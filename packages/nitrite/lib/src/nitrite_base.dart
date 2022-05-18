@@ -1,10 +1,7 @@
-// TODO: Put public facing types in this file.
-
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
-/// Checks if you are awesome. Spoiler: you are.
 abstract class Nitrite {
   static NitriteBuilder builder() {
     return NitriteBuilder();
@@ -32,11 +29,11 @@ abstract class Nitrite {
 
   void close();
 
-  NitriteConfig get getConfig;
+  NitriteConfig get config;
 
-  NitriteStore<T> getStore<T>();
+  NitriteStore<T> getStore<T extends StoreConfig>();
 
-  StoreMetaData get getDatabaseMetaData;
+  StoreMetaData get databaseMetaData;
 
   Session createSession();
 
