@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/store/store_config.dart';
 
 abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   void openOrCreate();
@@ -31,17 +30,17 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   NitriteRTree<Key, Value> openRTree<Key extends BoundingBox, Value>(
       String rTreeName);
 
-    void closeRTree(String rTreeName);
+  void closeRTree(String rTreeName);
 
-    void removeRTree(String rTreeName);
+  void removeRTree(String rTreeName);
 
-    void subscribe(StoreEventListener listener);
+  void subscribe(StoreEventListener listener);
 
-    void unsubscribe(StoreEventListener listener);
+  void unsubscribe(StoreEventListener listener);
 
-    String get storeVersion;
+  String get storeVersion;
 
-    Config get storeConfig;
+  Config get storeConfig;
 
-    StoreCatalog get catalog;
+  StoreCatalog get catalog;
 }

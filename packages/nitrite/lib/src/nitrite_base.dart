@@ -2,66 +2,115 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
+/// An in-memory, single-file based embedded nosql persistent document store. The store
+/// can contains multiple named document collections.
 abstract class Nitrite {
+  /// Returns an instance of a [NitriteBuilder].
   static NitriteBuilder builder() {
     return NitriteBuilder();
   }
 
-  void commit();
+  /// Commits the unsaved changes. For file based store, it saves the changes
+  /// to disk if there are any unsaved changes.
+  ///
+  /// No need to call it after every change, if auto-commit is not disabled
+  /// while opening the db. However, it may still be called to flush all
+  /// changes to disk.
+  Future<void> commit();
 
-  NitriteCollection getCollection(String name);
+  /// Opens a named collection from the store. If the collections does not
+  /// exist it will be created automatically and returned. If a collection
+  /// is already opened, it is returned as is. Returned collection is thread-safe
+  /// for concurrent use.
+  ///
+  /// The name cannot contain below reserved strings:
+  ///
+  /// * [Constants.internalNameSeparator]
+  /// * [Constants.userMap]
+  /// * [Constants.indexMetaPrefix]
+  /// * [Constants.indexPrefix]
+  /// * [Constants.objectStoreNameSeparator]
+  ///
+  Future<NitriteCollection> getCollection(String name);
 
-  ObjectRepository<T> getRepository<T>([String? key]);
+  /// Opens a type-safe object repository with an optional key identifier from
+  /// the store. If the repository does not exist it will be created
+  /// automatically and returned. If a repository is already opened, it is
+  /// returned as is.
+  ///
+  /// The returned repository is thread-safe for concurrent use.
+  Future<ObjectRepository<T>> getRepository<T>([String? key]);
 
-  void destroyCollection(String name);
+  /// Destroys a [NitriteCollection] without opening it first.
+  Future<void> destroyCollection(String name);
 
-  void destroyRepository<T>([String? key]);
+  /// Destroys an [ObjectRepository] without opening it first.
+  Future<void> destroyRepository<T>([String? key]);
 
-  Set<String> get listCollectionNames;
+  /// Gets the set of all [NitriteCollection]s' names saved in the store.
+  Future<Set<String>> get listCollectionNames;
 
-  Set<String> get listRepositories;
+  /// Gets the set of all fully qualified class names corresponding
+  /// to all [ObjectRepository]s in the store.
+  Future<Set<String>> get listRepositories;
 
-  Map<String, Set<String>> get listKeyedRepositories;
+  /// Gets the map of all key to the fully qualified class names corresponding
+  /// to all keyed-[ObjectRepository]s in the store.
+  Future<Map<String, Set<String>>> get listKeyedRepositories;
 
-  bool get hasUnsavedChanges;
+  /// Checks whether the store has any unsaved changes.
+  Future<bool> get hasUnsavedChanges;
 
+  /// Checks whether the store is closed.
   bool get isClosed;
 
-  void close();
+  /// Closes the database.
+  Future<void> close();
 
+  /// Gets the [NitriteConfig] instance to configure the database.
   NitriteConfig get config;
 
+  /// Gets the [NitriteStore] instance powering the database.
   NitriteStore<T> getStore<T extends StoreConfig>();
 
-  StoreMetaData get databaseMetaData;
+  /// Gets database meta data.
+  Future<StoreMetaData> get databaseMetaData;
 
+  /// Creates a [Session] for transaction.
   Session createSession();
 
-  bool hasCollection(String name) {
+  /// Checks whether a particular [NitriteCollection] exists in the store.
+  Future<bool> hasCollection(String name) async {
     checkOpened();
-    return listCollectionNames.contains(name);
+    var collections = await listCollectionNames;
+    return collections.contains(name);
   }
 
-  bool hasRepository<T>([String? key]) {
+  /// Checks whether a particular [ObjectRepository] exists in the store.
+  Future<bool> hasRepository<T>([String? key]) async {
     checkOpened();
     if (key.isNullOrEmpty) {
-      return listRepositories.contains(T.toString());
+      var repos = await listRepositories;
+      return repos.contains(T.toString());
     } else {
-      return listKeyedRepositories.containsKey(key) &&
-          listKeyedRepositories[key]?.contains(T.toString()) != null;
+      var repos = await listKeyedRepositories;
+      return repos.containsKey(key) &&
+          repos[key]?.contains(T.toString()) != null;
     }
   }
 
+  /// Validate the collection name.
   void validateCollectionName(String name) {
     name.notNullOrEmpty("name cannot be null or empty");
 
-    for (String reservedName in Constants.RESERVED_NAMES) {
+    for (String reservedName in Constants.reservedNames) {
       if (name.contains(reservedName)) {
         throw ValidationException("name cannot contain $reservedName");
       }
     }
   }
 
+  /// Checks if the store is opened.
   void checkOpened() {
     if (getStore().isClosed) {
       throw NitriteIOException("Nitrite is closed");

@@ -1,4 +1,1 @@
-
-class NitriteCollection {
-
-}
+class NitriteCollection {}

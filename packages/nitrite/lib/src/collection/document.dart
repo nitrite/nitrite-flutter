@@ -1,3 +1,1 @@
-class Document {
-
-}
+class Document {}

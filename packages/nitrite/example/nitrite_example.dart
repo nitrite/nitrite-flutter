@@ -1,5 +1,3 @@
 import 'package:nitrite/nitrite.dart';
 
-void main() {
-
-}
+void main() {}

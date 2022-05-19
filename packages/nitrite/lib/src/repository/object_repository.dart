@@ -1,3 +1,1 @@
-class ObjectRepository<T> {
-
-}
+class ObjectRepository<T> {}

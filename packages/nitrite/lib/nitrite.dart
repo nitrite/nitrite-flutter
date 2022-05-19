@@ -22,7 +22,19 @@ export 'src/repository/object_repository.dart';
 
 export 'src/transaction/session.dart';
 
-export 'src/common/exception/nitrite_exception.dart';
-export 'src/common/exception/validation_exception.dart';
 
+export 'src/common/exception/nitrite_exception.dart';
+export 'src/common/exception/nitrite_io_exception.dart';
+export 'src/common/exception/invalid_operation_exception.dart';
+export 'src/common/exception/validation_exception.dart';
+export 'src/common/exception/indexing_exception.dart';
+
+export 'src/common/module/nitrite_module.dart';
 export 'src/common/module/nitrite_plugin.dart';
+export 'src/common/module/plugin_manager.dart';
+
+export 'src/common/mapper/nitrite_mapper.dart';
+
+export 'src/migration/migration.dart';
+
+export 'src/index/nitrite_indexer.dart';
