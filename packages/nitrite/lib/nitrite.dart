@@ -14,6 +14,7 @@ export 'src/store/nitrite_store.dart';
 export 'src/store/meta_data.dart';
 export 'src/store/store_meta_data.dart';
 export 'src/store/store_config.dart';
+export 'src/store/nitrite_map.dart';
 export 'src/store/events/event_info.dart';
 export 'src/store/events/event_listener.dart';
 export 'src/store/events/store_events.dart';

@@ -4,8 +4,8 @@ import 'package:nitrite/src/common/meta/attributes.dart';
 /// aware of their metadata attributes.
 abstract class AttributesAware {
   /// Returns the metadata [attributes] of an object.
-  Attributes get attributes;
+  Future<Attributes> getAttributes();
 
   /// Sets new meta data [attributes].
-  set attributes(Attributes attributes);
+  Future<void> setAttributes(Attributes attributes);
 }
