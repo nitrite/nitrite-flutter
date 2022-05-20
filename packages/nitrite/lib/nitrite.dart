@@ -22,7 +22,6 @@ export 'src/repository/object_repository.dart';
 
 export 'src/transaction/session.dart';
 
-
 export 'src/common/exception/nitrite_exception.dart';
 export 'src/common/exception/nitrite_io_exception.dart';
 export 'src/common/exception/invalid_operation_exception.dart';
