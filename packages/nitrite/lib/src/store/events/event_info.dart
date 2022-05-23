@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:nitrite/src/nitrite_config.dart';
 import 'package:nitrite/src/store/events/store_events.dart';
 

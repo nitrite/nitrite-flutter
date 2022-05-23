@@ -1,5 +1,5 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/store/nitrite_map.dart';
+import 'package:nitrite/src/store/store_catalog.dart';
 
 abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   Future<void> openOrCreate();
