@@ -1011,3 +1011,6 @@ doc/api/
 .vscode
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+
+# Avoid committing generated documentation files
+packages/**/doc

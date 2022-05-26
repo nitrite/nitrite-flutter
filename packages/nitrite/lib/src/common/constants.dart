@@ -1,4 +1,6 @@
 class Constants {
+  Constants._();
+
   static const String indexMetaPrefix = "\$nitrite_index_meta";
 
   static const String indexPrefix = "\$nitrite_index";

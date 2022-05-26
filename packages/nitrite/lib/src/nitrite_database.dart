@@ -1,7 +1,11 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/concurrent/lock_service.dart';
 
 class NitriteDatabase extends Nitrite {
-  NitriteDatabase(NitriteConfig nitriteConfig);
+  final LockService _lockService = LockService();
+  final NitriteConfig _nitriteConfig;
+
+  NitriteDatabase(this._nitriteConfig);
 
   @override
   Future<void> close() async {
