@@ -41,3 +41,10 @@ class ValidationException extends NitriteException {
   @override
   String toString() => message ?? "ValidationException";
 }
+
+class FilterException extends NitriteException {
+  FilterException([String? message]) : super(message);
+
+  @override
+  String toString() => message ?? "FilterException";
+}

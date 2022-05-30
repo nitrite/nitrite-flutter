@@ -20,4 +20,8 @@ abstract class ObjectUtils {
     throw ValidationException("$collectionName is not a valid keyed "
         "object repository");
   }
+
+  static bool deepEquals(fieldValue, value) {
+    throw UnimplementedError();
+  }
 }

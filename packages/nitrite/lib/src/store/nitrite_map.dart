@@ -1,7 +1,5 @@
 import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/meta/attributes.dart';
-import 'package:nitrite/src/common/meta/attributes_aware.dart';
-import 'package:nitrite/src/common/tuples/pair.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 import 'package:nitrite/nitrite.dart';

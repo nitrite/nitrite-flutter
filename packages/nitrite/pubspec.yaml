@@ -11,8 +11,13 @@ dependencies:
    logging: ^1.0.2
    mutex: ^3.0.0
    collection: ^1.16.0
+   json_annotation: ^4.5.0
+   dart_numerics: ^0.0.6
+   string_splitter: ^1.0.0+1
 
 dev_dependencies:
   lints: ^2.0.0
   test: ^1.16.0
-  dart_numerics: ^0.0.6
+  build_runner: ^2.1.11
+  json_serializable: ^6.2.0
+
