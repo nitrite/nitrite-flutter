@@ -357,7 +357,7 @@ class _EqualsFilter extends ComparableFilter {
   bool apply(Pair<NitriteId, Document> element) {
     var doc = element.second;
     var fieldValue = doc.get(field);
-    return ObjectUtils.deepEquals(fieldValue, value);
+    return deepEquals(fieldValue, value);
   }
 
   @override
@@ -385,7 +385,7 @@ class _GreaterEqualFilter extends ComparableFilter {
     var fieldValue = doc.get(field);
     if (fieldValue != null) {
       if (fieldValue is num && comparable is num) {
-        return NumberUtils.compare(fieldValue, comparable as num) >= 0;
+        return compare(fieldValue, comparable as num) >= 0;
       } else if (fieldValue is Comparable) {
         return fieldValue.compareTo(comparable) >= 0;
       } else {
@@ -433,7 +433,7 @@ class _GreaterThanFilter extends ComparableFilter {
     var fieldValue = doc.get(field);
     if (fieldValue != null) {
       if (fieldValue is num && comparable is num) {
-        return NumberUtils.compare(fieldValue, comparable as num) > 0;
+        return compare(fieldValue, comparable as num) > 0;
       } else if (fieldValue is Comparable) {
         return fieldValue.compareTo(comparable) > 0;
       } else {
@@ -481,7 +481,7 @@ class _LesserEqualFilter extends ComparableFilter {
     var fieldValue = doc.get(field);
     if (fieldValue != null) {
       if (fieldValue is num && comparable is num) {
-        return NumberUtils.compare(fieldValue, comparable as num) <= 0;
+        return compare(fieldValue, comparable as num) <= 0;
       } else if (fieldValue is Comparable) {
         return fieldValue.compareTo(comparable) <= 0;
       } else {
@@ -529,7 +529,7 @@ class _LesserThanFilter extends ComparableFilter {
     var fieldValue = doc.get(field);
     if (fieldValue != null) {
       if (fieldValue is num && comparable is num) {
-        return NumberUtils.compare(fieldValue, comparable as num) < 0;
+        return compare(fieldValue, comparable as num) < 0;
       } else if (fieldValue is Comparable) {
         return fieldValue.compareTo(comparable) < 0;
       } else {
@@ -575,7 +575,7 @@ class _NotEqualsFilter extends ComparableFilter {
   bool apply(Pair<NitriteId, Document> element) {
     var doc = element.second;
     var fieldValue = doc.get(field);
-    return !ObjectUtils.deepEquals(fieldValue, value);
+    return !deepEquals(fieldValue, value);
   }
 
   @override
@@ -586,7 +586,7 @@ class _NotEqualsFilter extends ComparableFilter {
     var nitriteIds = <NitriteId>[];
 
     for (Pair<Comparable, dynamic> entry in indexMap.entries()) {
-      if (!ObjectUtils.deepEquals(value, entry.first)) {
+      if (!deepEquals(value, entry.first)) {
         processIndexValue(entry.second, subMaps, nitriteIds);
       }
     }
@@ -980,9 +980,9 @@ class _ElementMatchFilter extends NitriteFilter {
     var value = filter.value;
     if (element is Document) {
       var docValue = element[filter.field];
-      return ObjectUtils.deepEquals(value, docValue);
+      return deepEquals(value, docValue);
     } else {
-      return ObjectUtils.deepEquals(value, element);
+      return deepEquals(value, element);
     }
   }
 
@@ -990,7 +990,7 @@ class _ElementMatchFilter extends NitriteFilter {
     var comparable = filter.comparable;
 
     if (element is num && comparable is num) {
-      return NumberUtils.compare(element, comparable) > 0;
+      return compare(element, comparable) > 0;
     } else if (element is Comparable) {
       return element.compareTo(comparable) > 0;
     } else if (element is Document) {
@@ -1009,7 +1009,7 @@ class _ElementMatchFilter extends NitriteFilter {
     var comparable = filter.comparable;
 
     if (element is num && comparable is num) {
-      return NumberUtils.compare(element, comparable) >= 0;
+      return compare(element, comparable) >= 0;
     } else if (element is Comparable) {
       return element.compareTo(comparable) >= 0;
     } else if (element is Document) {
@@ -1028,7 +1028,7 @@ class _ElementMatchFilter extends NitriteFilter {
     var comparable = filter.comparable;
 
     if (element is num && comparable is num) {
-      return NumberUtils.compare(element, comparable) <= 0;
+      return compare(element, comparable) <= 0;
     } else if (element is Comparable) {
       return element.compareTo(comparable) <= 0;
     } else if (element is Document) {
@@ -1047,7 +1047,7 @@ class _ElementMatchFilter extends NitriteFilter {
     var comparable = filter.comparable;
 
     if (element is num && comparable is num) {
-      return NumberUtils.compare(element, comparable) < 0;
+      return compare(element, comparable) < 0;
     } else if (element is Comparable) {
       return element.compareTo(comparable) < 0;
     } else if (element is Document) {

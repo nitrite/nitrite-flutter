@@ -1,6 +1,8 @@
 import 'package:nitrite/src/filters/filter.dart';
 
+/// String extension for nitrite filter.
 extension StringFilterExtension on String {
+
   NitriteFilter eq(dynamic value) {
     return where(this).eq(value);
   }

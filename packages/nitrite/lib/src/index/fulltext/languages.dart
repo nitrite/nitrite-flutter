@@ -6033,7 +6033,6 @@ class English implements Language {
       "won't",
       "wonder",
       "would",
-      "would",
       "wouldn't",
       "x",
       "y",

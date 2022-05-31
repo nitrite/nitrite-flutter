@@ -1,6 +1,5 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/constants.dart';
-import 'package:nitrite/src/common/tuples/pair.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/store/meta_data.dart';
 
@@ -82,8 +81,8 @@ class StoreCatalog {
 
     var resultMap = <String, Set<String>>{};
     for (var field in keyedRepositoryNames) {
-      var key = ObjectUtils.getKeyName(field);
-      var type = ObjectUtils.getKeyedRepositoryType(field);
+      var key = getKeyName(field);
+      var type = getKeyedRepositoryType(field);
 
       Set<String>? types;
       if (resultMap.containsKey(key)) {

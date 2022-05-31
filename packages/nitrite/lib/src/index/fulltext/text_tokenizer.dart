@@ -24,7 +24,7 @@ abstract class BaseTextTokenizer implements TextTokenizer {
     var words = <String>{};
     if (text.isNullOrEmpty) return words;
 
-    var tokens = StringUtils.tokenizeString(text);
+    var tokens = tokenizeString(text);
     for (var token in tokens) {
       var word = token.toLowerCase();
       if (!stopWords().contains(word)) {
