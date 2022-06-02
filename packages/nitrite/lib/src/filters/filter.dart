@@ -9,14 +9,23 @@ import 'package:nitrite/src/index/index_map.dart';
 
 import '../common/util/number_utils.dart';
 
+/// The where clause for elemMatch filter.
 FluentFilter $ = where("\$");
 
+/// A filter to select all elements.
+Filter all = _All();
+
+/// Where clause for fluent filter api.
 FluentFilter where(String field) {
   var filter = FluentFilter._();
   filter._field = field;
   return filter;
 }
 
+/// Filter by document _id.
+Filter byId(NitriteId id) => _EqualsFilter(Constants.docId, id.idValue);
+
+/// Performs logical AND on the given filters.
 Filter and(List<Filter> filters) {
   filters.notNullOrEmpty('At least two filters must be specified');
   if (filters.length < 2) {
@@ -26,6 +35,7 @@ Filter and(List<Filter> filters) {
   return AndFilter(filters);
 }
 
+/// Performs logical OR on the given filters.
 Filter or(List<Filter> filters) {
   filters.notNullOrEmpty('At least two filters must be specified');
   if (filters.length < 2) {
@@ -39,80 +49,136 @@ Filter or(List<Filter> filters) {
 Filter _and(List<Filter> filters) => and(filters);
 Filter _or(List<Filter> filters) => or(filters);
 
+/// A fluent api for the [NitriteFilter].
 class FluentFilter {
   late String _field;
 
   FluentFilter._();
 
+  /// Creates an equality filter which matches documents where the value
+  /// of a field equals the specified value.
   NitriteFilter eq(dynamic value) => _EqualsFilter(_field, value);
 
+  /// Creates an equality filter which matches documents where the value
+  /// of a field not equals the specified value.
   NitriteFilter notEq(dynamic value) => _NotEqualsFilter(_field, value);
 
+  /// Creates a greater than filter which matches those documents where the value
+  /// of the field is greater than the specified value.
   NitriteFilter gt(dynamic value) => _GreaterThanFilter(_field, value);
 
+  /// Creates a greater equal filter which matches those documents where the value
+  /// of the field is greater than or equals to the specified value.
   NitriteFilter gte(dynamic value) => _GreaterEqualFilter(_field, value);
 
+  /// Creates a lesser than filter which matches those documents where the value
+  /// of the field is less than the specified value.
   NitriteFilter lt(dynamic value) => _LesserThanFilter(_field, value);
 
+  /// Creates a lesser equal filter which matches those documents where the value
+  /// of the field is less than or equals to the specified value.
   NitriteFilter lte(dynamic value) => _LesserEqualFilter(_field, value);
 
+  /// Creates a between filter which matches those documents where the value
+  /// of the field is within the specified bound including the end values.
+  /// 
+  /// ```dart
+  /// collection.find(where("age").between(40, 30));
+  /// ```
   NitriteFilter between(Comparable lowerBound, Comparable upperBound,
           {upperInclusive = true, lowerInclusive = true}) =>
       _BetweenFilter(
           _field,
-          Bound(upperBound, lowerBound,
+          _Bound(upperBound, lowerBound,
               upperInclusive: upperInclusive, lowerInclusive: lowerInclusive));
 
+  /// Creates a text filter which performs a text search on the content of 
+  /// the fields indexed with a full-text index.
   NitriteFilter text(dynamic value) => _TextFilter(_field, value);
 
+  /// Creates a string filter which provides regular expression capabilities
+  /// for pattern matching strings in documents.
   NitriteFilter regex(dynamic value) => _RegexFilter(_field, value);
 
+  /// Creates an in filter which matches the documents where
+  /// the value of a field equals any value in the specified values.
   NitriteFilter within(dynamic value) => _InFilter(_field, value);
 
+  /// Creates a notIn filter which matches the documents where
+  /// the value of a field not equals any value in the specified values.
   NitriteFilter notIn(dynamic value) => _NotInFilter(_field, value);
 
-  NitriteFilter elemMatch(dynamic value) => _ElementMatchFilter(_field, value);
+  /// Creates an element match filter that matches documents that contain a list
+  /// value with at least one element that matches the specified filter.
+  NitriteFilter elemMatch(Filter filter) => _ElementMatchFilter(_field, filter);
 
+  /// Creates a greater than filter which matches those documents where the value
+  /// of the field is greater than the specified value.
   NitriteFilter operator >(dynamic value) => _GreaterThanFilter(_field, value);
 
-  NitriteFilter operator <(dynamic value) => _LesserThanFilter(_field, value);
-
+  /// Creates a greater equal filter which matches those documents where the value
+  /// of the field is greater than or equals to the specified value.
   NitriteFilter operator >=(dynamic value) =>
       _GreaterEqualFilter(_field, value);
 
+  /// Creates a lesser than filter which matches those documents where the value
+  /// of the field is less than the specified value.
+  NitriteFilter operator <(dynamic value) => _LesserThanFilter(_field, value);
+
+  /// Creates a lesser equal filter which matches those documents where the value
+  /// of the field is less than or equals to the specified value.
   NitriteFilter operator <=(dynamic value) => _LesserEqualFilter(_field, value);
 }
 
+/// An interface to specify filtering criteria during find operation. When
+/// a filter is applied to a collection, based on the criteria it returns
+/// a set of matching records.
+/// 
+/// Each filtering criteria is based on a value of a document. If the value
+/// is indexed, the find operation takes the advantage of it and only scans
+/// the index map for that value. But if the value is not indexed, it scans
+/// the whole collection.
 abstract class Filter {
-  static Filter all = _All();
 
-  static Filter byId(NitriteId id) =>
-      _EqualsFilter(Constants.docId, id.idValue);
-
+  /// Filters a document map and returns `true` if the criteria matches.
   bool apply(Pair<NitriteId, Document> element);
 
+  /// Creates a not filter which performs a logical NOT operation on a filter 
+  /// and selects the documents that **do not** satisfy the criteria. 
+  /// This also includes documents that do not contain the value.
   Filter operator ~() {
     return _NotFilter(this);
   }
 }
 
+/// Represents a nitrite filter.
 abstract class NitriteFilter extends Filter {
   NitriteConfig? nitriteConfig;
   String? collectionName;
   bool objectFilter = false;
 
+  /// Creates an and filter which performs a logical AND operation on 
+  /// two filters and selects the documents that satisfy both filters.
   Filter and(Filter filter) {
     return this & filter;
   }
 
+  /// Creates an or filter which performs a logical OR operation on 
+  /// two filters and selects the documents that satisfy at least one 
+  /// of the filter.
   Filter or(Filter filter) {
     return this | filter;
   }
 
+  /// Creates an and filter which performs a logical AND operation on 
+  /// two filters and selects the documents that satisfy both filters.
   Filter operator &(Filter other) {
     return _and([this, other]);
   }
 
+  /// Creates an or filter which performs a logical OR operation on 
+  /// two filters and selects the documents that satisfy at least one 
+  /// of the filter.
   Filter operator |(Filter other) {
     return _or([this, other]);
   }
@@ -135,12 +201,15 @@ class _All extends Filter {
   }
 }
 
+/// Represents a filter which does a logical operation (AND, OR)
+/// between a set of filters.
 abstract class LogicalFilter extends NitriteFilter {
   List<Filter> filters;
 
   LogicalFilter(this.filters);
 }
 
+/// Represents a filter based on value of a nitrite document field.
 abstract class FieldBasedFilter extends NitriteFilter {
   String field;
   dynamic _value;
@@ -148,6 +217,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
 
   FieldBasedFilter(this.field, this._value);
 
+  /// Gets the value of the filter.
   dynamic get value {
     if (_processed) return _value;
     if (_value == null) return null;
@@ -175,6 +245,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
   }
 }
 
+/// Represents a filter based on document field holding [Comparable] values.
 abstract class ComparableFilter extends FieldBasedFilter {
   ComparableFilter(String field, dynamic value) : super(field, value);
 
@@ -185,8 +256,10 @@ abstract class ComparableFilter extends FieldBasedFilter {
     return value as Comparable;
   }
 
+  /// Apply this filter on a nitrite index.
   List applyOnIndex(IndexMap indexMap);
 
+  /// Process values after index scanning.
   void processIndexValue(
       dynamic value,
       List<SplayTreeMap<Comparable, dynamic>> subMap,
@@ -202,17 +275,22 @@ abstract class ComparableFilter extends FieldBasedFilter {
   }
 }
 
+/// Represents a filter on string values.
 abstract class StringFilter extends ComparableFilter {
   StringFilter(String field, dynamic value) : super(field, value);
 
   String get stringValue => value as String;
 }
 
+/// Represents an index-only filter. This filter does not support
+/// collection scan.
 abstract class IndexOnlyFilter extends ComparableFilter {
   IndexOnlyFilter(super.field, super.value);
 
+  /// Gets the supported index type for this filter.
   String supportedIndexType();
 
+  /// Checks if `other` filter can be grouped together with this filter.
   bool canBeGrouped(IndexOnlyFilter other);
 }
 
@@ -280,10 +358,10 @@ class AndFilter extends LogicalFilter {
 }
 
 class _BetweenFilter<T> extends AndFilter {
-  _BetweenFilter(String field, Bound<T> bound)
+  _BetweenFilter(String field, _Bound<T> bound)
       : super(<Filter>[_rhs(field, bound), _lhs(field, bound)]);
 
-  static Filter _rhs<R>(String field, Bound<R> bound) {
+  static Filter _rhs<R>(String field, _Bound<R> bound) {
     _validateBound(bound);
     R value = bound.upperBound;
     if (bound.upperInclusive) {
@@ -293,7 +371,7 @@ class _BetweenFilter<T> extends AndFilter {
     }
   }
 
-  static Filter _lhs<R>(String field, Bound<R> bound) {
+  static Filter _lhs<R>(String field, _Bound<R> bound) {
     _validateBound(bound);
     R value = bound.upperBound;
     if (bound.lowerInclusive) {
@@ -303,7 +381,7 @@ class _BetweenFilter<T> extends AndFilter {
     }
   }
 
-  static void _validateBound<R>(Bound<R> bound) {
+  static void _validateBound<R>(_Bound<R> bound) {
     if (bound.upperBound is! Comparable || bound.lowerBound is! Comparable) {
       throw FilterException("Upper bound or lower bound value "
           "must be comparable");
@@ -340,13 +418,13 @@ class OrFilter extends LogicalFilter {
   }
 }
 
-class Bound<T> {
+class _Bound<T> {
   T upperBound;
   T lowerBound;
   bool upperInclusive = true;
   bool lowerInclusive = true;
 
-  Bound(this.upperBound, this.lowerBound,
+  _Bound(this.upperBound, this.lowerBound,
       {this.upperInclusive = true, this.lowerInclusive = true});
 }
 

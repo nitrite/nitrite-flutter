@@ -7,10 +7,8 @@ export 'src/nitrite_base.dart';
 export 'src/nitrite_builder.dart';
 export 'src/nitrite_config.dart';
 
-export 'src/collection/nitrite_collection.dart';
-export 'src/collection/document.dart';
-export 'src/collection/nitrite_id.dart';
-export 'src/collection/events/event_aware.dart';
+export 'src/collection/index.dart';
+export 'src/collection/events/index.dart';
 
 export 'src/store/nitrite_store.dart';
 export 'src/store/meta_data.dart' hide MapMetaData;
@@ -38,9 +36,7 @@ export 'src/common/processors/processor.dart';
 
 export 'src/migration/migration.dart';
 
-export 'src/index/nitrite_indexer.dart';
-export 'src/index/bounding_box.dart';
-export 'src/index/index_options.dart';
+export 'src/index/index.dart';
 
 export 'src/filters/filter.dart';
 export 'src/filters/filter_extension.dart';

@@ -23,5 +23,42 @@ abstract class PersistentCollection<T> implements EventAware, AttributesAware {
   /// Rebuilds index on the [fields] if it exists.
   Future<void> rebuildIndex(List<String> fields);
 
+  /// Gets a set of all indices in the collection.
+  Future<Iterable<IndexDescriptor>> listIndexes();
 
+  /// Checks if the [fields] is already indexed or not.
+  Future<bool> hasIndex(List<String> fields);
+
+  /// Checks if indexing operation is currently ongoing for the [fields].
+  Future<bool> isIndexing(List<String> fields);
+
+  /// Drops the index on the [fields].
+  Future<void> dropIndex(List<String> fields);
+
+  /// Drops all indices from the collection.
+  Future<void> dropAllIndices();
+
+  /// Removes all element from the collection.
+  Future<void> clear();
+
+  /// Drops the collection and all of its indices.
+  ///
+  /// Any further access to a dropped collection would result into
+  /// an exception.
+  Future<void> drop();
+
+  /// Returns `true` if the collection is dropped; otherwise, `false`.
+  Future<bool> get isDropped;
+
+  /// Returns `true` if the collection is open; otherwise, `false`.
+  Future<bool> get isOpen;
+
+  /// Returns the size of the [PersistentCollection].
+  Future<bool> get size;
+
+  /// Closes this [PersistentCollection].
+  Future<void> close();
+
+  /// Returns the [NitriteStore] instance for this collection.
+  NitriteStore<Config> getStore<Config extends StoreConfig>();
 }
