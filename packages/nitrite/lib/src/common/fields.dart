@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/constants.dart';
+import 'package:nitrite/src/common/sort_order.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// Represents a list of document fields.
@@ -68,5 +70,34 @@ class Fields implements Comparable<Fields> {
     }
     return result;
   }
+}
 
+/// Represents a list of document field with
+/// sorting direction for find query.
+class SortableFields extends Fields {
+  final List<Pair<String, SortOrder>> _sortingOrders = [];
+
+  SortableFields();
+
+  /// Creates a [SortableFields] instance with field names.
+  factory SortableFields.withNames(List<String> fields) {
+    fields.notNullOrEmpty("fields cannot null or empty");
+
+    var sortableFields = SortableFields();
+    for (var field in fields) {
+      sortableFields.addSortedField(field, SortOrder.ascending);
+    }
+    return sortableFields;
+  }
+
+  /// Adds the sort order for a field.
+  SortableFields addSortedField(String fieldName, SortOrder sortOrder) {
+    super.fieldNames.add(fieldName);
+    _sortingOrders.add(Pair(fieldName, sortOrder));
+    return this;
+  }
+
+  /// Gets the sort by field specifications.
+  List<Pair<String, SortOrder>> get sortingOrders =>
+      List.unmodifiable(_sortingOrders);
 }

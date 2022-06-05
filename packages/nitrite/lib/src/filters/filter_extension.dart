@@ -1,8 +1,9 @@
 import 'package:nitrite/src/filters/filter.dart';
 
-/// String extension for nitrite filter.
-extension StringFilterExtension on String {
+typedef FieldName = String;
 
+/// String extension for nitrite filter.
+extension StringFilterExtension on FieldName {
   /// Creates an equality filter which matches documents where the value
   /// of a field equals the specified value.
   NitriteFilter eq(dynamic value) {

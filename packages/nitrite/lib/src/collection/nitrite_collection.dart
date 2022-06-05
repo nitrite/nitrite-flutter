@@ -1,9 +1,9 @@
-import 'package:nitrite/src/collection/document.dart';
-import 'package:nitrite/src/collection/nitrite_id.dart';
+import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/collection/document_cursor.dart';
+import 'package:nitrite/src/collection/options.dart';
 import 'package:nitrite/src/common/concurrent/lock_service.dart';
 import 'package:nitrite/src/common/persistent_collection.dart';
-import 'package:nitrite/src/nitrite_config.dart';
-import 'package:nitrite/src/store/nitrite_map.dart';
+import 'package:nitrite/src/common/write_result.dart';
 
 /// Represents a named document collection stored in nitrite database.
 /// It persists documents into the database. Each document is associated
@@ -21,16 +21,16 @@ import 'package:nitrite/src/store/nitrite_map.dart';
 /// var collection = db.getCollection("products");
 /// ```
 abstract class NitriteCollection extends PersistentCollection<Document> {
+  WriteResult insert(List<Document> documents);
 
+  WriteResult update(List<Document> documents,
+      {Filter filter, Document update, UpdateOptions updateOptions});
 
+  WriteResult remove(Filter filter, {Document document, bool justOne});
 
+  DocumentCursor find([Filter filter, FindOptions findOptions]);
 
-  bool get isDropped;
-  bool get isOpen;
-  Future<void> close();
+  Future<Document> getById(NitriteId id);
 
-  static create(String name, NitriteMap<NitriteId, Document> nitriteMap, NitriteConfig nitriteConfig, LockService lockService) {}
-
-  find() {}
-  update(dynamic filter, dynamic doc, dynamic option);
+  String get name;
 }

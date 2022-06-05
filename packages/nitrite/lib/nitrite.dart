@@ -37,6 +37,4 @@ export 'src/common/processors/processor.dart';
 export 'src/migration/migration.dart';
 
 export 'src/index/index.dart';
-
-export 'src/filters/filter.dart';
-export 'src/filters/filter_extension.dart';
+export 'src/filters/index.dart';

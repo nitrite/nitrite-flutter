@@ -14,16 +14,25 @@ class WriteResultImpl extends WriteResult {
 
   @override
   Future<int> getAffectedCount() async {
-    return _subject.values.length;
+    return _subject.length;
   }
 
   @override
-  StreamSubscription<NitriteId> listen(void Function(NitriteId event)? onData, {Function? onError, void Function()? onDone, bool? cancelOnError}) {
+  StreamSubscription<NitriteId> listen(void Function(NitriteId event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     return _subject.listen(
       onData,
       onError: onError,
       onDone: onDone,
       cancelOnError: cancelOnError,
     );
+  }
+
+  void add(NitriteId value) {
+    _subject.add(value);
+  }
+
+  Future<dynamic> close() {
+    return _subject.close();
   }
 }
