@@ -1,5 +1,7 @@
 import 'package:event_bus/event_bus.dart';
+import 'package:mutex/mutex.dart';
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/collection/collection_operations.dart';
 import 'package:nitrite/src/collection/options.dart';
 import 'package:nitrite/src/common/concurrent/lock_service.dart';
 import 'package:nitrite/src/common/meta/attributes.dart';
@@ -53,8 +55,9 @@ class CollectionFactory {
       String name, NitriteConfig nitriteConfig, bool writeCatalogue) async {
     var store = nitriteConfig.getNitriteStore();
     var nitriteMap = await store.openMap<NitriteId, Document>(name);
-    var collection =
-        NitriteCollection.create(name, nitriteMap, nitriteConfig, _lockService);
+    var collection = _DefaultNitriteCollection(
+        name, nitriteMap, nitriteConfig, _lockService);
+    await collection._initialize();
 
     if (writeCatalogue) {
       var repoRegistry = await store.repositoryRegistry;
@@ -92,40 +95,66 @@ class _DefaultNitriteCollection extends NitriteCollection {
   late NitriteStore _nitriteStore;
   late CollectionOperations _collectionOperations;
   late EventBus _eventBus;
+  late ReadWriteMutex _lock;
 
-  _DefaultNitriteCollection(
-      this._collectionName,
-      this._nitriteMap,
-      this._nitriteConfig,
-      this._lockService);
+  bool _isDropped = false;
+
+  _DefaultNitriteCollection(this._collectionName, this._nitriteMap,
+      this._nitriteConfig, this._lockService);
 
   @override
-  void addProcessor(Processor processor) {
-    // TODO: implement addProcessor
+  Future<void> addProcessor(Processor processor) async {
+    processor.notNullOrEmpty('Processor is null');
+
+    return _lock.protectWrite(() async {
+      await _checkOpened();
+      _collectionOperations.addProcessor(processor);
+    });
   }
 
   @override
   Future<void> clear() {
-    // TODO: implement clear
-    throw UnimplementedError();
+    return _lock.protectWrite(() async {
+      await _checkOpened();
+      await _nitriteMap.clear();
+    });
   }
 
   @override
   Future<void> close() {
-    // TODO: implement close
-    throw UnimplementedError();
+    return _lock.protectWrite(() async {
+      await _checkOpened();
+      await _collectionOperations.close();
+      _eventBus.destroy();
+    });
   }
 
   @override
   Future<void> createIndex(List<String> fields, [IndexOptions? indexOptions]) {
-    // TODO: implement createIndex
-    throw UnimplementedError();
+    fields.notNullOrEmpty('Fields cannot be null');
+
+    var indexFields = Fields.withNames(fields);
+    return _lock.protectWrite(() async {
+      await _checkOpened();
+      
+      if (indexOptions == null) {
+        await _collectionOperations.createIndex(indexFields, IndexType.unique);
+      } else {
+        await _collectionOperations.createIndex(indexFields, indexOptions.indexType);
+      }
+    });
   }
 
   @override
   Future<void> drop() {
-    // TODO: implement drop
-    throw UnimplementedError();
+    return _lock.protectWrite(() async {
+      await _checkOpened();
+      await _collectionOperations.close();
+      await _collectionOperations.dropCollection();
+      
+      _eventBus.destroy();
+      _isDropped = true;
+    });
   }
 
   @override
@@ -237,5 +266,19 @@ class _DefaultNitriteCollection extends NitriteCollection {
       [Filter? filter, Document? update, UpdateOptions? updateOptions]) {
     // TODO: implement update
     throw UnimplementedError();
+  }
+
+  Future<void> _initialize() async {
+    _isDropped = false;
+    _nitriteStore = _nitriteConfig.getNitriteStore();
+    _lock = await _lockService.getLock(_collectionName);
+    _eventBus = EventBus();
+    _collectionOperations = CollectionOperations(_collectionName, _nitriteMap, _nitriteConfig, _eventBus);
+  }
+
+  Future<void> _checkOpened() async {
+    var opened = await isOpen;
+    if (opened) return;
+    throw NitriteIOException("Collection is closed");
   }
 }
