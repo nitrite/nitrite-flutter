@@ -21,16 +21,50 @@ import 'package:nitrite/src/common/write_result.dart';
 /// var collection = db.getCollection("products");
 /// ```
 abstract class NitriteCollection extends PersistentCollection<Document> {
+  /// Insert documents into a collection. If the document contains a `_id` value,
+  /// then the value will be used as a unique key to identify the document in
+  /// the collection.
+  /// If the document does not contain any `_id` value, then nitrite will
+  /// generate a new [NitriteId] and will add it to the document.
+  ///
+  /// If any of the value is already indexed in the collection, then after
+  /// insertion the index will also be updated.
+  ///
+  /// **NOTE**: These operations will notify all [CollectionEventListener]
+  /// instances registered to this collection with change type
+  /// [EventType.insert].
   WriteResult insert(List<Document> documents);
 
+  /// Update documents in the collection.
+  ///
+  /// If the [filter] is `null`, it will update all documents in the collection.
+  ///
+  /// **NOTE**: This operations will notify all [CollectionEventListener]
+  /// instances registered to this collection with change type
+  /// [EventType.update].
   WriteResult update(List<Document> documents,
-      {Filter filter, Document update, UpdateOptions updateOptions});
+      [Filter? filter, Document? update, UpdateOptions? updateOptions]);
 
-  WriteResult remove(Filter filter, {Document document, bool justOne});
+  /// Removes matching elements from the collection.
+  ///
+  /// If the [filter] is `null`, it will remove all objects from the collection.
+  ///
+  /// **NOTE**: This operations will notify all [CollectionEventListener]
+  /// instances registered to this collection with change type
+  /// [EventType.remove].
+  WriteResult remove(Filter filter, [Document? document, bool? justOne]);
 
-  DocumentCursor find([Filter filter, FindOptions findOptions]);
+  /// Applies a filter on the collection and returns a customized cursor to the
+  /// selected documents.
+  ///
+  /// **NOTE**: If there is an index on the value specified in the filter,
+  /// this operation will take advantage of the index.
+  DocumentCursor find([Filter? filter, FindOptions? findOptions]);
 
+  /// Gets a single element from the collection by its id. If no element
+  /// is found, it will return `null`.
   Future<Document> getById(NitriteId id);
 
+  /// Returns the name of the [NitriteCollection].
   String get name;
 }

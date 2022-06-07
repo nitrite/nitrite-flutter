@@ -57,7 +57,7 @@ class FindOptions {
 
   FindOptions thenOrderBy(String fieldName, SortOrder sortOrder) {
     if (_orderBy != null) {
-      _orderBy.addSortedField(fieldName, sortOrder);
+      _orderBy!.addSortedField(fieldName, sortOrder);
     } else {
       var sortableFields = SortableFields();
       sortableFields.addSortedField(fieldName, sortOrder);
