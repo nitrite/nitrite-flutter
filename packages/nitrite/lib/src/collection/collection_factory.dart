@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:event_bus/event_bus.dart';
 import 'package:mutex/mutex.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/collection/collection_operations.dart';
+import 'package:nitrite/src/collection/operations/collection_operations.dart';
 import 'package:nitrite/src/collection/options.dart';
 import 'package:nitrite/src/common/concurrent/lock_service.dart';
 import 'package:nitrite/src/common/meta/attributes.dart';
@@ -91,6 +93,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   final LockService _lockService;
   final NitriteMap<NitriteId, Document> _nitriteMap;
   final NitriteConfig _nitriteConfig;
+  final Map<int, StreamSubscription> _subscriptions = {};
 
   late NitriteStore _nitriteStore;
   late CollectionOperations _collectionOperations;
@@ -107,165 +110,285 @@ class _DefaultNitriteCollection extends NitriteCollection {
     processor.notNullOrEmpty('Processor is null');
 
     return _lock.protectWrite(() async {
-      await _checkOpened();
+      _checkOpened();
       _collectionOperations.addProcessor(processor);
     });
   }
 
   @override
-  Future<void> clear() {
+  Future<void> clear() async {
     return _lock.protectWrite(() async {
-      await _checkOpened();
+      _checkOpened();
       await _nitriteMap.clear();
     });
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     return _lock.protectWrite(() async {
-      await _checkOpened();
+      _checkOpened();
       await _collectionOperations.close();
       _eventBus.destroy();
     });
   }
 
   @override
-  Future<void> createIndex(List<String> fields, [IndexOptions? indexOptions]) {
+  Future<void> createIndex(List<String> fields,
+      [IndexOptions? indexOptions]) async {
     fields.notNullOrEmpty('Fields cannot be null');
 
     var indexFields = Fields.withNames(fields);
     return _lock.protectWrite(() async {
-      await _checkOpened();
-      
+      _checkOpened();
+
       if (indexOptions == null) {
         await _collectionOperations.createIndex(indexFields, IndexType.unique);
       } else {
-        await _collectionOperations.createIndex(indexFields, indexOptions.indexType);
+        await _collectionOperations.createIndex(
+            indexFields, indexOptions.indexType);
       }
     });
   }
 
   @override
-  Future<void> drop() {
+  Future<void> drop() async {
     return _lock.protectWrite(() async {
-      await _checkOpened();
+      _checkOpened();
       await _collectionOperations.close();
       await _collectionOperations.dropCollection();
-      
+
       _eventBus.destroy();
       _isDropped = true;
     });
   }
 
   @override
-  Future<void> dropAllIndices() {
-    // TODO: implement dropAllIndices
-    throw UnimplementedError();
+  Future<void> dropAllIndices() async {
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      await _collectionOperations.dropAllIndices();
+    });
   }
 
   @override
   Future<void> dropIndex(List<String> fields) {
-    // TODO: implement dropIndex
-    throw UnimplementedError();
+    fields.notNullOrEmpty('Fields cannot be null');
+
+    var indexFields = Fields.withNames(fields);
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      await _collectionOperations.dropIndex(indexFields);
+    });
   }
 
   @override
-  DocumentCursor find([Filter? filter, FindOptions? findOptions]) {
-    // TODO: implement find
-    throw UnimplementedError();
+  Future<DocumentCursor> find(
+      [Filter? filter, FindOptions? findOptions]) async {
+    return _lock.protectRead(() async {
+      _checkOpened();
+      return _collectionOperations.find(filter, findOptions);
+    });
   }
 
   @override
-  Future<Attributes> getAttributes() {
-    // TODO: implement getAttributes
-    throw UnimplementedError();
+  Future<Attributes> getAttributes() async {
+    return _lock.protectRead(() async {
+      _checkOpened();
+      return _collectionOperations.getAttributes();
+    });
   }
 
   @override
   Future<Document> getById(NitriteId id) {
-    // TODO: implement getById
-    throw UnimplementedError();
+    id.notNullOrEmpty('Id cannot be null');
+
+    return _lock.protectRead(() async {
+      _checkOpened();
+      return _collectionOperations.getById(id);
+    });
   }
 
   @override
   NitriteStore<Config> getStore<Config extends StoreConfig>() {
-    // TODO: implement getStore
-    throw UnimplementedError();
+    return _nitriteStore as NitriteStore<Config>;
   }
 
   @override
-  Future<bool> hasIndex(List<String> fields) {
-    // TODO: implement hasIndex
-    throw UnimplementedError();
+  Future<bool> hasIndex(List<String> fields) async {
+    fields.notNullOrEmpty('Fields cannot be null');
+
+    var indexFields = Fields.withNames(fields);
+    return _lock.protectRead(() async {
+      _checkOpened();
+      return _collectionOperations.hasIndex(indexFields);
+    });
   }
 
   @override
-  WriteResult insert(List<Document> documents) {
-    // TODO: implement insert
-    throw UnimplementedError();
+  Future<WriteResult> insert(List<Document> documents) async {
+    documents.notNullOrEmpty('Documents cannot be null or empty');
+
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      return _collectionOperations.insert(documents);
+    });
   }
 
   @override
-  // TODO: implement isDropped
-  Future<bool> get isDropped => throw UnimplementedError();
+  Future<bool> get isDropped => _lock.protectRead(() async {
+        return _isDropped;
+      });
 
   @override
   Future<bool> isIndexing(List<String> fields) {
-    // TODO: implement isIndexing
-    throw UnimplementedError();
+    fields.notNullOrEmpty('Fields cannot be null');
+
+    var indexFields = Fields.withNames(fields);
+    return _lock.protectRead(() async {
+      _checkOpened();
+      return _collectionOperations.isIndexing(indexFields);
+    });
   }
 
   @override
-  // TODO: implement isOpen
-  Future<bool> get isOpen => throw UnimplementedError();
+  Future<bool> get isOpen => _lock.protectRead(() async {
+        return !_nitriteStore.isClosed && !_isDropped;
+      });
 
   @override
   Future<Iterable<IndexDescriptor>> listIndexes() {
-    // TODO: implement listIndexes
-    throw UnimplementedError();
+    return _lock.protectRead(() async {
+      _checkOpened();
+      return _collectionOperations.listIndexes();
+    });
   }
 
   @override
-  // TODO: implement name
-  String get name => throw UnimplementedError();
+  String get name => _collectionName;
 
   @override
-  Future<void> rebuildIndex(List<String> fields) {
-    // TODO: implement rebuildIndex
-    throw UnimplementedError();
+  Future<void> rebuildIndex(List<String> fields) async {
+    fields.notNullOrEmpty('Fields cannot be null');
+
+    IndexDescriptor? indexDescriptor;
+    var indexFields = Fields.withNames(fields);
+    await _lock.protectRead(() async {
+      _checkOpened();
+      indexDescriptor = await _collectionOperations.findIndex(indexFields);
+    });
+
+    if (indexDescriptor != null) {
+      await _validateRebuildIndex(indexDescriptor);
+
+      await _lock.protectWrite(() async {
+        _checkOpened();
+        await _collectionOperations.rebuildIndex(indexDescriptor!);
+      });
+    }
   }
 
   @override
-  WriteResult remove(Filter filter, [Document? document, bool? justOne]) {
-    // TODO: implement remove
-    throw UnimplementedError();
+  Future<WriteResult> remove(Filter filter,
+      [Document? document, bool? justOne]) {
+    if (document != null) {
+      if (document.hasId) {
+        return _lock.protectWrite(() async {
+          _checkOpened();
+          return _collectionOperations.removeDocument(document);
+        });
+      } else {
+        throw NotIdentifiableException(
+            'Document has no id, cannot remove by document');
+      }
+    } else {
+      var once = justOne ?? false;
+      if (filter == all && once) {
+        throw InvalidOperationException(
+            'Cannot remove all documents with justOne set to true');
+      }
+
+      return _lock.protectWrite(() async {
+        _checkOpened();
+        return _collectionOperations.removeByFilter(filter, once);
+      });
+    }
   }
 
   @override
   Future<void> setAttributes(Attributes attributes) {
-    // TODO: implement setAttributes
-    throw UnimplementedError();
+    attributes.notNullOrEmpty('Attributes cannot be null or empty');
+
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      await _collectionOperations.setAttributes(attributes);
+    });
   }
 
   @override
-  // TODO: implement size
-  Future<bool> get size => throw UnimplementedError();
+  Future<bool> get size => _lock.protectRead(() async {
+        _checkOpened();
+        return _collectionOperations.getSize();
+      });
 
   @override
-  void subscribe(CollectionEventListener listener) {
-    // TODO: implement subscribe
+  Future<void> subscribe(CollectionEventListener listener) async {
+    listener.notNullOrEmpty('Listener cannot be null');
+
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      var subscription = _eventBus.on().listen((event) => listener(event));
+      _subscriptions[listener.hashCode] = subscription;
+    });
   }
 
   @override
-  void unsubscribe(CollectionEventListener listener) {
-    // TODO: implement unsubscribe
+  Future<void> unsubscribe(CollectionEventListener listener) {
+    listener.notNullOrEmpty('Listener cannot be null');
+
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      var subscription = _subscriptions[listener.hashCode];
+      if (subscription != null) {
+        subscription.cancel();
+        _subscriptions.remove(listener.hashCode);
+      }
+    });
   }
 
   @override
-  WriteResult update(List<Document> documents,
-      [Filter? filter, Document? update, UpdateOptions? updateOptions]) {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<WriteResult> updateAll(List<Document> documents,
+      [bool insertIfAbsent = false]) {
+    documents.notNullOrEmpty('Documents cannot be null or empty');
+
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      return _collectionOperations.updateAll(documents, insertIfAbsent);
+    });
+  }
+
+  @override
+  Future<WriteResult> updateOne(Document documents,
+      [bool insertIfAbsent = false]) {
+
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      return _collectionOperations.updateOne(documents, insertIfAbsent);
+    });
+  }
+
+  @override
+  Future<WriteResult> update(Filter filter, Document update,
+      [UpdateOptions? updateOptions]) async {
+    update.notNullOrEmpty('Documents cannot be null or empty');
+    updateOptions ??= UpdateOptions();
+    updateOptions.insertIfAbsent = false;
+    updateOptions.justOnce = false;
+
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      return _collectionOperations.update(
+          filter, update, updateOptions!);
+    });
   }
 
   Future<void> _initialize() async {
@@ -273,12 +396,24 @@ class _DefaultNitriteCollection extends NitriteCollection {
     _nitriteStore = _nitriteConfig.getNitriteStore();
     _lock = await _lockService.getLock(_collectionName);
     _eventBus = EventBus();
-    _collectionOperations = CollectionOperations(_collectionName, _nitriteMap, _nitriteConfig, _eventBus);
+    _collectionOperations = CollectionOperations(
+        _collectionName, _nitriteMap, _nitriteConfig, _eventBus);
   }
 
-  Future<void> _checkOpened() async {
-    var opened = await isOpen;
+  void _checkOpened() {
+    var opened = !_nitriteStore.isClosed && !_isDropped;
     if (opened) return;
     throw NitriteIOException("Collection is closed");
+  }
+
+  Future<void> _validateRebuildIndex(IndexDescriptor? indexDescriptor) async {
+    indexDescriptor.notNullOrEmpty('Index descriptor cannot be null');
+
+    var indexFields = indexDescriptor!.indexFields.fieldNames;
+    var isIndexing = await this.isIndexing(indexFields);
+    if (isIndexing) {
+      throw InvalidOperationException(
+          'Cannot rebuild index, index is currently being built');
+    }
   }
 }

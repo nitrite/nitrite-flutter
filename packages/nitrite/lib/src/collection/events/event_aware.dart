@@ -9,10 +9,10 @@ typedef CollectionEventListener = void Function<T>(CollectionEventInfo<T> event)
 abstract class EventAware {
   /// Subscribes an [CollectionEventListener] instance to listen to any
   /// collection events.
-  void subscribe(CollectionEventListener listener);
+  Future<void> subscribe(CollectionEventListener listener);
 
   /// Unsubscribes an [CollectionEventListener] instance.
-  void unsubscribe(CollectionEventListener listener);
+  Future<void> unsubscribe(CollectionEventListener listener);
 }
 
 /// Represents different types of collection events.

@@ -1,6 +1,6 @@
-
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/persistent_collection.dart';
+import 'package:nitrite/src/common/util/stream_utils.dart';
 
 import '../../collection/options.dart';
 
@@ -23,10 +23,14 @@ abstract class Processor {
     }
 
     if (nitriteCollection != null) {
-      await for (var document in nitriteCollection.find()) {
+      var documentCursor = await nitriteCollection.find();
+      await for (var document in documentCursor) {
         var processed = processBeforeWrite(document);
-        nitriteCollection.update(createUniqueFilter(document), processed,
-            updateOptions(insertIfAbsent: false)).listen((event) { });
+        var writeResult = await nitriteCollection.update(
+            createUniqueFilter(document),
+            processed,
+            updateOptions(insertIfAbsent: false));
+        writeResult.listen(noOp);
       }
     }
   }

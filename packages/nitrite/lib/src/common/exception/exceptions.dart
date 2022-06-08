@@ -48,3 +48,10 @@ class FilterException extends NitriteException {
   @override
   String toString() => message ?? "FilterException";
 }
+
+class NotIdentifiableException extends NitriteException {
+  NotIdentifiableException([String? message]) : super(message);
+
+  @override
+  String toString() => message ?? "NotIdentifiableException";
+}

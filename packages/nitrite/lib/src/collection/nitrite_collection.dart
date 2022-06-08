@@ -33,17 +33,43 @@ abstract class NitriteCollection extends PersistentCollection<Document> {
   /// **NOTE**: These operations will notify all [CollectionEventListener]
   /// instances registered to this collection with change type
   /// [EventType.insert].
-  WriteResult insert(List<Document> documents);
+  Future<WriteResult> insert(List<Document> documents);
 
-  /// Update documents in the collection.
+  /// Update a single document in the collection. If [insertIfAbsent] is true,
+  /// then this operation will insert the document if it does not exist in the
+  /// collection.
+  ///
+  /// If the document does not contain any `_id` value and [insertIfAbsent]
+  /// is false, then nitrite throws an exception.
+  ///
+  /// **NOTE**: This operations will notify all [CollectionEventListener]
+  /// instances registered to this collection with change type
+  /// [EventType.update].
+  Future<WriteResult> updateOne(Document documents,
+      [bool insertIfAbsent = false]);
+
+  /// Update a list of documents in the collection. If [insertIfAbsent] is true,
+  /// then this operation will insert the documents if those do not exist in the
+  /// collection.
+  ///
+  /// If any document does not contain any `_id` value and [insertIfAbsent]
+  /// is false, then nitrite throws an exception.
+  ///
+  /// **NOTE**: This operations will notify all [CollectionEventListener]
+  /// instances registered to this collection with change type
+  /// [EventType.update].
+  Future<WriteResult> updateAll(List<Document> documents,
+      [bool insertIfAbsent = false]);
+
+  /// Update the filtered elements in the collection with the [update].
   ///
   /// If the [filter] is `null`, it will update all documents in the collection.
   ///
   /// **NOTE**: This operations will notify all [CollectionEventListener]
   /// instances registered to this collection with change type
   /// [EventType.update].
-  WriteResult update(List<Document> documents,
-      [Filter? filter, Document? update, UpdateOptions? updateOptions]);
+  Future<WriteResult> update(Filter filter, Document update,
+      [UpdateOptions? updateOptions]);
 
   /// Removes matching elements from the collection.
   ///
@@ -52,14 +78,15 @@ abstract class NitriteCollection extends PersistentCollection<Document> {
   /// **NOTE**: This operations will notify all [CollectionEventListener]
   /// instances registered to this collection with change type
   /// [EventType.remove].
-  WriteResult remove(Filter filter, [Document? document, bool? justOne]);
+  Future<WriteResult> remove(Filter filter,
+      [Document? document, bool? justOne]);
 
   /// Applies a filter on the collection and returns a customized cursor to the
   /// selected documents.
   ///
   /// **NOTE**: If there is an index on the value specified in the filter,
   /// this operation will take advantage of the index.
-  DocumentCursor find([Filter? filter, FindOptions? findOptions]);
+  Future<DocumentCursor> find([Filter? filter, FindOptions? findOptions]);
 
   /// Gets a single element from the collection by its id. If no element
   /// is found, it will return `null`.

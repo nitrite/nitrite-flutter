@@ -1,26 +1,29 @@
-import 'dart:io';
 import 'dart:math';
+import 'dart:convert';
 
 import 'package:logging/logging.dart';
-import 'package:mutex/mutex.dart';
+import 'package:uuid/uuid.dart';
 
 class SnowflakeIdGenerator {
   final Random _random = Random.secure();
   final int _nodeIdBits = 10;
   final Logger _log = Logger('SnowflakeIdGenerator');
-  final Mutex _mutex = Mutex();
 
   int _nodeId = 0;
   int _sequence = 0;
   int _lastTimestamp = -1;
-  bool _initialized = false;
 
-  SnowflakeIdGenerator();
+  SnowflakeIdGenerator() {
+    var maxNodeId = ~(-1 << _nodeIdBits);
+    _nodeId = _getNodeId();
+    if (_nodeId > maxNodeId) {
+      _log.warning("nodeId > maxNodeId; using random node id");
+      _nodeId = _random.nextInt(maxNodeId) + 1;
+    }
+    _log.fine("Initialised with node id $_nodeId");
+  }
 
-  Future<int> get id async {
-    // initialize the id generator safely for the first time
-    await _mutex.protect(() async => _init());
-
+  int get id {
     var timestamp = DateTime.now().millisecondsSinceEpoch;
     if (timestamp < _lastTimestamp) {
       _log.warning('Clock moved backwards. Refusing to generate id for '
@@ -50,35 +53,13 @@ class SnowflakeIdGenerator {
     return id;
   }
 
-  void _init() async {
-    if (_initialized) {
-      return;
-    }
-
-    var maxNodeId = ~(-1 << _nodeIdBits);
-    try {
-      _nodeId = await _getNodeId();
-    } on Exception {
-      _log.warning('Could not determine machine address; using random node id');
-      _nodeId = _random.nextInt(maxNodeId) + 1;
-    }
-
-    if (_nodeId > maxNodeId) {
-      _log.warning("nodeId > maxNodeId; using random node id");
-      _nodeId = _random.nextInt(maxNodeId) + 1;
-    }
-
-    _log.fine("Initialised with node id $_nodeId");
-    _initialized = true;
-  }
-
-  Future<int> _getNodeId() async {
-    var networks = await NetworkInterface.list();
-    var address = networks.map((n) => n.addresses).expand((a) => a).first;
+  int _getNodeId() {
+    Uuid uuid = Uuid();
+    var uid = ascii.encode(uuid.v4());
     var rndByte = _random.nextInt(0XFFFFFFFF) & 0x000000FF;
 
-    return ((0x000000FF & address.rawAddress[address.rawAddress.length - 1]) |
-        (0x0000FF00 & (rndByte << 8))) >> 6;
+    return ((0x000000FF & uid[uid.length - 1]) |
+    (0x0000FF00 & (rndByte << 8))) >> 6;
   }
 
   int _tillNextMillis(int lastTimestamp) {

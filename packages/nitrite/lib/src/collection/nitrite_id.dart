@@ -11,14 +11,14 @@ class NitriteId implements Comparable<NitriteId> {
 
   NitriteId._();
 
-  static Future<NitriteId> newId() async {
+  static NitriteId newId() {
     var nitriteId = NitriteId._();
-    var id = await _generator.id;
+    var id = _generator.id;
     nitriteId._idValue = id.toString();
     return nitriteId;
   }
 
-  static Future<NitriteId> createId(String value) async {
+  static NitriteId createId(String value) {
     validId(value);
     var nitriteId = NitriteId._();
     nitriteId._idValue = value;

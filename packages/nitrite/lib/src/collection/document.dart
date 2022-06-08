@@ -42,7 +42,7 @@ abstract class Document extends Iterable<Pair<String, dynamic>> {
   T? get<T>(String key);
 
   /// Return the nitrite id associated with this document.
-  Future<NitriteId> get id;
+  NitriteId get id;
 
   /// Retrieves all fields (top level and embedded) associated
   /// with this document.
@@ -151,20 +151,20 @@ class _NitriteDocument extends Document {
   }
 
   @override
-  Future<NitriteId> get id async {
+  NitriteId get id {
     String idValue;
 
     // if _id field is not populated already, create a new id
     // and set, otherwise return the existing id
     if (!containsKey(Constants.docId)) {
-      var id = await NitriteId.newId();
+      var id = NitriteId.newId();
       idValue = id.idValue;
       _documentMap[Constants.docId] = idValue;
     } else {
       idValue = get<String>(Constants.docId)!;
     }
 
-    return await NitriteId.createId(idValue);
+    return NitriteId.createId(idValue);
   }
 
   @override

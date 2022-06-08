@@ -24,6 +24,10 @@ FluentFilter where(String field) {
 /// Filter by document _id.
 Filter byId(NitriteId id) => EqualsFilter(Constants.docId, id.idValue);
 
+Filter createUniqueFilter(Document document) {
+  return byId(document.id);
+}
+
 /// Performs logical AND on the given filters.
 Filter and(List<Filter> filters) {
   filters.notNullOrEmpty('At least two filters must be specified');
