@@ -1,12 +1,12 @@
 part of 'filter.dart';
 
 class IndexScanFilter extends Filter {
-  final List<ComparableFilter> filters;
+  final Iterable<ComparableFilter> filters;
 
   IndexScanFilter(this.filters);
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
+  bool apply(Document doc) {
     throw InvalidOperationException(
         "Index scan filter cannot be applied on collection");
   }
@@ -16,8 +16,7 @@ class EqualsFilter extends ComparableFilter {
   EqualsFilter(String field, dynamic value) : super(field, value);
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
-    var doc = element.second;
+  bool apply(Document doc) {
     var fieldValue = doc.get(field);
     return deepEquals(fieldValue, value);
   }
@@ -42,9 +41,9 @@ class OrFilter extends LogicalFilter {
   OrFilter(List<Filter> filters) : super(filters);
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
+  bool apply(Document doc) {
     for (var filter in filters) {
-      if (filter.apply(element)) {
+      if (filter.apply(doc)) {
         return true;
       }
     }
@@ -70,7 +69,7 @@ class OrFilter extends LogicalFilter {
 class AndFilter extends LogicalFilter {
   AndFilter(List<Filter> filters) : super(filters) {
     for (int i = 1; i < filters.length; i++) {
-      if (filters[i] is _TextFilter) {
+      if (filters[i] is TextFilter) {
         throw FilterException(
             "Text filter must be the first filter in AND operation");
       }
@@ -78,9 +77,9 @@ class AndFilter extends LogicalFilter {
   }
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
+  bool apply(Document doc) {
     for (var filter in filters) {
-      if (!filter.apply(element)) {
+      if (!filter.apply(doc)) {
         return false;
       }
     }
@@ -103,292 +102,20 @@ class AndFilter extends LogicalFilter {
   }
 }
 
-class _BetweenFilter<T> extends AndFilter {
-  _BetweenFilter(String field, _Bound<T> bound)
-      : super(<Filter>[_rhs(field, bound), _lhs(field, bound)]);
-
-  static Filter _rhs<R>(String field, _Bound<R> bound) {
-    _validateBound(bound);
-    R value = bound.upperBound;
-    if (bound.upperInclusive) {
-      return _LesserEqualFilter(field, value as Comparable);
-    } else {
-      return _LesserThanFilter(field, value as Comparable);
-    }
-  }
-
-  static Filter _lhs<R>(String field, _Bound<R> bound) {
-    _validateBound(bound);
-    R value = bound.upperBound;
-    if (bound.lowerInclusive) {
-      return _GreaterEqualFilter(field, value as Comparable);
-    } else {
-      return _GreaterThanFilter(field, value as Comparable);
-    }
-  }
-
-  static void _validateBound<R>(_Bound<R> bound) {
-    if (bound.upperBound is! Comparable || bound.lowerBound is! Comparable) {
-      throw FilterException("Upper bound or lower bound value "
-          "must be comparable");
-    }
-  }
-}
-
-class _Bound<T> {
-  T upperBound;
-  T lowerBound;
-  bool upperInclusive = true;
-  bool lowerInclusive = true;
-
-  _Bound(this.upperBound, this.lowerBound,
-      {this.upperInclusive = true, this.lowerInclusive = true});
-}
-
-class _GreaterEqualFilter extends ComparableFilter {
-  _GreaterEqualFilter(String field, dynamic value) : super(field, value);
-
-  @override
-  bool apply(Pair<NitriteId, Document> element) {
-    var doc = element.second;
-    var fieldValue = doc.get(field);
-    if (fieldValue != null) {
-      if (fieldValue is num && comparable is num) {
-        return compare(fieldValue, comparable as num) >= 0;
-      } else if (fieldValue is Comparable) {
-        return fieldValue.compareTo(comparable) >= 0;
-      } else {
-        throw FilterException("$fieldValue is not comparable");
-      }
-    }
-    return false;
-  }
-
-  @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    var ceilingKey = indexMap.ceilingKey(comparable);
-    while (ceilingKey != null) {
-      // get the starting value, it can be a navigable-map (compound index)
-      // or list (single field index)
-      var val = indexMap.get(ceilingKey);
-      processIndexValue(val, subMaps, nitriteIds);
-      ceilingKey = indexMap.higherKey(comparable);
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
-    }
-  }
-
-  @override
-  toString() => "($field >= $value)";
-}
-
-class _GreaterThanFilter extends ComparableFilter {
-  _GreaterThanFilter(String field, dynamic value) : super(field, value);
-
-  @override
-  bool apply(Pair<NitriteId, Document> element) {
-    var doc = element.second;
-    var fieldValue = doc.get(field);
-    if (fieldValue != null) {
-      if (fieldValue is num && comparable is num) {
-        return compare(fieldValue, comparable as num) > 0;
-      } else if (fieldValue is Comparable) {
-        return fieldValue.compareTo(comparable) > 0;
-      } else {
-        throw FilterException("$fieldValue is not comparable");
-      }
-    }
-    return false;
-  }
-
-  @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    var ceilingKey = indexMap.higherKey(comparable);
-    while (ceilingKey != null) {
-      // get the starting value, it can be a navigable-map (compound index)
-      // or list (single field index)
-      var val = indexMap.get(ceilingKey);
-      processIndexValue(val, subMaps, nitriteIds);
-      ceilingKey = indexMap.higherKey(comparable);
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
-    }
-  }
-
-  @override
-  toString() => "($field > $value)";
-}
-
-class _LesserEqualFilter extends ComparableFilter {
-  _LesserEqualFilter(String field, dynamic value) : super(field, value);
-
-  @override
-  bool apply(Pair<NitriteId, Document> element) {
-    var doc = element.second;
-    var fieldValue = doc.get(field);
-    if (fieldValue != null) {
-      if (fieldValue is num && comparable is num) {
-        return compare(fieldValue, comparable as num) <= 0;
-      } else if (fieldValue is Comparable) {
-        return fieldValue.compareTo(comparable) <= 0;
-      } else {
-        throw FilterException("$fieldValue is not comparable");
-      }
-    }
-    return false;
-  }
-
-  @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    var floorKey = indexMap.floorKey(comparable);
-    while (floorKey != null) {
-      // get the starting value, it can be a navigable-map (compound index)
-      // or list (single field index)
-      var val = indexMap.get(floorKey);
-      processIndexValue(val, subMaps, nitriteIds);
-      floorKey = indexMap.lowerKey(comparable);
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
-    }
-  }
-
-  @override
-  toString() => "($field <= $value)";
-}
-
-class _LesserThanFilter extends ComparableFilter {
-  _LesserThanFilter(String field, dynamic value) : super(field, value);
-
-  @override
-  bool apply(Pair<NitriteId, Document> element) {
-    var doc = element.second;
-    var fieldValue = doc.get(field);
-    if (fieldValue != null) {
-      if (fieldValue is num && comparable is num) {
-        return compare(fieldValue, comparable as num) < 0;
-      } else if (fieldValue is Comparable) {
-        return fieldValue.compareTo(comparable) < 0;
-      } else {
-        throw FilterException("$fieldValue is not comparable");
-      }
-    }
-    return false;
-  }
-
-  @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    var floorKey = indexMap.lowerKey(comparable);
-    while (floorKey != null) {
-      // get the starting value, it can be a navigable-map (compound index)
-      // or list (single field index)
-      var val = indexMap.get(floorKey);
-      processIndexValue(val, subMaps, nitriteIds);
-      floorKey = indexMap.lowerKey(comparable);
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
-    }
-  }
-
-  @override
-  toString() => "($field < $value)";
-}
-
-class _NotEqualsFilter extends ComparableFilter {
-  _NotEqualsFilter(String field, dynamic value) : super(field, value);
-
-  @override
-  bool apply(Pair<NitriteId, Document> element) {
-    var doc = element.second;
-    var fieldValue = doc.get(field);
-    return !deepEquals(fieldValue, value);
-  }
-
-  @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-
-    for (Pair<Comparable, dynamic> entry in indexMap.entries()) {
-      if (!deepEquals(value, entry.first)) {
-        processIndexValue(entry.second, subMaps, nitriteIds);
-      }
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
-    }
-  }
-
-  @override
-  toString() => "($field != $value)";
-}
-
-class _TextFilter extends StringFilter {
+class TextFilter extends StringFilter {
   TextTokenizer? _tokenizer;
 
-  _TextFilter(String field, String value) : super(field, value);
+  TextFilter(String field, String value) : super(field, value);
 
   set textTokenizer(TextTokenizer tokenizer) {
     _tokenizer = tokenizer;
   }
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
+  bool apply(Document doc) {
     field.notNullOrEmpty("field cannot be null or empty");
     stringValue.notNullOrEmpty("search term cannot be null or empty");
 
-    var doc = element.second;
     var fieldValue = doc.get(field);
 
     if (fieldValue is! String) {
@@ -452,7 +179,7 @@ class _TextFilter extends StringFilter {
 
   Future<Set<NitriteId>> _searchByWildCard(
       NitriteMap<String, List> indexMap, String searchString) async {
-    if (identical(searchString, "*")) {
+    if (searchString == "*") {
       throw FilterException("* is not a valid search term");
     }
 
@@ -478,7 +205,7 @@ class _TextFilter extends StringFilter {
 
   Future<Set<NitriteId>> _searchByLeadingWildCard(
       NitriteMap<String, List> indexMap, String searchString) async {
-    if (identical(searchString, "*")) {
+    if (searchString == "*") {
       throw FilterException("* is not a valid search term");
     }
 
@@ -497,7 +224,7 @@ class _TextFilter extends StringFilter {
 
   Future<Set<NitriteId>> _searchByTrailingWildCard(
       NitriteMap<String, List> indexMap, String searchString) async {
-    if (identical(searchString, "*")) {
+    if (searchString == "*") {
       throw FilterException("* is not a valid search term");
     }
 
@@ -541,6 +268,272 @@ class _TextFilter extends StringFilter {
   }
 }
 
+class _BetweenFilter<T> extends AndFilter {
+  _BetweenFilter(String field, _Bound<T> bound)
+      : super(<Filter>[_rhs(field, bound), _lhs(field, bound)]);
+
+  static Filter _rhs<R>(String field, _Bound<R> bound) {
+    _validateBound(bound);
+    R value = bound.upperBound;
+    if (bound.upperInclusive) {
+      return _LesserEqualFilter(field, value as Comparable);
+    } else {
+      return _LesserThanFilter(field, value as Comparable);
+    }
+  }
+
+  static Filter _lhs<R>(String field, _Bound<R> bound) {
+    _validateBound(bound);
+    R value = bound.upperBound;
+    if (bound.lowerInclusive) {
+      return _GreaterEqualFilter(field, value as Comparable);
+    } else {
+      return _GreaterThanFilter(field, value as Comparable);
+    }
+  }
+
+  static void _validateBound<R>(_Bound<R> bound) {
+    if (bound.upperBound is! Comparable || bound.lowerBound is! Comparable) {
+      throw FilterException("Upper bound or lower bound value "
+          "must be comparable");
+    }
+  }
+}
+
+class _Bound<T> {
+  T upperBound;
+  T lowerBound;
+  bool upperInclusive = true;
+  bool lowerInclusive = true;
+
+  _Bound(this.upperBound, this.lowerBound,
+      {this.upperInclusive = true, this.lowerInclusive = true});
+}
+
+class _GreaterEqualFilter extends ComparableFilter {
+  _GreaterEqualFilter(String field, dynamic value) : super(field, value);
+
+  @override
+  bool apply(Document doc) {
+    var fieldValue = doc.get(field);
+    if (fieldValue != null) {
+      if (fieldValue is num && comparable is num) {
+        return compare(fieldValue, comparable as num) >= 0;
+      } else if (fieldValue is Comparable) {
+        return fieldValue.compareTo(comparable) >= 0;
+      } else {
+        throw FilterException("$fieldValue is not comparable");
+      }
+    }
+    return false;
+  }
+
+  @override
+  List applyOnIndex(IndexMap indexMap) {
+    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
+
+    // maintain the find sorting order
+    var nitriteIds = <NitriteId>[];
+    var ceilingKey = indexMap.ceilingKey(comparable);
+    while (ceilingKey != null) {
+      // get the starting value, it can be a navigable-map (compound index)
+      // or list (single field index)
+      var val = indexMap.get(ceilingKey);
+      processIndexValue(val, subMaps, nitriteIds);
+      ceilingKey = indexMap.higherKey(comparable);
+    }
+
+    if (subMaps.isNotEmpty) {
+      // if sub-map is populated then filtering on compound index, return sub-map
+      return subMaps;
+    } else {
+      // else it is filtering on either single field index,
+      // or it is a terminal filter on compound index, return only nitrite-ids
+      return nitriteIds;
+    }
+  }
+
+  @override
+  toString() => "($field >= $value)";
+}
+
+class _GreaterThanFilter extends ComparableFilter {
+  _GreaterThanFilter(String field, dynamic value) : super(field, value);
+
+  @override
+  bool apply(Document doc) {
+    var fieldValue = doc.get(field);
+    if (fieldValue != null) {
+      if (fieldValue is num && comparable is num) {
+        return compare(fieldValue, comparable as num) > 0;
+      } else if (fieldValue is Comparable) {
+        return fieldValue.compareTo(comparable) > 0;
+      } else {
+        throw FilterException("$fieldValue is not comparable");
+      }
+    }
+    return false;
+  }
+
+  @override
+  List applyOnIndex(IndexMap indexMap) {
+    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
+
+    // maintain the find sorting order
+    var nitriteIds = <NitriteId>[];
+    var ceilingKey = indexMap.higherKey(comparable);
+    while (ceilingKey != null) {
+      // get the starting value, it can be a navigable-map (compound index)
+      // or list (single field index)
+      var val = indexMap.get(ceilingKey);
+      processIndexValue(val, subMaps, nitriteIds);
+      ceilingKey = indexMap.higherKey(comparable);
+    }
+
+    if (subMaps.isNotEmpty) {
+      // if sub-map is populated then filtering on compound index, return sub-map
+      return subMaps;
+    } else {
+      // else it is filtering on either single field index,
+      // or it is a terminal filter on compound index, return only nitrite-ids
+      return nitriteIds;
+    }
+  }
+
+  @override
+  toString() => "($field > $value)";
+}
+
+class _LesserEqualFilter extends ComparableFilter {
+  _LesserEqualFilter(String field, dynamic value) : super(field, value);
+
+  @override
+  bool apply(Document doc) {
+    var fieldValue = doc.get(field);
+    if (fieldValue != null) {
+      if (fieldValue is num && comparable is num) {
+        return compare(fieldValue, comparable as num) <= 0;
+      } else if (fieldValue is Comparable) {
+        return fieldValue.compareTo(comparable) <= 0;
+      } else {
+        throw FilterException("$fieldValue is not comparable");
+      }
+    }
+    return false;
+  }
+
+  @override
+  List applyOnIndex(IndexMap indexMap) {
+    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
+
+    // maintain the find sorting order
+    var nitriteIds = <NitriteId>[];
+    var floorKey = indexMap.floorKey(comparable);
+    while (floorKey != null) {
+      // get the starting value, it can be a navigable-map (compound index)
+      // or list (single field index)
+      var val = indexMap.get(floorKey);
+      processIndexValue(val, subMaps, nitriteIds);
+      floorKey = indexMap.lowerKey(comparable);
+    }
+
+    if (subMaps.isNotEmpty) {
+      // if sub-map is populated then filtering on compound index, return sub-map
+      return subMaps;
+    } else {
+      // else it is filtering on either single field index,
+      // or it is a terminal filter on compound index, return only nitrite-ids
+      return nitriteIds;
+    }
+  }
+
+  @override
+  toString() => "($field <= $value)";
+}
+
+class _LesserThanFilter extends ComparableFilter {
+  _LesserThanFilter(String field, dynamic value) : super(field, value);
+
+  @override
+  bool apply(Document doc) {
+    var fieldValue = doc.get(field);
+    if (fieldValue != null) {
+      if (fieldValue is num && comparable is num) {
+        return compare(fieldValue, comparable as num) < 0;
+      } else if (fieldValue is Comparable) {
+        return fieldValue.compareTo(comparable) < 0;
+      } else {
+        throw FilterException("$fieldValue is not comparable");
+      }
+    }
+    return false;
+  }
+
+  @override
+  List applyOnIndex(IndexMap indexMap) {
+    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
+
+    // maintain the find sorting order
+    var nitriteIds = <NitriteId>[];
+    var floorKey = indexMap.lowerKey(comparable);
+    while (floorKey != null) {
+      // get the starting value, it can be a navigable-map (compound index)
+      // or list (single field index)
+      var val = indexMap.get(floorKey);
+      processIndexValue(val, subMaps, nitriteIds);
+      floorKey = indexMap.lowerKey(comparable);
+    }
+
+    if (subMaps.isNotEmpty) {
+      // if sub-map is populated then filtering on compound index, return sub-map
+      return subMaps;
+    } else {
+      // else it is filtering on either single field index,
+      // or it is a terminal filter on compound index, return only nitrite-ids
+      return nitriteIds;
+    }
+  }
+
+  @override
+  toString() => "($field < $value)";
+}
+
+class _NotEqualsFilter extends ComparableFilter {
+  _NotEqualsFilter(String field, dynamic value) : super(field, value);
+
+  @override
+  bool apply(Document doc) {
+    var fieldValue = doc.get(field);
+    return !deepEquals(fieldValue, value);
+  }
+
+  @override
+  List applyOnIndex(IndexMap indexMap) {
+    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
+
+    // maintain the find sorting order
+    var nitriteIds = <NitriteId>[];
+
+    for (Pair<Comparable, dynamic> entry in indexMap.entries()) {
+      if (!deepEquals(value, entry.first)) {
+        processIndexValue(entry.second, subMaps, nitriteIds);
+      }
+    }
+
+    if (subMaps.isNotEmpty) {
+      // if sub-map is populated then filtering on compound index, return sub-map
+      return subMaps;
+    } else {
+      // else it is filtering on either single field index,
+      // or it is a terminal filter on compound index, return only nitrite-ids
+      return nitriteIds;
+    }
+  }
+
+  @override
+  toString() => "($field != $value)";
+}
+
 class _RegexFilter extends FieldBasedFilter {
   final RegExp _pattern;
 
@@ -549,8 +542,7 @@ class _RegexFilter extends FieldBasedFilter {
         super(field, value);
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
-    var doc = element.second;
+  bool apply(Document doc) {
     var fieldValue = doc.get(field);
 
     if (fieldValue is! String) {
@@ -570,8 +562,7 @@ class _InFilter extends ComparableArrayFilter {
   }
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
-    var doc = element.second;
+  bool apply(Document doc) {
     var fieldValue = doc.get(field);
 
     if (fieldValue is Comparable) {
@@ -614,8 +605,7 @@ class _NotInFilter extends ComparableArrayFilter {
   }
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
-    var doc = element.second;
+  bool apply(Document doc) {
     var fieldValue = doc.get(field);
 
     if (fieldValue is Comparable) {
@@ -656,7 +646,7 @@ class _NotFilter extends NitriteFilter {
   _NotFilter(this._filter);
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
+  bool apply(Document element) {
     return !_filter.apply(element);
   }
 
@@ -671,16 +661,15 @@ class _ElementMatchFilter extends NitriteFilter {
   _ElementMatchFilter(this._field, this._elementFilter);
 
   @override
-  bool apply(Pair<NitriteId, Document> element) {
+  bool apply(Document doc) {
     if (_elementFilter is _ElementMatchFilter) {
       throw FilterException("Nested elemMatch filter is not supported");
     }
 
-    if (_elementFilter is _TextFilter) {
+    if (_elementFilter is TextFilter) {
       throw FilterException("Text filter is not supported in elemMatch filter");
     }
 
-    var doc = element.second;
     var fieldValue = doc.get(_field);
     if (fieldValue == null) return false;
 

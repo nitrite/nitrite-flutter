@@ -28,9 +28,7 @@ class CollectionOperations {
   late ReadOperations _readOperations;
 
   CollectionOperations(this._collectionName, this._nitriteMap,
-      this._nitriteConfig, this._eventBus) {
-    _init();
-  }
+      this._nitriteConfig, this._eventBus);
 
   void addProcessor(Processor processor) {
     _processorChain.add(processor);
@@ -57,77 +55,93 @@ class CollectionOperations {
     await _nitriteMap.close();
   }
 
-  Future<void> dropAllIndices() async {}
+  Future<void> dropAllIndices() async {
+    await _indexOperations.dropAllIndices();
+  }
 
-  Future<void> dropIndex(Fields indexFields) async {}
+  Future<void> dropIndex(Fields indexFields) async {
+    await _indexOperations.dropIndex(indexFields);
+  }
 
-  DocumentCursor find([Filter? filter, FindOptions? findOptions]) {
-    throw UnimplementedError();
+  Future<DocumentCursor> find([Filter? filter, FindOptions? findOptions]) {
+    return _readOperations.find(filter, findOptions);
   }
 
   Future<Attributes> getAttributes() async {
-    throw UnimplementedError();
+    return _nitriteMap.getAttributes();
   }
 
-  Future<Document> getById(NitriteId nitriteId) async {
-    throw UnimplementedError();
+  Future<Document?> getById(NitriteId nitriteId) async {
+    return _readOperations.getById(nitriteId);
   }
 
   Future<bool> hasIndex(Fields indexFields) {
-    throw UnimplementedError();
+    return _indexOperations.hasIndexEntry(indexFields);
   }
 
   WriteResult insert(List<Document> documents) {
-    throw UnimplementedError();
+    var stream = _writeOperations.insert(documents);
+    return WriteResult(stream);
   }
 
   Future<bool> isIndexing(Fields indexFields) async {
-    throw UnimplementedError();
+    return _indexOperations.isIndexing(indexFields);
   }
 
   Future<Iterable<IndexDescriptor>> listIndexes() async {
-    throw UnimplementedError();
+    return Future.value(_indexOperations.listIndexes());
   }
 
   Future<IndexDescriptor?> findIndex(Fields indexFields) async {
-    throw UnimplementedError();
+    return _indexOperations.findIndexDescriptor(indexFields);
   }
 
-  Future<void> rebuildIndex(IndexDescriptor indexDescriptor) async {}
-
-  Future<WriteResult> removeDocument(Document document) async {
-    throw UnimplementedError();
+  Future<void> rebuildIndex(IndexDescriptor indexDescriptor) async {
+    await _indexOperations.buildIndex(indexDescriptor, true);
   }
 
-  Future<WriteResult> removeByFilter(Filter filter, bool once) async {
-    throw UnimplementedError();
+  WriteResult removeDocument(Document document) {
+    var stream = _writeOperations.removeDocument(document);
+    return WriteResult(stream);
   }
 
-  Future<void> setAttributes(Attributes attributes) async {}
-
-  Future<bool> getSize() async {
-    throw UnimplementedError();
+  WriteResult removeByFilter(Filter filter, bool once) {
+    var stream = _writeOperations.removeByFilter(filter, once);
+    return WriteResult(stream);
   }
 
-  Future<WriteResult> update(
+  Future<void> setAttributes(Attributes attributes) async {
+    await _nitriteMap.setAttributes(attributes);
+  }
+
+  Future<int> getSize() async {
+    return _nitriteMap.size();
+  }
+
+  WriteResult update(
       Filter filter, Document update, UpdateOptions updateOptions) {
-    throw UnimplementedError();
+    var stream = _writeOperations.update(filter, update, updateOptions);
+    return WriteResult(stream);
   }
 
-  Future<WriteResult> updateAll(List<Document> documents, bool insertIfAbsent) {
-    throw UnimplementedError();
+  WriteResult updateAll(List<Document> documents, bool insertIfAbsent) {
+    var stream = _writeOperations.updateAll(documents, insertIfAbsent);
+    return WriteResult(stream);
   }
 
-  Future<WriteResult> updateOne(Document documents, bool insertIfAbsent) {
-    throw UnimplementedError();
+  WriteResult updateOne(Document documents, bool insertIfAbsent) {
+    var stream = _writeOperations.updateOne(documents, insertIfAbsent);
+    return WriteResult(stream);
   }
 
-  void _init() {
+  Future<void> initialize() async {
     _processorChain = ProcessorChain();
     _indexOperations = IndexOperations(
         _collectionName, _nitriteConfig, _nitriteMap, _eventBus);
-    _readOperations =
-        ReadOperations(_collectionName, _nitriteMap, _nitriteConfig, _eventBus);
+    await _indexOperations.initialize();
+    
+    _readOperations = ReadOperations(_collectionName, _indexOperations,
+        _nitriteConfig, _nitriteMap, _processorChain);
 
     var indexWriter = DocumentIndexWriter(_nitriteConfig, _indexOperations);
     _writeOperations = WriteOperations(

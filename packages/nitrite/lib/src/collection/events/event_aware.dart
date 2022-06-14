@@ -2,29 +2,34 @@ import 'package:nitrite/nitrite.dart';
 
 /// A listener which is able to listen to any changes in a [NitriteCollection]
 /// or [ObjectRepository].
-typedef CollectionEventListener = void Function<T>(CollectionEventInfo<T> event);
+typedef CollectionEventListener<T> = void Function(
+    CollectionEventInfo<T> event);
 
 /// Interface to be implemented by collections that wish to be aware
 /// of any event.
 abstract class EventAware {
   /// Subscribes an [CollectionEventListener] instance to listen to any
   /// collection events.
-  Future<void> subscribe(CollectionEventListener listener);
+  Future<void> subscribe<T>(CollectionEventListener<T> listener);
 
   /// Unsubscribes an [CollectionEventListener] instance.
-  Future<void> unsubscribe(CollectionEventListener listener);
+  Future<void> unsubscribe<T>(CollectionEventListener<T> listener);
 }
 
 /// Represents different types of collection events.
 enum EventType {
   /// Insert event.
   insert,
+
   /// Update event.
   update,
+
   /// Remove event.
   remove,
+
   /// Indexing start event.
   indexStart,
+
   /// Indexing end event.
   indexEnd
 }
@@ -43,6 +48,9 @@ class CollectionEventInfo<T> {
   /// Specifies the name of the originator who has initiated this event.
   String originator;
 
-  CollectionEventInfo(this.item, this.eventType,
-      this.timestamp, this.originator);
+  CollectionEventInfo(
+      {required this.item,
+      required this.eventType,
+      required this.timestamp,
+      required this.originator});
 }

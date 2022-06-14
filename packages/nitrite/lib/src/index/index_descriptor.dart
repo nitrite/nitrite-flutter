@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/index/index_type.dart';
 
 /// Represents a nitrite database index.
 class IndexDescriptor implements Comparable<IndexDescriptor> {

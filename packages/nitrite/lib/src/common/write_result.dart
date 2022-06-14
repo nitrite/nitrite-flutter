@@ -1,38 +1,25 @@
 import 'dart:async';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:rxdart/rxdart.dart';
 
-abstract class WriteResult extends Stream<NitriteId> {
-  Future<int> getAffectedCount();
-}
+class WriteResult extends Stream<NitriteId> {
+  final Stream<NitriteId> _stream;
 
-class WriteResultImpl extends WriteResult {
-  final ReplaySubject<NitriteId> _subject;
+  WriteResult(Stream<NitriteId> stream)
+      : _stream = stream.asBroadcastStream();
 
-  WriteResultImpl() : _subject = ReplaySubject();
-
-  @override
-  Future<int> getAffectedCount() async {
-    return _subject.length;
+  Future<int> getAffectedCount() {
+    return _stream.length;
   }
 
   @override
   StreamSubscription<NitriteId> listen(void Function(NitriteId event)? onData,
       {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return _subject.listen(
+    return _stream.listen(
       onData,
       onError: onError,
       onDone: onDone,
       cancelOnError: cancelOnError,
     );
-  }
-
-  void add(NitriteId value) {
-    _subject.add(value);
-  }
-
-  Future<dynamic> close() {
-    return _subject.close();
   }
 }

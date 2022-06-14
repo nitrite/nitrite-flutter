@@ -55,3 +55,10 @@ class NotIdentifiableException extends NitriteException {
   @override
   String toString() => message ?? "NotIdentifiableException";
 }
+
+class UniqueConstraintException extends NitriteException {
+  UniqueConstraintException([String? message]) : super(message);
+
+  @override
+  String toString() => message ?? "UniqueConstraintException";
+}

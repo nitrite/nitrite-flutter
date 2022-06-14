@@ -129,13 +129,13 @@ void main() async {
     });
 
     test("Put _id", () {
-      expect(() => doc.put(Constants.docId, "value"),
+      expect(() => doc.put(docId, "value"),
           throwsA(isA<InvalidIdException>()));
     });
 
     test("Get Invalid _id", () {
       var map = <String, dynamic> {};
-      map[Constants.docId] = "value";
+      map[docId] = "value";
       var doc2 = documentFromMap(map);
       expect(() async => await doc2.id, throwsA(isA<InvalidIdException>()));
     });

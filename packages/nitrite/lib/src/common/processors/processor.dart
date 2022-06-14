@@ -1,16 +1,15 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/persistent_collection.dart';
-import 'package:nitrite/src/common/util/stream_utils.dart';
+import 'package:nitrite/src/common/util/object_utils.dart';
 
-import '../../collection/options.dart';
 
 /// Represents a document processor.
 abstract class Processor {
   /// Processes a document before writing it into database.
-  Document processBeforeWrite(Document document);
+  Future<Document> processBeforeWrite(Document document);
 
   /// Processes a document after reading from the database.
-  Document processAfterRead(Document document);
+  Future<Document> processAfterRead(Document document);
 
   /// Processes all documents of a [PersistentCollection].
   Future<void> process(PersistentCollection collection) async {
@@ -25,12 +24,12 @@ abstract class Processor {
     if (nitriteCollection != null) {
       var documentCursor = await nitriteCollection.find();
       await for (var document in documentCursor) {
-        var processed = processBeforeWrite(document);
+        var processed = await processBeforeWrite(document);
         var writeResult = await nitriteCollection.update(
             createUniqueFilter(document),
             processed,
             updateOptions(insertIfAbsent: false));
-        writeResult.listen(noOp);
+        writeResult.listen(blackHole);
       }
     }
   }
@@ -42,17 +41,17 @@ class ProcessorChain extends Processor {
   ProcessorChain([this.processors = const []]);
 
   @override
-  Document processBeforeWrite(Document document) {
+  Future<Document> processBeforeWrite(Document document) async {
     for (var processor in processors) {
-      document = processor.processBeforeWrite(document);
+      document = await processor.processBeforeWrite(document);
     }
     return document;
   }
 
   @override
-  Document processAfterRead(Document document) {
+  Future<Document> processAfterRead(Document document) async {
     for (var processor in processors) {
-      document = processor.processAfterRead(document);
+      document = await processor.processAfterRead(document);
     }
     return document;
   }

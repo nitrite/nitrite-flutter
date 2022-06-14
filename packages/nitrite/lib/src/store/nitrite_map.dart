@@ -20,11 +20,11 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
   /// Closes this [NitriteMap].
   Future<void> close();
 
-  /// Gets a [RecordStream] view of the values contained in
+  /// Gets a [Stream] of the values contained in
   /// this map.
   Stream<Value> values();
 
-  /// Gets a [RecordStream] view of the keys contained in this map.
+  /// Gets a [Stream] of the keys contained in this map.
   Stream<Key> keys();
 
   /// Removes the mapping for a key from this map if it is present.
@@ -65,10 +65,10 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
   /// Gets name of this map.
   String get name;
 
-  /// Gets a [RecordStream] view of the mappings contained in this map.
+  /// Gets a [Stream] of the mappings contained in this map.
   Stream<Pair<Key, Value>> entries();
 
-  /// Gets a reversed [RecordStream] view of the mappings
+  /// Gets a reversed [Stream] of the mappings
   /// contained in this map.
   Stream<Pair<Key, Value>> reversedEntries();
 
@@ -79,9 +79,9 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
   @override
   Future<Attributes> getAttributes() async {
     NitriteMap<String, Attributes> metaMap =
-        await getStore().openMap(Constants.metaMapName);
+        await getStore().openMap(metaMapName);
 
-    if (!identical(name, Constants.metaMapName)) {
+    if (name != metaMapName) {
       var attributes = await metaMap[name];
       if (attributes != null) {
         return attributes;
@@ -96,9 +96,9 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
   @override
   Future<void> setAttributes(Attributes attributes) async {
     var metaMap =
-        await getStore().openMap<String, Attributes>(Constants.metaMapName);
+        await getStore().openMap<String, Attributes>(metaMapName);
 
-    if (!identical(name, Constants.metaMapName)) {
+    if (name != metaMapName) {
       await metaMap.put(name, attributes);
     }
     return;
@@ -106,12 +106,12 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
 
   /// Update last modified time of the map.
   Future<void> updateLastModifiedTime() async {
-    if (name.isNullOrEmpty || identical(name, Constants.metaMapName)) {
+    if (name.isNullOrEmpty || name == metaMapName) {
       return;
     }
 
     var metaMap =
-        await getStore().openMap<String, Attributes>(Constants.metaMapName);
+        await getStore().openMap<String, Attributes>(metaMapName);
 
     var attributes = await metaMap[name];
     if (attributes == null) {
@@ -122,4 +122,5 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
     attributes.set(Attributes.lastModifiedTime,
         DateTime.now().millisecondsSinceEpoch.toString());
   }
+
 }

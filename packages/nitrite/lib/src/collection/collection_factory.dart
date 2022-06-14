@@ -4,11 +4,9 @@ import 'package:event_bus/event_bus.dart';
 import 'package:mutex/mutex.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/collection_operations.dart';
-import 'package:nitrite/src/collection/options.dart';
 import 'package:nitrite/src/common/concurrent/lock_service.dart';
-import 'package:nitrite/src/common/meta/attributes.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
-import 'package:nitrite/src/common/write_result.dart';
+import 'package:quiver/core.dart';
 
 class CollectionFactory {
   final Map<String, NitriteCollection> _collectionMap = {};
@@ -199,7 +197,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<Document> getById(NitriteId id) {
+  Future<Document?> getById(NitriteId id) async {
     id.notNullOrEmpty('Id cannot be null');
 
     return _lock.protectRead(() async {
@@ -325,32 +323,38 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<bool> get size => _lock.protectRead(() async {
+  Future<int> get size => _lock.protectRead(() async {
         _checkOpened();
         return _collectionOperations.getSize();
       });
 
   @override
-  Future<void> subscribe(CollectionEventListener listener) async {
+  Future<void> subscribe<T>(CollectionEventListener<T> listener) async {
     listener.notNullOrEmpty('Listener cannot be null');
 
     return _lock.protectWrite(() async {
       _checkOpened();
-      var subscription = _eventBus.on().listen((event) => listener(event));
-      _subscriptions[listener.hashCode] = subscription;
+      var subscription = _eventBus
+          .on<CollectionEventInfo<T>>()
+          .listen((event) => listener(event));
+
+      var hashCode = hash2(listener, T);
+      _subscriptions[hashCode] = subscription;
     });
   }
 
   @override
-  Future<void> unsubscribe(CollectionEventListener listener) {
+  Future<void> unsubscribe<T>(CollectionEventListener<T> listener) {
     listener.notNullOrEmpty('Listener cannot be null');
 
     return _lock.protectWrite(() async {
       _checkOpened();
-      var subscription = _subscriptions[listener.hashCode];
+      var hashCode = hash2(listener, T);
+      var subscription = _subscriptions[hashCode];
       if (subscription != null) {
         subscription.cancel();
-        _subscriptions.remove(listener.hashCode);
+
+        _subscriptions.remove(hashCode);
       }
     });
   }
@@ -369,7 +373,6 @@ class _DefaultNitriteCollection extends NitriteCollection {
   @override
   Future<WriteResult> updateOne(Document documents,
       [bool insertIfAbsent = false]) {
-
     return _lock.protectWrite(() async {
       _checkOpened();
       return _collectionOperations.updateOne(documents, insertIfAbsent);
@@ -386,8 +389,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
     return _lock.protectWrite(() async {
       _checkOpened();
-      return _collectionOperations.update(
-          filter, update, updateOptions!);
+      return _collectionOperations.update(filter, update, updateOptions!);
     });
   }
 
@@ -398,6 +400,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
     _eventBus = EventBus();
     _collectionOperations = CollectionOperations(
         _collectionName, _nitriteMap, _nitriteConfig, _eventBus);
+    await _collectionOperations.initialize();
   }
 
   void _checkOpened() {

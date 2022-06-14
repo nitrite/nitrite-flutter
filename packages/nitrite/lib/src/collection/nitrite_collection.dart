@@ -1,7 +1,5 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/collection/document_cursor.dart';
 import 'package:nitrite/src/collection/options.dart';
-import 'package:nitrite/src/common/concurrent/lock_service.dart';
 import 'package:nitrite/src/common/persistent_collection.dart';
 import 'package:nitrite/src/common/write_result.dart';
 
@@ -89,8 +87,8 @@ abstract class NitriteCollection extends PersistentCollection<Document> {
   Future<DocumentCursor> find([Filter? filter, FindOptions? findOptions]);
 
   /// Gets a single element from the collection by its id. If no element
-  /// is found, it will return `null`.
-  Future<Document> getById(NitriteId id);
+  /// is found, it will return `Future<null>`.
+  Future<Document?> getById(NitriteId id);
 
   /// Returns the name of the [NitriteCollection].
   String get name;

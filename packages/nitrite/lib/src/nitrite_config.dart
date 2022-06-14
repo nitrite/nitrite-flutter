@@ -1,13 +1,13 @@
 import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/constants.dart';
+import 'package:nitrite/src/common/module/plugin_manager.dart';
 
 /// A class to configure [Nitrite] database.
 class NitriteConfig {
   static String fieldSeparator = ".";
 
-  int _schemaVersion = Constants.initialSchemaVersion;
+  int _schemaVersion = initialSchemaVersion;
   late PluginManager _pluginManager;
   late Map<int, SplayTreeMap<int, Migration>> _migrations;
   bool _configured = false;
@@ -31,7 +31,7 @@ class NitriteConfig {
   /// is `.`
   setFieldSeparator(String fieldSeparator) {
     if (_configured) {
-      throw InvalidOperationException("cannot change the separator after "
+      throw InvalidOperationException("Cannot change the separator after "
           "database initialization");
     }
     NitriteConfig.fieldSeparator = fieldSeparator;
@@ -40,7 +40,7 @@ class NitriteConfig {
   /// Loads [NitriteModule] instance.
   NitriteConfig loadModule(NitriteModule module) {
     if (_configured) {
-      throw InvalidOperationException("cannot load module after database "
+      throw InvalidOperationException("Cannot load module after database "
           "initialization");
     }
     _pluginManager.loadModule(module);
@@ -50,7 +50,7 @@ class NitriteConfig {
   /// Adds instructions to perform during schema migration.
   NitriteConfig addMigration(Migration migration) {
     if (_configured) {
-      throw InvalidOperationException("cannot add migration after database "
+      throw InvalidOperationException("Cannot add migration after database "
           "initialization");
     }
 
@@ -69,7 +69,7 @@ class NitriteConfig {
   /// Sets the current schema version.
   NitriteConfig currentSchemaVersion(int version) {
     if (_configured) {
-      throw InvalidOperationException("cannot change the schema version after "
+      throw InvalidOperationException("Cannot change the schema version after "
           "database initialization");
     }
     _schemaVersion = version;
@@ -80,7 +80,7 @@ class NitriteConfig {
   /// default built-in plugins.
   void autoConfigure() {
     if (_configured) {
-      throw InvalidOperationException("cannot auto configure after database "
+      throw InvalidOperationException("Cannot auto configure after database "
           "initialization");
     }
     _pluginManager.findAndLoadPlugins();
@@ -93,7 +93,7 @@ class NitriteConfig {
       nitriteIndexer.initialize(this);
       return nitriteIndexer;
     } else {
-      throw IndexingException("no indexer found for index type $indexType");
+      throw IndexingException("No indexer found for index type $indexType");
     }
   }
 

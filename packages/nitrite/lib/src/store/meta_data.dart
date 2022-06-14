@@ -13,13 +13,13 @@ class MapMetaData implements MetaData {
   Set<String> get mapNames => _mapNames;
 
   MapMetaData(Document document) {
-    var mapNames = document.get<Set<String>?>(Constants.tagMapMetaData);
+    var mapNames = document.get<Set<String>?>(tagMapMetaData);
     mapNames ??= HashSet<String>();
     _mapNames = mapNames;
   }
 
   @override
   Document getInfo() {
-    return Document.createDocument(Constants.tagMapMetaData, _mapNames);
+    return Document.createDocument(tagMapMetaData, _mapNames);
   }
 }

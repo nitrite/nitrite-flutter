@@ -25,11 +25,11 @@ abstract class Nitrite {
   ///
   /// The name cannot contain below reserved strings:
   ///
-  /// * [Constants.internalNameSeparator]
-  /// * [Constants.userMap]
-  /// * [Constants.indexMetaPrefix]
-  /// * [Constants.indexPrefix]
-  /// * [Constants.objectStoreNameSeparator]
+  /// * [internalNameSeparator]
+  /// * [userMap]
+  /// * [indexMetaPrefix]
+  /// * [indexPrefix]
+  /// * [objectStoreNameSeparator]
   ///
   Future<NitriteCollection> getCollection(String name);
 
@@ -103,7 +103,7 @@ abstract class Nitrite {
   void validateCollectionName(String name) {
     name.notNullOrEmpty("name cannot be null or empty");
 
-    for (String reservedName in Constants.reservedNames) {
+    for (String reservedName in reservedNames) {
       if (name.contains(reservedName)) {
         throw ValidationException("name cannot contain $reservedName");
       }

@@ -44,7 +44,7 @@ class NitriteId implements Comparable<NitriteId> {
       int.parse(_idValue).compareTo(int.parse(other._idValue));
 
   @override
-  String toString() => Constants.idPrefix + _idValue + Constants.idSuffix;
+  String toString() => idPrefix + _idValue + idSuffix;
 
   @override
   bool operator ==(dynamic other) =>

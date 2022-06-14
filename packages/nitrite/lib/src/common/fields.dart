@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/constants.dart';
-import 'package:nitrite/src/common/sort_order.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// Represents a list of document fields.
@@ -24,7 +23,7 @@ class Fields implements Comparable<Fields> {
   List<String> get fieldNames => List.unmodifiable(_fieldNames);
 
   /// Gets the encoded name for this [Fields].
-  String get encodedName => _fieldNames.join(Constants.internalNameSeparator);
+  String get encodedName => _fieldNames.join(internalNameSeparator);
 
   /// Adds a new field name.
   Fields addField(String fieldName) {
@@ -100,4 +99,43 @@ class SortableFields extends Fields {
   /// Gets the sort by field specifications.
   List<Pair<String, SortOrder>> get sortingOrders =>
       List.unmodifiable(_sortingOrders);
+}
+
+class FieldValues {
+  final List<Pair<String, Object>> values = [];
+
+  NitriteId? nitriteId;
+  Fields? _fields;
+
+  FieldValues();
+
+  dynamic get(String field) {
+    if (fields.fieldNames.contains(field)) {
+      for (var value in values) {
+        if (value.first == field) {
+          return value.second;
+        }
+      }
+    }
+    return null;
+  }
+
+  Fields get fields {
+    if (_fields != null) {
+      return _fields!;
+    }
+
+    var fieldNames = <String>[];
+    for (var value in values) {
+      if (!value.first.isNullOrEmpty) {
+        fieldNames.add(value.first);
+      }
+    }
+    _fields = Fields.withNames(fieldNames);
+    return _fields!;
+  }
+
+  set fields(Fields fields) {
+    _fields = fields;
+  }
 }

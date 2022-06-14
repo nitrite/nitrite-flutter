@@ -71,35 +71,35 @@ abstract class Document extends Iterable<Pair<String, dynamic>> {
 
   /// Gets the document revision number.
   int get revision {
-    if (!containsKey(Constants.docRevision)) {
+    if (!containsKey(docRevision)) {
       return 0;
     }
-    return get<int>(Constants.docRevision)!;
+    return get<int>(docRevision)!;
   }
 
   /// Gets the source of this document.
   String get source {
-    if (!containsKey(Constants.docSource)) {
+    if (!containsKey(docSource)) {
       return "";
     }
-    return get<String>(Constants.docSource)!;
+    return get<String>(docSource)!;
   }
 
   /// Gets last modified time of this document since epoch.
   int get lastModifiedSinceEpoch {
-    if (!containsKey(Constants.docModified)) {
+    if (!containsKey(docModified)) {
       return 0;
     }
-    return get<int>(Constants.docModified)!;
+    return get<int>(docModified)!;
   }
 }
 
 class _NitriteDocument extends Document {
   static final List<String> _reservedFields = <String>[
-    Constants.docId,
-    Constants.docRevision,
-    Constants.docSource,
-    Constants.docModified,
+    docId,
+    docRevision,
+    docSource,
+    docModified,
   ];
 
   Map<String, dynamic> _documentMap = {};
@@ -119,7 +119,7 @@ class _NitriteDocument extends Document {
     }
 
     // field name cannot be empty or null
-    if (identical(field, Constants.docId) && !NitriteId.validId(value)) {
+    if (field == docId && !NitriteId.validId(value)) {
       throw InvalidOperationException("_id is an auto generated value and"
           " cannot be set");
     }
@@ -156,12 +156,12 @@ class _NitriteDocument extends Document {
 
     // if _id field is not populated already, create a new id
     // and set, otherwise return the existing id
-    if (!containsKey(Constants.docId)) {
+    if (!containsKey(docId)) {
       var id = NitriteId.newId();
       idValue = id.idValue;
-      _documentMap[Constants.docId] = idValue;
+      _documentMap[docId] = idValue;
     } else {
-      idValue = get<String>(Constants.docId)!;
+      idValue = get<String>(docId)!;
     }
 
     return NitriteId.createId(idValue);
@@ -171,7 +171,7 @@ class _NitriteDocument extends Document {
   Set<String> get fields => _getFieldsInternal("");
 
   @override
-  bool get hasId => _documentMap.containsKey(Constants.docId);
+  bool get hasId => _documentMap.containsKey(docId);
 
   @override
   void remove(String field) {

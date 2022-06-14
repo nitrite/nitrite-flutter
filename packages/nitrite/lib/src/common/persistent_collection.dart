@@ -54,7 +54,7 @@ abstract class PersistentCollection<T> implements EventAware, AttributesAware {
   Future<bool> get isOpen;
 
   /// Returns the size of the [PersistentCollection].
-  Future<bool> get size;
+  Future<int> get size;
 
   /// Closes this [PersistentCollection].
   Future<void> close();

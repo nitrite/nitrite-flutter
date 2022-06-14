@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
-import 'package:nitrite/src/common/util/number_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 part 'filter_impl.dart';
@@ -22,7 +21,7 @@ FluentFilter where(String field) {
 }
 
 /// Filter by document _id.
-Filter byId(NitriteId id) => EqualsFilter(Constants.docId, id.idValue);
+Filter byId(NitriteId id) => EqualsFilter(docId, id.idValue);
 
 Filter createUniqueFilter(Document document) {
   return byId(document.id);
@@ -97,7 +96,7 @@ class FluentFilter {
 
   /// Creates a text filter which performs a text search on the content of
   /// the fields indexed with a full-text index.
-  NitriteFilter text(dynamic value) => _TextFilter(_field, value);
+  NitriteFilter text(dynamic value) => TextFilter(_field, value);
 
   /// Creates a string filter which provides regular expression capabilities
   /// for pattern matching strings in documents.
@@ -143,7 +142,7 @@ class FluentFilter {
 /// the whole collection.
 abstract class Filter {
   /// Filters a document map and returns `true` if the criteria matches.
-  bool apply(Pair<NitriteId, Document> element);
+  bool apply(Document doc);
 
   /// Creates a not filter which performs a logical NOT operation on a filter
   /// and selects the documents that **do not** satisfy the criteria.
@@ -198,7 +197,7 @@ abstract class NitriteFilter extends Filter {
 
 class _All extends Filter {
   @override
-  bool apply(Pair<NitriteId, Document> element) {
+  bool apply(Document element) {
     return true;
   }
 }

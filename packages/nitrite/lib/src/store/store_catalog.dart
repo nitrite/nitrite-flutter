@@ -11,11 +11,11 @@ class StoreCatalog {
   StoreCatalog(this._nitriteStore);
 
   Future<void> init() async {
-    _catalog = await _nitriteStore.openMap<String, Document>(Constants.collectionCatalog);
+    _catalog = await _nitriteStore.openMap<String, Document>(collectionCatalog);
   }
 
   Future<void> writeCollectionEntry(String name) async {
-    var document = await _catalog[Constants.tagCollections];
+    var document = await _catalog[tagCollections];
     document ??= Document.emptyDocument();
 
     // parse the document to create collection meta data object
@@ -23,11 +23,11 @@ class StoreCatalog {
     mapMetaData.mapNames.add(name);
 
     // convert the meta data object to document and save
-    await _catalog.put(Constants.tagCollections, mapMetaData.getInfo());
+    await _catalog.put(tagCollections, mapMetaData.getInfo());
   }
 
   Future<void> writeRepositoryEntry(String name) async {
-    var document = await _catalog[Constants.tagRepositories];
+    var document = await _catalog[tagRepositories];
     document ??= Document.emptyDocument();
 
     // parse the document to create repository meta data object
@@ -35,11 +35,11 @@ class StoreCatalog {
     mapMetaData.mapNames.add(name);
 
     // convert the meta data object to document and save
-    await _catalog.put(Constants.tagRepositories, mapMetaData.getInfo());
+    await _catalog.put(tagRepositories, mapMetaData.getInfo());
   }
 
   Future<void> writeKeyedRepositoryEntry(String name) async {
-    var document = await _catalog[Constants.tagKeyedRepositories];
+    var document = await _catalog[tagKeyedRepositories];
     document ??= Document.emptyDocument();
 
     // parse the document to create repository meta data object
@@ -47,11 +47,11 @@ class StoreCatalog {
     mapMetaData.mapNames.add(name);
 
     // convert the meta data object to document and save
-    await _catalog.put(Constants.tagKeyedRepositories, mapMetaData.getInfo());
+    await _catalog.put(tagKeyedRepositories, mapMetaData.getInfo());
   }
 
   Future<Set<String>> get collectionNames async {
-    var doc = await _catalog[Constants.tagCollections];
+    var doc = await _catalog[tagCollections];
     if (doc == null) {
       return <String>{};
     }
@@ -61,7 +61,7 @@ class StoreCatalog {
   }
 
   Future<Set<String>> get repositoryNames async {
-    var doc = await _catalog[Constants.tagRepositories];
+    var doc = await _catalog[tagRepositories];
     if (doc == null) {
       return <String>{};
     }
@@ -71,7 +71,7 @@ class StoreCatalog {
   }
 
   Future<Map<String, Set<String>>> get keyedRepositoryNames async {
-    var doc = await _catalog[Constants.tagKeyedRepositories];
+    var doc = await _catalog[tagKeyedRepositories];
     if (doc == null) {
       return <String, Set<String>>{};
     }

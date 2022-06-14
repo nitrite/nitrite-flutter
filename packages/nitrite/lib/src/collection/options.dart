@@ -16,6 +16,7 @@ class FindOptions {
   SortableFields? _orderBy;
   int? _skip;
   int? _limit;
+  bool _distinct = false;
 
   FindOptions([this._orderBy, this._skip, this._limit]);
 
@@ -41,9 +42,16 @@ class FindOptions {
     return findOptions;
   }
 
+  factory FindOptions.distinct() {
+    var findOptions = FindOptions();
+    findOptions._distinct = true;
+    return findOptions;
+  }
+
   SortableFields? get orderBy => _orderBy;
   int? get skip => _skip;
   int? get limit => _limit;
+  bool get distinct => _distinct;
 
   FindOptions setSkip(int skip) {
     _skip = skip;
@@ -64,6 +72,11 @@ class FindOptions {
       _orderBy = sortableFields;
     }
 
+    return this;
+  }
+
+  FindOptions withDistinct(bool distinct) {
+    _distinct = distinct;
     return this;
   }
 }

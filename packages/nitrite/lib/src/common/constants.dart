@@ -1,71 +1,69 @@
-class Constants {
-  Constants._();
+const String indexMetaPrefix = "\$nitrite_index_meta";
 
-  static const String indexMetaPrefix = "\$nitrite_index_meta";
+const String indexPrefix = "\$nitrite_index";
 
-  static const String indexPrefix = "\$nitrite_index";
+const String internalNameSeparator = "|";
 
-  static const String internalNameSeparator = "|";
+const String userMap = "\$nitrite_users";
 
-  static const String userMap = "\$nitrite_users";
+const String objectStoreNameSeparator = ":";
 
-  static const String objectStoreNameSeparator = ":";
+const String metaMapName = "\$nitrite_meta_map";
 
-  static const String metaMapName = "\$nitrite_meta_map";
+const String storeInfo = "\$nitrite_store_info";
 
-  static const String storeInfo = "\$nitrite_store_info";
+const String collectionCatalog = "\$nitrite_catalog";
 
-  static const String collectionCatalog = "\$nitrite_catalog";
+const String keyObjSeparator = "+";
 
-  static const String keyObjSeparator = "+";
+const List<String> reservedNames = <String>[
+  indexMetaPrefix,
+  indexPrefix,
+  internalNameSeparator,
+  userMap,
+  objectStoreNameSeparator,
+  metaMapName,
+  storeInfo,
+  collectionCatalog,
+  keyObjSeparator
+];
 
-  static const List<String> reservedNames = <String>[
-    indexMetaPrefix,
-    indexPrefix,
-    internalNameSeparator,
-    userMap,
-    objectStoreNameSeparator,
-    metaMapName,
-    storeInfo,
-    collectionCatalog,
-    keyObjSeparator
-  ];
+const int initialSchemaVersion = 1;
 
-  static final int initialSchemaVersion = 1;
+const String no2 = "NO\u2082";
 
-  static final String no2 = "NO\u2082";
+const String idPrefix = "[";
 
-  static final String idPrefix = "[";
+const String idSuffix = "]$no2";
 
-  static final String idSuffix = "]$no2";
+const String tagCollections = "collections";
 
-  static final String tagCollections = "collections";
+const String tagRepositories = "repositories";
 
-  static final String tagRepositories = "repositories";
+const String tagKeyedRepositories = "keyed-repositories";
 
-  static final String tagKeyedRepositories = "keyed-repositories";
+const String tagType = "type";
 
-  static final String tagType = "type";
+const String tagIndices = "indices";
 
-  static final String tagIndices = "indices";
+const String tagIndex = "index";
 
-  static final String tagIndex = "index";
+const String tagData = "data";
 
-  static final String tagData = "data";
+const String tagName = "name";
 
-  static final String tagName = "name";
+const String tagKey = "key";
 
-  static final String tagKey = "key";
+const String tagValue = "value";
 
-  static final String tagValue = "value";
+const String docId = "_id";
 
-  static final String docId = "_id";
+const String docRevision = "_revision";
 
-  static final String docRevision = "_revision";
+const String docModified = "_modified";
 
-  static final String docModified = "_modified";
+const String docSource = "_source";
 
-  static final String docSource = "_source";
+const String tagMapMetaData = "mapNames";
 
-  static final String tagMapMetaData = "mapNames";
-}
+const String replicator = "Replicator.$no2";

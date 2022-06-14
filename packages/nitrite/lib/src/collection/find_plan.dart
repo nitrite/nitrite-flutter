@@ -9,6 +9,7 @@ class FindPlan {
   IndexDescriptor? indexDescriptor;
   int? skip;
   int? limit;
+  bool distinct = false;
 
   Map<String, bool> indexScanOrder = {};
   List<Pair<String, SortOrder>> blockingSortOrder = [];
