@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/sort_order.dart';
 
 class UpdateOptions {
   bool insertIfAbsent;

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/lookup.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 
 class JoinedDocumentStream extends StreamView<Document> {

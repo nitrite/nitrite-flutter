@@ -62,3 +62,10 @@ class UniqueConstraintException extends NitriteException {
   @override
   String toString() => message ?? "UniqueConstraintException";
 }
+
+class ObjectMappingException extends NitriteException {
+  ObjectMappingException([String? message]) : super(message);
+
+  @override
+  String toString() => message ?? "ObjectMappingException";
+}

@@ -1,7 +1,8 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/constants.dart';
 
 void blackHole(dynamic _) {}
+
+bool isSubtype<S, T>() => <S>[] is List<T>;
 
 String getKeyName(String collectionName) {
   if (collectionName.contains(keyObjSeparator)) {
