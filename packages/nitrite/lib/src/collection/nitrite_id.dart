@@ -1,6 +1,5 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/snowflake_id.dart';
-import 'package:nitrite/src/common/constants.dart';
 
 class NitriteId implements Comparable<NitriteId> {
   static final SnowflakeIdGenerator _generator = SnowflakeIdGenerator();
@@ -33,9 +32,9 @@ class NitriteId implements Comparable<NitriteId> {
     try {
       int.parse(value.toString());
       return true;
-    } on FormatException {
-      throw InvalidIdException("id must be a string representation "
-          "of 64bit integer number $value");
+    } on FormatException catch (e, stackTrace) {
+      throw InvalidIdException("Id must be a string representation "
+          "of 64bit integer number $value", stackTrace: stackTrace, cause: e);
     }
   }
 

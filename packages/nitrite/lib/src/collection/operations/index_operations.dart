@@ -1,13 +1,7 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/collection/document.dart';
-import 'package:nitrite/src/collection/nitrite_id.dart';
 import 'package:nitrite/src/collection/operations/index_manager.dart';
-import 'package:nitrite/src/common/fields.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
-import 'package:nitrite/src/index/index_descriptor.dart';
-import 'package:nitrite/src/nitrite_config.dart';
-import 'package:nitrite/src/store/nitrite_map.dart';
 
 class IndexOperations {
   final String _collectionName;
@@ -85,7 +79,7 @@ class IndexOperations {
     var indexDescriptor = await findIndexDescriptor(fields);
     if (indexDescriptor != null) {
       var indexType = indexDescriptor.indexType;
-      var nitriteIndexer = _nitriteConfig.findIndexer(indexType);
+      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
       await nitriteIndexer.dropIndex(indexDescriptor, _nitriteConfig);
 
       await _indexManager.dropIndexDescriptor(fields);
@@ -136,7 +130,7 @@ class IndexOperations {
       await _indexManager.beginIndexing(fields);
 
       var indexType = indexDescriptor.indexType;
-      var nitriteIndexer = _nitriteConfig.findIndexer(indexType);
+      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
       // if rebuild drop existing index
       if (rebuild) {

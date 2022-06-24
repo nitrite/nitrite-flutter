@@ -1,6 +1,7 @@
 import 'package:nitrite/src/common/util/string_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/fulltext/languages.dart';
+import 'package:nitrite/src/index/fulltext/stop_words.dart';
 
 /// A stop-word based string tokenizer.
 abstract class TextTokenizer {
@@ -26,13 +27,24 @@ abstract class BaseTextTokenizer implements TextTokenizer {
 
     var tokens = tokenizeString(text);
     for (var token in tokens) {
-      var word = token.toLowerCase();
-      if (!stopWords().contains(word)) {
-        words.add(token);
+      var word = convertWord(token);
+      if (!word.isNullOrEmpty) {
+        words.add(word!);
       }
     }
 
     return words;
+  }
+
+  /// Converts a `word` into all lower case and checks if it
+  /// is a known stop word. If it is, then the `word` will be
+  /// discarded and will not be considered as a valid token.
+  String? convertWord(String word) {
+    var convertedWord = word.toLowerCase();
+    if (stopWords().contains(convertedWord)) {
+      return null;
+    }
+    return convertedWord;
   }
 }
 
@@ -52,7 +64,7 @@ class UniversalTextTokenizer extends BaseTextTokenizer {
   final Set<String> _stopWords = <String>{};
 
   UniversalTextTokenizer([List<Languages> languages = const []]) {
-    if (languages.contains(Languages.all)) {
+    if (languages.isEmpty || languages.contains(Languages.all)) {
       _loadAllLanguages();
     } else {
       _loadLanguage(languages);

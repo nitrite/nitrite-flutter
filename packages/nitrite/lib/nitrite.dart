@@ -1,6 +1,3 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
 library nitrite;
 
 export 'src/nitrite_base.dart';
@@ -9,6 +6,9 @@ export 'src/nitrite_config.dart';
 
 export 'src/collection/index.dart';
 export 'src/common/index.dart';
+export 'src/exception/exceptions.dart';
+export 'src/filters/index.dart';
+export 'src/index/index.dart';
 
 export 'src/store/nitrite_store.dart';
 export 'src/store/meta_data.dart' hide MapMetaData;
@@ -26,5 +26,4 @@ export 'src/transaction/session.dart';
 
 export 'src/migration/migration.dart';
 
-export 'src/index/index.dart';
-export 'src/filters/index.dart';
+

@@ -1,6 +1,6 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
-import 'package:nitrite/src/index/data_types.dart';
+import 'package:nitrite/src/index/types.dart';
 
 class IndexManager {
   final NitriteConfig _nitriteConfig;
@@ -142,7 +142,7 @@ class IndexManager {
   }
 
   Future<void> _validateIndexRequest(Fields fields, String indexType) async {
-    var indexer = _nitriteConfig.findIndexer(indexType);
+    var indexer = await _nitriteConfig.findIndexer(indexType);
     await indexer.validateIndex(fields);
   }
 }

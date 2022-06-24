@@ -99,7 +99,7 @@ class ReadOperations {
       // and or single filter
       if (findPlan.byIdFilter != null) {
         var nitriteId = NitriteId.createId(findPlan.byIdFilter!.value);
-        var doc = await getById(nitriteId);
+        var doc = await _nitriteMap[nitriteId];
         if (doc != null) {
           rawStream = Stream.value(doc);
         } else {
@@ -109,9 +109,11 @@ class ReadOperations {
         var indexDescriptor = findPlan.indexDescriptor;
         if (indexDescriptor != null) {
           // get optimized filter
-          var indexer = _nitriteConfig.findIndexer(indexDescriptor.indexType);
-          rawStream = IndexedStream(
-              indexer.findByFilter(findPlan, _nitriteConfig), _nitriteMap);
+          var indexer = await _nitriteConfig.findIndexer(indexDescriptor.indexType);
+          var nitriteIdStream = indexer.findByFilter(findPlan, _nitriteConfig);
+
+          // create indexed stream from optimized filter
+          rawStream = IndexedStream(nitriteIdStream, _nitriteMap);
         } else {
           rawStream = _nitriteMap.values();
         }

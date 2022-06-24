@@ -1,9 +1,6 @@
-import 'package:nitrite/src/collection/document.dart';
+import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/index_operations.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
-import 'package:nitrite/src/index/index_descriptor.dart';
-import 'package:nitrite/src/index/nitrite_indexer.dart';
-import 'package:nitrite/src/nitrite_config.dart';
 
 class DocumentIndexWriter {
   final NitriteConfig _nitriteConfig;
@@ -15,7 +12,7 @@ class DocumentIndexWriter {
     var indexEntries = await _indexOperations.listIndexes();
     for (var indexDescriptor in indexEntries) {
       var indexType = indexDescriptor.indexType;
-      var nitriteIndexer = _nitriteConfig.findIndexer(indexType);
+      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
       await _writeIndexEntryInternal(indexDescriptor, document, nitriteIndexer);
     }
@@ -25,7 +22,7 @@ class DocumentIndexWriter {
     var indexEntries = await _indexOperations.listIndexes();
     for (var indexDescriptor in indexEntries) {
       var indexType = indexDescriptor.indexType;
-      var nitriteIndexer = _nitriteConfig.findIndexer(indexType);
+      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
       await _removeIndexEntryInternal(indexDescriptor, oldDoc, nitriteIndexer);
       await _writeIndexEntryInternal(indexDescriptor, newDoc, nitriteIndexer);
@@ -36,7 +33,7 @@ class DocumentIndexWriter {
     var indexEntries = await _indexOperations.listIndexes();
     for (var indexDescriptor in indexEntries) {
       var indexType = indexDescriptor.indexType;
-      var nitriteIndexer = _nitriteConfig.findIndexer(indexType);
+      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
       await _removeIndexEntryInternal(
           indexDescriptor, document, nitriteIndexer);

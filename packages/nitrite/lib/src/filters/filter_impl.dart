@@ -22,15 +22,13 @@ class EqualsFilter extends ComparableFilter {
   }
 
   @override
-  List applyOnIndex(IndexMap indexMap) {
-    var val = indexMap.get(value as Comparable);
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
+    var val = await indexMap.get(value as Comparable);
     if (val is List) {
-      return val;
+      yield* Stream.fromIterable(val);
     }
 
-    var result = <List<dynamic>>[];
-    result.add(val);
-    return result;
+    yield val;
   }
 
   @override
@@ -132,8 +130,8 @@ class TextFilter extends StringFilter {
   }
 
   @override
-  List applyOnIndex(IndexMap indexMap) {
-    return [];
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) {
+    return Stream.empty();
   }
 
   @override
@@ -329,27 +327,15 @@ class _GreaterEqualFilter extends ComparableFilter {
   }
 
   @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    var ceilingKey = indexMap.ceilingKey(comparable);
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
+    var ceilingKey = await indexMap.ceilingKey(comparable);
     while (ceilingKey != null) {
       // get the starting value, it can be a navigable-map (compound index)
       // or list (single field index)
-      var val = indexMap.get(ceilingKey);
-      processIndexValue(val, subMaps, nitriteIds);
-      ceilingKey = indexMap.higherKey(comparable);
-    }
+      var val = await indexMap.get(ceilingKey);
+      yield* yieldValues(val);
 
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
+      ceilingKey = await indexMap.higherKey(comparable);
     }
   }
 
@@ -376,27 +362,14 @@ class _GreaterThanFilter extends ComparableFilter {
   }
 
   @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    var ceilingKey = indexMap.higherKey(comparable);
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
+    var ceilingKey = await indexMap.higherKey(comparable);
     while (ceilingKey != null) {
       // get the starting value, it can be a navigable-map (compound index)
       // or list (single field index)
-      var val = indexMap.get(ceilingKey);
-      processIndexValue(val, subMaps, nitriteIds);
-      ceilingKey = indexMap.higherKey(comparable);
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
+      var val = await indexMap.get(ceilingKey);
+      yield* yieldValues(val);
+      ceilingKey = await indexMap.higherKey(comparable);
     }
   }
 
@@ -423,27 +396,14 @@ class _LesserEqualFilter extends ComparableFilter {
   }
 
   @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    var floorKey = indexMap.floorKey(comparable);
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
+    var floorKey = await indexMap.floorKey(comparable);
     while (floorKey != null) {
       // get the starting value, it can be a navigable-map (compound index)
       // or list (single field index)
-      var val = indexMap.get(floorKey);
-      processIndexValue(val, subMaps, nitriteIds);
-      floorKey = indexMap.lowerKey(comparable);
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
+      var val = await indexMap.get(floorKey);
+      yield* yieldValues(val);
+      floorKey = await indexMap.lowerKey(comparable);
     }
   }
 
@@ -470,27 +430,14 @@ class _LesserThanFilter extends ComparableFilter {
   }
 
   @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    var floorKey = indexMap.lowerKey(comparable);
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
+    var floorKey = await indexMap.lowerKey(comparable);
     while (floorKey != null) {
       // get the starting value, it can be a navigable-map (compound index)
       // or list (single field index)
-      var val = indexMap.get(floorKey);
-      processIndexValue(val, subMaps, nitriteIds);
-      floorKey = indexMap.lowerKey(comparable);
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
+      var val = await indexMap.get(floorKey);
+      yield* yieldValues(val);
+      floorKey = await indexMap.lowerKey(comparable);
     }
   }
 
@@ -508,25 +455,11 @@ class _NotEqualsFilter extends ComparableFilter {
   }
 
   @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-
-    for (Pair<Comparable, dynamic> entry in indexMap.entries()) {
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
+    await for (Pair<Comparable?, dynamic> entry in indexMap.entries()) {
       if (!deepEquals(value, entry.first)) {
-        processIndexValue(entry.second, subMaps, nitriteIds);
+        yield* yieldValues(entry.second);
       }
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
     }
   }
 
@@ -572,24 +505,11 @@ class _InFilter extends ComparableArrayFilter {
   }
 
   @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    for (Pair<Comparable, dynamic> entry in indexMap.entries()) {
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
+    await for (Pair<Comparable?, dynamic> entry in indexMap.entries()) {
       if (_comparableSet.contains(entry.first)) {
-        processIndexValue(entry.second, subMaps, nitriteIds);
+        yield* yieldValues(entry.second);
       }
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
     }
   }
 
@@ -615,24 +535,11 @@ class _NotInFilter extends ComparableArrayFilter {
   }
 
   @override
-  List applyOnIndex(IndexMap indexMap) {
-    var subMaps = <SplayTreeMap<Comparable, dynamic>>[];
-
-    // maintain the find sorting order
-    var nitriteIds = <NitriteId>[];
-    for (Pair<Comparable, dynamic> entry in indexMap.entries()) {
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
+    await for (Pair<Comparable?, dynamic> entry in indexMap.entries()) {
       if (!_comparableSet.contains(entry.first)) {
-        processIndexValue(entry.second, subMaps, nitriteIds);
+        yield* yieldValues(entry.second);
       }
-    }
-
-    if (subMaps.isNotEmpty) {
-      // if sub-map is populated then filtering on compound index, return sub-map
-      return subMaps;
-    } else {
-      // else it is filtering on either single field index,
-      // or it is a terminal filter on compound index, return only nitrite-ids
-      return nitriteIds;
     }
   }
 

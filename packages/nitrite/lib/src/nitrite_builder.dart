@@ -18,8 +18,8 @@ class NitriteBuilder {
   }
 
   /// Loads [NitriteModule] instance.
-  NitriteBuilder loadModule(NitriteModule module) {
-    nitriteConfig.loadModule(module);
+  Future<NitriteBuilder> loadModule(NitriteModule module) async {
+    await nitriteConfig.loadModule(module);
     return this;
   }
 
@@ -42,7 +42,7 @@ class NitriteBuilder {
   /// exists, then it will create a new file store and open; otherwise it will
   /// open the existing file store.
   Future<Nitrite> openOrCreate([String? username, String? password]) async {
-    nitriteConfig.autoConfigure();
+    await nitriteConfig.autoConfigure();
     // TODO: add shutdown hook to close the db
     var db = NitriteDatabase(nitriteConfig);
     await db.initialize(username, password);

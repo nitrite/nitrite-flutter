@@ -1,4 +1,3 @@
-export 'exception/exceptions.dart';
 export 'mapper/index.dart';
 export 'meta/attributes.dart';
 export 'module/index.dart';

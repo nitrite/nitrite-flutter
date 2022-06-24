@@ -3,11 +3,11 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// A [NitriteMapper] based on [Mappable] implementation.
-class MappableMapper implements NitriteMapper {
+class MappableMapper extends NitriteMapper {
   final Set<Type> _valueTypes = {};
   final Map<Type, MappableFactory> _mappableFactories = {};
 
-  MappableMapper(List<Type> valueTypes) {
+  MappableMapper([List<Type> valueTypes = const []]) {
     _valueTypes.add(num);
     _valueTypes.add(String);
     _valueTypes.add(bool);
@@ -38,7 +38,8 @@ class MappableMapper implements NitriteMapper {
     }
 
     throw ObjectMappingException(
-      'Cannot convert object of type ${source.runtimeType} to type ${Target.runtimeType}',
+      'Cannot convert object of type ${source.runtimeType} '
+      'to type ${Target.runtimeType}',
     );
   }
 
@@ -48,15 +49,12 @@ class MappableMapper implements NitriteMapper {
   }
 
   @override
-  void initialize(NitriteConfig nitriteConfig) {}
-
-  @override
   bool isValue(value) {
     return _valueTypes.contains(value.runtimeType);
   }
 
   @override
-  void close() {}
+  Future<void> initialize(NitriteConfig nitriteConfig) async {}
 
   /// Registers a [Mappable] factory method to be used when converting a document
   /// to an object of type [T].

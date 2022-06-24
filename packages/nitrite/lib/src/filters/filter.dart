@@ -4,6 +4,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
+import 'package:nitrite/src/index/index_map.dart';
 
 part 'filter_impl.dart';
 
@@ -258,20 +259,17 @@ abstract class ComparableFilter extends FieldBasedFilter {
   }
 
   /// Apply this filter on a nitrite index.
-  List applyOnIndex(IndexMap indexMap);
+  Stream<dynamic> applyOnIndex(IndexMap indexMap);
 
-  /// Process values after index scanning.
-  void processIndexValue(
-      dynamic value,
-      List<SplayTreeMap<Comparable, dynamic>> subMap,
-      List<NitriteId> nitriteIds) {
+  /// Yield values after index scanning.
+  Stream<dynamic> yieldValues(dynamic value) async* {
     if (value is List) {
-      // if it is list then add it directly to nitrite ids
-      nitriteIds.addAll(value as List<NitriteId>);
-    }
-
-    if (value is SplayTreeMap) {
-      subMap.add(value as SplayTreeMap<Comparable, dynamic>);
+      // if it is a list then it is filtering on either single field index,
+      // or it is a terminal filter on compound index, emit the nitrite-ids
+      yield* Stream.fromIterable(value);
+    } else if (value is SplayTreeMap) {
+      // if it is a tree-map then filtering on compound index, emit sub-map
+      yield value;
     }
   }
 }

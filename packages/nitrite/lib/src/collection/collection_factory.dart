@@ -45,8 +45,9 @@ class CollectionFactory {
           await value.close();
         });
         _collectionMap.clear();
-      } catch (e) {
-        throw NitriteIOException("Failed to close a collection");
+      } catch (e, stackTrace) {
+        throw NitriteIOException("Failed to close a collection",
+            stackTrace: stackTrace, cause: e);
       }
     });
   }

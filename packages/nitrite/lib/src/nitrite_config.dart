@@ -23,7 +23,7 @@ class NitriteConfig {
 
   /// Instantiates a new [NitriteConfig].
   NitriteConfig() {
-    _pluginManager = PluginManager();
+    _pluginManager = PluginManager(this);
     _migrations = <int, SplayTreeMap<int, Migration>>{};
   }
 
@@ -38,12 +38,12 @@ class NitriteConfig {
   }
 
   /// Loads [NitriteModule] instance.
-  NitriteConfig loadModule(NitriteModule module) {
+  Future<NitriteConfig> loadModule(NitriteModule module) async {
     if (_configured) {
       throw InvalidOperationException("Cannot load module after database "
           "initialization");
     }
-    _pluginManager.loadModule(module);
+    await _pluginManager.loadModule(module);
     return this;
   }
 
@@ -78,19 +78,19 @@ class NitriteConfig {
 
   /// Autoconfigures nitrite database with default configuration values and
   /// default built-in plugins.
-  void autoConfigure() {
+  Future<void> autoConfigure() async {
     if (_configured) {
       throw InvalidOperationException("Cannot auto configure after database "
           "initialization");
     }
-    _pluginManager.findAndLoadPlugins();
+    return _pluginManager.findAndLoadPlugins();
   }
 
   /// Finds a [NitriteIndexer] by indexType.
-  NitriteIndexer findIndexer(String indexType) {
-    var nitriteIndexer = pluginManager.getIndexerMap()[indexType];
+  Future<NitriteIndexer> findIndexer(String indexType) async {
+    var nitriteIndexer = pluginManager.indexerMap[indexType];
     if (nitriteIndexer != null) {
-      nitriteIndexer.initialize(this);
+      await nitriteIndexer.initialize(this);
       return nitriteIndexer;
     } else {
       throw IndexingException("No indexer found for index type $indexType");
@@ -98,20 +98,20 @@ class NitriteConfig {
   }
 
   /// Gets the [NitriteMapper] instance.
-  NitriteMapper get nitriteMapper => pluginManager.mapper;
+  NitriteMapper get nitriteMapper => pluginManager.nitriteMapper;
 
   /// Gets [NitriteStore] instance.
   NitriteStore<Config> getNitriteStore<Config extends StoreConfig>() {
     return pluginManager.getNitriteStore();
   }
 
-  void close() {
-    pluginManager.close();
+  Future<void> close() {
+    return pluginManager.close();
   }
 
   /// Initializes this [NitriteConfig] instance.
-  void initialize() {
+  Future<void> initialize() {
     _configured = true;
-    _pluginManager.initializePlugins();
+    return _pluginManager.initializePlugins();
   }
 }

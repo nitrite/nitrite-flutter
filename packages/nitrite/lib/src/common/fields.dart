@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// Represents a list of document fields.
@@ -102,7 +101,7 @@ class SortableFields extends Fields {
 }
 
 class FieldValues {
-  final List<Pair<String, Object>> values = [];
+  final List<Pair<String, dynamic>> values = [];
 
   NitriteId? nitriteId;
   Fields? _fields;

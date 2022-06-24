@@ -1,4 +1,6 @@
+import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/util/number_utils.dart' as numbers;
 
 void blackHole(dynamic _) {}
 
@@ -22,10 +24,42 @@ String getKeyedRepositoryType(String collectionName) {
       "object repository");
 }
 
-bool deepEquals(fieldValue, value) {
-  throw UnimplementedError();
+bool deepEquals(o1, o2) {
+  if (o1 == null && o2 == null) {
+    return true;
+  } else if (o1 == null || o2 == null) {
+    return false;
+  }
+
+  if (identical(o1, o2)) {
+    // if reference equal send true
+    return true;
+  }
+
+  if (o1 is num && o2 is num) {
+    if (o1.runtimeType != o2.runtimeType) {
+      return false;
+    }
+
+    // cast to Number and take care of boxing and compare
+    return numbers.compare(o1, o2) == 0;
+  } else if (o1 is Iterable && o2 is Iterable) {
+    return IterableEquality().equals(o1, o2);
+  } else if (o1 is Map && o2 is Map) {
+    return MapEquality().equals(o1, o2);
+  } else {
+    // generic check
+    return o1.runtimeType == o2.runtimeType && o1 == o2;
+  }
 }
 
-int compare(Comparable a, Comparable b) {
-  throw UnimplementedError();
+int compare(Comparable first, Comparable second) {
+  if (first is num && second is num) {
+    var result = numbers.compare(first, second);
+    if (first.runtimeType != second.runtimeType) {
+      if (result == 0) return 1;
+    }
+    return result;
+  }
+  return first.compareTo(second);
 }

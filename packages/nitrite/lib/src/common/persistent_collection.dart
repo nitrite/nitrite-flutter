@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/meta/attributes.dart';
 
 /// The interface Persistent collection.
 abstract class PersistentCollection<T> implements EventAware, AttributesAware {

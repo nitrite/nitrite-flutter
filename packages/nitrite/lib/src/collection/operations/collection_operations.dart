@@ -1,20 +1,10 @@
 import 'package:event_bus/event_bus.dart';
-import 'package:nitrite/src/collection/document.dart';
-import 'package:nitrite/src/collection/document_cursor.dart';
-import 'package:nitrite/src/collection/nitrite_id.dart';
+import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/document_index_writer.dart';
 import 'package:nitrite/src/collection/operations/index_operations.dart';
 import 'package:nitrite/src/collection/operations/read_operations.dart';
 import 'package:nitrite/src/collection/operations/write_operations.dart';
-import 'package:nitrite/src/collection/options.dart';
-import 'package:nitrite/src/common/fields.dart';
-import 'package:nitrite/src/common/meta/attributes.dart';
 import 'package:nitrite/src/common/processors/processor.dart';
-import 'package:nitrite/src/common/write_result.dart';
-import 'package:nitrite/src/filters/filter.dart';
-import 'package:nitrite/src/index/index_descriptor.dart';
-import 'package:nitrite/src/nitrite_config.dart';
-import 'package:nitrite/src/store/nitrite_map.dart';
 
 class CollectionOperations {
   final String _collectionName;

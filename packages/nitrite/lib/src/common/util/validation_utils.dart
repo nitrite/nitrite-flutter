@@ -1,5 +1,25 @@
 import 'package:nitrite/nitrite.dart';
 
+void validateIterableIndexField(Iterable fieldValue, String field) {
+  if (fieldValue.isNotEmpty) {
+    for (var value in fieldValue) {
+      if (value == null) continue;
+      validateArrayIndexItem(value, field);
+    }
+  }
+}
+
+void validateArrayIndexItem(dynamic value, String field) {
+  if (value is Iterable) {
+    throw InvalidOperationException('Nested iterables are not supported');
+  }
+
+  if (value is! Comparable) {
+    throw IndexingException('Each value in the iterable field $field must '
+        'implement Comparable');
+  }
+}
+
 extension ValidationUtils<T> on T {
   bool get isNullOrEmpty {
     if (this == null) {
