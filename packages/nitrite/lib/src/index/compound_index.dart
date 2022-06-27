@@ -88,9 +88,9 @@ class CompoundIndex extends NitriteIndex {
   }
 
   Future<NitriteMap<DBValue, SplayTreeMap<DBValue, dynamic>>>
-      _findIndexMap() async {
+      _findIndexMap() {
     var mapName = deriveIndexMapName(_indexDescriptor);
-    return await _nitriteStore
+    return _nitriteStore
         .openMap<DBValue, SplayTreeMap<DBValue, dynamic>>(mapName);
   }
 

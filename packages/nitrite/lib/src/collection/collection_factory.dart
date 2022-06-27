@@ -337,7 +337,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
       _checkOpened();
       var subscription = _eventBus
           .on<CollectionEventInfo<T>>()
-          .listen((event) => listener(event));
+          .listen(listener);
 
       var hashCode = hash2(listener, T);
       _subscriptions[hashCode] = subscription;
@@ -354,7 +354,6 @@ class _DefaultNitriteCollection extends NitriteCollection {
       var subscription = _subscriptions[hashCode];
       if (subscription != null) {
         subscription.cancel();
-
         _subscriptions.remove(hashCode);
       }
     });

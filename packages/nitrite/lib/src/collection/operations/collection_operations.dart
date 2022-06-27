@@ -79,7 +79,7 @@ class CollectionOperations {
   }
 
   Future<Iterable<IndexDescriptor>> listIndexes() async {
-    return Future.value(_indexOperations.listIndexes());
+    return _indexOperations.listIndexes();
   }
 
   Future<IndexDescriptor?> findIndex(Fields indexFields) async {

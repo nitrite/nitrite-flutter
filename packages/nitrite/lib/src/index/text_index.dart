@@ -1,10 +1,7 @@
-import 'package:nitrite/src/collection/find_plan.dart';
-import 'package:nitrite/src/collection/nitrite_id.dart';
-import 'package:nitrite/src/common/fields.dart';
-import 'package:nitrite/src/index/fulltext/text_tokenizer.dart';
+import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/util/index_utils.dart';
+import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/nitrite_index.dart';
-import 'package:nitrite/src/index/types.dart';
-import 'package:nitrite/src/store/nitrite_store.dart';
 
 class TextIndex extends NitriteIndex {
   final IndexDescriptor _indexDescriptor;
@@ -14,32 +11,123 @@ class TextIndex extends NitriteIndex {
   TextIndex(this._textTokenizer, this._indexDescriptor, this._nitriteStore);
 
   @override
-  Future<void> drop() {
-    // TODO: implement drop
-    throw UnimplementedError();
+  IndexDescriptor get indexDescriptor => _indexDescriptor;
+
+  @override
+  Future<void> write(FieldValues fieldValues) async {
+    var fields = fieldValues.fields;
+    var fieldNames = fields.fieldNames;
+
+    var firstField = fieldNames.first;
+    var element = fieldValues.get(firstField);
+
+    var indexMap = await _findIndexMap();
+
+    if (element == null) {
+      await _addIndexElement(indexMap, fieldValues, null);
+    } else if (element is String) {
+      await _addIndexElement(indexMap, fieldValues, element);
+    } else if (element is Iterable) {
+      validateStringIterableIndexField(element, firstField);
+
+      for (var item in element) {
+        await _addIndexElement(indexMap, fieldValues, item);
+      }
+    } else {
+      throw IndexingException("Index field $firstField must be a "
+          "String or Iterable<String>");
+    }
   }
 
   @override
-  Stream<NitriteId> findNitriteIds(FindPlan findPlan) {
-    // TODO: implement findNitriteIds
-    throw UnimplementedError();
+  Future<void> remove(FieldValues fieldValues) async {
+    var fields = fieldValues.fields;
+    var fieldNames = fields.fieldNames;
+
+    var firstField = fieldNames.first;
+    var element = fieldValues.get(firstField);
+
+    var indexMap = await _findIndexMap();
+
+    if (element == null) {
+      await _removeIndexElement(indexMap, fieldValues, null);
+    } else if (element is String) {
+      await _removeIndexElement(indexMap, fieldValues, element);
+    } else if (element is Iterable) {
+      validateStringIterableIndexField(element, firstField);
+
+      for (var item in element) {
+        await _removeIndexElement(indexMap, fieldValues, item);
+      }
+    } else {
+      throw IndexingException("Index field $firstField must be a "
+          "String or Iterable<String>");
+    }
   }
 
   @override
-  // TODO: implement indexDescriptor
-  IndexDescriptor get indexDescriptor => throw UnimplementedError();
-
-  @override
-  Future<void> remove(FieldValues fieldValues) {
-    // TODO: implement remove
-    throw UnimplementedError();
+  Future<void> drop() async {
+    var indexMap = await _findIndexMap();
+    await indexMap.clear();
+    await indexMap.drop();
   }
 
   @override
-  Future<void> write(FieldValues fieldValues) {
-    // TODO: implement write
-    throw UnimplementedError();
+  Stream<NitriteId> findNitriteIds(FindPlan findPlan) async* {
+    if (findPlan.indexScanFilter == null) return;
+
+    var indexMap = await _findIndexMap();
+    var filters = findPlan.indexScanFilter!.filters;
+
+    if (filters.length == 1 && filters.first is TextFilter) {
+      var textFilter = filters.first as TextFilter;
+      textFilter.textTokenizer = _textTokenizer;
+      yield* textFilter.applyOnTextIndex(indexMap);
+    } else {
+      throw FilterException("Text index only supports a single TextFilter");
+    }
   }
 
+  Future<NitriteMap<String, List<dynamic>>> _findIndexMap() {
+    var mapName = deriveIndexMapName(_indexDescriptor);
+    return _nitriteStore.openMap<String, List<dynamic>>(mapName);
+  }
 
+  Future<void> _addIndexElement(
+      NitriteMap<String, List<dynamic>> indexMap,
+      FieldValues fieldValues,
+      String? value) async {
+    var words = _decompose(value);
+
+    for (var word in words) {
+      var nitriteIds = await indexMap[word];
+      nitriteIds ??= <NitriteId>[];
+      nitriteIds = addNitriteIds(nitriteIds as List<NitriteId>, fieldValues);
+      await indexMap.put(word, nitriteIds);
+    }
+  }
+
+  Future<void> _removeIndexElement(
+      NitriteMap<String, List<dynamic>> indexMap,
+      FieldValues fieldValues,
+      String? value) async {
+    var words = _decompose(value);
+
+    for (var word in words) {
+      var nitriteIds = await indexMap[word];
+      if (!nitriteIds.isNullOrEmpty) {
+        nitriteIds!.remove(fieldValues.nitriteId);
+        if (nitriteIds.isEmpty) {
+          await indexMap.remove(word);
+        } else {
+          await indexMap.put(word, nitriteIds);
+        }
+      }
+    }
+  }
+
+  Set<String> _decompose(String? value) {
+    if (value == null) return {};
+    return _textTokenizer.tokenize(value);
+  }
 }

@@ -67,3 +67,4 @@ const String docSource = "_source";
 const String tagMapMetaData = "mapNames";
 
 const String replicator = "Replicator.$no2";
+

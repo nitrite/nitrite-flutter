@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/store/meta_data.dart';
 

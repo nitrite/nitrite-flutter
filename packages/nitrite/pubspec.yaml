@@ -1,6 +1,6 @@
 name: nitrite
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
+description: An embedded nosql document store for dart/flutter.
+version: 0.0.1
 # homepage: https://www.example.com
 
 environment:
@@ -17,6 +17,7 @@ dependencies:
    rxdart: ^0.27.4
    event_bus: ^2.0.0
    quiver: ^3.1.0
+   yaml: ^3.1.1
 
 dev_dependencies:
   lints: ^2.0.0

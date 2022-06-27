@@ -80,9 +80,9 @@ class SingleFieldIndex extends NitriteIndex {
     }
   }
 
-  Future<NitriteMap<DBValue, List<dynamic>>> _findIndexMap() async {
+  Future<NitriteMap<DBValue, List<dynamic>>> _findIndexMap() {
     var mapName = deriveIndexMapName(_indexDescriptor);
-    return _nitriteStore.openMap(mapName);
+    return _nitriteStore.openMap<DBValue, List<dynamic>>(mapName);
   }
 
   Future<void> _addIndexElement(NitriteMap<DBValue, List<dynamic>> indexMap,

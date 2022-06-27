@@ -137,21 +137,21 @@ class TextFilter extends StringFilter {
   @override
   String toString() => "($field like $value)";
 
-  Future<Set<NitriteId>> applyOnTextIndex(
-      NitriteMap<String, List> indexMap) async {
+  Stream<NitriteId> applyOnTextIndex(
+      NitriteMap<String, List> indexMap) async* {
     field.notNullOrEmpty("field cannot be null or empty");
     stringValue.notNullOrEmpty("search term cannot be null or empty");
 
     var searchString = stringValue;
     if (searchString.startsWith("*") || searchString.endsWith("*")) {
-      return await _searchByWildCard(indexMap, searchString);
+      yield* _searchByWildCard(indexMap, searchString);
     } else {
-      return await _searchExactByIndex(indexMap, searchString);
+      yield* _searchExactByIndex(indexMap, searchString);
     }
   }
 
-  Future<Set<NitriteId>> _searchExactByIndex(
-      NitriteMap<String, List> indexMap, String searchString) async {
+  Stream<NitriteId> _searchExactByIndex(
+      NitriteMap<String, List> indexMap, String searchString) async* {
     if (_tokenizer != null) {
       var words = _tokenizer!.tokenize(searchString);
       var scoreMap = <NitriteId, int>{};
@@ -169,14 +169,12 @@ class TextFilter extends StringFilter {
         }
       }
 
-      return Future.value(_sortedIdsByScore(scoreMap));
+      yield* Stream.fromIterable(_sortedIdsByScore(scoreMap));
     }
-
-    return Future.value(<NitriteId>{});
   }
 
-  Future<Set<NitriteId>> _searchByWildCard(
-      NitriteMap<String, List> indexMap, String searchString) async {
+  Stream<NitriteId> _searchByWildCard(
+      NitriteMap<String, List> indexMap, String searchString) async* {
     if (searchString == "*") {
       throw FilterException("* is not a valid search term");
     }
@@ -189,67 +187,56 @@ class TextFilter extends StringFilter {
       }
 
       if (searchString.startsWith("*") && !searchString.endsWith("*")) {
-        return await _searchByLeadingWildCard(indexMap, searchString);
+        yield* _searchByLeadingWildCard(indexMap, searchString);
       } else if (searchString.endsWith("*") && !searchString.startsWith("*")) {
-        return await _searchByTrailingWildCard(indexMap, searchString);
+        yield* _searchByTrailingWildCard(indexMap, searchString);
       } else {
         var term = searchString.substring(1, searchString.length - 1);
-        return await _searchContains(indexMap, term);
+        yield* _searchContains(indexMap, term);
       }
     }
-
-    return Future.value(<NitriteId>{});
   }
 
-  Future<Set<NitriteId>> _searchByLeadingWildCard(
-      NitriteMap<String, List> indexMap, String searchString) async {
+  Stream<NitriteId> _searchByLeadingWildCard(
+      NitriteMap<String, List> indexMap, String searchString) async* {
     if (searchString == "*") {
       throw FilterException("* is not a valid search term");
     }
 
-    var idSet = <NitriteId>{};
     var term = searchString.substring(1);
 
     await for (var entry in indexMap.entries()) {
       var key = entry.first;
       if (key.endsWith(term.toLowerCase())) {
-        idSet.addAll(entry.second as List<NitriteId>);
+        yield* Stream.fromIterable(entry.second as List<NitriteId>);
       }
     }
-
-    return Future.value(idSet);
   }
 
-  Future<Set<NitriteId>> _searchByTrailingWildCard(
-      NitriteMap<String, List> indexMap, String searchString) async {
+  Stream<NitriteId> _searchByTrailingWildCard(
+      NitriteMap<String, List> indexMap, String searchString) async* {
     if (searchString == "*") {
       throw FilterException("* is not a valid search term");
     }
 
-    var idSet = <NitriteId>{};
     var term = searchString.substring(0, searchString.length - 1);
 
     await for (var entry in indexMap.entries()) {
       var key = entry.first;
       if (key.startsWith(term.toLowerCase())) {
-        idSet.addAll(entry.second as List<NitriteId>);
+        yield* Stream.fromIterable(entry.second as List<NitriteId>);
       }
     }
-
-    return Future.value(idSet);
   }
 
-  Future<Set<NitriteId>> _searchContains(
-      NitriteMap<String, List> indexMap, String term) async {
-    var idSet = <NitriteId>{};
+  Stream<NitriteId> _searchContains(
+      NitriteMap<String, List> indexMap, String term) async* {
     await for (var entry in indexMap.entries()) {
       var key = entry.first;
       if (key.contains(term.toLowerCase())) {
-        idSet.addAll(entry.second as List<NitriteId>);
+        yield* Stream.fromIterable(entry.second as List<NitriteId>);
       }
     }
-
-    return Future.value(idSet);
   }
 
   Set<NitriteId> _sortedIdsByScore(Map<NitriteId, int> unsortedMap) {

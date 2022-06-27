@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/constants.dart';
 
 abstract class MetaData {
   Document getInfo();

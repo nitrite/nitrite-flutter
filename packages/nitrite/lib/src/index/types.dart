@@ -13,6 +13,7 @@ IndexOptions indexOptions(String indexType) => IndexOptions(indexType);
 
 /// Represents options to apply while creating an index.
 class IndexOptions {
+  /// Specifies the type of an index to create.
   String indexType;
 
   IndexOptions(this.indexType);
