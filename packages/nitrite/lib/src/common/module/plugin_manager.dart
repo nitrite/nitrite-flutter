@@ -29,9 +29,13 @@ class PluginManager {
   /// Loads a [NitriteModule] instance.
   Future<void> loadModule(NitriteModule module) async {
     if (!module.plugins.isNullOrEmpty) {
+
+      var futures = <Future<void>>[];
       for (var plugin in module.plugins) {
-        await _loadPlugin(plugin);
+        // load all plugins in parallel
+        futures.add(_loadPlugin(plugin));
       }
+      await Future.wait(futures);
     }
   }
 
@@ -56,16 +60,22 @@ class PluginManager {
     }
 
     if (_indexerMap.isNotEmpty) {
+      var futures = <Future<void>>[];
       for (var indexer in _indexerMap.values) {
-        await _initializePlugin(indexer);
+        // initialize all indexers in parallel
+        futures.add(_initializePlugin(indexer));
       }
+      await Future.wait(futures);
     }
   }
 
   Future<void> close() async {
+    var futures = <Future<void>>[];
     for (var indexer in _indexerMap.values) {
-      await indexer.close();
+      // close all indexers in parallel
+      futures.add(indexer.close());
     }
+    await Future.wait(futures);
 
     await _nitriteMapper?.close();
     return _nitriteStore?.close();

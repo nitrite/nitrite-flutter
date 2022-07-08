@@ -64,3 +64,15 @@ class PluginException extends NitriteException {
   PluginException(String message, {StackTrace? stackTrace, dynamic cause})
       : super(message, stackTrace: stackTrace, cause: cause);
 }
+
+class NitriteSecurityException extends NitriteException {
+  NitriteSecurityException(String message,
+      {StackTrace? stackTrace, dynamic cause})
+      : super(message, stackTrace: stackTrace, cause: cause);
+}
+
+class MigrationException extends NitriteException {
+  MigrationException(String message,
+      {StackTrace? stackTrace, dynamic cause})
+      : super(message, stackTrace: stackTrace, cause: cause);
+}

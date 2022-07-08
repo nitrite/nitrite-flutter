@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/index_operations.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
@@ -10,34 +12,53 @@ class DocumentIndexWriter {
 
   Future<void> writeIndexEntry(Document document) async {
     var indexEntries = await _indexOperations.listIndexes();
+    var futures = <Future<void>>[];
+
     for (var indexDescriptor in indexEntries) {
       var indexType = indexDescriptor.indexType;
-      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
-      await _writeIndexEntryInternal(indexDescriptor, document, nitriteIndexer);
+      // run the job for all index entries in parallel
+      futures.add(Future.microtask(() async {
+        var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
+        await _writeIndexEntryInternal(
+            indexDescriptor, document, nitriteIndexer);
+      }));
     }
+    await Future.wait(futures);
   }
 
   Future<void> updateIndexEntry(Document oldDoc, Document newDoc) async {
     var indexEntries = await _indexOperations.listIndexes();
+    var futures = <Future<void>>[];
+
     for (var indexDescriptor in indexEntries) {
       var indexType = indexDescriptor.indexType;
       var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
-      await _removeIndexEntryInternal(indexDescriptor, oldDoc, nitriteIndexer);
-      await _writeIndexEntryInternal(indexDescriptor, newDoc, nitriteIndexer);
+      // run the job for all index entries in parallel
+      futures.add(Future.microtask(() async {
+        await _removeIndexEntryInternal(
+            indexDescriptor, oldDoc, nitriteIndexer);
+        await _writeIndexEntryInternal(indexDescriptor, newDoc, nitriteIndexer);
+      }));
     }
+    await Future.wait(futures);
   }
 
   Future<void> removeIndexEntry(Document document) async {
     var indexEntries = await _indexOperations.listIndexes();
+    var futures = <Future<void>>[];
+
     for (var indexDescriptor in indexEntries) {
       var indexType = indexDescriptor.indexType;
-      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
+      futures.add(Future.microtask(() async {
+        var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
-      await _removeIndexEntryInternal(
-          indexDescriptor, document, nitriteIndexer);
+        await _removeIndexEntryInternal(
+            indexDescriptor, document, nitriteIndexer);
+      }));
     }
+    await Future.wait(futures);
   }
 
   Future<void> _writeIndexEntryInternal(IndexDescriptor indexDescriptor,

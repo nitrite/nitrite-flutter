@@ -17,20 +17,28 @@ abstract class Processor {
     if (collection is NitriteCollection) {
       nitriteCollection = collection;
     } else if (collection is ObjectRepository) {
-      var repository = collection as ObjectRepository;
+      var repository = collection;
       nitriteCollection = repository.documentCollection;
     }
 
     if (nitriteCollection != null) {
       var documentCursor = await nitriteCollection.find();
+
+      var futures = <Future<void>>[];
       await for (var document in documentCursor) {
-        var processed = await processBeforeWrite(document);
-        var writeResult = await nitriteCollection.update(
-            createUniqueFilter(document),
-            processed,
-            updateOptions(insertIfAbsent: false));
-        writeResult.listen(blackHole);
+        futures.add(Future.microtask(() async {
+          // process all documents in parallel
+          var processed = await processBeforeWrite(document);
+          var writeResult = await nitriteCollection!.update(
+              createUniqueFilter(document),
+              processed,
+              updateOptions(insertIfAbsent: false));
+
+          // listen to the write result to ensure that the document is updated
+          writeResult.listen(blackHole);
+        }));
       }
+      await Future.wait(futures);
     }
   }
 }
@@ -43,6 +51,7 @@ class ProcessorChain extends Processor {
   @override
   Future<Document> processBeforeWrite(Document document) async {
     for (var processor in processors) {
+      // cannot run in parallel because of the order of the processors
       document = await processor.processBeforeWrite(document);
     }
     return document;
@@ -51,6 +60,7 @@ class ProcessorChain extends Processor {
   @override
   Future<Document> processAfterRead(Document document) async {
     for (var processor in processors) {
+      // cannot run in parallel because of the order of the processors
       document = await processor.processAfterRead(document);
     }
     return document;

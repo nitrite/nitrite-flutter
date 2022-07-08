@@ -1,17 +1,21 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/store/meta_data.dart';
 
 /// The nitrite database metadata.
 class StoreMetaData implements MetaData {
-  late int createTime;
-  late String storeVersion;
-  late String nitriteVersion;
-  late int schemaVersion;
+  int? createTime;
+  String? storeVersion;
+  String? nitriteVersion;
+  int? schemaVersion;
 
-  StoreMetaData(Document document) {
-    createTime = document.get('createTime');
-    storeVersion = document.get('storeVersion');
-    nitriteVersion = document.get('nitriteVersion');
-    schemaVersion = document.get('schemaVersion');
+  StoreMetaData();
+
+  factory StoreMetaData.fromDocument(Document document) {
+    return StoreMetaData()
+    ..createTime = document.get('createTime')
+    ..storeVersion = document.get('storeVersion')
+    ..nitriteVersion = document.get('nitriteVersion')
+    ..schemaVersion = document.get('schemaVersion');
   }
 
   /// Gets the database info in a document.

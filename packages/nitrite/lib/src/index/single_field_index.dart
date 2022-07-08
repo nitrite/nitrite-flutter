@@ -47,11 +47,14 @@ class SingleFieldIndex extends NitriteIndex {
       var dbValue = DBValue(element);
       await _removeIndexElement(indexMap, fieldValues, dbValue);
     } else if (element is Iterable) {
+      var futures = <Future<void>>[];
       for (var item in element) {
         // wrap around db value
         var dbValue = item == null ? DBNull.instance : DBValue(item);
-        await _removeIndexElement(indexMap, fieldValues, dbValue);
+        // remove index element in parallel
+        futures.add(_removeIndexElement(indexMap, fieldValues, dbValue));
       }
+      await Future.wait(futures);
     }
   }
 
@@ -72,11 +75,14 @@ class SingleFieldIndex extends NitriteIndex {
       var dbValue = DBValue(element);
       await _addIndexElement(indexMap, fieldValues, dbValue);
     } else if (element is Iterable) {
+      var futures = <Future<void>>[];
       for (var item in element) {
         // wrap around db value
         var dbValue = item == null ? DBNull.instance : DBValue(item);
-        await _addIndexElement(indexMap, fieldValues, dbValue);
+        // add index element in parallel
+        futures.add(_addIndexElement(indexMap, fieldValues, dbValue));
       }
+      await Future.wait(futures);
     }
   }
 

@@ -55,29 +55,28 @@ class CollectionFactory {
   Future<NitriteCollection> _createCollection(
       String name, NitriteConfig nitriteConfig, bool writeCatalogue) async {
     var store = nitriteConfig.getNitriteStore();
-    var nitriteMap = await store.openMap<NitriteId, Document>(name);
-    var collection = _DefaultNitriteCollection(
-        name, nitriteMap, nitriteConfig, _lockService);
-    await collection._initialize();
 
     if (writeCatalogue) {
       var repoRegistry = await store.repositoryRegistry;
       if (repoRegistry.contains(name)) {
-        await nitriteMap.close();
-        await collection.close();
         throw ValidationException("A repository with same name already exists");
       }
 
       var keyedRepoRegistry = await store.keyedRepositoryRegistry;
       for (var set in keyedRepoRegistry.values) {
         if (set.contains(name)) {
-          await nitriteMap.close();
-          await collection.close();
           throw ValidationException("A keyed repository with same name "
               "already exists");
         }
       }
+    }
 
+    var nitriteMap = await store.openMap<NitriteId, Document>(name);
+    var collection = _DefaultNitriteCollection(
+        name, nitriteMap, nitriteConfig, _lockService);
+    await collection._initialize();
+
+    if (writeCatalogue) {
       _collectionMap[name] = collection;
       var storeCatalog = store.catalog;
       await storeCatalog.writeCollectionEntry(name);
@@ -153,7 +152,6 @@ class _DefaultNitriteCollection extends NitriteCollection {
   Future<void> drop() async {
     return _lock.protectWrite(() async {
       _checkOpened();
-      await _collectionOperations.close();
       await _collectionOperations.dropCollection();
 
       _eventBus.destroy();
@@ -235,7 +233,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
   @override
   Future<bool> get isDropped => _lock.protectRead(() async {
-        return _isDropped;
+        return _isDropped || _nitriteMap.isDropped;
       });
 
   @override
@@ -251,7 +249,10 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
   @override
   Future<bool> get isOpen => _lock.protectRead(() async {
-        return !_nitriteStore.isClosed && !_isDropped;
+        return !_nitriteStore.isClosed &&
+            !_isDropped &&
+            !_nitriteMap.isClosed &&
+            !_nitriteMap.isDropped;
       });
 
   @override
@@ -287,30 +288,30 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<WriteResult> remove(Filter filter,
-      [Document? document, bool? justOne]) {
-    if (document != null) {
-      if (document.hasId) {
-        return _lock.protectWrite(() async {
-          _checkOpened();
-          return _collectionOperations.removeDocument(document);
-        });
-      } else {
-        throw NotIdentifiableException(
-            'Document has no id, cannot remove by document');
-      }
-    } else {
-      var once = justOne ?? false;
-      if (filter == all && once) {
-        throw InvalidOperationException(
-            'Cannot remove all documents with justOne set to true');
-      }
-
+  Future<WriteResult> removeOne(Document document) {
+    if (document.hasId) {
       return _lock.protectWrite(() async {
         _checkOpened();
-        return _collectionOperations.removeByFilter(filter, once);
+        return _collectionOperations.removeDocument(document);
       });
+    } else {
+      throw NotIdentifiableException(
+          'Document has no id, cannot remove by document');
     }
+  }
+
+  @override
+  Future<WriteResult> remove(Filter filter, [bool? justOne]) {
+    var once = justOne ?? false;
+    if (filter == all && once) {
+      throw InvalidOperationException(
+          'Cannot remove all documents with justOne set to true');
+    }
+
+    return _lock.protectWrite(() async {
+      _checkOpened();
+      return _collectionOperations.removeByFilter(filter, once);
+    });
   }
 
   @override
@@ -335,9 +336,8 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
     return _lock.protectWrite(() async {
       _checkOpened();
-      var subscription = _eventBus
-          .on<CollectionEventInfo<T>>()
-          .listen(listener);
+      var subscription =
+          _eventBus.on<CollectionEventInfo<T>>().listen(listener);
 
       var hashCode = hash2(listener, T);
       _subscriptions[hashCode] = subscription;
@@ -356,17 +356,6 @@ class _DefaultNitriteCollection extends NitriteCollection {
         subscription.cancel();
         _subscriptions.remove(hashCode);
       }
-    });
-  }
-
-  @override
-  Future<WriteResult> updateAll(List<Document> documents,
-      [bool insertIfAbsent = false]) {
-    documents.notNullOrEmpty('Documents cannot be null or empty');
-
-    return _lock.protectWrite(() async {
-      _checkOpened();
-      return _collectionOperations.updateAll(documents, insertIfAbsent);
     });
   }
 

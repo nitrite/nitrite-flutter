@@ -31,7 +31,11 @@ class MappableMapper extends NitriteMapper {
       return source as Target;
     } else {
       if (Target == Document) {
-        return convertToDocument<Source>(source) as Target;
+        if (source is Document) {
+          return source as Target;
+        } else {
+          return convertToDocument<Source>(source) as Target;
+        }
       } else if (source is Document) {
         return convertFromDocument<Target, Source>(source);
       }
@@ -51,6 +55,19 @@ class MappableMapper extends NitriteMapper {
   @override
   bool isValue(value) {
     return _valueTypes.contains(value.runtimeType);
+  }
+
+  @override
+  T newInstance<T>() {
+    var factory = _mappableFactories[T];
+    if (factory != null) {
+      return factory() as T;
+    } else {
+      throw ObjectMappingException(
+        'Cannot create instance of type ${T.runtimeType} '
+        'because no factory was registered.',
+      );
+    }
   }
 
   @override

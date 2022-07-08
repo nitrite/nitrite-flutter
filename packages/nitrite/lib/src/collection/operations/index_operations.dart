@@ -2,6 +2,7 @@ import 'package:event_bus/event_bus.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/index_manager.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
+import 'package:nitrite/src/index/index.dart';
 
 class IndexOperations {
   final String _collectionName;
@@ -59,12 +60,17 @@ class IndexOperations {
     }
 
     var indices = await listIndexes();
+
+    var futures = <Future<void>>[];
     for (var index in indices) {
-      await dropIndex(index.indexFields);
+      // drop all indices in parallel
+      futures.add(dropIndex(index.indexFields));
     }
 
+    await Future.wait(futures);
     await _indexManager.dropIndexMeta();
     _indexBuildTracker.clear();
+    await _indexManager.close();
 
     // recreate index manager to discard old native resources
     _indexManager = IndexManager(_collectionName, _nitriteConfig);
@@ -137,13 +143,18 @@ class IndexOperations {
         await nitriteIndexer.dropIndex(indexDescriptor, _nitriteConfig);
       }
 
+      var futures = <Future<void>>[];
       await for (var entry in _nitriteMap.entries()) {
         var document = entry.second;
         var fieldValues =
             getDocumentValues(document, indexDescriptor.indexFields);
-        await nitriteIndexer.writeIndexEntry(
-            fieldValues, indexDescriptor, _nitriteConfig);
+
+        // write index entries in parallel
+        futures.add(nitriteIndexer.writeIndexEntry(
+            fieldValues, indexDescriptor, _nitriteConfig));
       }
+
+      await Future.wait(futures);
     } finally {
       // remove dirty marker to denote indexing completed successfully
       // if dirty marker is found in any index, it needs to be rebuilt

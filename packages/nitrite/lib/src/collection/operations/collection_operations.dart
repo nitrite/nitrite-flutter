@@ -114,11 +114,6 @@ class CollectionOperations {
     return WriteResult(stream);
   }
 
-  WriteResult updateAll(List<Document> documents, bool insertIfAbsent) {
-    var stream = _writeOperations.updateAll(documents, insertIfAbsent);
-    return WriteResult(stream);
-  }
-
   WriteResult updateOne(Document documents, bool insertIfAbsent) {
     var stream = _writeOperations.updateOne(documents, insertIfAbsent);
     return WriteResult(stream);

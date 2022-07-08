@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/number_utils.dart' as numbers;
+import 'package:nitrite/src/common/util/validation_utils.dart';
+import 'package:nitrite/src/repository/entity.dart';
 
 void blackHole(dynamic _) {}
 
@@ -62,4 +64,26 @@ int compare(Comparable first, Comparable second) {
     return result;
   }
   return first.compareTo(second);
+}
+
+String findRepositoryNameByType<T>(String? key, NitriteMapper nitriteMapper) {
+  return findRepositoryNameByTypeName(getEntityName<T>(nitriteMapper), key);
+}
+
+String findRepositoryNameByTypeName(String entityName, String? key) {
+  if (key.isNullOrEmpty) {
+    return entityName;
+  } else {
+    return '$entityName$keyObjSeparator$key';
+  }
+}
+
+String getEntityName<T>(NitriteMapper nitriteMapper) {
+  if (isSubtype<T, Entity>()) {
+    Entity entity = nitriteMapper.newInstance<T>() as Entity;
+    if (!entity.entityName.isNullOrEmpty) {
+      return entity.entityName!;
+    }
+  }
+  return T.toString();
 }

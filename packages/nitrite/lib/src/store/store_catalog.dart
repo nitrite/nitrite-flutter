@@ -99,14 +99,16 @@ class StoreCatalog {
   Future<void> remove(String name) async {
     // iterate over all types of catalog and find which type contains the name
     // remove the name from there
+    var futures = <Future<void>>[];
     await for (Pair<String, Document> entry in _catalog.entries()) {
       var catalog = entry.first;
       var doc = entry.second;
       var metaData = MapMetaData(doc);
       if (metaData.mapNames.contains(name)) {
         metaData.mapNames.remove(name);
-        await _catalog.put(catalog, metaData.getInfo());
+        futures.add(_catalog.put(catalog, metaData.getInfo()));
       }
     }
+    await Future.wait(futures);
   }
 }

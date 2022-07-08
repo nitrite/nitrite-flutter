@@ -20,7 +20,7 @@ import 'package:nitrite/src/common/stream/projected_document_stream.dart';
 /// // returns all ids un-filtered
 /// var cursor = collection.find();
 ///
-/// for (var doc in cursor) {
+/// await for (var doc in cursor) {
 ///   // use your logic with the retrieved doc here
 ///   print(doc.id);
 /// }

@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// An in-memory, single-file based embedded nosql persistent document store. The store

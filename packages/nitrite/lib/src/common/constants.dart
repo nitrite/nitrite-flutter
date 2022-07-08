@@ -1,3 +1,5 @@
+import 'package:nitrite/src/store/memory/in_memory_meta.dart';
+
 const String indexMetaPrefix = "\$nitrite_index_meta";
 
 const String indexPrefix = "\$nitrite_index";
@@ -67,4 +69,6 @@ const String docSource = "_source";
 const String tagMapMetaData = "mapNames";
 
 const String replicator = "Replicator.$no2";
+
+String nitriteVersion = meta["version"]!;
 

@@ -1,7 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/collection/find_plan.dart';
-import 'package:nitrite/src/collection/options.dart';
-import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/filters/filter.dart';
 
 class FindOptimizer {

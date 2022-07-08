@@ -1,3 +1,4 @@
+
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/nitrite_database.dart';
 
@@ -38,12 +39,11 @@ class NitriteBuilder {
   }
 
   /// Opens or creates a new nitrite database. If it is an in-memory store,
-  /// then it will create a new one. If it is a file based store, and if the file does not
-  /// exists, then it will create a new file store and open; otherwise it will
-  /// open the existing file store.
+  /// then it will create a new one. If it is a file based store, and if the
+  /// file does not exists, then it will create a new file store and open;
+  /// otherwise it will open the existing file store.
   Future<Nitrite> openOrCreate([String? username, String? password]) async {
     await nitriteConfig.autoConfigure();
-    // TODO: add shutdown hook to close the db
     var db = NitriteDatabase(nitriteConfig);
     await db.initialize(username, password);
     return db;

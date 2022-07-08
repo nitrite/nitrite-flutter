@@ -20,6 +20,9 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
   /// Closes this [NitriteMap].
   Future<void> close();
 
+  /// Indicates if this [NitriteMap] is closed.
+  bool get isClosed;
+
   /// Gets a [Stream] of the values contained in
   /// this map.
   Stream<Value> values();
@@ -75,18 +78,23 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
   /// Deletes the map from the store.
   Future<void> drop();
 
+  /// Indicates if this map is dropped.
+  bool get isDropped;
+
   /// Gets the attributes of this map.
   @override
   Future<Attributes> getAttributes() async {
-    NitriteMap<String, Attributes> metaMap =
-        await getStore().openMap(metaMapName);
+    if (!isDropped) {
+      NitriteMap<String, Attributes> metaMap =
+      await getStore().openMap(metaMapName);
 
-    if (name != metaMapName) {
-      var attributes = await metaMap[name];
-      if (attributes != null) {
-        return attributes;
-      } else {
-        return Attributes();
+      if (name != metaMapName) {
+        var attributes = await metaMap[name];
+        if (attributes != null) {
+          return attributes;
+        } else {
+          return Attributes();
+        }
       }
     }
     return Attributes();
@@ -95,32 +103,37 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
   /// Sets the attributes for this map.
   @override
   Future<void> setAttributes(Attributes attributes) async {
-    var metaMap =
-        await getStore().openMap<String, Attributes>(metaMapName);
+    if (!isDropped) {
+      var metaMap =
+      await getStore().openMap<String, Attributes>(metaMapName);
 
-    if (name != metaMapName) {
-      await metaMap.put(name, attributes);
+      if (name != metaMapName) {
+        await metaMap.put(name, attributes);
+      }
     }
-    return;
   }
 
   /// Update last modified time of the map.
   Future<void> updateLastModifiedTime() async {
-    if (name.isNullOrEmpty || name == metaMapName) {
-      return;
-    }
+    if (!isDropped) {
+      if (name.isNullOrEmpty || name == metaMapName) {
+        return;
+      }
 
-    var metaMap =
-        await getStore().openMap<String, Attributes>(metaMapName);
+      var metaMap =
+      await getStore().openMap<String, Attributes>(metaMapName);
 
-    var attributes = await metaMap[name];
-    if (attributes == null) {
-      attributes = Attributes(name);
-      metaMap.put(name, attributes);
+      var attributes = await metaMap[name];
+      if (attributes == null) {
+        attributes = Attributes(name);
+        metaMap.put(name, attributes);
+      }
+
+      attributes.set(Attributes.lastModifiedTime,
+          DateTime
+              .now()
+              .millisecondsSinceEpoch
+              .toString());
     }
-    
-    attributes.set(Attributes.lastModifiedTime,
-        DateTime.now().millisecondsSinceEpoch.toString());
   }
-
 }

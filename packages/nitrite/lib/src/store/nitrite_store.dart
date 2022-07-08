@@ -19,7 +19,7 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   Future<Map<String, Set<String>>> get keyedRepositoryRegistry;
 
   /// Checks whether there are any unsaved changes.
-  bool get hasUnsavedChanges;
+  Future<bool> get hasUnsavedChanges;
 
   /// Checks whether the store is opened in readonly mode.
   bool get isReadOnly;

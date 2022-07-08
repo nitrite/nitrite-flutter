@@ -18,6 +18,7 @@ dependencies:
    event_bus: ^2.0.0
    quiver: ^3.1.0
    yaml: ^3.1.1
+   cryptography: ^2.0.5
 
 dev_dependencies:
   lints: ^2.0.0

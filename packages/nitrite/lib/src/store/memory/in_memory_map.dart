@@ -37,13 +37,6 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   }
 
   @override
-  Future<void> clear() {
-    _checkOpened();
-    _backingMap.clear();
-    return updateLastModifiedTime();
-  }
-
-  @override
   Stream<Value> values() {
     _checkOpened();
     return Stream.fromIterable(_backingMap.values);
@@ -132,15 +125,29 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<void> drop() async {
-    _checkOpened();
-    _droppedFlag = true;
-    await clear();
-    await getStore().removeMap(_mapName);
+    if (!_droppedFlag) {
+      _backingMap.clear();
+      await getStore().removeMap(_mapName);
+      _droppedFlag = true;
+    }
   }
+
+  @override
+  bool get isDropped => _droppedFlag;
 
   @override
   Future<void> close() async {
     _closedFlag = true;
+  }
+
+  @override
+  bool get isClosed => _closedFlag;
+
+  @override
+  Future<void> clear() {
+    _checkOpened();
+    _backingMap.clear();
+    return updateLastModifiedTime();
   }
 
   static int _comp(k1, k2) {

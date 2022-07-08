@@ -11,6 +11,9 @@ abstract class NitriteMapper extends NitritePlugin {
 
   /// Checks if an object is of a value type.
   bool isValue(dynamic value);
+
+  /// Creates and returns a new instance of the provided type.
+  T newInstance<T>();
 }
 
 /// A factory method to create an instance of a [T].
@@ -19,8 +22,8 @@ typedef MappableFactory<T extends Mappable> = T Function();
 /// An object that maps itself into a [Document] and vice versa.
 abstract class Mappable {
   /// Writes the instance data to a [Document] and returns it.
-  Document write(NitriteMapper mapper);
+  Document write(NitriteMapper? mapper);
 
   /// Reads the [document] and populate all fields of this instance.
-  void read(NitriteMapper mapper, Document document);
+  void read(NitriteMapper? mapper, Document document);
 }

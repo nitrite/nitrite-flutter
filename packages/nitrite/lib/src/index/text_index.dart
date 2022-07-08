@@ -30,9 +30,12 @@ class TextIndex extends NitriteIndex {
     } else if (element is Iterable) {
       validateStringIterableIndexField(element, firstField);
 
+      var futures = <Future<void>>[];
       for (var item in element) {
-        await _addIndexElement(indexMap, fieldValues, item);
+        // add index element in parallel
+        futures.add(_addIndexElement(indexMap, fieldValues, item));
       }
+      await Future.wait(futures);
     } else {
       throw IndexingException("Index field $firstField must be a "
           "String or Iterable<String>");
@@ -56,9 +59,12 @@ class TextIndex extends NitriteIndex {
     } else if (element is Iterable) {
       validateStringIterableIndexField(element, firstField);
 
+      var futures = <Future<void>>[];
       for (var item in element) {
-        await _removeIndexElement(indexMap, fieldValues, item);
+        // remove index element in parallel
+        futures.add(_removeIndexElement(indexMap, fieldValues, item));
       }
+      await Future.wait(futures);
     } else {
       throw IndexingException("Index field $firstField must be a "
           "String or Iterable<String>");
@@ -99,12 +105,15 @@ class TextIndex extends NitriteIndex {
       String? value) async {
     var words = _decompose(value);
 
+    var futures = <Future<void>>[];
     for (var word in words) {
       var nitriteIds = await indexMap[word];
       nitriteIds ??= <NitriteId>[];
       nitriteIds = addNitriteIds(nitriteIds as List<NitriteId>, fieldValues);
-      await indexMap.put(word, nitriteIds);
+      // update index map in parallel
+      futures.add(indexMap.put(word, nitriteIds));
     }
+    await Future.wait(futures);
   }
 
   Future<void> _removeIndexElement(
@@ -113,17 +122,22 @@ class TextIndex extends NitriteIndex {
       String? value) async {
     var words = _decompose(value);
 
+    var futures = <Future<void>>[];
     for (var word in words) {
       var nitriteIds = await indexMap[word];
       if (!nitriteIds.isNullOrEmpty) {
         nitriteIds!.remove(fieldValues.nitriteId);
-        if (nitriteIds.isEmpty) {
-          await indexMap.remove(word);
-        } else {
-          await indexMap.put(word, nitriteIds);
-        }
+        // update index map in parallel
+        futures.add(Future.microtask(() async {
+          if (nitriteIds.isEmpty) {
+            await indexMap.remove(word);
+          } else {
+            await indexMap.put(word, nitriteIds);
+          }
+        }));
       }
     }
+    await Future.wait(futures);
   }
 
   Set<String> _decompose(String? value) {

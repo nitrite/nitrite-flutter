@@ -18,13 +18,13 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   bool get isClosed => _closed;
 
   @override
-  bool get hasUnsavedChanges => false;
+  Future<bool> get hasUnsavedChanges async => false;
 
   @override
   bool get isReadOnly => false;
 
   @override
-  String get storeVersion => 'InMemory/${meta["version"]}';
+  String get storeVersion => 'InMemory/$nitriteVersion';
 
   @override
   Future<void> openOrCreate() async {
@@ -36,13 +36,19 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   Future<void> close() async {
     _closed = true;
 
+    var futures = <Future<void>>[];
     for (var map in _nitriteMapRegistry.values) {
-      await map.close();
+      // close all maps in parallel
+      futures.add(map.close());
     }
+    await Future.wait(futures);
 
+    futures.clear();
     for (var rtree in _nitriteRTreeMapRegistry.values) {
-      await rtree.close();
+      // close all rtree in parallel
+      futures.add(rtree.close());
     }
+    await Future.wait(futures);
 
     _nitriteMapRegistry.clear();
     _nitriteRTreeMapRegistry.clear();
@@ -63,7 +69,12 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   @override
   Future<NitriteMap<Key, Value>> openMap<Key, Value>(String mapName) async {
     if (_nitriteMapRegistry.containsKey(mapName)) {
-      return _nitriteMapRegistry[mapName]! as InMemoryMap<Key, Value>;
+      var nitriteMap = _nitriteMapRegistry[mapName]!;
+      if (nitriteMap.isClosed) {
+        _nitriteMapRegistry.remove(mapName);
+      } else {
+        return nitriteMap as InMemoryMap<Key, Value>;
+      }
     }
 
     var nitriteMap = InMemoryMap<Key, Value>(mapName, this);
@@ -74,20 +85,25 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   @override
   Future<void> closeMap(String mapName) async {
     // nothing to close as it is volatile map, moreover,
-    // removing it form registry means loosing the map
+    // removing it from registry means losing the map
   }
 
   @override
   Future<void> closeRTree(String rTreeName) async {
     // nothing to close as it is volatile map, moreover,
-    // removing it form registry means loosing the map
+    // removing it from registry means losing the map
   }
 
   @override
   Future<void> removeMap(String mapName) async {
     if (_nitriteMapRegistry.containsKey(mapName)) {
       var map = _nitriteMapRegistry[mapName]!;
-      await map.clear();
+
+      if (!map.isClosed && !map.isDropped) {
+        await map.clear();
+        await map.close();
+      }
+
       _nitriteMapRegistry.remove(mapName);
       await catalog.remove(mapName);
     }

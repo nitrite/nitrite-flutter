@@ -51,19 +51,28 @@ class IndexManager {
 
   Future<void> close() async {
     // close all index maps
-    await for (var indexMeta in _indexMetaMap.values()) {
-      if (indexMeta.indexDescriptor != null) {
-        var indexMapName = indexMeta.indexMap;
-        if (indexMapName != null) {
-          var indexMap =
+    if (!_indexMetaMap.isClosed && !_indexMetaMap.isDropped) {
+      var futures = <Future<void>>[];
+
+      await for (var indexMeta in _indexMetaMap.values()) {
+        if (indexMeta.indexDescriptor != null) {
+          var indexMapName = indexMeta.indexMap;
+
+          if (indexMapName != null) {
+            // run all futures in parallel
+            futures.add(Future.microtask(() async {
+              var indexMap =
               await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
-          await indexMap.close();
+              await indexMap.close();
+            }));
+          }
         }
       }
-    }
 
-    // close index meta
-    await _indexMetaMap.close();
+      await Future.wait(futures);
+      // close index meta
+      await _indexMetaMap.close();
+    }
   }
 
   Future<bool> isDirtyIndex(Fields fields) async {
@@ -117,7 +126,6 @@ class IndexManager {
   }
 
   Future<void> dropIndexMeta() async {
-    await _indexMetaMap.clear();
     await _indexMetaMap.drop();
   }
 
