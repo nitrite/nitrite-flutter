@@ -111,8 +111,8 @@ class TextFilter extends StringFilter {
 
   @override
   bool apply(Document doc) {
-    field.notNullOrEmpty("field cannot be null or empty");
-    stringValue.notNullOrEmpty("search term cannot be null or empty");
+    field.notNullOrEmpty("Field cannot be empty");
+    stringValue.notNullOrEmpty("Search term cannot be empty");
 
     var fieldValue = doc.get(field);
 
@@ -139,8 +139,8 @@ class TextFilter extends StringFilter {
 
   Stream<NitriteId> applyOnTextIndex(
       NitriteMap<String, List> indexMap) async* {
-    field.notNullOrEmpty("field cannot be null or empty");
-    stringValue.notNullOrEmpty("search term cannot be null or empty");
+    field.notNullOrEmpty("Field cannot be empty");
+    stringValue.notNullOrEmpty("Search term cannot be empty");
 
     var searchString = stringValue;
     if (searchString.startsWith("*") || searchString.endsWith("*")) {

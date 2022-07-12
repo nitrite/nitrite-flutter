@@ -238,7 +238,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
 
   void validateSearchTerm(
       NitriteMapper nitriteMapper, String field, dynamic value) {
-    field.notNullOrEmpty("field cannot be null or empty");
+    field.notNullOrEmpty("field cannot be empty");
 
     if (!nitriteMapper.isValue(value) && value is! Comparable) {
       throw FilterException(
@@ -298,7 +298,7 @@ abstract class ComparableArrayFilter extends ComparableFilter {
 
   @override
   validateSearchTerm(NitriteMapper nitriteMapper, String field, dynamic value) {
-    field.notNullOrEmpty("field cannot be null or empty");
+    field.notNullOrEmpty("Field cannot be empty");
     if (value is Iterable) {
       _validateFilterIterableField(value, field);
     }

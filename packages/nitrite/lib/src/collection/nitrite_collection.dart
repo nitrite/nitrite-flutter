@@ -41,7 +41,7 @@ abstract class NitriteCollection extends PersistentCollection<Document> {
   /// **NOTE**: This operations will notify all [CollectionEventListener]
   /// instances registered to this collection with change type
   /// [EventType.update].
-  Future<WriteResult> updateOne(Document documents,
+  Future<WriteResult> updateOne(Document document,
       [bool insertIfAbsent = false]);
 
   /// Update the filtered elements in the collection with the [update].
@@ -61,7 +61,7 @@ abstract class NitriteCollection extends PersistentCollection<Document> {
   /// **NOTE**: This operations will notify all [CollectionEventListener]
   /// instances registered to this collection with change type
   /// [EventType.remove].
-  Future<WriteResult> remove(Filter filter, [bool? justOne = false]);
+  Future<WriteResult> remove(Filter filter, [bool justOne = false]);
 
   /// Removes the document from the collection.
   ///

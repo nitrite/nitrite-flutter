@@ -81,7 +81,7 @@ abstract class ObjectRepository<T> extends PersistentCollection<T> {
   /// **NOTE**: This operations will notify all [CollectionEventListener]
   /// instances registered to this repository with change type
   /// [EventType.remove].
-  Future<WriteResult> remove(Filter filter, [bool? justOne = false]);
+  Future<WriteResult> remove(Filter filter, [bool justOne = false]);
 
   /// Applies a filter on the repository and returns a customized cursor to the
   /// selected objects.

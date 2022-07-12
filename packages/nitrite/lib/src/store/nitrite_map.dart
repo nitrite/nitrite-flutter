@@ -1,4 +1,5 @@
 import 'package:nitrite/src/common/constants.dart';
+import 'package:nitrite/src/common/initializable.dart';
 import 'package:nitrite/src/common/meta/attributes.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
@@ -6,7 +7,8 @@ import 'package:nitrite/nitrite.dart';
 
 /// Represents a Nitrite key-value pair map. Every piece of
 /// data in a Nitrite database is stored in [NitriteMap].
-abstract class NitriteMap<Key, Value> extends AttributesAware {
+abstract class NitriteMap<Key, Value> extends AttributesAware
+    implements Initializable {
   /// Determines if the map contains a mapping for the
   /// specified key.
   Future<bool> containsKey(Key key);
@@ -86,7 +88,7 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
   Future<Attributes> getAttributes() async {
     if (!isDropped) {
       NitriteMap<String, Attributes> metaMap =
-      await getStore().openMap(metaMapName);
+          await getStore().openMap(metaMapName);
 
       if (name != metaMapName) {
         var attributes = await metaMap[name];
@@ -104,8 +106,7 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
   @override
   Future<void> setAttributes(Attributes attributes) async {
     if (!isDropped) {
-      var metaMap =
-      await getStore().openMap<String, Attributes>(metaMapName);
+      var metaMap = await getStore().openMap<String, Attributes>(metaMapName);
 
       if (name != metaMapName) {
         await metaMap.put(name, attributes);
@@ -120,8 +121,7 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
         return;
       }
 
-      var metaMap =
-      await getStore().openMap<String, Attributes>(metaMapName);
+      var metaMap = await getStore().openMap<String, Attributes>(metaMapName);
 
       var attributes = await metaMap[name];
       if (attributes == null) {
@@ -130,10 +130,7 @@ abstract class NitriteMap<Key, Value> extends AttributesAware {
       }
 
       attributes.set(Attributes.lastModifiedTime,
-          DateTime
-              .now()
-              .millisecondsSinceEpoch
-              .toString());
+          DateTime.now().millisecondsSinceEpoch.toString());
     }
   }
 }

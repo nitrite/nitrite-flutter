@@ -7,7 +7,7 @@ typedef StreamFactory<T> = Stream<T> Function();
 class ProcessedDocumentStream extends DeferStream<Document> {
   ProcessedDocumentStream(
       StreamFactory<Document> streamFactory, ProcessorChain processorChain,
-      {bool reusable = false})
+      {bool reusable = true})
       : super(
             () => streamFactory()
                 .asyncMap((event) => _process(processorChain, event)),

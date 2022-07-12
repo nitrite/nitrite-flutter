@@ -29,7 +29,7 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
       catalog.keyedRepositoryNames;
 
   @override
-  Config get storeConfig => _storeConfig;
+  Config? get storeConfig => _storeConfig;
 
   @override
   Future<void> beforeClose() async {

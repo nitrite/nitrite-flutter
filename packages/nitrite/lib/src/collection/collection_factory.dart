@@ -16,9 +16,7 @@ class CollectionFactory {
 
   Future<NitriteCollection> getCollection(
       String name, NitriteConfig nitriteConfig, bool writeCatalogue) async {
-    nitriteConfig.notNullOrEmpty('Configuration is null while '
-        'creating collection');
-    name.notNullOrEmpty('Collection name is null or empty');
+    name.notNullOrEmpty('Collection name is empty');
 
     var lock = await _lockService.getLock(name);
     return await lock.protectWrite(() async {
@@ -74,7 +72,7 @@ class CollectionFactory {
     var nitriteMap = await store.openMap<NitriteId, Document>(name);
     var collection = _DefaultNitriteCollection(
         name, nitriteMap, nitriteConfig, _lockService);
-    await collection._initialize();
+    await collection.initialize();
 
     if (writeCatalogue) {
       _collectionMap[name] = collection;
@@ -104,9 +102,29 @@ class _DefaultNitriteCollection extends NitriteCollection {
       this._nitriteConfig, this._lockService);
 
   @override
-  Future<void> addProcessor(Processor processor) async {
-    processor.notNullOrEmpty('Processor is null');
+  Future<bool> get isDropped => _lock.protectRead(() async {
+    return _isDropped || _nitriteMap.isDropped;
+  });
 
+  @override
+  Future<bool> get isOpen => _lock.protectRead(() async {
+    return !_nitriteStore.isClosed &&
+        !_isDropped &&
+        !_nitriteMap.isClosed &&
+        !_nitriteMap.isDropped;
+  });
+
+  @override
+  String get name => _collectionName;
+
+  @override
+  Future<int> get size => _lock.protectRead(() async {
+    _checkOpened();
+    return _collectionOperations.getSize();
+  });
+
+  @override
+  Future<void> addProcessor(Processor processor) async {
     return _lock.protectWrite(() async {
       _checkOpened();
       _collectionOperations.addProcessor(processor);
@@ -133,7 +151,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   @override
   Future<void> createIndex(List<String> fields,
       [IndexOptions? indexOptions]) async {
-    fields.notNullOrEmpty('Fields cannot be null');
+    fields.notNullOrEmpty('Fields cannot be empty');
 
     var indexFields = Fields.withNames(fields);
     return _lock.protectWrite(() async {
@@ -169,7 +187,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
   @override
   Future<void> dropIndex(List<String> fields) {
-    fields.notNullOrEmpty('Fields cannot be null');
+    fields.notNullOrEmpty('Fields cannot be empty');
 
     var indexFields = Fields.withNames(fields);
     return _lock.protectWrite(() async {
@@ -197,8 +215,6 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
   @override
   Future<Document?> getById(NitriteId id) async {
-    id.notNullOrEmpty('Id cannot be null');
-
     return _lock.protectRead(() async {
       _checkOpened();
       return _collectionOperations.getById(id);
@@ -212,7 +228,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
   @override
   Future<bool> hasIndex(List<String> fields) async {
-    fields.notNullOrEmpty('Fields cannot be null');
+    fields.notNullOrEmpty('Fields cannot be empty');
 
     var indexFields = Fields.withNames(fields);
     return _lock.protectRead(() async {
@@ -223,7 +239,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
   @override
   Future<WriteResult> insert(List<Document> documents) async {
-    documents.notNullOrEmpty('Documents cannot be null or empty');
+    documents.notNullOrEmpty('Documents cannot be empty');
 
     return _lock.protectWrite(() async {
       _checkOpened();
@@ -232,13 +248,8 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<bool> get isDropped => _lock.protectRead(() async {
-        return _isDropped || _nitriteMap.isDropped;
-      });
-
-  @override
   Future<bool> isIndexing(List<String> fields) {
-    fields.notNullOrEmpty('Fields cannot be null');
+    fields.notNullOrEmpty('Fields cannot be empty');
 
     var indexFields = Fields.withNames(fields);
     return _lock.protectRead(() async {
@@ -246,14 +257,6 @@ class _DefaultNitriteCollection extends NitriteCollection {
       return _collectionOperations.isIndexing(indexFields);
     });
   }
-
-  @override
-  Future<bool> get isOpen => _lock.protectRead(() async {
-        return !_nitriteStore.isClosed &&
-            !_isDropped &&
-            !_nitriteMap.isClosed &&
-            !_nitriteMap.isDropped;
-      });
 
   @override
   Future<Iterable<IndexDescriptor>> listIndexes() {
@@ -264,11 +267,8 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  String get name => _collectionName;
-
-  @override
   Future<void> rebuildIndex(List<String> fields) async {
-    fields.notNullOrEmpty('Fields cannot be null');
+    fields.notNullOrEmpty('Fields cannot be empty');
 
     IndexDescriptor? indexDescriptor;
     var indexFields = Fields.withNames(fields);
@@ -301,23 +301,20 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<WriteResult> remove(Filter filter, [bool? justOne]) {
-    var once = justOne ?? false;
-    if (filter == all && once) {
+  Future<WriteResult> remove(Filter filter, [bool justOne = false]) {
+    if (filter == all && justOne) {
       throw InvalidOperationException(
           'Cannot remove all documents with justOne set to true');
     }
 
     return _lock.protectWrite(() async {
       _checkOpened();
-      return _collectionOperations.removeByFilter(filter, once);
+      return _collectionOperations.removeByFilter(filter, justOne);
     });
   }
 
   @override
   Future<void> setAttributes(Attributes attributes) {
-    attributes.notNullOrEmpty('Attributes cannot be null or empty');
-
     return _lock.protectWrite(() async {
       _checkOpened();
       await _collectionOperations.setAttributes(attributes);
@@ -325,15 +322,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<int> get size => _lock.protectRead(() async {
-        _checkOpened();
-        return _collectionOperations.getSize();
-      });
-
-  @override
   Future<void> subscribe<T>(CollectionEventListener<T> listener) async {
-    listener.notNullOrEmpty('Listener cannot be null');
-
     return _lock.protectWrite(() async {
       _checkOpened();
       var subscription =
@@ -346,8 +335,6 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
   @override
   Future<void> unsubscribe<T>(CollectionEventListener<T> listener) {
-    listener.notNullOrEmpty('Listener cannot be null');
-
     return _lock.protectWrite(() async {
       _checkOpened();
       var hashCode = hash2(listener, T);
@@ -360,18 +347,24 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<WriteResult> updateOne(Document documents,
-      [bool insertIfAbsent = false]) {
-    return _lock.protectWrite(() async {
-      _checkOpened();
-      return _collectionOperations.updateOne(documents, insertIfAbsent);
-    });
+  Future<WriteResult> updateOne(Document document,
+      [bool insertIfAbsent = false]) async {
+    var filter = createUniqueFilter(document);
+    if (insertIfAbsent) {
+      return update(filter, document, UpdateOptions(insertIfAbsent: true));
+    } else {
+      if (document.hasId) {
+        return update(filter, document, UpdateOptions(insertIfAbsent: false));
+      } else {
+        throw NotIdentifiableException('Update operation failed as the '
+            'document does not have id');
+      }
+    }
   }
 
   @override
   Future<WriteResult> update(Filter filter, Document update,
       [UpdateOptions? updateOptions]) async {
-    update.notNullOrEmpty('Documents cannot be null or empty');
     updateOptions ??= UpdateOptions();
     updateOptions.insertIfAbsent = false;
     updateOptions.justOnce = false;
@@ -382,7 +375,8 @@ class _DefaultNitriteCollection extends NitriteCollection {
     });
   }
 
-  Future<void> _initialize() async {
+  @override
+  Future<void> initialize() async {
     _isDropped = false;
     _nitriteStore = _nitriteConfig.getNitriteStore();
     _lock = await _lockService.getLock(_collectionName);

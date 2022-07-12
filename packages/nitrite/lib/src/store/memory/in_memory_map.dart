@@ -57,7 +57,6 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   @override
   Future<void> put(Key key, Value value) {
     _checkOpened();
-    value.notNullOrEmpty("value cannot be null");
     _backingMap[key] = value;
     return updateLastModifiedTime();
   }
@@ -71,7 +70,6 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   @override
   Future<Value?> putIfAbsent(Key key, Value value) async {
     _checkOpened();
-    value.notNullOrEmpty("value cannot be null");
     return _backingMap.putIfAbsent(key, () => value);
   }
 
@@ -164,5 +162,9 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
     if (_droppedFlag) {
       throw NitriteException('Map $_mapName is dropped');
     }
+  }
+
+  @override
+  Future<void> initialize() async {
   }
 }

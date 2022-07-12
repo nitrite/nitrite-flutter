@@ -1,7 +1,9 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/initializable.dart';
 
 /// The interface Persistent collection.
-abstract class PersistentCollection<T> implements EventAware, AttributesAware {
+abstract class PersistentCollection<T>
+    implements EventAware, AttributesAware, Initializable {
   /// Adds a data processor to this collection.
   Future<void> addProcessor(Processor processor);
 

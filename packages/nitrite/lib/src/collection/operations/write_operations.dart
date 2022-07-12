@@ -241,20 +241,6 @@ class WriteOperations {
     }
   }
 
-  Stream<NitriteId> updateOne(Document document, bool insertIfAbsent) async* {
-    var filter = createUniqueFilter(document);
-    if (insertIfAbsent) {
-      yield* update(filter, document, UpdateOptions(insertIfAbsent: true));
-    } else {
-      if (document.hasId) {
-        yield* update(filter, document, UpdateOptions(insertIfAbsent: true));
-      } else {
-        throw NotIdentifiableException('Update operation failed as the '
-            'document does not have id');
-      }
-    }
-  }
-
   void _alert<T>(CollectionEventInfo<T> changedItem) {
     _log.fine('Alerting event listeners for action : ${changedItem.eventType} '
         'in ${_nitriteMap.name}');

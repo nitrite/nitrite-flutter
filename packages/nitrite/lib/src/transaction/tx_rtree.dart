@@ -1,81 +1,86 @@
-import 'dart:collection';
-
-import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/spatial_key.dart';
+import 'package:nitrite/src/store/memory/in_memory_rtree.dart';
+import 'package:rxdart/rxdart.dart';
 
-class InMemoryRTree<Key extends BoundingBox, Value>
+class TransactionalRTree<Key extends BoundingBox, Value>
     extends NitriteRTree<Key, Value> {
-  final Map<SpatialKey, Key> _backingMap =
-      SplayTreeMap<SpatialKey, Key>();
+  final Map<SpatialKey, Key> _map;
+  final NitriteRTree<Key, Value> _primaryRTree;
 
-  bool _droppedFlag = false;
-  bool _closedFlag = false;
+  TransactionalRTree(NitriteRTree<Key, Value>? primaryRTree) :
+      _primaryRTree = primaryRTree ?? InMemoryRTree<Key, Value>(),
+      _map = <SpatialKey, Key>{};
 
   @override
-  Future<int> get size async {
-    _checkOpened();
-    return _backingMap.length;
-  }
+  Future<int> get size async => _map.length;
 
   @override
   Future<void> add(Key key, NitriteId? value) async {
-    _checkOpened();
-    if (value != null) {
+    if (value != null && value.idValue.isNotEmpty) {
       var spatialKey = _getKey(key, int.parse(value.idValue));
-      _backingMap[spatialKey] = key;
+      _map[spatialKey] = key;
     }
   }
 
   @override
   Future<void> remove(Key key, NitriteId? value) async {
-    _checkOpened();
-    if (value != null) {
+    if (value != null && value.idValue.isNotEmpty) {
       var spatialKey = _getKey(key, int.parse(value.idValue));
-      _backingMap.remove(spatialKey);
+      _map.remove(spatialKey);
     }
   }
 
   @override
-  Stream<NitriteId> findIntersectingKeys(Key key) async* {
-    _checkOpened();
+  Stream<NitriteId> findIntersectingKeys(Key key) {
     var spatialKey = _getKey(key, 0);
+    var set = <NitriteId>{};
 
-    for(var sk in _backingMap.keys) {
+    for (var sk in _map.keys) {
       if (_isOverlap(sk, spatialKey)) {
-        yield NitriteId.createId(sk.id.toString());
+        set.add(NitriteId.createId(sk.id.toString()));
       }
     }
+
+    var primaryRecords = _primaryRTree.findIntersectingKeys(key);
+    return ConcatStream([
+      primaryRecords,
+      Stream.fromIterable(set),
+    ]);
   }
 
   @override
-  Stream<NitriteId> findContainedKeys(Key key) async* {
-    _checkOpened();
+  Stream<NitriteId> findContainedKeys(Key key) {
     var spatialKey = _getKey(key, 0);
+    var set = <NitriteId>{};
 
-    for(var sk in _backingMap.keys) {
+    for (var sk in _map.keys) {
       if (_isInside(sk, spatialKey)) {
-        yield NitriteId.createId(sk.id.toString());
+        set.add(NitriteId.createId(sk.id.toString()));
       }
     }
+
+    var primaryRecords = _primaryRTree.findContainedKeys(key);
+    return ConcatStream([
+      primaryRecords,
+      Stream.fromIterable(set),
+    ]);
   }
+
 
   @override
   Future<void> clear() async {
-    _checkOpened();
-    _backingMap.clear();
+    _map.clear();
   }
 
   @override
   Future<void> close() async {
-    _closedFlag = true;
+    _map.clear();
   }
 
   @override
   Future<void> drop() async {
-    _checkOpened();
-    _droppedFlag = true;
-    _backingMap.clear();
+    _map.clear();
   }
 
   SpatialKey _getKey(Key key, int id) {
@@ -100,17 +105,8 @@ class InMemoryRTree<Key extends BoundingBox, Value>
     return true;
   }
 
-  void _checkOpened() {
-    if (_closedFlag) {
-      throw NitriteException('RTreeMap is closed');
-    }
-    if (_droppedFlag) {
-      throw NitriteException('RTreeMap is dropped');
-    }
-  }
-
   @override
   Future<void> initialize() async {
   }
-}
 
+}

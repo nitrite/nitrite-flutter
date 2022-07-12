@@ -145,7 +145,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
 
   @override
   Future<WriteResult> insert(List<T> elements) {
-    elements.notNullOrEmpty('elements is empty');
+    elements.notNullOrEmpty('Element list is empty');
     return _nitriteCollection.insert(_operations.toDocuments(elements));
   }
 
@@ -182,7 +182,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<WriteResult> remove(Filter filter, [bool? justOne]) {
+  Future<WriteResult> remove(Filter filter, [bool justOne = false]) {
     return _nitriteCollection.remove(
         _operations.asObjectFilter(filter), justOne);
   }
@@ -244,6 +244,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
     return T;
   }
 
+  @override
   Future<void> initialize() {
     var nitriteMapper = _nitriteConfig.nitriteMapper;
     _operations = RepositoryOperations<T>(nitriteMapper, _nitriteCollection);

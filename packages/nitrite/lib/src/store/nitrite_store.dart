@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/initializable.dart';
 import 'package:nitrite/src/store/store_catalog.dart';
 
 /// Represents a storage interface for Nitrite database.
@@ -67,7 +68,7 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   String get storeVersion;
 
   /// Gets the store configuration.
-  Config get storeConfig;
+  Config? get storeConfig;
 
   /// Gets the store catalog.
   StoreCatalog get catalog;

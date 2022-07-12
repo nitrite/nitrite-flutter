@@ -29,7 +29,7 @@ class NitriteConfig {
 
   /// Sets the embedded field separator character. Default value
   /// is `.`
-  setFieldSeparator(String fieldSeparator) {
+  void setFieldSeparator(String fieldSeparator) {
     if (_configured) {
       throw InvalidOperationException("Cannot change the separator after "
           "database initialization");
@@ -105,6 +105,7 @@ class NitriteConfig {
     return pluginManager.getNitriteStore();
   }
 
+  /// Closes the config and plugin manager.
   Future<void> close() {
     return pluginManager.close();
   }

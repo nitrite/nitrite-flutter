@@ -1,7 +1,8 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/initializable.dart';
 
 /// Represents an R-Tree in the nitrite database.
-abstract class NitriteRTree<Key, Value> {
+abstract class NitriteRTree<Key, Value> implements Initializable {
 
   /// Adds a key to the rtree.
   Future<void> add(Key key, NitriteId? value);

@@ -122,8 +122,8 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   }
 
   void _initEventBus() {
-    if (storeConfig.eventListeners.isNotEmpty) {
-      for (var listener in storeConfig.eventListeners) {
+    if (storeConfig!.eventListeners.isNotEmpty) {
+      for (var listener in storeConfig!.eventListeners) {
         subscribe(listener);
       }
     }

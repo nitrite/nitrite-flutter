@@ -11,7 +11,7 @@ class Fields implements Comparable<Fields> {
 
   /// Creates a [Fields] instance with field names.
   factory Fields.withNames(List<String> fields) {
-    fields.notNullOrEmpty('Fields cannot null or empty');
+    fields.notNullOrEmpty('Fields cannot be empty');
 
     var f = Fields();
     f._fieldNames = fields;
@@ -26,15 +26,13 @@ class Fields implements Comparable<Fields> {
 
   /// Adds a new field name.
   Fields addField(String fieldName) {
-    fieldName.notNullOrEmpty('Field name cannot null or empty');
+    fieldName.notNullOrEmpty('Field name cannot be empty');
     _fieldNames.add(fieldName);
     return this;
   }
 
   /// Check if a [Fields] is a subset of the current [Fields];
   bool startWith(Fields other) {
-    other.notNullOrEmpty('Fields cannot null');
-
     var length = min(_fieldNames.length, other._fieldNames.length);
 
     // if other is greater then it is not a prefix of this field
@@ -79,7 +77,7 @@ class SortableFields extends Fields {
 
   /// Creates a [SortableFields] instance with field names.
   factory SortableFields.withNames(List<String> fields) {
-    fields.notNullOrEmpty("fields cannot null or empty");
+    fields.notNullOrEmpty("fields cannot be empty");
 
     var sortableFields = SortableFields();
     for (var field in fields) {
