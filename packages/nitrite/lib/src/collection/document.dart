@@ -17,14 +17,22 @@ abstract class Document extends Iterable<Pair<String, dynamic>> {
 
   /// Creates a new document initialized with the given key/value pair.
   static Document createDocument(String key, dynamic value) {
-    var document = <String, dynamic>{};
-    document[key] = value;
-    return _NitriteDocument(document);
+    var document = emptyDocument();
+    document.put(key, value);
+    return document;
   }
 
   /// Creates a new document initialized with the given map.
   static Document fromMap(Map<String, dynamic> map) {
-    return _NitriteDocument(map);
+    var doc = emptyDocument();
+    map.forEach((key, value) {
+      if (value is Map<String, dynamic>) {
+        doc.put(key, fromMap(value));
+      } else {
+        doc.put(key, value);
+      }
+    });
+    return doc;
   }
 
   /// Associates the specified value with the specified key in this document.
@@ -102,13 +110,9 @@ class _NitriteDocument extends Document {
     docModified,
   ];
 
-  Map<String, dynamic> _documentMap = {};
+  final Map<String, dynamic> _documentMap = {};
 
-  _NitriteDocument([Map<String, dynamic>? documentMap]) {
-    if (documentMap != null) {
-      _documentMap = documentMap;
-    }
-  }
+  _NitriteDocument();
 
   @override
   Document put(String field, dynamic value) {
@@ -198,7 +202,9 @@ class _NitriteDocument extends Document {
       }
     });
 
-    return _NitriteDocument(cloned);
+    var newDoc = _NitriteDocument();
+    newDoc._documentMap.addAll(cloned);
+    return newDoc;
   }
 
   @override

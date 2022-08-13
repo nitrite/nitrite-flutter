@@ -118,6 +118,18 @@ class IndexOperations {
     return await _indexManager.isDirtyIndex(fields) && !_getBuildFlag(fields);
   }
 
+  Future<void> clear() async {
+    for (var entry in _indexBuildTracker.entries) {
+      if (entry.value == true) {
+        throw IndexingException(
+            'Index build already in progress on fields: ${entry.key}');
+      }
+    }
+
+    await _indexManager.clearAll();
+    _indexBuildTracker.clear();
+  }
+
   bool _getBuildFlag(Fields field) {
     var flag = _indexBuildTracker[field];
     if (flag != null) return flag;

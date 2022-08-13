@@ -135,7 +135,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   Future<void> clear() async {
     return _lock.protectWrite(() async {
       _checkOpened();
-      await _nitriteMap.clear();
+      await _collectionOperations.clear();
     });
   }
 

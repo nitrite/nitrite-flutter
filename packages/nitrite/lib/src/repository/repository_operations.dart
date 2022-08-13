@@ -7,16 +7,16 @@ class RepositoryOperations<T> {
   final NitriteMapper _nitriteMapper;
   final NitriteCollection _nitriteCollection;
 
-  Id? _objectIdField;
-  List<Index>? _indexes;
+  EntityId? _objectIdField;
+  List<EntityIndex>? _indexes;
 
   RepositoryOperations(this._nitriteMapper, this._nitriteCollection);
 
   Future<void> createIndices() async {
-    if (isSubtype<T, Entity>()) {
-      Entity dummy = _nitriteMapper.newInstance<T>() as Entity;
-      if (dummy.id != null) {
-        _objectIdField = dummy.id;
+    if (isSubtype<T, NitriteEntity>()) {
+      NitriteEntity dummy = _nitriteMapper.newInstance<T>() as NitriteEntity;
+      if (dummy.entityId != null) {
+        _objectIdField = dummy.entityId;
         var hasIndex = await _nitriteCollection
             .hasIndex(_objectIdField!.embeddedFieldNames);
         if (!hasIndex) {
@@ -25,8 +25,8 @@ class RepositoryOperations<T> {
         }
       }
 
-      if (dummy.indexes != null) {
-        _indexes = dummy.indexes;
+      if (dummy.entityIndexes != null) {
+        _indexes = dummy.entityIndexes;
 
         var futures = <Future<void>>[];
         for (var index in _indexes!) {

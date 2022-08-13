@@ -100,9 +100,9 @@ class SingleFieldIndex extends NitriteIndex {
 
   Future<void> _removeIndexElement(NitriteMap<DBValue, List<dynamic>> indexMap,
       FieldValues fieldValues, DBValue element) async {
-    var nitriteIds = await indexMap[element] as List<NitriteId>;
+    var nitriteIds = await indexMap[element] as List<NitriteId>?;
     if (!nitriteIds.isNullOrEmpty) {
-      nitriteIds.remove(fieldValues.nitriteId);
+      nitriteIds!.remove(fieldValues.nitriteId);
       if (nitriteIds.isEmpty) {
         await indexMap.remove(element);
       } else {

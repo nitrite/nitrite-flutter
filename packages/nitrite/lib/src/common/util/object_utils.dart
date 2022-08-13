@@ -79,8 +79,8 @@ String findRepositoryNameByTypeName(String entityName, String? key) {
 }
 
 String getEntityName<T>(NitriteMapper nitriteMapper) {
-  if (isSubtype<T, Entity>()) {
-    Entity entity = nitriteMapper.newInstance<T>() as Entity;
+  if (isSubtype<T, NitriteEntity>()) {
+    NitriteEntity entity = nitriteMapper.newInstance<T>() as NitriteEntity;
     if (!entity.entityName.isNullOrEmpty) {
       return entity.entityName!;
     }

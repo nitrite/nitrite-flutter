@@ -1,12 +1,18 @@
+import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 import 'package:nitrite/nitrite.dart';
 
-class Id {
+/// For internal use only
+@internal
+class EntityId {
   final String _fieldName;
   final List<String> _fields;
 
-  const Id(this._fieldName, [this._fields = const []]);
+  EntityId(this._fieldName, [this._fields = const []]);
 
   String get fieldName => _fieldName;
+
+  List<String> get subFields => _fields;
 
   List<String> get embeddedFieldNames {
     return _fields
@@ -24,10 +30,10 @@ class Id {
       }
 
       var filters = <Filter>[];
-      for (var field in embeddedFieldNames) {
-        var docFieldName = _embeddedFieldName(field);
-        var fieldValue = document[docFieldName];
-        filters.add(where(field).eq(fieldValue));
+      for (var field in _fields) {
+        var filterField = "$_fieldName${NitriteConfig.fieldSeparator}$field";
+        var fieldValue = document[field];
+        filters.add(where(filterField).eq(fieldValue));
       }
 
       var nitriteFilter = and(filters) as NitriteFilter;
@@ -38,31 +44,46 @@ class Id {
     }
   }
 
-  String _embeddedFieldName(String fieldName) {
-    if (fieldName.contains(NitriteConfig.fieldSeparator)) {
-      return fieldName
-          .substring(fieldName.indexOf(NitriteConfig.fieldSeparator) + 1);
-    } else {
-      return fieldName;
-    }
-  }
+  @override
+  operator ==(Object other) =>
+      identical(this, other) ||
+      other is EntityId &&
+          runtimeType == other.runtimeType &&
+          _fieldName == other._fieldName &&
+          const ListEquality().equals(_fields, other._fields);
+
+  @override
+  int get hashCode => _fieldName.hashCode ^ _fields.hashCode;
 }
 
-class Index {
+/// For internal use only
+@internal
+class EntityIndex {
   final List<String> _fields;
   final String _type;
 
-  const Index(this._fields, [this._type = "unique"]);
+  const EntityIndex(this._fields, [this._type = "unique"]);
 
   List<String> get fieldNames => _fields;
 
   String get indexType => _type;
+
+  @override
+  operator ==(Object other) =>
+      identical(this, other) ||
+      other is EntityIndex &&
+          runtimeType == other.runtimeType &&
+          ListEquality().equals(_fields, other._fields) &&
+          _type == other._type;
+
+  @override
+  int get hashCode => _fields.hashCode ^ _type.hashCode;
 }
 
-abstract class Entity {
-  String? get entityName => null;
-  List<Index>? get indexes => null;
-  Id? get id => null;
+/// For internal use only
+@internal
+abstract class NitriteEntity {
+  String? get entityName;
+  List<EntityIndex>? get entityIndexes;
+  EntityId? get entityId;
 }
-
-abstract class MappableEntity extends Entity implements Mappable {}

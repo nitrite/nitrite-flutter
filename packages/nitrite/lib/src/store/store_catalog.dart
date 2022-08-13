@@ -9,7 +9,7 @@ class StoreCatalog {
 
   StoreCatalog(this._nitriteStore);
 
-  Future<void> init() async {
+  Future<void> initialize() async {
     _catalog = await _nitriteStore.openMap<String, Document>(collectionCatalog);
   }
 

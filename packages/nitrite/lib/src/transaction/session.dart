@@ -95,7 +95,7 @@ class _NitriteTransaction extends Transaction {
       var txMap = await _transactionStore.openMap<NitriteId, Document>(name);
       var txContext = TransactionContext(name, txMap, _transactionConfig);
       var txCollection =
-          DefaultTransactionalCollection(primary, txContext, _nitrite);
+          DefaultTransactionalCollection(primary, txContext);
       await txCollection.initialize();
 
       _collectionRegistry[name] = txCollection;
@@ -127,7 +127,7 @@ class _NitriteTransaction extends Transaction {
       var txContext = TransactionContext(name, txMap, _transactionConfig);
       var primaryCollection = primary.documentCollection;
       var backingCollection = DefaultTransactionalCollection(
-          primaryCollection!, txContext, _nitrite);
+          primaryCollection!, txContext);
       await backingCollection.initialize();
 
       var txRepository = DefaultTransactionalRepository<T>(

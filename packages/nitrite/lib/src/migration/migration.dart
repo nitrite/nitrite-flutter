@@ -2,10 +2,7 @@ import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
-import 'package:nitrite/src/migration/collection_instruction.dart';
-import 'package:nitrite/src/migration/database_instruction.dart';
 import 'package:nitrite/src/migration/instructions.dart';
-import 'package:nitrite/src/migration/repository_instruction.dart';
 
 class Migration {
   final Queue<MigrationStep> _migrationSteps = Queue();

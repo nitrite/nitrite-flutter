@@ -4,21 +4,30 @@ import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// A [NitriteMapper] based on [Mappable] implementation.
 class MappableMapper extends NitriteMapper {
-  final Set<Type> _valueTypes = {};
   final Map<Type, MappableFactory> _mappableFactories = {};
+  final Set<Type> _valueTypes = {};
 
+  /// Creates a new instance of [MappableMapper].
   MappableMapper([List<Type> valueTypes = const []]) {
     _valueTypes.add(num);
+    _valueTypes.add(int);
+    _valueTypes.add(double);
     _valueTypes.add(String);
     _valueTypes.add(bool);
-    _valueTypes.add(Enum);
     _valueTypes.add(Null);
     _valueTypes.add(DateTime);
+    _valueTypes.add(Duration);
     _valueTypes.add(NitriteId);
 
     if (!valueTypes.isNullOrEmpty) {
       _valueTypes.addAll(valueTypes);
     }
+  }
+
+  /// Registers a [Mappable] factory method to be used when converting a document
+  /// to an object of type [T].
+  void registerMappable<T extends Mappable>(MappableFactory<T> factory) {
+    _mappableFactories[T] = factory;
   }
 
   @override
@@ -27,17 +36,17 @@ class MappableMapper extends NitriteMapper {
       return null;
     }
 
-    if (isValue(source)) {
+    if (isValue(source) && source is Target) {
       return source as Target;
     } else {
       if (Target == Document) {
         if (source is Document) {
           return source as Target;
         } else {
-          return convertToDocument<Source>(source) as Target;
+          return _convertToDocument<Source>(source) as Target;
         }
       } else if (source is Document) {
-        return convertFromDocument<Target, Source>(source);
+        return _convertFromDocument<Target, Source>(source);
       }
     }
 
@@ -54,7 +63,7 @@ class MappableMapper extends NitriteMapper {
 
   @override
   bool isValue(value) {
-    return _valueTypes.contains(value.runtimeType);
+    return _valueTypes.any((type) => value.runtimeType == type);
   }
 
   @override
@@ -73,19 +82,13 @@ class MappableMapper extends NitriteMapper {
   @override
   Future<void> initialize(NitriteConfig nitriteConfig) async {}
 
-  /// Registers a [Mappable] factory method to be used when converting a document
-  /// to an object of type [T].
-  void registerMappable<T extends Mappable>(MappableFactory<T> factory) {
-    _mappableFactories[T] = factory;
-  }
-
   /// Adds a value type to ignore during mapping.
   void addValueType<T>() {
     _valueTypes.add(T);
   }
 
   /// Converts an object of type [Source] to a document.
-  Document convertToDocument<Source>(Source source) {
+  Document _convertToDocument<Source>(Source source) {
     if (source is Mappable) {
       return source.write(this);
     }
@@ -95,7 +98,7 @@ class MappableMapper extends NitriteMapper {
   }
 
   /// Converts a document to a target object of type [Target].
-  Target? convertFromDocument<Target, Source>(Document source) {
+  Target? _convertFromDocument<Target, Source>(Document source) {
     if (isSubtype<Target, Mappable>()) {
       var factory = _mappableFactories[Target];
       if (factory != null) {

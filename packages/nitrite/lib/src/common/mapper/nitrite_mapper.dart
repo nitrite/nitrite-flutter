@@ -7,9 +7,16 @@ abstract class NitriteMapper extends NitritePlugin {
   Target? convert<Target, Source>(Source? source);
 
   /// Checks if the provided type is registered as a value type.
+  ///
+  /// A value type is a dart type which does not need to be
+  /// converted to a [Document], i.e. dart build-in types.
+  ///
+  /// NOTE: An exact match of type is required.
   bool isValueType<T>();
 
   /// Checks if an object is of a value type.
+  ///
+  /// It will return `true` only if an **exact** type match is found.
   bool isValue(dynamic value);
 
   /// Creates and returns a new instance of the provided type.

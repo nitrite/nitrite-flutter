@@ -61,11 +61,12 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
   @override
   Future<void> initialize(NitriteConfig nitriteConfig) async {
     _nitriteConfig = nitriteConfig;
+    _storeCatalog = StoreCatalog(this);
+    await _storeCatalog!.initialize();
   }
 
   @override
   StoreCatalog get catalog {
-    _storeCatalog ??= StoreCatalog(this);
     return _storeCatalog!;
   }
 

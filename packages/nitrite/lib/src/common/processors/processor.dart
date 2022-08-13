@@ -44,9 +44,11 @@ abstract class Processor {
 }
 
 class ProcessorChain extends Processor {
-  final List<Processor> processors;
+  final List<Processor> processors = [];
 
-  ProcessorChain([this.processors = const []]);
+  ProcessorChain([List<Processor> processors = const []]) {
+    this.processors.addAll(processors);
+  }
 
   @override
   Future<Document> processBeforeWrite(Document document) async {

@@ -12,7 +12,6 @@ import 'package:quiver/core.dart';
 class DefaultTransactionalCollection extends NitriteCollection {
   final NitriteCollection _primary;
   final TransactionContext _context;
-  final Nitrite _nitrite;
   final ReadWriteMutex _mutex = ReadWriteMutex();
   final Map<int, StreamSubscription> _subscriptions = {};
 
@@ -24,7 +23,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
   late bool _isClosed;
   late EventBus _eventBus;
 
-  DefaultTransactionalCollection(this._primary, this._context, this._nitrite);
+  DefaultTransactionalCollection(this._primary, this._context);
 
   @override
   String get name => _collectionName;
@@ -390,23 +389,15 @@ class DefaultTransactionalCollection extends NitriteCollection {
   Future<void> clear() async {
     await _mutex.protectWrite(() async {
       await _checkOpened();
-      await _nitriteMap.clear();
+      await _collectionOperations.clear();
     });
 
-    var documentList = <Document>[];
     var journalEntry = JournalEntry(
       changeType: ChangeType.clear,
       commit: () async {
-        var cursor = await _primary.find();
-        await for (var document in cursor) {
-          documentList.add(document);
-        }
         await _primary.clear();
       },
-      rollback: () async {
-        var stream = await _primary.insert(documentList);
-        stream.listen(blackHole);
-      },
+      rollback: () async {}, // can't rollback clear
     );
     _context.journal.add(journalEntry);
   }
@@ -419,33 +410,12 @@ class DefaultTransactionalCollection extends NitriteCollection {
     });
     _isDropped = true;
 
-    var documentList = <Document>[];
-    var indexEntries = <IndexDescriptor>[];
     var journalEntry = JournalEntry(
       changeType: ChangeType.dropCollection,
       commit: () async {
-        var cursor = await _primary.find();
-        await for (var document in cursor) {
-          documentList.add(document);
-        }
-        var indexes = await _primary.listIndexes();
-        indexEntries.addAll(indexes);
         await _primary.drop();
       },
-      rollback: () async {
-        // re-create collection
-        var collection = await _nitrite.getCollection(_collectionName);
-
-        // re-create indexes
-        for (var entry in indexEntries) {
-          await collection.createIndex(
-              entry.indexFields.fieldNames, indexOptions(entry.indexType));
-        }
-
-        // re-insert documents
-        var stream = await collection.insert(documentList);
-        stream.listen(blackHole);
-      },
+      rollback: () async {}, // can't rollback drop
     );
 
     _context.journal.add(journalEntry);

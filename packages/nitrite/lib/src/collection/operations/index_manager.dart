@@ -137,6 +137,30 @@ class IndexManager {
     return _markDirty(fields, false);
   }
 
+  Future<void> clearAll() async {
+    // close all index maps
+    if (!_indexMetaMap.isClosed && !_indexMetaMap.isDropped) {
+      var futures = <Future<void>>[];
+
+      await for (var indexMeta in _indexMetaMap.values()) {
+        if (indexMeta.indexDescriptor != null) {
+          var indexMapName = indexMeta.indexMap;
+
+          if (indexMapName != null) {
+            // run all futures in parallel
+            futures.add(Future.microtask(() async {
+              var indexMap =
+              await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
+              await indexMap.clear();
+            }));
+          }
+        }
+      }
+
+      await Future.wait(futures);
+    }
+  }
+
   Future<void> _markDirty(Fields fields, bool dirty) async {
     var meta = await _indexMetaMap[fields];
     if (meta != null) {

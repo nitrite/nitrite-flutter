@@ -114,6 +114,11 @@ class CollectionOperations {
     return WriteResult(stream);
   }
 
+  Future<void> clear() async {
+    await _nitriteMap.clear();
+    await _indexOperations.clear();
+  }
+
   Future<void> initialize() async {
     _processorChain = ProcessorChain();
     _indexOperations = IndexOperations(

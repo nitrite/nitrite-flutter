@@ -31,9 +31,7 @@ abstract class NitriteIndex {
 
     nitriteIds = nitriteIds ?? [];
 
-    if (isUnique &&
-        nitriteIds.length == 1 &&
-        !nitriteIds.contains(fieldValues.nitriteId)) {
+    if (isUnique && nitriteIds.length == 1) {
       // if key is already exists for unique type, throw error
       throw UniqueConstraintException(
           'Unique key constraint violation for ${fieldValues.fields}');

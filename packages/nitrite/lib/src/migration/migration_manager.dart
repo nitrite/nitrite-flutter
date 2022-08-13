@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/migration/commands/collection_commands.dart';
@@ -11,7 +10,6 @@ import 'package:nitrite/src/migration/instructions.dart';
 import 'package:nitrite/src/migration/migration.dart';
 
 class MigrationManager {
-  static final Logger _log = Logger('MigrationManager');
   final Nitrite _database;
 
   late NitriteConfig _nitriteConfig;

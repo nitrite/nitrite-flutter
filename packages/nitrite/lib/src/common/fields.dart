@@ -88,7 +88,7 @@ class SortableFields extends Fields {
 
   /// Adds the sort order for a field.
   SortableFields addSortedField(String fieldName, SortOrder sortOrder) {
-    super.fieldNames.add(fieldName);
+    super._fieldNames.add(fieldName);
     _sortingOrders.add(Pair(fieldName, sortOrder));
     return this;
   }

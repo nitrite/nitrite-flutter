@@ -3,7 +3,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/collection_operations.dart';
 import 'package:nitrite/src/collection/operations/index_manager.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
-import 'package:nitrite/src/migration/repository_instruction.dart';
+
 
 class CollectionRenameCommand extends BaseCommand {
   final Pair<String, String> _arguments;

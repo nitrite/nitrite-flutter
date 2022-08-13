@@ -1,8 +1,7 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/constants.dart';
 import 'package:test/test.dart';
 
-void main() async {
+void main() {
   late Document doc;
 
   group('Document Test Suite', () {
@@ -136,8 +135,7 @@ void main() async {
     test("Get Invalid _id", () {
       var map = <String, dynamic> {};
       map[docId] = "value";
-      var doc2 = documentFromMap(map);
-      expect(() async => await doc2.id, throwsA(isA<InvalidIdException>()));
+      expect(() => documentFromMap(map), throwsA(isA<InvalidIdException>()));
     });
 
     test("Invalid Get", () {

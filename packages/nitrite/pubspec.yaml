@@ -1,7 +1,6 @@
 name: nitrite
 description: An embedded nosql document store for dart/flutter.
 version: 0.0.1
-# homepage: https://www.example.com
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
@@ -19,10 +18,16 @@ dependencies:
    quiver: ^3.1.0
    yaml: ^3.1.1
    cryptography: ^2.0.5
+   build: any
+   source_gen: any
+   analyzer: ^4.3.1
+   meta: ^1.8.0
 
 dev_dependencies:
   lints: ^2.0.0
   test: ^1.16.0
-  build_runner: ^2.1.11
-  json_serializable: ^6.2.0
+  mockito: ^5.2.0
+  build_runner: ^2.1.7
+  nitrite_entity_generator:
+    path: ../nitrite_entity_generator
 

@@ -4,6 +4,7 @@ import 'package:test/test.dart';
 void main() {
   MetaUpdate("pubspec.yaml")
       .writeMetaDartFile("lib/src/store/memory/in_memory_meta.dart");
+
   group('A group of tests', () {
     setUp(() {
       // Additional setup goes here.

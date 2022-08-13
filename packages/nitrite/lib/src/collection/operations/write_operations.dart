@@ -18,8 +18,6 @@ class WriteOperations {
   WriteOperations(this._documentIndexWriter, this._readOperations,
       this._nitriteMap, this._eventBus, this._processorChain);
 
-  // TODO: implement parallelism in the write operations
-
   Stream<NitriteId> insert(List<Document> documents) async* {
     _log.fine('Inserting ${documents.length} documents in ${_nitriteMap.name}');
 

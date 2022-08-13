@@ -124,6 +124,7 @@ class PluginManager {
       throw PluginException("Multiple indexer plugins found for type: "
           "${plugin.indexType}");
     }
+    _indexerMap[plugin.indexType] = plugin;
   }
 
   Future<void> _loadInternalPlugins() async {
