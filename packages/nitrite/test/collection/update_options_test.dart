@@ -10,6 +10,5 @@ main() {
       expect(options.insertIfAbsent, isTrue);
       expect(options.justOnce, isTrue);
     });
-    
   });
 }

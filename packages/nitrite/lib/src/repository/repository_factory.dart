@@ -16,7 +16,7 @@ class RepositoryFactory {
   Future<ObjectRepository<T>> getRepository<T>(NitriteConfig nitriteConfig,
       [String? key]) {
     var collectionName =
-        findRepositoryNameByType<T>(key, nitriteConfig.nitriteMapper);
+        findRepositoryNameByType<T>(nitriteConfig.nitriteMapper, key);
     return _lock.protect(() async {
       if (_repositoryMap.containsKey(collectionName)) {
         var repository = _repositoryMap[collectionName]! as ObjectRepository<T>;

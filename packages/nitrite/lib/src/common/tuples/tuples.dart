@@ -6,6 +6,17 @@ class Pair<A, B> {
 
   @override
   String toString() => '($first, $second)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Pair &&
+          runtimeType == other.runtimeType &&
+          first == other.first &&
+          second == other.second;
+
+  @override
+  int get hashCode => first.hashCode ^ second.hashCode;
 }
 
 class Triplet<A, B, C> {
@@ -17,6 +28,18 @@ class Triplet<A, B, C> {
 
   @override
   String toString() => '($first, $second, $third)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Triplet &&
+          runtimeType == other.runtimeType &&
+          first == other.first &&
+          second == other.second &&
+          third == other.third;
+
+  @override
+  int get hashCode => first.hashCode ^ second.hashCode ^ third.hashCode;
 }
 
 class Quartet<A, B, C, D> {
@@ -29,6 +52,20 @@ class Quartet<A, B, C, D> {
 
   @override
   String toString() => '($first, $second, $third, $fourth)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Quartet &&
+          runtimeType == other.runtimeType &&
+          first == other.first &&
+          second == other.second &&
+          third == other.third &&
+          fourth == other.fourth;
+
+  @override
+  int get hashCode =>
+      first.hashCode ^ second.hashCode ^ third.hashCode ^ fourth.hashCode;
 }
 
 class Quintet<A, B, C, D, E> {
@@ -42,5 +79,23 @@ class Quintet<A, B, C, D, E> {
 
   @override
   String toString() => '($first, $second, $third, $fourth, $fifth)';
-}
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Quintet &&
+          runtimeType == other.runtimeType &&
+          first == other.first &&
+          second == other.second &&
+          third == other.third &&
+          fourth == other.fourth &&
+          fifth == other.fifth;
+
+  @override
+  int get hashCode =>
+      first.hashCode ^
+      second.hashCode ^
+      third.hashCode ^
+      fourth.hashCode ^
+      fifth.hashCode;
+}

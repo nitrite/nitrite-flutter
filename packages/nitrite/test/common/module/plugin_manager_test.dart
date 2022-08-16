@@ -6,13 +6,12 @@ import 'package:nitrite/src/common/module/plugin_manager.dart';
 import 'package:nitrite/src/store/memory/in_memory_store.dart';
 import 'package:test/test.dart';
 
+import '../../test_utils.dart';
 import 'plugin_manager_test.mocks.dart';
 
 @GenerateMocks([NitriteModule, NitritePlugin])
 void main() {
-
   group("Plugin Manager Test Suite", () {
-
     test("Test LoadModule", () async {
       var pluginManager = PluginManager(NitriteConfig());
       var nitriteModule = MockNitriteModule();
@@ -27,7 +26,7 @@ void main() {
       var nitriteModule = MockNitriteModule();
       when(nitriteModule.plugins).thenReturn(nitritePluginSet);
       expect(() async => await pluginManager.loadModule(nitriteModule),
-          throwsA(TypeMatcher<PluginException>()));
+          throwsPluginException);
       verify(nitriteModule.plugins).called(2);
     });
 

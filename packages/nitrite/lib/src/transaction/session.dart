@@ -110,7 +110,7 @@ class _NitriteTransaction extends Transaction {
       _checkState();
 
       var name =
-          findRepositoryNameByType<T>(key, _transactionConfig.nitriteMapper);
+          findRepositoryNameByType<T>(_transactionConfig.nitriteMapper, key);
       if (_repositoryRegistry.containsKey(name)) {
         return _repositoryRegistry[name]! as ObjectRepository<T>;
       }

@@ -2,11 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/number_utils.dart' as numbers;
 import 'package:nitrite/src/common/util/validation_utils.dart';
-import 'package:nitrite/src/repository/entity.dart';
 
 void blackHole(dynamic _) {}
 
-bool isSubtype<S, T>() => <S>[] is List<T>;
+bool isSubtype<Subtype, Type>() => <Subtype>[] is List<Type>;
 
 String getKeyName(String collectionName) {
   if (collectionName.contains(keyObjSeparator)) {
@@ -44,7 +43,7 @@ bool deepEquals(o1, o2) {
     }
 
     // cast to Number and take care of boxing and compare
-    return numbers.compare(o1, o2) == 0;
+    return numbers.compareNum(o1, o2) == 0;
   } else if (o1 is Iterable && o2 is Iterable) {
     return IterableEquality().equals(o1, o2);
   } else if (o1 is Map && o2 is Map) {
@@ -57,7 +56,7 @@ bool deepEquals(o1, o2) {
 
 int compare(Comparable first, Comparable second) {
   if (first is num && second is num) {
-    var result = numbers.compare(first, second);
+    var result = numbers.compareNum(first, second);
     if (first.runtimeType != second.runtimeType) {
       if (result == 0) return 1;
     }
@@ -66,7 +65,7 @@ int compare(Comparable first, Comparable second) {
   return first.compareTo(second);
 }
 
-String findRepositoryNameByType<T>(String? key, NitriteMapper nitriteMapper) {
+String findRepositoryNameByType<T>(NitriteMapper nitriteMapper, [String? key]) {
   return findRepositoryNameByTypeName(getEntityName<T>(nitriteMapper), key);
 }
 

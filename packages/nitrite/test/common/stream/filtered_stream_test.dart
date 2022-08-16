@@ -9,18 +9,16 @@ import 'filtered_stream_test.mocks.dart';
 @GenerateMocks([Filter])
 void main() {
   group("FilteredStream Test Suite", () {
-
     test("Test Stream with Filter 1", () async {
       var filter = MockFilter();
 
       Stream<Document> stream = FilteredStream(
-        Stream.fromIterable([
-          Document.fromMap({"id": 1, "name": "John"}),
-          Document.fromMap({"id": 2, "name": "Jane"}),
-          Document.fromMap({"id": 3, "name": "Joe"}),
-        ]),
-        filter
-      );
+          Stream.fromIterable([
+            Document.fromMap({"id": 1, "name": "John"}),
+            Document.fromMap({"id": 2, "name": "Jane"}),
+            Document.fromMap({"id": 3, "name": "Joe"}),
+          ]),
+          filter);
 
       when(filter.apply(any)).thenReturn(true);
       expect(await stream.toList(), [
@@ -35,13 +33,12 @@ void main() {
       var filter = MockFilter();
 
       Stream<Document> stream = FilteredStream(
-        Stream.fromIterable([
-          Document.fromMap({"id": 1, "name": "John"}),
-          Document.fromMap({"id": 2, "name": "Jane"}),
-          Document.fromMap({"id": 3, "name": "Joe"}),
-        ]),
-        filter
-      );
+          Stream.fromIterable([
+            Document.fromMap({"id": 1, "name": "John"}),
+            Document.fromMap({"id": 2, "name": "Jane"}),
+            Document.fromMap({"id": 3, "name": "Joe"}),
+          ]),
+          filter);
 
       when(filter.apply(any)).thenReturn(false);
       expect(await stream.toList(), []);
@@ -55,8 +52,7 @@ void main() {
             Document.fromMap({"id": 2, "name": "Jane"}),
             Document.fromMap({"id": 3, "name": "Joe"}),
           ]),
-          all
-      );
+          all);
 
       expect(await stream.toList(), [
         Document.fromMap({"id": 1, "name": "John"}),

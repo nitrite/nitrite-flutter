@@ -39,9 +39,8 @@ main() {
     var indexOperations = MockIndexOperations();
     var indexDescriptor = IndexDescriptor(
         IndexType.unique, Fields.withNames(["a"]), "Collection Name");
-    when(indexOperations.listIndexes()).thenAnswer((_) => Future.value([
-        indexDescriptor
-    ]));
+    when(indexOperations.listIndexes())
+        .thenAnswer((_) => Future.value([indexDescriptor]));
 
     var nitriteConfig = NitriteConfig();
     var nitriteMap =
@@ -62,7 +61,7 @@ main() {
     when(indexOperations.listIndexes()).thenAnswer((_) => Future.value([]));
     var nitriteConfig = NitriteConfig();
     var nitriteMap =
-    InMemoryMap<NitriteId, Document>("Map Name", InMemoryStore());
+        InMemoryMap<NitriteId, Document>("Map Name", InMemoryStore());
 
     var readOperation = ReadOperations("Collection Name", indexOperations,
         nitriteConfig, nitriteMap, ProcessorChain());

@@ -1,4 +1,3 @@
-
 import 'package:nitrite/nitrite.dart';
 
 FieldValues getDocumentValues(Document document, Fields fields) {

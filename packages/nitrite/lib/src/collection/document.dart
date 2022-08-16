@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 Document emptyDocument() => Document.emptyDocument();

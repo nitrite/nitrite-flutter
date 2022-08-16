@@ -1,6 +1,8 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
+import '../test_utils.dart';
+
 void main() {
   late Document doc;
 
@@ -11,19 +13,20 @@ void main() {
 
       doc = emptyDocument()
         ..put("score", 1034)
-        ..put("location", emptyDocument()
-          ..put("state", "NY")
-          ..put("city", "New York")
-          ..put("address", emptyDocument()
-            ..put("line1", "40")
-            ..put("line2", "ABC Street")
-            ..put("house", ["1", "2", "3"])
-          )
-        )
+        ..put(
+            "location",
+            emptyDocument()
+              ..put("state", "NY")
+              ..put("city", "New York")
+              ..put(
+                  "address",
+                  emptyDocument()
+                    ..put("line1", "40")
+                    ..put("line2", "ABC Street")
+                    ..put("house", ["1", "2", "3"])))
         ..put("category", ['food', 'produce', 'grocery'])
-        ..put("objArray", [
-          createDocument("value", 1),
-          createDocument("value", 2)]);
+        ..put("objArray",
+            [createDocument("value", 1), createDocument("value", 2)]);
     });
 
     tearDown(() => NitriteConfig().setFieldSeparator("."));
@@ -38,18 +41,19 @@ void main() {
       expect(doc[""], null);
       expect(doc["score"], 1034);
       expect(doc["location.state"], "NY");
-      expect(doc["location.address"], emptyDocument()
-        ..put("line1", "40")
-        ..put("line2", "ABC Street")
-        ..put("house", ["1", "2", "3"])
-      );
+      expect(
+          doc["location.address"],
+          emptyDocument()
+            ..put("line1", "40")
+            ..put("line2", "ABC Street")
+            ..put("house", ["1", "2", "3"]));
       expect(doc["location.address.line1"], "40");
       expect(doc["location.address.line2"], "ABC Street");
       expect(doc["location.address.house"], ["1", "2", "3"]);
       expect(doc["location.address.house.0"], "1");
       expect(doc["location.address.house.1"], "2");
       expect(doc["location.address.house.2"], "3");
-      expect(() => doc["location.address.house.3"], throwsException);
+      expect(() => doc["location.address.house.3"], throwsValidationException);
       expect(doc["location.category"], null);
 
       expect(doc["category"], ['food', 'produce', 'grocery']);
@@ -57,17 +61,18 @@ void main() {
       expect(doc["category.1"], 'produce');
       expect(doc["category.2"], 'grocery');
 
-      expect(doc["objArray"], [
-        createDocument("value", 1),
-        createDocument("value", 2)]);
+      expect(doc["objArray"],
+          [createDocument("value", 1), createDocument("value", 2)]);
       expect(doc["objArray.0"], createDocument("value", 1));
       expect(doc["objArray.1"], createDocument("value", 2));
       expect(doc["objArray.0.value"], 1);
       expect(doc["objArray.1.value"], 2);
 
-      expect(doc["location.address.test"], isNot(emptyDocument()
-        ..put("line1", "40")
-        ..put("line2", "ABC Street")));
+      expect(
+          doc["location.address.test"],
+          isNot(emptyDocument()
+            ..put("line1", "40")
+            ..put("line2", "ABC Street")));
       expect(doc["location.address.test"], isNot("a"));
       expect(doc["."], isNull);
       expect(doc[".."], isNull);
@@ -80,18 +85,19 @@ void main() {
       expect(doc[""], null);
       expect(doc["score"], 1034);
       expect(doc["location:state"], "NY");
-      expect(doc["location:address"], emptyDocument()
-        ..put("line1", "40")
-        ..put("line2", "ABC Street")
-        ..put("house", ["1", "2", "3"])
-      );
+      expect(
+          doc["location:address"],
+          emptyDocument()
+            ..put("line1", "40")
+            ..put("line2", "ABC Street")
+            ..put("house", ["1", "2", "3"]));
       expect(doc["location:address:line1"], "40");
       expect(doc["location:address:line2"], "ABC Street");
       expect(doc["location:address:house"], ["1", "2", "3"]);
       expect(doc["location:address:house:0"], "1");
       expect(doc["location:address:house:1"], "2");
       expect(doc["location:address:house:2"], "3");
-      expect(() => doc["location:address:house:3"], throwsException);
+      expect(() => doc["location:address:house:3"], throwsValidationException);
       expect(doc["location:category"], null);
 
       expect(doc["category"], ['food', 'produce', 'grocery']);
@@ -99,17 +105,18 @@ void main() {
       expect(doc["category:1"], 'produce');
       expect(doc["category:2"], 'grocery');
 
-      expect(doc["objArray"], [
-        createDocument("value", 1),
-        createDocument("value", 2)]);
+      expect(doc["objArray"],
+          [createDocument("value", 1), createDocument("value", 2)]);
       expect(doc["objArray:0"], createDocument("value", 1));
       expect(doc["objArray:1"], createDocument("value", 2));
       expect(doc["objArray:0:value"], 1);
       expect(doc["objArray:1:value"], 2);
 
-      expect(doc["location:address:test"], isNot(emptyDocument()
-        ..put("line1", "40")
-        ..put("line2", "ABC Street")));
+      expect(
+          doc["location:address:test"],
+          isNot(emptyDocument()
+            ..put("line1", "40")
+            ..put("line2", "ABC Street")));
       expect(doc["location:address:test"], isNot("a"));
       expect(doc[":"], isNull);
       expect(doc["::"], isNull);
@@ -128,21 +135,19 @@ void main() {
     });
 
     test("Put _id", () {
-      expect(() => doc.put(docId, "value"),
-          throwsA(isA<InvalidIdException>()));
+      expect(() => doc.put(docId, "value"), throwsInvalidIdException);
     });
 
     test("Get Invalid _id", () {
-      var map = <String, dynamic> {};
+      var map = <String, dynamic>{};
       map[docId] = "value";
-      expect(() => documentFromMap(map), throwsA(isA<InvalidIdException>()));
+      expect(() => documentFromMap(map), throwsInvalidIdException);
     });
 
     test("Invalid Get", () {
       var key = "first.array.-1";
-      var doc2 = createDocument("first",
-          createDocument("array", []));
-      expect(() => doc2[key], throwsA(isA<ValidationException>()));
+      var doc2 = createDocument("first", createDocument("array", []));
+      expect(() => doc2[key], throwsValidationException);
     });
 
     test("Remove", () {
@@ -182,45 +187,40 @@ void main() {
 
     test("Get Embedded Array Fields", () {
       var document = createDocument("first", "value")
-          ..put("second", ['1', '2'])
-          ..put("third", null)
-          ..put("fourth", createDocument("first", "value")
+        ..put("second", ['1', '2'])
+        ..put("third", null)
+        ..put(
+            "fourth",
+            createDocument("first", "value")
               ..put("second", ['1', '2'])
-              ..put("third", createDocument("first", [1, 2])
-                  ..put("second", "other"))
-          )
-          ..put("fifth", [
-            createDocument("first", "value")
-                ..put("second", [1, 2, 3])
-                ..put("third", createDocument("first", "value")
-                    ..put("second", [1, 2]))
-                ..put("fourth", <Document>[
-                  createDocument("first", "value")
-                      ..put("second", [1, 2]),
-                  createDocument("first", "value")
-                      ..put("second", [1, 2])
-                ]),
-            createDocument("first", "value")
-                ..put("second", [3, 4, 5])
-                ..put("third", createDocument("first", "value")
-                    ..put("second", [1, 2]))
-                ..put("fourth", <Document>[
-                  createDocument("first", "value")
-                      ..put("second", [1, 2]),
-                  createDocument("first", "value")
-                      ..put("second", [1, 2])
-                ]),
-            createDocument("first", "value")
-                ..put("second", [5, 6, 7])
-                ..put("third", createDocument("first", "value")
-                    ..put("second", [1, 2]))
-                ..put("fourth", <Document>[
-                  createDocument("first", "value")
-                      ..put("second", [1, 2]),
-                  createDocument("first", "value")
-                      ..put("second", [3, 4])
-                ])
-          ]);
+              ..put("third",
+                  createDocument("first", [1, 2])..put("second", "other")))
+        ..put("fifth", [
+          createDocument("first", "value")
+            ..put("second", [1, 2, 3])
+            ..put("third",
+                createDocument("first", "value")..put("second", [1, 2]))
+            ..put("fourth", <Document>[
+              createDocument("first", "value")..put("second", [1, 2]),
+              createDocument("first", "value")..put("second", [1, 2])
+            ]),
+          createDocument("first", "value")
+            ..put("second", [3, 4, 5])
+            ..put("third",
+                createDocument("first", "value")..put("second", [1, 2]))
+            ..put("fourth", <Document>[
+              createDocument("first", "value")..put("second", [1, 2]),
+              createDocument("first", "value")..put("second", [1, 2])
+            ]),
+          createDocument("first", "value")
+            ..put("second", [5, 6, 7])
+            ..put("third",
+                createDocument("first", "value")..put("second", [1, 2]))
+            ..put("fourth", <Document>[
+              createDocument("first", "value")..put("second", [1, 2]),
+              createDocument("first", "value")..put("second", [3, 4])
+            ])
+        ]);
 
       var list = document["fifth.second"]!;
       expect(list.length, 7);
@@ -252,8 +252,5 @@ void main() {
       doc.remove("location.address.house");
       expect(doc["location.address"], isNull);
     });
-
   });
-
-
 }

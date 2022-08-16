@@ -11,12 +11,13 @@ void main() {
     setUp(() {
       // Additional setup goes here.
     });
-    
+
     test("Test Optimize", () {
       var findOptimizer = FindOptimizer();
       var filter = MockFilter();
       var findOptions = FindOptions();
-      var actualOptimizeResult = findOptimizer.optimize(filter, findOptions, []);
+      var actualOptimizeResult =
+          findOptimizer.optimize(filter, findOptions, []);
       expect(actualOptimizeResult, isNotNull);
       expect(actualOptimizeResult.blockingSortOrder, isEmpty);
       expect(actualOptimizeResult.subPlans, isEmpty);
@@ -39,7 +40,8 @@ void main() {
       var findOptimizer = FindOptimizer();
       var filter = MockFilter();
       var findOptions = FindOptions.orderBy("Field Name", SortOrder.ascending);
-      var actualOptimizeResult = findOptimizer.optimize(filter, findOptions, []);
+      var actualOptimizeResult =
+          findOptimizer.optimize(filter, findOptions, []);
       expect(actualOptimizeResult, isNotNull);
       expect(actualOptimizeResult.blockingSortOrder.length, 1);
       expect(actualOptimizeResult.subPlans, isEmpty);
@@ -52,10 +54,10 @@ void main() {
       var filter = MockFilter();
       var findOptions = FindOptions();
 
-
       var indexDescriptor = IndexDescriptor(
           IndexType.unique, Fields.withNames(["a"]), "Collection Name");
-      var actualOptimizeResult = findOptimizer.optimize(filter, findOptions, [indexDescriptor]);
+      var actualOptimizeResult =
+          findOptimizer.optimize(filter, findOptions, [indexDescriptor]);
       expect(actualOptimizeResult, isNotNull);
       expect(actualOptimizeResult.blockingSortOrder, isEmpty);
       expect(actualOptimizeResult.subPlans, isEmpty);

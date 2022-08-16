@@ -2,8 +2,9 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 import 'package:dart_numerics/dart_numerics.dart' as num;
 
-void main() async {
+import '../test_utils.dart';
 
+void main() async {
   group('Nitrite Id Test Suite', () {
     setUp(() {
       // Additional setup goes here.
@@ -49,11 +50,11 @@ void main() async {
     test('Test CreatId', () {
       var one = NitriteId.createId("42");
       expect(one.idValue, "42");
-      expect(() => NitriteId.createId("value"), throwsException);
+      expect(() => NitriteId.createId("value"), throwsInvalidIdException);
     });
 
     test('Test ValidId', () {
-      expect(() => NitriteId.createId("value"), throwsException);
+      expect(() => NitriteId.createId("value"), throwsInvalidIdException);
       expect(NitriteId.validId(42), isTrue);
     });
 

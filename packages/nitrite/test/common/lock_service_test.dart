@@ -14,7 +14,7 @@ void main() {
 
       var lock2 = await lockService.getLock("test");
       expect(lock2, same(lock));
-      
+
       var lock3 = await lockService.getLock("test2");
       expect(lock3, isNot(same(lock2)));
     });

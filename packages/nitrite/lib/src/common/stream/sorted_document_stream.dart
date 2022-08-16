@@ -40,24 +40,22 @@ class SortedDocumentStream extends StreamView<Document> {
       } else {
         // validate comparable
         if (aValue is! Comparable || bValue is! Comparable) {
-          throw ValidationException(
+          throw InvalidOperationException(
               "Cannot compare ${aValue.runtimeType} and ${bValue.runtimeType}");
         }
 
         // compare values
         result = aValue.compareTo(bValue);
-
-        if (order == SortOrder.descending) {
-          result = -result;
-        }
-
-        // if both values are equal, continue to next sort order
-        if (result != 0) {
-          return result;
-        }
       }
 
-      return result;
+      if (order == SortOrder.descending) {
+        result = -result;
+      }
+
+      // if both values are equal, continue to next sort order
+      if (result != 0) {
+        return result;
+      }
     }
   }
 }

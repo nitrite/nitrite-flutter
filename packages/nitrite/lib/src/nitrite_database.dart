@@ -91,7 +91,7 @@ class NitriteDatabase extends Nitrite {
   Future<void> destroyRepository<T>([String? key]) async {
     checkOpened();
     var mapName =
-        findRepositoryNameByType<T>(key, _nitriteConfig.nitriteMapper);
+        findRepositoryNameByType<T>(_nitriteConfig.nitriteMapper, key);
     return _nitriteStore.removeMap(mapName);
   }
 

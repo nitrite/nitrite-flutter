@@ -2,6 +2,8 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/mapper/mappable_mapper.dart';
 import 'package:test/test.dart';
 
+import '../../test_utils.dart';
+
 void main() {
   group('MappableMapper Test Suite', () {
     test('Test Convert Value Type', () {
@@ -60,8 +62,8 @@ void main() {
     test("Test Convert Non Mappable To Document", () {
       var mapper = MappableMapper();
       var a = _A("test");
-      expect(() => mapper.convert<Document, _A>(a),
-          throwsA(TypeMatcher<ObjectMappingException>()));
+      expect(
+          () => mapper.convert<Document, _A>(a), throwsObjectMappingException);
     });
 
     test("Test Convert Document To Non Mappable", () {
@@ -69,7 +71,7 @@ void main() {
       expect(
           () => mapper
               .convert<_A, Document>(Document.createDocument("key", "value")),
-          throwsA(TypeMatcher<ObjectMappingException>()));
+          throwsObjectMappingException);
     });
 
     test("Test Convert Document To Mappable", () {
@@ -96,7 +98,7 @@ void main() {
       expect(
           () => mapper
               .convert<_B, Document>(Document.createDocument("value", "test")),
-          throwsA(TypeMatcher<ObjectMappingException>()));
+          throwsObjectMappingException);
     });
 
     test("Test IsValueType", () {
@@ -147,10 +149,8 @@ void main() {
 
     test("Test NewInstance", () {
       var mapper = MappableMapper();
-      expect(() => mapper.newInstance<int>(),
-          throwsA(TypeMatcher<ObjectMappingException>()));
-      expect(() => mapper.newInstance<_B>(),
-          throwsA(TypeMatcher<ObjectMappingException>()));
+      expect(() => mapper.newInstance<int>(), throwsObjectMappingException);
+      expect(() => mapper.newInstance<_B>(), throwsObjectMappingException);
 
       mapper.registerMappable(() => _B());
       expect(mapper.newInstance<_B>(), isNotNull);

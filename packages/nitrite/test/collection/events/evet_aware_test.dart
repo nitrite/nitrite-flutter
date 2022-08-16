@@ -4,18 +4,18 @@ import 'package:test/test.dart';
 void main() {
   var eventAwareTest = EventAwareTest();
 
-  group('EventAware Test Suite', (){
+  group('EventAware Test Suite', () {
     setUp(() {
       // Additional setup goes here.
     });
 
     test('Subscription Test', () {
-      eventAwareTest.subscribe((event) { });
+      eventAwareTest.subscribe((event) {});
       expect(eventAwareTest.subscribed, 1);
     });
 
     test('Unsubscription Test', () {
-      eventAwareTest.unsubscribe((event) { });
+      eventAwareTest.unsubscribe((event) {});
       expect(eventAwareTest.unsubscribed, 1);
     });
   });
@@ -34,5 +34,4 @@ class EventAwareTest implements EventAware {
   Future<void> unsubscribe<T>(CollectionEventListener<T> listener) async {
     unsubscribed++;
   }
-
 }
