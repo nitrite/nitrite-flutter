@@ -22,6 +22,16 @@ class DBValue implements Comparable<DBValue> {
 
   @override
   toString() => _value == null ? "null" : _value.toString();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is DBValue &&
+              runtimeType == other.runtimeType &&
+              _value == other._value;
+
+  @override
+  int get hashCode => _value.hashCode;
 }
 
 /// This class acts as a surrogate for null key.
@@ -44,6 +54,15 @@ class DBNull extends DBValue {
 
   @override
   String toString() => "null";
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is DBNull &&
+              runtimeType == other.runtimeType;
+
+  @override
+  int get hashCode => _value.hashCode;
 }
 
 /// Represents an unknown type.
@@ -52,4 +71,13 @@ class UnknownType implements Comparable<UnknownType> {
   int compareTo(UnknownType other) {
     return 0;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is UnknownType &&
+              runtimeType == other.runtimeType;
+
+  @override
+  int get hashCode => 0;
 }

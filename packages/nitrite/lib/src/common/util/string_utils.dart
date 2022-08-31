@@ -42,5 +42,5 @@ List<String> tokenizeString(String text) {
       '\\'
     ],
     trimParts: true,
-  );
+  ).where((element) => element.isNotEmpty).toList();
 }

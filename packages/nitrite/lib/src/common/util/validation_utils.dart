@@ -30,10 +30,6 @@ void validateStringIterableIndexField(Iterable fieldValue, String field) {
 }
 
 void validateStringIterableItem(dynamic value, String field) {
-  if (value is! String && value is Iterable) {
-    throw IndexingException('Nested iterables are not supported');
-  }
-
   if (value is! String) {
     throw IndexingException('Each value in the iterable field $field must '
         'be a string');
