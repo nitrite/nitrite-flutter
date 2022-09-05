@@ -1,7 +1,6 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/repository/cursor.dart';
-import 'package:nitrite/src/repository/entity.dart';
 
 class RepositoryOperations<T> {
   final NitriteMapper _nitriteMapper;
