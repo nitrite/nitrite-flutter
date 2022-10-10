@@ -79,10 +79,95 @@ String findRepositoryNameByTypeName(String entityName, String? key) {
 
 String getEntityName<T>(NitriteMapper nitriteMapper) {
   if (isSubtype<T, NitriteEntity>()) {
-    NitriteEntity entity = nitriteMapper.newInstance<T>() as NitriteEntity;
+    NitriteEntity entity = newInstance<T>(nitriteMapper) as NitriteEntity;
     if (!entity.entityName.isNullOrEmpty) {
       return entity.entityName!;
     }
   }
   return T.toString();
+}
+
+String findRepositoryNameByDecorator<T>(EntityDecorator<T> entityDecorator,
+    [String? key]) {
+  var entityName = entityDecorator.entityName;
+  if (entityName.contains(keyObjSeparator)) {
+    throw ValidationException('$entityName is not a valid entity name');
+  }
+  return findRepositoryNameByTypeName(entityName, key);
+}
+
+T? newInstance<T>(NitriteMapper nitriteMapper) {
+  try {
+    if (builtInTypes().contains(T)) {
+      return _defaultValue<T>();
+    }
+
+    return nitriteMapper.convert<T, Document>(Document.emptyDocument());
+  } catch (e, s) {
+    throw ObjectMappingException("Failed to instantiate type ${T.toString()}",
+        cause: e, stackTrace: s);
+  }
+}
+
+List<Type> builtInTypes() {
+  return [
+    num,
+    int,
+    double,
+    String,
+    Runes,
+    bool,
+    Null,
+    DateTime,
+    Duration,
+    Symbol
+  ];
+}
+
+bool isValue<T>(T value, NitriteMapper nitriteMapper) {
+  try {
+    if (value == null) return true;
+
+    // if it is registered with nitrite mapper as value
+    // then no exception will be thrown
+    nitriteMapper.convert<Document, T>(value);
+    return true;
+  } catch (e) {
+    return isBuiltInValueType<T>();
+  }
+}
+
+bool isValueType<T>(NitriteMapper nitriteMapper) {
+  try {
+    var value = newInstance<T>(nitriteMapper);
+    if (value != null) {
+      return isValue(value, nitriteMapper);
+    } else {
+      return isBuiltInValueType<T>();
+    }
+  } catch (e) {
+    return isBuiltInValueType<T>();
+  }
+}
+
+bool isBuiltInValueType<T>() {
+  if (isSubtype<T, num>()) return true;
+  if (isSubtype<T, Iterable>()) return true;
+  if (isSubtype<T, Map>()) return true;
+  if (isSubtype<T, Symbol>()) return true;
+  return (builtInTypes().contains(T));
+}
+
+T? _defaultValue<T>() {
+  if (isSubtype<T, int>()) {
+    return 0 as T;
+  } else if (isSubtype<T, double>()) {
+    return 0.0 as T;
+  } else if (isSubtype<T, num>()) {
+    return 0 as T;
+  } else if (isSubtype<T, bool>()) {
+    return false as T;
+  } else {
+    return null;
+  }
 }

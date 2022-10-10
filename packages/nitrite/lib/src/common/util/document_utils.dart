@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/util/object_utils.dart';
 
 FieldValues getDocumentValues(Document document, Fields fields) {
   var fieldValues = FieldValues();
@@ -14,11 +15,7 @@ FieldValues getDocumentValues(Document document, Fields fields) {
 }
 
 Document skeletonDocument<T>(NitriteMapper nitriteMapper) {
-  if (nitriteMapper.isValueType<T>()) {
-    return Document.emptyDocument();
-  }
-
-  var dummy = nitriteMapper.newInstance<T>();
+  var dummy = newInstance<T>(nitriteMapper);
   var document = nitriteMapper.convert<Document, T>(dummy);
   if (document != null) {
     return _removeValues(document);
@@ -27,14 +24,15 @@ Document skeletonDocument<T>(NitriteMapper nitriteMapper) {
   return Document.emptyDocument();
 }
 
-
 Document _removeValues(Document document) {
+  if (document.isEmpty) return document;
+  var newDoc = Document.emptyDocument();
   for (var entry in document) {
     if (entry.second is Document) {
-      document.put(entry.first, _removeValues(entry.second as Document));
+      newDoc.put(entry.first, _removeValues(entry.second as Document));
     } else {
-      document.put(entry.first, null);
+      newDoc.put(entry.first, null);
     }
   }
-  return document;
+  return newDoc;
 }

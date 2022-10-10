@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/constants.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/index_map.dart';
@@ -227,7 +226,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
     if (objectFilter && nitriteConfig != null) {
       var mapper = nitriteConfig!.nitriteMapper;
       validateSearchTerm(mapper, field, _value);
-      if (mapper.isValue(_value)) {
+      if (isValue(_value, mapper)) {
         _value = mapper.convert<dynamic, Comparable>(_value);
       }
     }
@@ -240,7 +239,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
       NitriteMapper nitriteMapper, String field, dynamic value) {
     field.notNullOrEmpty("field cannot be empty");
 
-    if (!nitriteMapper.isValue(value) && value is! Comparable) {
+    if (!isValue(value, nitriteMapper) && value is! Comparable) {
       throw FilterException(
           "The value for field '$field' is not a valid search term");
     }

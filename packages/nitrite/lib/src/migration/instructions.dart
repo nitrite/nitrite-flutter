@@ -83,7 +83,7 @@ abstract class InstructionSet {
 
   /// Creates a [RepositoryInstruction].
   RepositoryInstruction forRepository<T>(NitriteMapper nitriteMapper,
-      {String? key});
+      {EntityDecorator<T>? entityDecorator, String? key});
 
   /// Creates a [CollectionInstruction].
   CollectionInstruction forCollection(String collectionName);

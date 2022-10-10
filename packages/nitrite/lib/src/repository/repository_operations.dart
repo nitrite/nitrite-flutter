@@ -1,46 +1,36 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/repository/cursor.dart';
+import 'package:nitrite/src/repository/entity_decorator.dart';
+import 'package:nitrite/src/repository/nitrite_entity_reader.dart';
 
 class RepositoryOperations<T> {
   final NitriteMapper _nitriteMapper;
   final NitriteCollection _nitriteCollection;
+  final EntityDecorator<T>? _entityDecorator;
 
   EntityId? _objectIdField;
-  List<EntityIndex>? _indexes;
+  EntityDecoratorReader? _entityDecoratorReader;
+  NitriteEntityReader? _nitriteEntityReader;
 
-  RepositoryOperations(this._nitriteMapper, this._nitriteCollection);
+  RepositoryOperations(
+      this._entityDecorator, this._nitriteMapper, this._nitriteCollection) {
+    if (_entityDecorator != null) {
+      _entityDecoratorReader =
+          EntityDecoratorReader(_entityDecorator!, _nitriteCollection);
+    } else {
+      _nitriteEntityReader =
+          NitriteEntityReader(_nitriteMapper, _nitriteCollection);
+    }
+  }
 
   Future<void> createIndices() async {
-    if (isSubtype<T, NitriteEntity>()) {
-      NitriteEntity dummy = _nitriteMapper.newInstance<T>() as NitriteEntity;
-      if (dummy.entityId != null) {
-        _objectIdField = dummy.entityId;
-        var hasIndex = await _nitriteCollection
-            .hasIndex(_objectIdField!.embeddedFieldNames);
-        if (!hasIndex) {
-          await _nitriteCollection
-              .createIndex(_objectIdField!.embeddedFieldNames);
-        }
-      }
-
-      if (dummy.entityIndexes != null) {
-        _indexes = dummy.entityIndexes;
-
-        var futures = <Future<void>>[];
-        for (var index in _indexes!) {
-          var hasIndex = await _nitriteCollection.hasIndex(index.fieldNames);
-          if (!hasIndex) {
-            futures.add(_nitriteCollection.createIndex(
-                index.fieldNames, indexOptions(index.indexType)));
-          }
-        }
-        await Future.wait(futures);
-      }
-    } else if (isSubtype<T, Mappable>()) {
-      // to test if a MappableFactory has been registered for this type
-      // if no registered factory found, it will throw an exception
-      _nitriteMapper.newInstance<T>() as Mappable;
+    if (_entityDecoratorReader != null) {
+      _entityDecoratorReader!.readAndExecute();
+      _objectIdField = _entityDecoratorReader!.objectIdField;
+    } else if (isSubtype<T, NitriteEntity>()) {
+      _nitriteEntityReader!.readAndExecute();
+      _objectIdField = _nitriteEntityReader!.objectIdField;
     }
   }
 

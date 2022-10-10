@@ -94,8 +94,7 @@ class _NitriteTransaction extends Transaction {
 
       var txMap = await _transactionStore.openMap<NitriteId, Document>(name);
       var txContext = TransactionContext(name, txMap, _transactionConfig);
-      var txCollection =
-          DefaultTransactionalCollection(primary, txContext);
+      var txCollection = DefaultTransactionalCollection(primary, txContext);
       await txCollection.initialize();
 
       _collectionRegistry[name] = txCollection;
@@ -105,19 +104,24 @@ class _NitriteTransaction extends Transaction {
   }
 
   @override
-  Future<ObjectRepository<T>> getRepository<T>([String? key]) async {
+  Future<ObjectRepository<T>> getRepository<T>(
+      {EntityDecorator<T>? entityDecorator, String? key}) async {
     return _mutex.protect(() async {
       _checkState();
 
-      var name =
-          findRepositoryNameByType<T>(_transactionConfig.nitriteMapper, key);
+      var name = entityDecorator == null
+          ? findRepositoryNameByType<T>(_transactionConfig.nitriteMapper, key)
+          : findRepositoryNameByDecorator(entityDecorator, key);
+
       if (_repositoryRegistry.containsKey(name)) {
         return _repositoryRegistry[name]! as ObjectRepository<T>;
       }
 
       ObjectRepository<T> primary;
-      if (await _nitrite.hasRepository(name)) {
-        primary = await _nitrite.getRepository<T>(key);
+      if (await _nitrite.hasRepository<T>(
+          entityDecorator: entityDecorator, key: key)) {
+        primary = await _nitrite.getRepository<T>(
+            entityDecorator: entityDecorator, key: key);
       } else {
         throw TransactionException(
             'Repository of type ${T.runtimeType} does not exist');
@@ -126,12 +130,12 @@ class _NitriteTransaction extends Transaction {
       var txMap = await _transactionStore.openMap<NitriteId, Document>(name);
       var txContext = TransactionContext(name, txMap, _transactionConfig);
       var primaryCollection = primary.documentCollection;
-      var backingCollection = DefaultTransactionalCollection(
-          primaryCollection!, txContext);
+      var backingCollection =
+          DefaultTransactionalCollection(primaryCollection!, txContext);
       await backingCollection.initialize();
 
       var txRepository = DefaultTransactionalRepository<T>(
-          primary, backingCollection, _transactionConfig);
+          primary, backingCollection, entityDecorator, _transactionConfig);
       await txRepository.initialize();
 
       _repositoryRegistry[name] = txRepository;

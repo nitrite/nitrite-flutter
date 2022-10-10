@@ -3,7 +3,6 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/collection_factory.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
-import 'package:nitrite/src/repository/cursor.dart';
 import 'package:nitrite/src/repository/repository_operations.dart';
 
 class RepositoryFactory {
@@ -14,20 +13,24 @@ class RepositoryFactory {
   RepositoryFactory(this._collectionFactory);
 
   Future<ObjectRepository<T>> getRepository<T>(NitriteConfig nitriteConfig,
-      [String? key]) {
-    var collectionName =
-        findRepositoryNameByType<T>(nitriteConfig.nitriteMapper, key);
+      [EntityDecorator<T>? entityDecorator, String? key]) {
+    var collectionName = entityDecorator == null
+        ? findRepositoryNameByType<T>(nitriteConfig.nitriteMapper, key)
+        : findRepositoryNameByDecorator(entityDecorator, key);
+
     return _lock.protect(() async {
       if (_repositoryMap.containsKey(collectionName)) {
         var repository = _repositoryMap[collectionName]! as ObjectRepository<T>;
         if (await repository.isDropped || !await repository.isOpen) {
           _repositoryMap.remove(collectionName);
-          return _createRepository<T>(nitriteConfig, collectionName, key);
+          return _createRepository<T>(
+              nitriteConfig, collectionName, entityDecorator, key);
         } else {
           return repository;
         }
       } else {
-        return _createRepository<T>(nitriteConfig, collectionName, key);
+        return _createRepository<T>(
+            nitriteConfig, collectionName, entityDecorator, key);
       }
     });
   }
@@ -48,10 +51,11 @@ class RepositoryFactory {
 
   Future<ObjectRepository<T>> _createRepository<T>(
       NitriteConfig nitriteConfig, String collectionName,
-      [String? key]) async {
+      [EntityDecorator<T>? entityDecorator, String? key]) async {
     var nitriteMapper = nitriteConfig.nitriteMapper;
     var store = nitriteConfig.getNitriteStore();
-    if (nitriteMapper.isValueType<T>()) {
+
+    if (isValueType<T>(nitriteMapper)) {
       throw ValidationException('Cannot create a repository for a value type');
     }
 
@@ -63,8 +67,8 @@ class RepositoryFactory {
 
     var nitriteCollection = await _collectionFactory.getCollection(
         collectionName, nitriteConfig, false);
-    var repository =
-        _DefaultObjectRepository<T>(nitriteCollection, nitriteConfig);
+    var repository = _DefaultObjectRepository<T>(
+        entityDecorator, nitriteCollection, nitriteConfig);
     await repository.initialize();
 
     _repositoryMap[collectionName] = repository;
@@ -87,9 +91,11 @@ class RepositoryFactory {
 class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   final NitriteCollection _nitriteCollection;
   final NitriteConfig _nitriteConfig;
+  final EntityDecorator<T>? _entityDecorator;
   late RepositoryOperations<T> _operations;
 
-  _DefaultObjectRepository(this._nitriteCollection, this._nitriteConfig);
+  _DefaultObjectRepository(
+      this._entityDecorator, this._nitriteCollection, this._nitriteConfig);
 
   @override
   Future<bool> get isDropped => _nitriteCollection.isDropped;
@@ -247,7 +253,8 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   @override
   Future<void> initialize() {
     var nitriteMapper = _nitriteConfig.nitriteMapper;
-    _operations = RepositoryOperations<T>(nitriteMapper, _nitriteCollection);
+    _operations = RepositoryOperations<T>(
+        _entityDecorator, nitriteMapper, _nitriteCollection);
     return _operations.createIndices();
   }
 }

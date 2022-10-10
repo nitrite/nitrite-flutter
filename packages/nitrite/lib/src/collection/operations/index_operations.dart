@@ -42,7 +42,7 @@ class IndexOperations {
   // call to this method is already synchronized, only one thread per field
   // can access it only if rebuild is already not running for that field
   Future<void> buildIndex(IndexDescriptor indexDescriptor, bool rebuild) async {
-    var fields = indexDescriptor.indexFields;
+    var fields = indexDescriptor.fields;
     if (_getBuildFlag(fields) == false) {
       _indexBuildTracker[fields] = true;
       return _buildIndexInternal(indexDescriptor, rebuild);
@@ -64,7 +64,7 @@ class IndexOperations {
     var futures = <Future<void>>[];
     for (var index in indices) {
       // drop all indices in parallel
-      futures.add(dropIndex(index.indexFields));
+      futures.add(dropIndex(index.fields));
     }
 
     await Future.wait(futures);
@@ -140,7 +140,7 @@ class IndexOperations {
 
   Future<void> _buildIndexInternal(
       IndexDescriptor indexDescriptor, bool rebuild) async {
-    var fields = indexDescriptor.indexFields;
+    var fields = indexDescriptor.fields;
 
     try {
       _alert(EventType.indexStart, fields);
@@ -159,7 +159,7 @@ class IndexOperations {
       await for (var entry in _nitriteMap.entries()) {
         var document = entry.second;
         var fieldValues =
-            getDocumentValues(document, indexDescriptor.indexFields);
+            getDocumentValues(document, indexDescriptor.fields);
 
         // write index entries in parallel
         futures.add(nitriteIndexer.writeIndexEntry(

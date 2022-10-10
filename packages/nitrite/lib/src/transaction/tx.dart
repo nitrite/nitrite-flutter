@@ -15,7 +15,8 @@ abstract class Transaction {
   Future<NitriteCollection> getCollection(String name);
 
   /// Gets an [ObjectRepository] to perform ACID operations on it.
-  Future<ObjectRepository<T>> getRepository<T>([String? key]);
+  Future<ObjectRepository<T>> getRepository<T>(
+      {EntityDecorator<T>? entityDecorator, String? key});
 
   /// Completes the transaction and commits the data to the underlying store.
   Future<void> commit();

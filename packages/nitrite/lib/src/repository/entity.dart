@@ -2,8 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:nitrite/nitrite.dart';
 
-/// For internal use only
-@internal
+/// Represents an entity id declaration.
 class EntityId {
   final String _fieldName;
   final List<String> _fields;
@@ -56,8 +55,7 @@ class EntityId {
   int get hashCode => _fieldName.hashCode ^ _fields.hashCode;
 }
 
-/// For internal use only
-@internal
+/// Represents an entity index declaration.
 class EntityIndex {
   final List<String> _fields;
   final String _type;

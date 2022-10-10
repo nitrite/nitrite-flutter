@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/mapper/mappable_mapper.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:test/test.dart';
 
@@ -106,7 +105,7 @@ void main() {
     });
 
     test('Test FindRepositoryNameByType', () {
-      var nitriteMapper = MappableMapper();
+      var nitriteMapper = SimpleDocumentMapper();
       nitriteMapper.registerMappable(() => _F());
       nitriteMapper.registerMappable(() => _G());
 
@@ -125,7 +124,7 @@ void main() {
     });
 
     test('Test GetEntityName', () {
-      var nitriteMapper = MappableMapper();
+      var nitriteMapper = SimpleDocumentMapper();
       nitriteMapper.registerMappable(() => _F());
       nitriteMapper.registerMappable(() => _G());
 
@@ -134,14 +133,67 @@ void main() {
       expect(getEntityName(nitriteMapper), 'dynamic');
       expect(getEntityName<DateTime>(nitriteMapper), 'DateTime');
     });
+
+    test('Test IsValueType', () {
+      var nitriteMapper = SimpleDocumentMapper();
+      expect(isValueType(nitriteMapper), isFalse); // no type arguments
+      expect(isValueType<int>(nitriteMapper), isTrue);
+      expect(isValueType<double>(nitriteMapper), isTrue);
+      expect(isValueType<String>(nitriteMapper), isTrue);
+      expect(isValueType<bool>(nitriteMapper), isTrue);
+      expect(isValueType<Null>(nitriteMapper), isTrue);
+      expect(isValueType<DateTime>(nitriteMapper), isTrue);
+      expect(isValueType<Duration>(nitriteMapper), isTrue);
+      expect(isValueType<NitriteId>(nitriteMapper), isTrue);
+      expect(isValueType<Document>(nitriteMapper), isFalse);
+
+      expect(isValueType<_A>(nitriteMapper), isFalse);
+      expect(isValueType<_B>(nitriteMapper), isFalse);
+
+      nitriteMapper.addValueType<_A>();
+      expect(isValueType<_A>(nitriteMapper), isTrue);
+      expect(isValueType<_B>(nitriteMapper), isFalse);
+
+      nitriteMapper.addValueType<_B>();
+      expect(isValueType<_A>(nitriteMapper), isTrue);
+      expect(isValueType<_B>(nitriteMapper), isTrue);
+    });
+
+    test('Test IsValue', () {
+      var nitriteMapper = SimpleDocumentMapper();
+      expect(isValue(1, nitriteMapper), isTrue);
+      expect(isValue(1.0, nitriteMapper), isTrue);
+      expect(isValue("1", nitriteMapper), isTrue);
+      expect(isValue(true, nitriteMapper), isTrue);
+      expect(isValue(null, nitriteMapper), isTrue);
+      expect(isValue(DateTime(2020, 1, 1), nitriteMapper), isTrue);
+      expect(isValue(Duration(days: 1), nitriteMapper), isTrue);
+      expect(isValue(NitriteId.createId('1'), nitriteMapper), isTrue);
+      expect(isValue(Document.createDocument("key", "value"), nitriteMapper), isFalse);
+
+      nitriteMapper.addValueType<_B>();
+      expect(isValue(_B("test"), nitriteMapper), isTrue);
+      expect(isValue(_C("test"), nitriteMapper), isFalse);
+
+      nitriteMapper.addValueType<_C>();
+      expect(isValue(_B("test"), nitriteMapper), isTrue);
+      expect(isValue(_C("test"), nitriteMapper), isTrue);
+    });
   });
 }
 
-abstract class _A {}
+abstract class _A {
+}
 
-class _B extends _A {}
+class _B extends _A {
+  final String value;
+  _B(this.value);
+}
 
-class _C extends _B {}
+class _C extends _B {
+  final String val;
+  _C(this.val) : super(val);
+}
 
 mixin _M {}
 

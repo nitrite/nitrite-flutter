@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// An in-memory, single-file based embedded nosql persistent document store. The store
@@ -37,14 +38,20 @@ abstract class Nitrite {
   /// automatically and returned. If a repository is already opened, it is
   /// returned as is.
   ///
+  /// If the entity type [T] cannot be annotated with [Entity], an
+  /// [EntityDecorator] implementation of the type can also be provided
+  /// to create an object repository.
+  ///
   /// The returned repository is thread-safe for concurrent use.
-  Future<ObjectRepository<T>> getRepository<T>([String? key]);
+  Future<ObjectRepository<T>> getRepository<T>(
+      {EntityDecorator<T>? entityDecorator, String? key});
 
   /// Destroys a [NitriteCollection] without opening it first.
   Future<void> destroyCollection(String name);
 
   /// Destroys an [ObjectRepository] without opening it first.
-  Future<void> destroyRepository<T>([String? key]);
+  Future<void> destroyRepository<T>(
+      {EntityDecorator<T>? entityDecorator, String? key});
 
   /// Gets the set of all [NitriteCollection]s' names saved in the store.
   Future<Set<String>> get listCollectionNames;
@@ -86,15 +93,21 @@ abstract class Nitrite {
   }
 
   /// Checks whether a particular [ObjectRepository] exists in the store.
-  Future<bool> hasRepository<T>([String? key]) async {
+  Future<bool> hasRepository<T>(
+      {EntityDecorator<T>? entityDecorator, String? key}) async {
     checkOpened();
+    var nitriteMapper = config.nitriteMapper;
+    var entityName = entityDecorator == null
+        ? getEntityName<T>(nitriteMapper)
+        : entityDecorator.entityName;
+
     if (key.isNullOrEmpty) {
       var repos = await listRepositories;
-      return repos.contains(T.toString());
+      return repos.contains(entityName);
     } else {
       var repos = await listKeyedRepositories;
       return repos.containsKey(key) &&
-          repos[key]?.contains(T.toString()) != null;
+          repos[key]?.contains(entityName) != null;
     }
   }
 

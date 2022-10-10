@@ -34,7 +34,7 @@ class IndexManager {
     var list = <IndexDescriptor>[];
     var indexDescriptors = await getIndexDescriptors();
     for (var indexDescriptor in indexDescriptors) {
-      if (indexDescriptor.indexFields.startWith(fields)) {
+      if (indexDescriptor.fields.startWith(fields)) {
         list.add(indexDescriptor);
       }
     }

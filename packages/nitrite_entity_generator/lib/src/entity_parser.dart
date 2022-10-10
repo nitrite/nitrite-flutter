@@ -45,14 +45,6 @@ class EntityParser extends Parser<EntityInfo> {
       );
     }
 
-    // check mappable
-    if (!isMappable.isAssignableFromType(_classElement.thisType)) {
-      throw InvalidGenerationSourceError(
-        '`@Entity` can only be used on classes that implement `Mappable`.',
-        element: _classElement,
-      );
-    }
-
     // check for default constructor
     var constructors = _classElement.constructors;
     for (var ctor in constructors) {

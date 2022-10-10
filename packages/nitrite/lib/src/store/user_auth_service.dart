@@ -21,7 +21,7 @@ class UserAuthenticationService {
 
         var userCredential = UserCredential(hash, salt);
         var uMap = await _nitriteStore.openMap<String, Document>(userMap);
-        await uMap.put(username!, userCredential.write(null));
+        await uMap.put(username!, userCredential.toDocument());
       } else {
         var uMap = await _nitriteStore.openMap<String, Document>(userMap);
         var doc = await uMap[username!];
@@ -69,7 +69,7 @@ class UserAuthenticationService {
     var salt = _getNextSalt();
     var hash = await _hash(newPassword, salt);
     var userCredential = UserCredential(hash, salt);
-    await uMap.put(username, userCredential.write(null));
+    await uMap.put(username, userCredential.toDocument());
   }
 
   List<int> _getNextSalt() {

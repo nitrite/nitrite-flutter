@@ -74,7 +74,7 @@ class ObjectCursor<T> extends Cursor<T> {
       throw ValidationException('Cannot project to a number type');
     } else if (isSubtype<D, Iterable>()) {
       throw ValidationException('Cannot project to an iterable type');
-    } else if (nitriteMapper.isValueType<D>()) {
+    } else if (isValueType<D>(nitriteMapper)) {
       throw ValidationException(
           'Cannot project to a nitrite mapper\'s value type');
     }

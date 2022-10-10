@@ -63,9 +63,11 @@ class _NitriteInstructionSet extends InstructionSet {
 
   @override
   RepositoryInstruction forRepository<T>(NitriteMapper nitriteMapper,
-      {String? key}) {
-    return _RepositoryInstruction(
-        _migrationSteps, getEntityName<T>(nitriteMapper), key);
+      {EntityDecorator<T>? entityDecorator, String? key}) {
+    var entityName = entityDecorator != null
+        ? entityDecorator.entityName
+        : getEntityName<T>(nitriteMapper);
+    return _RepositoryInstruction(_migrationSteps, entityName, key);
   }
 }
 

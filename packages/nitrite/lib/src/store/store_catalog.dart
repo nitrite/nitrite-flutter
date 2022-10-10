@@ -17,11 +17,11 @@ class StoreCatalog {
     var document = await _catalog[tagCollections];
     document ??= Document.emptyDocument();
 
-    // parse the document to create collection meta data object
+    // parse the document to create collection metadata object
     var mapMetaData = MapMetaData(document);
     mapMetaData.mapNames.add(name);
 
-    // convert the meta data object to document and save
+    // convert the metadata object to document and save
     await _catalog.put(tagCollections, mapMetaData.getInfo());
   }
 
@@ -29,11 +29,11 @@ class StoreCatalog {
     var document = await _catalog[tagRepositories];
     document ??= Document.emptyDocument();
 
-    // parse the document to create repository meta data object
+    // parse the document to create repository metadata object
     var mapMetaData = MapMetaData(document);
     mapMetaData.mapNames.add(name);
 
-    // convert the meta data object to document and save
+    // convert the metadata object to document and save
     await _catalog.put(tagRepositories, mapMetaData.getInfo());
   }
 
@@ -41,11 +41,11 @@ class StoreCatalog {
     var document = await _catalog[tagKeyedRepositories];
     document ??= Document.emptyDocument();
 
-    // parse the document to create repository meta data object
+    // parse the document to create repository metadata object
     var mapMetaData = MapMetaData(document);
     mapMetaData.mapNames.add(name);
 
-    // convert the meta data object to document and save
+    // convert the metadata object to document and save
     await _catalog.put(tagKeyedRepositories, mapMetaData.getInfo());
   }
 

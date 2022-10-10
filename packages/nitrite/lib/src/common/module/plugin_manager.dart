@@ -1,6 +1,5 @@
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/mapper/mappable_mapper.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/comparable_indexer.dart';
 import 'package:nitrite/src/index/nitrite_text_indexer.dart';
@@ -148,7 +147,7 @@ class PluginManager {
 
     if (_nitriteMapper == null) {
       _log.fine("Loading nitrite mapper");
-      var plugin = MappableMapper();
+      var plugin = SimpleDocumentMapper();
       await _loadPlugin(plugin);
     }
 

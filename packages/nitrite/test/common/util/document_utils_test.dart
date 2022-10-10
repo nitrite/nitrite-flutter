@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/mapper/mappable_mapper.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
 import 'package:test/test.dart';
 
@@ -41,7 +40,7 @@ void main() {
     });
 
     test('Test SkeletonDocument', () {
-      var nitriteMapper = MappableMapper();
+      var nitriteMapper = SimpleDocumentMapper();
       nitriteMapper.registerMappable(() => _Person());
       nitriteMapper.registerMappable(() => _Address());
       nitriteMapper.registerMappable(() => _Phone());
@@ -57,7 +56,7 @@ void main() {
     });
 
     test('Test SkeletonDocument with value type', () {
-      var nitriteMapper = MappableMapper();
+      var nitriteMapper = SimpleDocumentMapper();
 
       var document = skeletonDocument<int>(nitriteMapper);
       print(document);

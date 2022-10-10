@@ -189,7 +189,7 @@ class FindOptimizer {
     var indexFilterMap = <IndexDescriptor, List<ComparableFilter>>{};
 
     for (var indexDescriptor in indexDescriptors) {
-      var fieldNames = indexDescriptor.indexFields.fieldNames;
+      var fieldNames = indexDescriptor.fields.fieldNames;
       var indexFilters = <ComparableFilter>[];
       for (var fieldName in fieldNames) {
         var matchFound = false;
@@ -269,7 +269,7 @@ class FindOptimizer {
 
       if (indexDescriptor != null) {
         // get index field names
-        var indexedFieldNames = indexDescriptor.indexFields.fieldNames;
+        var indexedFieldNames = indexDescriptor.fields.fieldNames;
 
         var canUseIndex = false;
         var indexScanOrder = <String, bool>{};

@@ -280,7 +280,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       throw IndexingException('$fields is not indexed');
     }
 
-    if (await isIndexing(indexDescriptor.indexFields.fieldNames)) {
+    if (await isIndexing(indexDescriptor.fields.fieldNames)) {
       throw IndexingException(
           'Indexing on fields $fields is currently running');
     }
@@ -342,7 +342,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
         // find the index descriptor to get the index type
         // which will be required during rollback
         for (var entry in indexes) {
-          if (entry.indexFields == Fields.withNames(fields)) {
+          if (entry.fields == Fields.withNames(fields)) {
             indexDescriptor = entry;
             break;
           }
@@ -378,7 +378,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       rollback: () async {
         for (var entry in indexEntries) {
           await _primary.createIndex(
-              entry.indexFields.fieldNames, indexOptions(entry.indexType));
+              entry.fields.fieldNames, indexOptions(entry.indexType));
         }
       },
     );

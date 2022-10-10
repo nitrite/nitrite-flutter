@@ -1,7 +1,6 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
-import 'package:nitrite/src/migration/instructions.dart';
 import 'package:nitrite/src/store/user_auth_service.dart';
 
 class AddPasswordCommand extends Command {

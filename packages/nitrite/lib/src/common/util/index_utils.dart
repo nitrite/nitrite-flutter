@@ -11,7 +11,7 @@ String deriveIndexMapName(IndexDescriptor descriptor) {
       internalNameSeparator +
       descriptor.collectionName +
       internalNameSeparator +
-      descriptor.indexFields.encodedName +
+      descriptor.fields.encodedName +
       internalNameSeparator +
       descriptor.indexType;
 }

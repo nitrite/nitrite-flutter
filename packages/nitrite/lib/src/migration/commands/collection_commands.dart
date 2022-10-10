@@ -38,7 +38,7 @@ class CollectionRenameCommand extends BaseCommand {
         var indexEntries = await indexManager.getIndexDescriptors();
         var futures = <Future<void>>[];
         for (var indexDescriptor in indexEntries) {
-          var field = indexDescriptor.indexFields;
+          var field = indexDescriptor.fields;
           var indexType = indexDescriptor.indexType;
           // create indexes in parallel
           futures.add(newOperations.createIndex(field, indexType));
@@ -126,12 +126,12 @@ class RenameFieldCommand extends BaseCommand {
         for (var indexDescriptor in matchingIndexDescriptors) {
           var indexType = indexDescriptor.indexType;
 
-          var oldIndexFields = indexDescriptor.indexFields;
+          var oldIndexFields = indexDescriptor.fields;
           var newIndexFields = _getNewIndexFields(oldIndexFields, oldName, newName);
 
           // create indexes in parallel
           futures.add(Future.microtask(() async {
-            await operations!.dropIndex(indexDescriptor.indexFields);
+            await operations!.dropIndex(indexDescriptor.fields);
             await operations!.createIndex(newIndexFields, indexType);
           }));
         }

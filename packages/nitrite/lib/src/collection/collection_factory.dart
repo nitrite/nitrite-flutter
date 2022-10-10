@@ -395,7 +395,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   Future<void> _validateRebuildIndex(IndexDescriptor? indexDescriptor) async {
     indexDescriptor.notNullOrEmpty('Index descriptor cannot be null');
 
-    var indexFields = indexDescriptor!.indexFields.fieldNames;
+    var indexFields = indexDescriptor!.fields.fieldNames;
     var isIndexing = await this.isIndexing(indexFields);
     if (isIndexing) {
       throw InvalidOperationException(

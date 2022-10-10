@@ -63,7 +63,7 @@ class DocumentIndexWriter {
 
   Future<void> _writeIndexEntryInternal(IndexDescriptor indexDescriptor,
       Document document, NitriteIndexer nitriteIndexer) async {
-    var fields = indexDescriptor.indexFields;
+    var fields = indexDescriptor.fields;
     var fieldValues = getDocumentValues(document, fields);
 
     // if dirty index and currently indexing is not running, rebuild
@@ -80,7 +80,7 @@ class DocumentIndexWriter {
 
   Future<void> _removeIndexEntryInternal(IndexDescriptor indexDescriptor,
       Document document, NitriteIndexer nitriteIndexer) async {
-    var fields = indexDescriptor.indexFields;
+    var fields = indexDescriptor.fields;
     var fieldValues = getDocumentValues(document, fields);
 
     // if dirty index and currently indexing is not running, rebuild

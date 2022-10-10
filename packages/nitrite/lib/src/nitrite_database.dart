@@ -76,9 +76,11 @@ class NitriteDatabase extends Nitrite {
   }
 
   @override
-  Future<ObjectRepository<T>> getRepository<T>([String? key]) async {
+  Future<ObjectRepository<T>> getRepository<T>(
+      {EntityDecorator<T>? entityDecorator, String? key}) async {
     checkOpened();
-    return _repositoryFactory.getRepository<T>(_nitriteConfig, key);
+    return _repositoryFactory.getRepository<T>(
+        _nitriteConfig, entityDecorator, key);
   }
 
   @override
@@ -88,10 +90,12 @@ class NitriteDatabase extends Nitrite {
   }
 
   @override
-  Future<void> destroyRepository<T>([String? key]) async {
+  Future<void> destroyRepository<T>(
+      {EntityDecorator<T>? entityDecorator, String? key}) async {
     checkOpened();
-    var mapName =
-        findRepositoryNameByType<T>(_nitriteConfig.nitriteMapper, key);
+    var mapName = entityDecorator == null
+        ? findRepositoryNameByType<T>(_nitriteConfig.nitriteMapper, key)
+        : findRepositoryNameByDecorator(entityDecorator, key);
     return _nitriteStore.removeMap(mapName);
   }
 

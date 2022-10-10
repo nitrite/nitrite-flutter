@@ -1,7 +1,7 @@
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/mapper/mappable_mapper.dart';
+import 'package:nitrite/src/common/mapper/simple_document_mapper.dart';
 import 'package:nitrite/src/common/module/plugin_manager.dart';
 import 'package:nitrite/src/store/memory/in_memory_store.dart';
 import 'package:test/test.dart';
@@ -37,7 +37,7 @@ void main() {
       var nitriteStore = pluginManager.getNitriteStore();
       expect(nitriteStore, TypeMatcher<InMemoryStore>());
       expect(pluginManager.indexerMap.length, 3);
-      expect(pluginManager.nitriteMapper, TypeMatcher<MappableMapper>());
+      expect(pluginManager.nitriteMapper, TypeMatcher<SimpleDocumentMapper>());
       expect(nitriteStore.isClosed, isFalse);
     });
   });

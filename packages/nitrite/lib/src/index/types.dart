@@ -45,7 +45,7 @@ class IndexDescriptor implements Comparable<IndexDescriptor> {
   String get indexType => _indexType;
 
   /// Gets the target fields for the index.
-  Fields get indexFields => _indexFields;
+  Fields get fields => _indexFields;
 
   /// Gets the collection name.
   String get collectionName => _collectionName;

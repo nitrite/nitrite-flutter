@@ -1,17 +1,17 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
-import 'package:nitrite/src/repository/cursor.dart';
 import 'package:nitrite/src/repository/repository_operations.dart';
 
 class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   final ObjectRepository<T> _primary;
   final NitriteCollection _backingCollection;
   final NitriteConfig _nitriteConfig;
+  final EntityDecorator<T>? _entityDecorator;
 
   late RepositoryOperations<T> _operations;
 
-  DefaultTransactionalRepository(
-      this._primary, this._backingCollection, this._nitriteConfig);
+  DefaultTransactionalRepository(this._primary, this._backingCollection,
+      this._entityDecorator, this._nitriteConfig);
 
   @override
   Future<bool> get isDropped => _backingCollection.isDropped;
@@ -174,7 +174,8 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   @override
   Future<void> initialize() async {
     var nitriteMapper = _nitriteConfig.nitriteMapper;
-    var operations = RepositoryOperations<T>(nitriteMapper, _backingCollection);
+    var operations = RepositoryOperations<T>(
+        _entityDecorator, nitriteMapper, _backingCollection);
     await operations.createIndices();
   }
 }

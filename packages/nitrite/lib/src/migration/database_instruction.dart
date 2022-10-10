@@ -33,9 +33,13 @@ abstract class DatabaseInstruction implements Instruction {
 
   /// Adds an instruction to drop a keyed [ObjectRepository] from the database.
   DatabaseInstruction dropRepository<T>(NitriteMapper nitriteMapper,
-      {String? key}) {
-    MigrationStep migrationStep = MigrationStep(InstructionType.dropRepository,
-        Pair(getEntityName<T>(nitriteMapper), key));
+      {EntityDecorator<T>? entityDecorator, String? key}) {
+    var entityName = entityDecorator != null
+        ? entityDecorator.entityName
+        : getEntityName<T>(nitriteMapper);
+
+    MigrationStep migrationStep =
+        MigrationStep(InstructionType.dropRepository, Pair(entityName, key));
     addStep(migrationStep);
     return this;
   }

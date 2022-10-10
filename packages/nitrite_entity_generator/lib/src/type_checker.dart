@@ -1,11 +1,8 @@
 import 'package:analyzer/dart/element/type.dart';
-import 'package:nitrite/nitrite.dart';
 import 'package:source_gen/source_gen.dart';
 
 
 TypeChecker typeChecker(final Type type) => TypeChecker.fromRuntime(type);
-
-final isMappable = typeChecker(Mappable);
 
 final isString = typeChecker(String);
 

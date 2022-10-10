@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:nitrite/src/collection/document.dart';
-import 'package:nitrite/src/common/mapper/mappable_mapper.dart';
+import 'package:nitrite/src/common/mapper/simple_document_mapper.dart';
 import 'package:nitrite/src/common/mapper/nitrite_mapper.dart';
 import 'package:test/test.dart';
 
@@ -18,8 +18,8 @@ void main() {
       emp.joiningDate = DateTime.now();
       emp.boss = boss;
 
-      var mapper = MappableMapper();
-      mapper.registerMappable(() => _Employee());
+      var mapper = SimpleDocumentMapper();
+      mapper.registerEntityConverter(_EmployeeConverter());
       var stopWatch = Stopwatch();
       stopWatch.start();
       var doc = mapper.convert<Document, _Employee>(emp);
@@ -51,9 +51,9 @@ void main() {
       dept.employees.add(emp);
       dept.employees.add(boss);
 
-      var mapper = MappableMapper();
-      mapper.registerMappable(() => _Employee());
-      mapper.registerMappable(() => _Department());
+      var mapper = SimpleDocumentMapper();
+      mapper.registerEntityConverter(_EmployeeConverter());
+      mapper.registerEntityConverter(_DepartmentConverter());
 
       var stopWatch = Stopwatch();
       stopWatch.start();
@@ -71,32 +71,11 @@ void main() {
   });
 }
 
-class _Employee implements Mappable {
+class _Employee {
   String? empId;
   String? name;
   DateTime? joiningDate;
   _Employee? boss;
-
-  @override
-  void read(NitriteMapper? mapper, Document document) {
-    empId = document.get('empId');
-    name = document.get('name');
-    joiningDate = document.get('joiningDate');
-    if (document.containsKey('boss') && document.get('boss') != null) {
-      boss = _Employee();
-      boss?.read(mapper, document.get("boss"));
-    }
-  }
-
-  @override
-  Document write(NitriteMapper? mapper) {
-    var document = Document.emptyDocument();
-    document.put('empId', empId);
-    document.put('name', name);
-    document.put('joiningDate', joiningDate);
-    document.put('boss', boss?.write(mapper));
-    return document;
-  }
 
   @override
   operator ==(Object? other) =>
@@ -113,32 +92,35 @@ class _Employee implements Mappable {
       empId.hashCode ^ name.hashCode ^ joiningDate.hashCode ^ boss.hashCode;
 }
 
-class _Department implements Mappable {
-  String? name;
-  List<_Employee> employees = [];
-
+class _EmployeeConverter extends EntityConverter<_Employee> {
   @override
-  void read(NitriteMapper? mapper, Document document) {
-    name = document.get('name');
-    if (document.containsKey('employees') &&
-        document.get('employees') != null) {
-      var docs = document.get('employees') as List<Document>;
-      for (var doc in docs) {
-        var emp = _Employee();
-        emp.read(mapper, doc);
-        employees.add(emp);
-      }
+  _Employee fromDocument(Document document, NitriteMapper nitriteMapper) {
+    _Employee entity = _Employee();
+    entity.empId = document.get('empId');
+    entity.name = document.get('name');
+    entity.joiningDate = document.get('joiningDate');
+    if (document.containsKey('boss') && document.get('boss') != null) {
+      entity.boss =
+          nitriteMapper.convert<_Employee, Document>(document.get("boss"));
     }
+    return entity;
   }
 
   @override
-  Document write(NitriteMapper? mapper) {
+  Document toDocument(_Employee entity, NitriteMapper nitriteMapper) {
     var document = Document.emptyDocument();
-    document.put('name', name);
-    var docs = employees.map((emp) => emp.write(mapper)).toList();
-    document.put('employees', docs);
+    document.put('empId', entity.empId);
+    document.put('name', entity.name);
+    document.put('joiningDate', entity.joiningDate);
+    document.put(
+        'boss', nitriteMapper.convert<Document, _Employee>(entity.boss));
     return document;
   }
+}
+
+class _Department {
+  String? name;
+  List<_Employee> employees = [];
 
   @override
   operator ==(Object? other) =>
@@ -150,4 +132,34 @@ class _Department implements Mappable {
 
   @override
   int get hashCode => name.hashCode ^ ListEquality().hash(employees);
+}
+
+class _DepartmentConverter extends EntityConverter<_Department> {
+  @override
+  _Department fromDocument(Document document, NitriteMapper nitriteMapper) {
+    _Department entity = _Department();
+    entity.name = document.get('name');
+    if (document.containsKey('employees') &&
+        document.get('employees') != null) {
+      var docs = document.get('employees') as List<Document?>;
+      for (var doc in docs) {
+        var emp = nitriteMapper.convert<_Employee, Document>(doc);
+        if (emp != null) {
+          entity.employees.add(emp);
+        }
+      }
+    }
+    return entity;
+  }
+
+  @override
+  Document toDocument(_Department entity, NitriteMapper nitriteMapper) {
+    var document = Document.emptyDocument();
+    document.put('name', entity.name);
+    var docs = entity.employees
+        .map((emp) => nitriteMapper.convert<Document, _Employee>(emp))
+        .toList();
+    document.put('employees', docs);
+    return document;
+  }
 }

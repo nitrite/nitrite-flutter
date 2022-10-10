@@ -1,13 +1,12 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/mapper/mappable_mapper.dart';
 import 'package:nitrite/src/common/stream/mutated_object_stream.dart';
 import 'package:test/test.dart';
 
 void main() {
   group("MutatedObjectStream Test Suite", () {
     test("Test Mutate with Id Strip", () async {
-      var nitriteMapper = MappableMapper();
-      nitriteMapper.registerMappable(() => _A());
+      var nitriteMapper = SimpleDocumentMapper();
+      nitriteMapper.registerEntityConverter(_AConverter());
 
       var stream = MutatedObjectStream<_A>(
           Stream.fromIterable([
@@ -28,8 +27,8 @@ void main() {
     });
 
     test("Test Mutate without Id Strip", () async {
-      var nitriteMapper = MappableMapper();
-      nitriteMapper.registerMappable(() => _A());
+      var nitriteMapper = SimpleDocumentMapper();
+      nitriteMapper.registerEntityConverter(_AConverter());
 
       var stream = MutatedObjectStream<_A>(
           Stream.fromIterable([
@@ -52,28 +51,12 @@ void main() {
   });
 }
 
-class _A implements Mappable {
+class _A {
   int? id;
   String? name;
   int? age;
 
   _A([this.name, this.age]);
-
-  @override
-  void read(NitriteMapper? mapper, Document document) {
-    id = document.get("_id");
-    name = document.get("name");
-    age = document.get("age");
-  }
-
-  @override
-  Document write(NitriteMapper? mapper) {
-    return Document.fromMap({
-      "_id": id,
-      "name": name,
-      "age": age,
-    });
-  }
 
   @override
   String toString() => "name: $name, age: $age";
@@ -88,4 +71,24 @@ class _A implements Mappable {
 
   @override
   int get hashCode => name.hashCode ^ age.hashCode;
+}
+
+class _AConverter extends EntityConverter<_A> {
+  @override
+  _A fromDocument(Document document, NitriteMapper nitriteMapper) {
+    _A entity = _A();
+    entity.id = document.get("_id");
+    entity.name = document.get("name");
+    entity.age = document.get("age");
+    return entity;
+  }
+
+  @override
+  Document toDocument(_A entity, NitriteMapper nitriteMapper) {
+    return Document.fromMap({
+      "_id": entity.id,
+      "name": entity.name,
+      "age": entity.age,
+    });
+  }
 }
