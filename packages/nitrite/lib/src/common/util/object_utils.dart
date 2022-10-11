@@ -130,7 +130,7 @@ bool isValue<T>(T value, NitriteMapper nitriteMapper) {
 
     // if it is registered with nitrite mapper as value
     // then no exception will be thrown
-    nitriteMapper.convert<Document, T>(value);
+    nitriteMapper.convert<Comparable, T>(value);
     return true;
   } catch (e) {
     return isBuiltInValueType<T>();
@@ -152,7 +152,8 @@ bool isValueType<T>(NitriteMapper nitriteMapper) {
 
 bool isBuiltInValueType<T>() {
   if (isSubtype<T, num>()) return true;
-  if (isSubtype<T, Iterable>()) return true;
+  if (isSubtype<T, List>()) return true;
+  if (isSubtype<T, Set>()) return true;
   if (isSubtype<T, Map>()) return true;
   if (isSubtype<T, Symbol>()) return true;
   return (builtInTypes().contains(T));
