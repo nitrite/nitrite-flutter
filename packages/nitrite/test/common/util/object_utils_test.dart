@@ -49,7 +49,7 @@ void main() {
       expect(deepEquals(null, 1), isFalse);
       expect(deepEquals(1, null), isFalse);
 
-      var b = _B();
+      var b = _B("test");
       expect(deepEquals(b, b), isTrue);
       expect(deepEquals(1, 1), isTrue);
       expect(deepEquals(1, 2), isFalse);
@@ -84,7 +84,7 @@ void main() {
       var date2 = DateTime.parse('2020-01-01');
       expect(deepEquals(date1, date2), isTrue);
 
-      var c = _C();
+      var c = _C("test");
       expect(deepEquals(c, b), isFalse);
     });
 
@@ -106,8 +106,8 @@ void main() {
 
     test('Test FindRepositoryNameByType', () {
       var nitriteMapper = SimpleDocumentMapper();
-      nitriteMapper.registerMappable(() => _F());
-      nitriteMapper.registerMappable(() => _G());
+      nitriteMapper.registerEntityConverter(_FConverter());
+      nitriteMapper.registerEntityConverter(_GConverter());
 
       expect(findRepositoryNameByType<_F>(nitriteMapper), '_F');
       expect(findRepositoryNameByType<_F>(nitriteMapper, 'a'),
@@ -125,8 +125,8 @@ void main() {
 
     test('Test GetEntityName', () {
       var nitriteMapper = SimpleDocumentMapper();
-      nitriteMapper.registerMappable(() => _F());
-      nitriteMapper.registerMappable(() => _G());
+      nitriteMapper.registerEntityConverter(_FConverter());
+      nitriteMapper.registerEntityConverter(_GConverter());
 
       expect(getEntityName<_F>(nitriteMapper), '_F');
       expect(getEntityName<_G>(nitriteMapper), 'g');
@@ -140,11 +140,13 @@ void main() {
       expect(isValueType<int>(nitriteMapper), isTrue);
       expect(isValueType<double>(nitriteMapper), isTrue);
       expect(isValueType<String>(nitriteMapper), isTrue);
+      expect(isValueType<Runes>(nitriteMapper), isTrue);
       expect(isValueType<bool>(nitriteMapper), isTrue);
       expect(isValueType<Null>(nitriteMapper), isTrue);
       expect(isValueType<DateTime>(nitriteMapper), isTrue);
       expect(isValueType<Duration>(nitriteMapper), isTrue);
-      expect(isValueType<NitriteId>(nitriteMapper), isTrue);
+      expect(isValueType<Symbol>(nitriteMapper), isTrue);
+      expect(isValueType<NitriteId>(nitriteMapper), isFalse);
       expect(isValueType<Document>(nitriteMapper), isFalse);
 
       expect(isValueType<_A>(nitriteMapper), isFalse);
@@ -201,23 +203,33 @@ class _D with _M {}
 
 class _E implements _A {}
 
-class _F implements Mappable {
+class _F {
+}
+
+class _FConverter extends EntityConverter<_F> {
   @override
-  void read(NitriteMapper? mapper, Document document) {}
+  _F fromDocument(Document document, NitriteMapper nitriteMapper) {
+    return _F();
+  }
 
   @override
-  Document write(NitriteMapper? mapper) {
+  Document toDocument(_F entity, NitriteMapper nitriteMapper) {
     return emptyDocument();
   }
 }
 
 @Entity(name: 'g')
-class _G with _$_GEntityMixin implements Mappable {
+class _G with _$_GEntityMixin {
+}
+
+class _GConverter extends EntityConverter<_G> {
   @override
-  void read(NitriteMapper? mapper, Document document) {}
+  _G fromDocument(Document document, NitriteMapper nitriteMapper) {
+    return _G();
+  }
 
   @override
-  Document write(NitriteMapper? mapper) {
+  Document toDocument(_G entity, NitriteMapper nitriteMapper) {
     return emptyDocument();
   }
 }

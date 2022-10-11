@@ -1,3 +1,4 @@
+import 'package:meta/meta_meta.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
@@ -17,7 +18,11 @@ class SimpleDocumentMapper extends NitriteMapper {
       return null;
     }
     
-    if (_isValue(source) && source is Target) {
+    if (_isValue(source)) {
+      if (source is! Target) {
+        throw ObjectMappingException("Cannot convert value type $Source to $Target");
+      }
+
       return source as Target;
     } else {
       if (Target == Document || isSubtype<Target, Document>()) {

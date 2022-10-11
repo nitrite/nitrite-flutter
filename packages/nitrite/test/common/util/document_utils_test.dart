@@ -2,6 +2,8 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
 import 'package:test/test.dart';
 
+import '../../test_utils.dart';
+
 void main() {
   group("Document Utils Test Suite", () {
     test('Test GetDocumentValues', () {
@@ -41,9 +43,9 @@ void main() {
 
     test('Test SkeletonDocument', () {
       var nitriteMapper = SimpleDocumentMapper();
-      nitriteMapper.registerMappable(() => _Person());
-      nitriteMapper.registerMappable(() => _Address());
-      nitriteMapper.registerMappable(() => _Phone());
+      nitriteMapper.registerEntityConverter(_PersonConverter());
+      nitriteMapper.registerEntityConverter(_AddressConverter());
+      nitriteMapper.registerEntityConverter(_PhoneConverter());
 
       var document = skeletonDocument<_Person>(nitriteMapper);
       print(document);
@@ -57,79 +59,93 @@ void main() {
 
     test('Test SkeletonDocument with value type', () {
       var nitriteMapper = SimpleDocumentMapper();
-
-      var document = skeletonDocument<int>(nitriteMapper);
-      print(document);
-      expect(document.isEmpty, isTrue);
+      expect(() => skeletonDocument<int>(nitriteMapper),
+          throwsObjectMappingException);
     });
   });
 }
 
-class _Person implements Mappable {
+class _Person {
   String? name;
   int? age;
   _Address? address;
   _Phone? phone;
+}
 
+class _PersonConverter extends EntityConverter<_Person> {
   @override
-  void read(NitriteMapper? mapper, Document document) {
-    name = document.get('name');
-    age = document.get('age');
-    address = mapper?.convert<_Address, Document>(document.get('address'));
-    phone = mapper?.convert<_Phone, Document>(document.get('phone'));
+  _Person fromDocument(Document document, NitriteMapper nitriteMapper) {
+    _Person entity = _Person();
+    entity.name = document.get('name');
+    entity.age = document.get('age');
+    entity.address =
+        nitriteMapper.convert<_Address, Document>(document.get('address'));
+    entity.phone =
+        nitriteMapper.convert<_Phone, Document>(document.get('phone'));
+    return entity;
   }
 
   @override
-  Document write(NitriteMapper? mapper) {
+  Document toDocument(_Person entity, NitriteMapper nitriteMapper) {
     var document = Document.emptyDocument();
-    document.put('name', name);
-    document.put('age', age);
-    document.put('address', mapper?.convert<Document, _Address>(address));
-    document.put('phone', mapper?.convert<Document, _Phone>(phone));
+    document.put('name', entity.name);
+    document.put('age', entity.age);
+    document.put(
+        'address', nitriteMapper.convert<Document, _Address>(entity.address));
+    document.put(
+        'phone', nitriteMapper.convert<Document, _Phone>(entity.phone));
     return document;
   }
 }
 
-class _Address implements Mappable {
+class _Address {
   String? street;
   String? city;
   String? state;
   int? zip;
+}
 
+class _AddressConverter extends EntityConverter<_Address> {
   @override
-  void read(NitriteMapper? mapper, Document document) {
-    street = document.get('street');
-    city = document.get('city');
-    state = document.get('state');
-    zip = document.get('zip');
+  _Address fromDocument(Document document, NitriteMapper nitriteMapper) {
+    _Address entity = _Address();
+    entity.street = document.get('street');
+    entity.city = document.get('city');
+    entity.state = document.get('state');
+    entity.zip = document.get('zip');
+    return entity;
   }
 
   @override
-  Document write(NitriteMapper? mapper) {
+  Document toDocument(_Address entity, NitriteMapper nitriteMapper) {
     var document = Document.emptyDocument();
-    document.put('street', street);
-    document.put('city', city);
-    document.put('state', state);
-    document.put('zip', zip);
+    document.put('street', entity.street);
+    document.put('city', entity.city);
+    document.put('state', entity.state);
+    document.put('zip', entity.zip);
     return document;
   }
 }
 
-class _Phone implements Mappable {
+class _Phone {
   String? home;
   String? cell;
+}
 
+class _PhoneConverter extends EntityConverter<_Phone> {
   @override
-  void read(NitriteMapper? mapper, Document document) {
-    home = document.get('home');
-    cell = document.get('cell');
+  _Phone fromDocument(Document document, NitriteMapper nitriteMapper) {
+    _Phone entity = _Phone();
+    entity.home = document.get('home');
+    entity.cell = document.get('cell');
+    return entity;
   }
 
   @override
-  Document write(NitriteMapper? mapper) {
+  Document toDocument(_Phone entity, NitriteMapper nitriteMapper) {
     var document = Document.emptyDocument();
-    document.put('home', home);
-    document.put('cell', cell);
+    document.put('home', entity.home);
+    document.put('cell', entity.cell);
     return document;
   }
 }
