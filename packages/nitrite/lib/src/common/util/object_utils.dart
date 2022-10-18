@@ -98,8 +98,8 @@ String findRepositoryNameByDecorator<T>(EntityDecorator<T> entityDecorator,
 
 T? newInstance<T>(NitriteMapper nitriteMapper) {
   try {
-    if (builtInTypes().contains(T)) {
-      return _defaultValue<T>();
+    if (builtInTypes().contains(T) || isBuiltInValueType<T>()) {
+      return defaultValue<T>();
     }
 
     return nitriteMapper.convert<T, Document>(Document.emptyDocument());
@@ -124,42 +124,13 @@ List<Type> builtInTypes() {
   ];
 }
 
-bool isValue<T>(T value, NitriteMapper nitriteMapper) {
-  try {
-    if (value == null) return true;
-
-    // if it is registered with nitrite mapper as value
-    // then no exception will be thrown
-    nitriteMapper.convert<Comparable, T>(value);
-    return true;
-  } catch (e) {
-    return isBuiltInValueType<T>();
-  }
-}
-
-bool isValueType<T>(NitriteMapper nitriteMapper) {
-  try {
-    var value = newInstance<T>(nitriteMapper);
-    if (value != null) {
-      return isValue(value, nitriteMapper);
-    } else {
-      return isBuiltInValueType<T>();
-    }
-  } catch (e) {
-    return isBuiltInValueType<T>();
-  }
-}
-
 bool isBuiltInValueType<T>() {
   if (isSubtype<T, num>()) return true;
-  if (isSubtype<T, List>()) return true;
-  if (isSubtype<T, Set>()) return true;
-  if (isSubtype<T, Map>()) return true;
   if (isSubtype<T, Symbol>()) return true;
   return (builtInTypes().contains(T));
 }
 
-T? _defaultValue<T>() {
+T? defaultValue<T>() {
   if (isSubtype<T, int>()) {
     return 0 as T;
   } else if (isSubtype<T, double>()) {

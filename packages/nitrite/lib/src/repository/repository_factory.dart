@@ -55,9 +55,7 @@ class RepositoryFactory {
     var nitriteMapper = nitriteConfig.nitriteMapper;
     var store = nitriteConfig.getNitriteStore();
 
-    if (isValueType<T>(nitriteMapper)) {
-      throw ValidationException('Cannot create a repository for a value type');
-    }
+    validateRepositoryType<T>(nitriteMapper);
 
     var collectionNames = await store.collectionNames;
     if (collectionNames.contains(collectionName)) {

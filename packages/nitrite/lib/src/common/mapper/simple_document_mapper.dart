@@ -1,4 +1,3 @@
-import 'package:meta/meta_meta.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
@@ -58,9 +57,7 @@ class SimpleDocumentMapper extends NitriteMapper {
   }
 
   _registerValueTypes(List<Type> valueTypes) {
-    for (var type in builtInTypes()) {
-      _valueTypes.add(type);
-    }
+    _valueTypes.addAll(builtInTypes());
     _valueTypes.add(Enum);
     _valueTypes.add(NitriteId);
     _valueTypes.addAll(valueTypes);

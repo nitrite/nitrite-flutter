@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/util/object_utils.dart';
 
 void validateIterableIndexField(Iterable fieldValue, String field) {
   if (fieldValue.isNotEmpty) {
@@ -33,6 +34,40 @@ void validateStringIterableItem(dynamic value, String field) {
   if (value is! String) {
     throw IndexingException('Each value in the iterable field $field must '
         'be a string');
+  }
+}
+
+void validateProjectionType<T>(NitriteMapper nitriteMapper) {
+  dynamic value;
+  try {
+    value = newInstance<T>(nitriteMapper);
+  } catch (e, s) {
+    throw ValidationException("Invalid projection type",
+        cause: e, stackTrace: s);
+  }
+
+  if (value == null) {
+    throw ValidationException("Invalid projection type");
+  }
+}
+
+void validateRepositoryType<T>(NitriteMapper nitriteMapper) {
+  dynamic value;
+  try {
+    value = newInstance<T>(nitriteMapper);
+    if (value == null) {
+      throw ValidationException(
+          "Cannot create new instance of type ${T.toString()}");
+    }
+
+    var document = nitriteMapper.convert<Document, T>(value);
+    if (document == null || document.size == 0) {
+      throw ValidationException(
+          "Cannot convert to document from type ${T.toString()}");
+    }
+  } catch (e, s) {
+    throw ValidationException("Invalid repository type",
+        cause: e, stackTrace: s);
   }
 }
 

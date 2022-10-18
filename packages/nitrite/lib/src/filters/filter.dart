@@ -226,7 +226,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
     if (objectFilter && nitriteConfig != null) {
       var mapper = nitriteConfig!.nitriteMapper;
       validateSearchTerm(mapper, field, _value);
-      if (isValue(_value, mapper)) {
+      if (value is Comparable) {
         _value = mapper.convert<dynamic, Comparable>(_value);
       }
     }
@@ -238,11 +238,6 @@ abstract class FieldBasedFilter extends NitriteFilter {
   void validateSearchTerm(
       NitriteMapper nitriteMapper, String field, dynamic value) {
     field.notNullOrEmpty("field cannot be empty");
-
-    if (!isValue(value, nitriteMapper) && value is! Comparable) {
-      throw FilterException(
-          "The value for field '$field' is not a valid search term");
-    }
   }
 }
 

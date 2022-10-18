@@ -4,6 +4,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/stream/mutated_object_stream.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
+import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// An interface to iterate over [ObjectRepository.find] results.
 ///
@@ -74,11 +75,14 @@ class ObjectCursor<T> extends Cursor<T> {
       throw ValidationException('Cannot project to a number type');
     } else if (isSubtype<D, Iterable>()) {
       throw ValidationException('Cannot project to an iterable type');
-    } else if (isValueType<D>(nitriteMapper)) {
-      throw ValidationException(
-          'Cannot project to a nitrite mapper\'s value type');
     }
 
-    return skeletonDocument<D>(nitriteMapper);
+    validateProjectionType<D>(nitriteMapper);
+
+    var dummyDoc = skeletonDocument<D>(nitriteMapper);
+    if (dummyDoc.isEmpty) {
+      throw ValidationException("Cannot project to empty type");
+    }
+    return dummyDoc;
   }
 }
