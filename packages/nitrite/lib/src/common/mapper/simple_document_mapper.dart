@@ -4,8 +4,8 @@ import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// A [NitriteMapper] based on [EntityConverter] implementation.
 class SimpleDocumentMapper extends NitriteMapper {
-  final Set<Type> _valueTypes = {};
-  final Map<Type, EntityConverter> _converterRegistry = {};
+  final Set<String> _valueTypes = {};
+  final Map<String, EntityConverter> _converterRegistry = {};
 
   SimpleDocumentMapper([List<Type> valueTypes = const []]) {
     _registerValueTypes(valueTypes);
@@ -47,30 +47,32 @@ class SimpleDocumentMapper extends NitriteMapper {
 
   /// Adds a value type to ignore during mapping.
   void addValueType<T>() {
-    _valueTypes.add(T);
+    _valueTypes.add("$T");
+    _valueTypes.add("$T?");
   }
 
   /// Registers an [EntityConverter].
   void registerEntityConverter(EntityConverter<dynamic> entityConverter) {
     entityConverter.notNullOrEmpty("entityConverter cannot be null");
-    _converterRegistry[entityConverter.entityType] = entityConverter;
+    _converterRegistry["${entityConverter.entityType}"] = entityConverter;
+    _converterRegistry["${entityConverter.entityType}?"] = entityConverter;
   }
 
   _registerValueTypes(List<Type> valueTypes) {
-    _valueTypes.addAll(builtInTypes());
-    _valueTypes.add(Enum);
-    _valueTypes.add(NitriteId);
-    _valueTypes.addAll(valueTypes);
+    _valueTypes.addAll(builtInTypes().map((e) => e.toString()));
+    _valueTypes.add("$Enum");
+    _valueTypes.add("$NitriteId");
+    _valueTypes.addAll(valueTypes.map((e) => e.toString()));
   }
 
   bool _isValue(value) {
-    return _valueTypes.any((type) => value.runtimeType == type);
+    return _valueTypes.any((type) => value.runtimeType.toString() == type);
   }
 
   /// Converts an object of type [Source] to a document.
   Document _convertToDocument<Source>(Source source) {
-    if (_converterRegistry.containsKey(Source)) {
-      var serializer = _converterRegistry[Source] as EntityConverter<Source>;
+    if (_converterRegistry.containsKey("$Source")) {
+      var serializer = _converterRegistry["$Source"] as EntityConverter<Source>;
       return serializer.toDocument(source, this);
     }
 
@@ -81,8 +83,8 @@ class SimpleDocumentMapper extends NitriteMapper {
 
   /// Converts a document to a target object of type [Target].
   Target? _convertFromDocument<Target, Source>(Document source) {
-    if (_converterRegistry.containsKey(Target)) {
-      var serializer = _converterRegistry[Target] as EntityConverter<Target>;
+    if (_converterRegistry.containsKey("$Target")) {
+      var serializer = _converterRegistry["$Target"] as EntityConverter<Target>;
       return serializer.fromDocument(source, this);
     }
 

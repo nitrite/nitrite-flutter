@@ -134,58 +134,76 @@ void main() {
       expect(getEntityName<DateTime>(nitriteMapper), 'DateTime');
     });
 
-    test('Test IsValueType', () {
-      var nitriteMapper = SimpleDocumentMapper();
-      expect(isValueType(nitriteMapper), isFalse); // no type arguments
-      expect(isValueType<int>(nitriteMapper), isTrue);
-      expect(isValueType<double>(nitriteMapper), isTrue);
-      expect(isValueType<String>(nitriteMapper), isTrue);
-      expect(isValueType<Runes>(nitriteMapper), isTrue);
-      expect(isValueType<bool>(nitriteMapper), isTrue);
-      expect(isValueType<Null>(nitriteMapper), isTrue);
-      expect(isValueType<DateTime>(nitriteMapper), isTrue);
-      expect(isValueType<Duration>(nitriteMapper), isTrue);
-      expect(isValueType<Symbol>(nitriteMapper), isTrue);
-      expect(isValueType<NitriteId>(nitriteMapper), isFalse);
-      expect(isValueType<Document>(nitriteMapper), isFalse);
-
-      expect(isValueType<_A>(nitriteMapper), isFalse);
-      expect(isValueType<_B>(nitriteMapper), isFalse);
-
-      nitriteMapper.addValueType<_A>();
-      expect(isValueType<_A>(nitriteMapper), isTrue);
-      expect(isValueType<_B>(nitriteMapper), isFalse);
-
-      nitriteMapper.addValueType<_B>();
-      expect(isValueType<_A>(nitriteMapper), isTrue);
-      expect(isValueType<_B>(nitriteMapper), isTrue);
+    test('Test FindRepositoryNameByDecorator', () {
+      expect(findRepositoryNameByDecorator(_BDecorator()), "_B");
+      expect(findRepositoryNameByDecorator(_BDecorator(), "key"), "_B+key");
+      expect(findRepositoryNameByDecorator(_CDecorator()), "c");
+      expect(findRepositoryNameByDecorator(_CDecorator(), "key"), "c+key");
     });
 
-    test('Test IsValue', () {
+    test('Test NewInstance', () {
       var nitriteMapper = SimpleDocumentMapper();
-      expect(isValue(1, nitriteMapper), isTrue);
-      expect(isValue(1.0, nitriteMapper), isTrue);
-      expect(isValue("1", nitriteMapper), isTrue);
-      expect(isValue(true, nitriteMapper), isTrue);
-      expect(isValue(null, nitriteMapper), isTrue);
-      expect(isValue(DateTime(2020, 1, 1), nitriteMapper), isTrue);
-      expect(isValue(Duration(days: 1), nitriteMapper), isTrue);
-      expect(isValue(NitriteId.createId('1'), nitriteMapper), isTrue);
-      expect(isValue(Document.createDocument("key", "value"), nitriteMapper), isFalse);
+      nitriteMapper.registerEntityConverter(_FConverter());
 
-      nitriteMapper.addValueType<_B>();
-      expect(isValue(_B("test"), nitriteMapper), isTrue);
-      expect(isValue(_C("test"), nitriteMapper), isFalse);
+      var f = newInstance<_F>(nitriteMapper);
+      expect(f, isNotNull);
 
-      nitriteMapper.addValueType<_C>();
-      expect(isValue(_B("test"), nitriteMapper), isTrue);
-      expect(isValue(_C("test"), nitriteMapper), isTrue);
+      f = newInstance<_F?>(nitriteMapper);
+      expect(f, isNotNull);
+
+      var i = newInstance<num>(nitriteMapper);
+      expect(i, 0);
+
+      i = newInstance<int>(nitriteMapper);
+      expect(i, 0);
+
+      var d = newInstance<double>(nitriteMapper);
+      expect(d, 0.0);
+
+      var s = newInstance<String>(nitriteMapper);
+      expect(s, isNull);
+
+      var r = newInstance<Runes>(nitriteMapper);
+      expect(r, isNull);
+
+      var boolean = newInstance<bool>(nitriteMapper);
+      expect(boolean, false);
+
+      var n = newInstance<Null>(nitriteMapper);
+      expect(n, isNull);
+
+      var date = newInstance<DateTime>(nitriteMapper);
+      expect(date, isNull);
+
+      var duration = newInstance<Duration>(nitriteMapper);
+      expect(duration, isNull);
+
+      var symbol = newInstance<Symbol>(nitriteMapper);
+      expect(symbol, isNull);
+
+      expect(() => newInstance(nitriteMapper), throwsObjectMappingException);
+      expect(() => newInstance<_G>(nitriteMapper), throwsObjectMappingException);
+    });
+
+    test('Test DefaultValue', () {
+      expect(defaultValue<num>(), 0);
+      expect(defaultValue<int>(), 0);
+      expect(defaultValue<double>(), 0.0);
+      expect(defaultValue<bool>(), false);
+      expect(defaultValue<Object>(), isNull);
+      expect(defaultValue(), isNull);
+
+      expect(defaultValue<num?>(), isNull);
+      expect(defaultValue<int?>(), isNull);
+      expect(defaultValue<double?>(), isNull);
+      expect(defaultValue<bool?>(), isNull);
+      expect(defaultValue<Object?>(), isNull);
+      expect(defaultValue(), isNull);
     });
   });
 }
 
-abstract class _A {
-}
+abstract class _A {}
 
 class _B extends _A {
   final String value;
@@ -203,8 +221,7 @@ class _D with _M {}
 
 class _E implements _A {}
 
-class _F {
-}
+class _F {}
 
 class _FConverter extends EntityConverter<_F> {
   @override
@@ -219,8 +236,7 @@ class _FConverter extends EntityConverter<_F> {
 }
 
 @Entity(name: 'g')
-class _G with _$_GEntityMixin {
-}
+class _G with _$_GEntityMixin {}
 
 class _GConverter extends EntityConverter<_G> {
   @override
@@ -232,4 +248,30 @@ class _GConverter extends EntityConverter<_G> {
   Document toDocument(_G entity, NitriteMapper nitriteMapper) {
     return emptyDocument();
   }
+}
+
+class _BDecorator extends EntityDecorator<_B> {
+  @override
+  EntityId? get idField => EntityId("value");
+
+  @override
+  List<EntityIndex> get indexFields => [
+        EntityIndex(["value"], IndexType.nonUnique)
+      ];
+}
+
+class _CDecorator implements EntityDecorator<_C> {
+  @override
+  EntityId? get idField => null;
+
+  @override
+  // TODO: implement indexFields
+  List<EntityIndex> get indexFields => [];
+
+  @override
+  String get entityName => "c";
+
+  @override
+  Type get entityType => _C;
+
 }

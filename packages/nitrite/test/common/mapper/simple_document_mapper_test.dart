@@ -92,6 +92,20 @@ void main() {
       expect(document, isNotNull);
       expect(document?.get("value"), "test");
     });
+
+    test("Test Convert Nullable Entity", () {
+      var mapper = SimpleDocumentMapper();
+      mapper.registerEntityConverter(_BConverter());
+
+      var b = _B("test");
+      var document = mapper.convert<Document, _B?>(b);
+      expect(document, isNotNull);
+      expect(document?.get("value"), "test");
+
+      var bb = mapper.convert<_B?, Document>(document);
+      expect(bb, isNotNull);
+      expect(bb?.value, "test");
+    });
   });
 }
 

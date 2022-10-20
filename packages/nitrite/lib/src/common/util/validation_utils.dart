@@ -38,7 +38,7 @@ void validateStringIterableItem(dynamic value, String field) {
 }
 
 void validateProjectionType<T>(NitriteMapper nitriteMapper) {
-  dynamic value;
+  T? value;
   try {
     value = newInstance<T>(nitriteMapper);
   } catch (e, s) {
@@ -48,6 +48,18 @@ void validateProjectionType<T>(NitriteMapper nitriteMapper) {
 
   if (value == null) {
     throw ValidationException("Invalid projection type");
+  }
+
+  Document? document;
+  try {
+    document = nitriteMapper.convert<Document, T>(value);
+  } catch (e, s) {
+    throw ValidationException("Invalid projection type",
+        cause: e, stackTrace: s);
+  }
+
+  if (document == null || document.size == 0) {
+    throw ValidationException("Cannot project to empty type ${T.toString()}");
   }
 }
 

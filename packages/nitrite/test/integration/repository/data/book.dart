@@ -7,7 +7,7 @@ part 'book.no2.dart';
   Index(fields: ['description'], type: IndexType.fullText),
   Index(fields: ['price', 'publisher']),
 ])
-class Book with _$BookEntityMixin implements Mappable {
+class Book with _$BookEntityMixin {
   @Id(fieldName: 'book_id', embeddedFields: ['isbn', 'book_name'])
   BookId? bookId;
 
@@ -25,42 +25,52 @@ class Book with _$BookEntityMixin implements Mappable {
       this.price,
       this.tags = const [],
       this.description]);
+}
 
+class BookConverter extends EntityConverter<Book> {
   @override
-  void read(NitriteMapper? mapper, Document document) {
-    bookId = mapper?.convert<BookId?, Document>(document['book_id']);
-    publisher = document['publisher'];
-    price = document['price'];
-    tags = document['tags'];
-    description = document['description'];
+  Book fromDocument(Document document, NitriteMapper nitriteMapper) {
+    var book = Book();
+    book.bookId =
+        nitriteMapper.convert<BookId?, Document>(document['book_id']);
+    book.publisher = document['publisher'];
+    book.price = document['price'];
+    book.tags = document['tags'];
+    book.description = document['description'];
+    return book;
   }
 
   @override
-  Document write(NitriteMapper? mapper) {
-    return createDocument('book_id', mapper?.convert<Document, BookId>(bookId))
-      ..put('publisher', publisher)
-      ..put('price', price)
-      ..put('tags', tags)
-      ..put('description', description);
+  Document toDocument(Book entity, NitriteMapper nitriteMapper) {
+    return createDocument(
+        'book_id', nitriteMapper.convert<Document, BookId>(entity.bookId))
+      ..put('publisher', entity.publisher)
+      ..put('price', entity.price)
+      ..put('tags', entity.tags)
+      ..put('description', entity.description);
   }
 }
 
-class BookId implements Mappable {
+class BookId {
   String? isbn;
   String? name;
   String? author;
+}
 
+class BookIdConverter extends EntityConverter<BookId> {
   @override
-  void read(NitriteMapper? mapper, Document document) {
-    isbn = document['isbn'];
-    name = document['book_name'];
-    author = document['author'];
+  BookId fromDocument(Document document, NitriteMapper nitriteMapper) {
+    var bookId = BookId();
+    bookId.isbn = document['isbn'];
+    bookId.name = document['book_name'];
+    bookId.author = document['author'];
+    return bookId;
   }
 
   @override
-  Document write(NitriteMapper? mapper) {
-    return createDocument('isbn', isbn)
-      ..put('book_name', name)
-      ..put('author', author);
+  Document toDocument(BookId entity, NitriteMapper nitriteMapper) {
+    return createDocument('isbn', entity.isbn)
+      ..put('book_name', entity.name)
+      ..put('author', entity.author);
   }
 }
