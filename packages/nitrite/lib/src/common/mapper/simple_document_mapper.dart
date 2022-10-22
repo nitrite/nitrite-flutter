@@ -16,13 +16,16 @@ class SimpleDocumentMapper extends NitriteMapper {
     if (source == null) {
       return null;
     }
-    
+
     if (_isValue(source)) {
       if (source is! Target) {
-        throw ObjectMappingException("Cannot convert value type $Source to $Target");
+        throw ObjectMappingException(
+            "Cannot convert value type $Source to $Target");
       }
 
       return source as Target;
+    } else if (_isValueType<Target>()) {
+      return defaultValue<Target>();
     } else {
       if (Target == Document || isSubtype<Target, Document>()) {
         if (source is Document) {
@@ -37,13 +40,12 @@ class SimpleDocumentMapper extends NitriteMapper {
 
     throw ObjectMappingException(
       'Cannot convert object of type ${source.runtimeType} '
-          'to type ${Target.runtimeType}',
+      'to type ${Target.runtimeType}',
     );
   }
 
   @override
-  Future<void> initialize(NitriteConfig nitriteConfig) async {
-  }
+  Future<void> initialize(NitriteConfig nitriteConfig) async {}
 
   /// Adds a value type to ignore during mapping.
   void addValueType<T>() {
@@ -67,6 +69,10 @@ class SimpleDocumentMapper extends NitriteMapper {
 
   bool _isValue(value) {
     return _valueTypes.any((type) => value.runtimeType.toString() == type);
+  }
+
+  bool _isValueType<T>() {
+    return _valueTypes.contains('$T');
   }
 
   /// Converts an object of type [Source] to a document.

@@ -98,7 +98,7 @@ String findRepositoryNameByDecorator<T>(EntityDecorator<T> entityDecorator,
 
 T? newInstance<T>(NitriteMapper nitriteMapper) {
   try {
-    if (builtInTypes().contains(T) || isBuiltInValueType<T>()) {
+    if (isBuiltInValueType<T>()) {
       return defaultValue<T>();
     }
 
@@ -126,15 +126,24 @@ List<Type> builtInTypes() {
 
 bool isBuiltInValueType<T>() {
   if (isSubtype<T, num>()) return true;
+  if (isSubtype<T, num?>()) return true;
   if (isSubtype<T, int>()) return true;
+  if (isSubtype<T, int?>()) return true;
   if (isSubtype<T, double>()) return true;
+  if (isSubtype<T, double?>()) return true;
   if (isSubtype<T, String>()) return true;
+  if (isSubtype<T, String?>()) return true;
   if (isSubtype<T, Runes>()) return true;
+  if (isSubtype<T, Runes?>()) return true;
   if (isSubtype<T, bool>()) return true;
+  if (isSubtype<T, bool?>()) return true;
   if (isSubtype<T, Null>()) return true;
   if (isSubtype<T, DateTime>()) return true;
+  if (isSubtype<T, DateTime?>()) return true;
   if (isSubtype<T, Duration>()) return true;
+  if (isSubtype<T, Duration?>()) return true;
   if (isSubtype<T, Symbol>()) return true;
+  if (isSubtype<T, Symbol?>()) return true;
   return false;
 }
 

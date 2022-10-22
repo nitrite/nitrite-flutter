@@ -10,7 +10,7 @@ class Id {
   /// The name of the embedded fields
   final List<String> embeddedFields;
 
-  const Id({ required this.fieldName, this.embeddedFields = const []});
+  const Id({required this.fieldName, this.embeddedFields = const []});
 }
 
 /// Specifies a field to be indexed.
@@ -22,7 +22,7 @@ class Index {
   /// Type of the index.
   final String type;
 
-  const Index({ required this.fields, this.type = IndexType.unique});
+  const Index({required this.fields, this.type = IndexType.unique});
 }
 
 /// Represents an entity for an [ObjectRepository].
@@ -36,4 +36,23 @@ class Entity {
   final List<Index> indices;
 
   const Entity({this.name = "", this.indices = const []});
+}
+
+@Target({TargetKind.classType})
+class Converter {
+  final String className;
+
+  const Converter({this.className = ""});
+}
+
+@Target({TargetKind.field})
+class Property {
+  final String alias;
+
+  const Property({this.alias = ""});
+}
+
+@Target({TargetKind.field})
+class IgnoredProperty {
+  const IgnoredProperty();
 }

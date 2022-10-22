@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/element/type.dart';
 import 'package:nitrite/nitrite.dart';
 
 abstract class EntityField {
@@ -15,6 +16,14 @@ abstract class IdField {
   static const embeddedFields = "embeddedFields";
 }
 
+abstract class ConverterField {
+  static const className = 'className';
+}
+
+abstract class PropertyField {
+  static const alias = 'alias';
+}
+
 class EntityInfo {
   final String className;
 
@@ -24,4 +33,21 @@ class EntityInfo {
   EntityId? entityId;
 
   EntityInfo(this.className);
+}
+
+class ConverterInfo {
+  final String className;
+  final String converterName;
+  final List<FieldInfo> fieldInfoList;
+
+  ConverterInfo(this.className,
+      [this.converterName = "", this.fieldInfoList = const []]);
+}
+
+class FieldInfo {
+  final String fieldName;
+  final DartType fieldType;
+  final String aliasName;
+
+  FieldInfo(this.fieldName, this.fieldType, [this.aliasName = ""]);
 }

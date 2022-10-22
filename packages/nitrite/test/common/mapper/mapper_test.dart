@@ -1,7 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:nitrite/src/collection/document.dart';
-import 'package:nitrite/src/common/mapper/simple_document_mapper.dart';
-import 'package:nitrite/src/common/mapper/nitrite_mapper.dart';
+import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 void main() {

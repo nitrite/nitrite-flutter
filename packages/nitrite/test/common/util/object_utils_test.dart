@@ -143,6 +143,7 @@ void main() {
 
     test('Test NewInstance', () {
       var nitriteMapper = SimpleDocumentMapper();
+      nitriteMapper.addValueType<_B>();
       nitriteMapper.registerEntityConverter(_FConverter());
 
       var f = newInstance<_F>(nitriteMapper);
@@ -181,8 +182,12 @@ void main() {
       var symbol = newInstance<Symbol>(nitriteMapper);
       expect(symbol, isNull);
 
+      var b = newInstance<_B>(nitriteMapper);
+      expect(b, isNull);
+
       expect(() => newInstance(nitriteMapper), throwsObjectMappingException);
-      expect(() => newInstance<_G>(nitriteMapper), throwsObjectMappingException);
+      expect(
+          () => newInstance<_G>(nitriteMapper), throwsObjectMappingException);
     });
 
     test('Test DefaultValue', () {
@@ -273,5 +278,4 @@ class _CDecorator implements EntityDecorator<_C> {
 
   @override
   Type get entityType => _C;
-
 }
