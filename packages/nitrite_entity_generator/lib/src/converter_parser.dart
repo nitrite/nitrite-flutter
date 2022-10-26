@@ -262,6 +262,12 @@ class ConverterParser extends Parser<ConverterInfo> {
 
     // check for an accessor if getter-setter both are available, otherwise
     // throw error.
+    var fieldNames = fieldInfoList.map((e) => e.fieldName).toList();
+    propertyInfoList.removeWhere(
+        (propInfo) => fieldNames.contains(propInfo.getterFieldName));
+    propertyInfoList.removeWhere(
+        (propInfo) => fieldNames.contains(propInfo.setterFieldName));
+
     for (var propInfo in propertyInfoList) {
       if (propInfo.getterFieldName.isEmpty) {
         throw InvalidGenerationSourceError(

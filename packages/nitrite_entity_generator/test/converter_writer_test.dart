@@ -4,6 +4,8 @@ import 'package:test/test.dart';
 
 import 'test_utils.dart';
 
+part 'converter_writer_test.no2.dart';
+
 void main() {
   group("Converter Writer Test Suite", () {
     test("Test Converter Class Name", () async {
@@ -29,14 +31,14 @@ void main() {
 
 @Converter()
 class A {
-  final String field;
+  String field;
 
   A([this.field = "a"]);
 }
 
 @Converter(className: 'MyBConverter')
 class B {
-  final String field;
+  String field;
 
   B([this.field = "a"]);
 }
@@ -81,12 +83,10 @@ class G {
   @Property(alias: 'firstField')
   String get field1 => _field1;
 
-  @Property(alias: 'secondField')
   String get field2 => _field2;
 
   @Property(alias: 'firstField')
   void set field1(String value) => this._field1 = value;
 
-  @Property(alias: 'secondField')
   void set field2(String value) => this._field2 = value;
 }
