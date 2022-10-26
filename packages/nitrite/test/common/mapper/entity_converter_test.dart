@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
@@ -5,7 +6,7 @@ part 'entity_converter_test.no2.dart';
 
 void main() {
   group("EntityConverter Test Suite", () {
-    test("Test FromList", () {
+    test("Test Helper Methods", () {
       var nitriteMapper = SimpleDocumentMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
       nitriteMapper.registerEntityConverter(_BConverter());
@@ -25,7 +26,9 @@ void main() {
       var a = _A(l: l, s: s, m: m, ms: ms, ls: ls);
 
       var doc = nitriteMapper.convert<Document, _A>(a);
-      print(doc);
+
+      var a1 = nitriteMapper.convert<_A, Document>(doc);
+      expect(a1, a);
     });
   });
 }
@@ -39,6 +42,21 @@ class _A {
   List<String> ls = [];
 
   _A({this.l, this.s, this.m, this.ms, this.ls = const []});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _A &&
+          runtimeType == other.runtimeType &&
+          ListEquality().equals(l, other.l) &&
+          SetEquality().equals(s, other.s) &&
+          MapEquality().equals(m, other.m) &&
+          MapEquality().equals(ms, other.ms) &&
+          ListEquality().equals(ls, other.ls);
+
+  @override
+  int get hashCode =>
+      l.hashCode ^ s.hashCode ^ m.hashCode ^ ms.hashCode ^ ls.hashCode;
 }
 
 @Converter()
@@ -46,6 +64,14 @@ class _B {
   String? s;
 
   _B({this.s});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _B && runtimeType == other.runtimeType && s == other.s;
+
+  @override
+  int get hashCode => s.hashCode;
 }
 
 @Converter()
@@ -53,6 +79,14 @@ class _C {
   int? i;
 
   _C({this.i});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _C && runtimeType == other.runtimeType && i == other.i;
+
+  @override
+  int get hashCode => i.hashCode;
 }
 
 @Converter()
@@ -60,6 +94,14 @@ class _K {
   double? d;
 
   _K({this.d});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _K && runtimeType == other.runtimeType && d == other.d;
+
+  @override
+  int get hashCode => d.hashCode;
 }
 
 @Converter()
@@ -67,4 +109,12 @@ class _V {
   String? s;
 
   _V({this.s});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _V && runtimeType == other.runtimeType && s == other.s;
+
+  @override
+  int get hashCode => s.hashCode;
 }

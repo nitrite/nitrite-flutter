@@ -4,5 +4,5 @@ import 'package:nitrite/nitrite.dart';
 /// type to an object of another type.
 abstract class NitriteMapper extends NitritePlugin {
   /// Converts an object of type [Source] to an object of type [Target].
-  Target? convert<Target, Source>(Source? source);
+  dynamic convert<Target, Source>(Source? source);
 }

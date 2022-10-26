@@ -12,15 +12,16 @@ class SimpleDocumentMapper extends NitriteMapper {
   }
 
   @override
-  Target? convert<Target, Source>(Source? source) {
+  dynamic convert<Target, Source>(Source? source) {
     if (source == null) {
       return null;
     }
 
     if (_isValue(source)) {
       if (source is! Target) {
-        throw ObjectMappingException(
-            "Cannot convert value type $Source to $Target");
+        return source;
+        // throw ObjectMappingException(
+        //     "Cannot convert value type $Source to $Target");
       }
 
       return source as Target;

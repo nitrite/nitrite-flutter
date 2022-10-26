@@ -270,7 +270,6 @@ class _CDecorator implements EntityDecorator<_C> {
   EntityId? get idField => null;
 
   @override
-  // TODO: implement indexFields
   List<EntityIndex> get indexFields => [];
 
   @override

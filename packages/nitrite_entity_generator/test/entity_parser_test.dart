@@ -11,7 +11,7 @@ void main() {
       @Entity(name: 'person', indices: [
         Index(fields: ['name'], type: IndexType.nonUnique),
       ])
-      class Person implements Mappable {
+      class Person {
         @Id(fieldName: 'person_id')
         int? personId;
         
@@ -39,7 +39,7 @@ void main() {
       @Entity(name: 'person', indices: [
         Index(fields: ['name'], type: IndexType.nonUnique),
       ])
-      class Person implements Mappable {
+      class Person {
         @Id(fieldName: 'person_id')
         int? personId;
         
@@ -59,7 +59,7 @@ void main() {
       @Entity(indices: [
         Index(fields: ['name'], type: IndexType.nonUnique),
       ])
-      class Person implements Mappable {
+      class Person {
         @Id(fieldName: 'person_id')
         int? personId;
         
@@ -85,7 +85,7 @@ void main() {
   test('Parse entity without any indexes', () async {
     final classElement = await createClassElement('''
       @Entity()
-      class Person implements Mappable {
+      class Person {
         @Id(fieldName: 'person_id')
         int? personId;
         
@@ -108,7 +108,7 @@ void main() {
   test('Parse entity without Id', () async {
     final classElement = await createClassElement('''
       @Entity()
-      class Person implements Mappable {
+      class Person {
         int? personId;
         
         String? name;
@@ -130,7 +130,7 @@ void main() {
       @Entity(name: 'person', indices: [
         Index(fields: ['name'], type: IndexType.nonUnique),
       ])
-      class Person implements Mappable {
+      class Person {
         @Id()
         int? personId;
         
@@ -158,7 +158,7 @@ void main() {
       @Entity(name: 'person', indices: [
         Index(fields: ['name'], type: IndexType.nonUnique),
       ])
-      class Person implements Mappable {
+      class Person {
         @Id()
         int? personId;
         
@@ -186,7 +186,7 @@ void main() {
       @Entity(name: 'person', indices: [
         Index(fields: ['name'], type: IndexType.nonUnique),
       ])
-      class Person implements Mappable {
+      class Person {
         @Id(embeddedFields: ['isbn', 'book_name'])
         PersonId? personId;
         
@@ -205,7 +205,7 @@ void main() {
       @Entity(name: 'person', indices: [
         Index(fields: ['name'], type: IndexType.nonUnique),
       ])
-      class Person implements Mappable {
+      class Person {
         @Id(embeddedFields: ['age', 'dob'])
         PersonId? personId;
         
@@ -243,7 +243,7 @@ void main() {
       @Entity(name: 'person', indices: [
         Index(fields: ['name'], type: IndexType.nonUnique),
       ])
-      class Person implements Mappable {
+      class Person {
         @Id(embeddedFields: ['age', 'dob'])
         PersonId? personId;
         

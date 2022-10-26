@@ -39,15 +39,52 @@ class ConverterInfo {
   final String className;
   final String converterName;
   final List<FieldInfo> fieldInfoList;
+  final ConstructorInfo constructorInfo;
 
   ConverterInfo(this.className,
-      [this.converterName = "", this.fieldInfoList = const []]);
+      [this.converterName = "",
+      this.fieldInfoList = const [],
+      this.constructorInfo = const ConstructorInfo()]);
 }
 
 class FieldInfo {
   final String fieldName;
   final DartType fieldType;
   final String aliasName;
+  final bool isFinal;
 
-  FieldInfo(this.fieldName, this.fieldType, [this.aliasName = ""]);
+  FieldInfo(this.fieldName, this.fieldType,
+      [this.aliasName = "", this.isFinal = false]);
+}
+
+class PropertyInfo {
+  String getterFieldName;
+  String setterFieldName;
+  DartType fieldType;
+  String aliasName;
+
+  PropertyInfo(this.fieldType,
+      {this.getterFieldName = '',
+      this.setterFieldName = '',
+      this.aliasName = ''});
+}
+
+class ConstructorInfo {
+  final bool hasDefaultCtor;
+  final bool hasAllOptionalNamedCtor;
+  final bool hasAllOptionalPositionalCtor;
+  final List<String> ctorParamNames;
+
+  const ConstructorInfo(
+      {this.hasDefaultCtor = false,
+      this.hasAllOptionalNamedCtor = false,
+      this.hasAllOptionalPositionalCtor = false,
+      this.ctorParamNames = const []});
+
+  @override
+  String toString() {
+    return 'ConstructorInfo{hasDefaultCtor: $hasDefaultCtor, '
+        'hasAllNamedParamsCtor: $hasAllOptionalNamedCtor, '
+        'hasAllOptionalParamsCtor: $hasAllOptionalPositionalCtor}';
+  }
 }
