@@ -25,6 +25,18 @@ void main() {
 
     test("All Valid Converters", () {
       var nitriteMapper = SimpleDocumentMapper();
+      nitriteMapper.registerEntityConverter(AConverter());
+      nitriteMapper.registerEntityConverter(MyBConverter());
+      nitriteMapper.registerEntityConverter(CConverter());
+      nitriteMapper.registerEntityConverter(DConverter());
+      nitriteMapper.registerEntityConverter(EConverter());
+      nitriteMapper.registerEntityConverter(FConverter());
+      nitriteMapper.registerEntityConverter(GConverter());
+
+      var a = A('test');
+      Document doc = nitriteMapper.convert<Document, A>(a);
+      var a2 = nitriteMapper.convert<A, Document>(doc);
+      expect(a.field, a2.field);
     });
   });
 }

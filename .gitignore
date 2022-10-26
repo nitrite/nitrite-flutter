@@ -1014,3 +1014,9 @@ doc/api/
 
 # Avoid committing generated documentation files
 packages/**/doc
+
+# nitrite generated files
+*.no2.dart
+
+# mockito generated files
+*.mocks.dart

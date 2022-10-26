@@ -154,9 +154,10 @@ class ConverterParser extends Parser<ConverterInfo> {
   List<PropertyInfo> _getPropertyInfoList() {
     var propInfos = <PropertyInfo>[];
     var accessors = _classElement.accessors;
+
     for (var accessor in accessors) {
       var ignored = accessor.getAnnotation(IgnoredProperty);
-      if (ignored != null) {
+      if (ignored != null || accessor.isSynthetic) {
         continue;
       }
 
@@ -260,14 +261,14 @@ class ConverterParser extends Parser<ConverterInfo> {
       }
     }
 
+    // remove getters from Object class
+    propertyInfoList
+        .removeWhere((propInfo) => 'hashCode' == propInfo.getterFieldName);
+    propertyInfoList
+        .removeWhere((propInfo) => 'runtimeType' == propInfo.getterFieldName);
+
     // check for an accessor if getter-setter both are available, otherwise
     // throw error.
-    var fieldNames = fieldInfoList.map((e) => e.fieldName).toList();
-    propertyInfoList.removeWhere(
-        (propInfo) => fieldNames.contains(propInfo.getterFieldName));
-    propertyInfoList.removeWhere(
-        (propInfo) => fieldNames.contains(propInfo.setterFieldName));
-
     for (var propInfo in propertyInfoList) {
       if (propInfo.getterFieldName.isEmpty) {
         throw InvalidGenerationSourceError(
