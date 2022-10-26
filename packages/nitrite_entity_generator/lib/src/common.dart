@@ -39,11 +39,13 @@ class ConverterInfo {
   final String className;
   final String converterName;
   final List<FieldInfo> fieldInfoList;
+  final List<PropertyInfo> propertyInfoList;
   final ConstructorInfo constructorInfo;
 
   ConverterInfo(this.className,
       [this.converterName = "",
       this.fieldInfoList = const [],
+      this.propertyInfoList = const [],
       this.constructorInfo = const ConstructorInfo()]);
 }
 

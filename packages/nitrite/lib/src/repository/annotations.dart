@@ -45,14 +45,14 @@ class Converter {
   const Converter({this.className = ""});
 }
 
-@Target({TargetKind.field})
+@Target({TargetKind.field, TargetKind.getter, TargetKind.setter})
 class Property {
   final String alias;
 
   const Property({this.alias = ""});
 }
 
-@Target({TargetKind.field})
+@Target({TargetKind.field, TargetKind.getter, TargetKind.setter})
 class IgnoredProperty {
   const IgnoredProperty();
 }

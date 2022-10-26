@@ -2,7 +2,6 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:nitrite_entity_generator/src/common.dart';
 import 'package:nitrite_entity_generator/src/type_checker.dart';
-import 'package:collection/collection.dart';
 import 'package:source_gen/source_gen.dart';
 
 class ConverterWriter {
@@ -66,43 +65,19 @@ class ConverterWriter {
     StringBuffer buffer = StringBuffer();
 
     var ctorInfo = _converterInfo.constructorInfo;
-    var fieldInfos = _converterInfo.fieldInfoList;
 
-    bool hasDefaultCtor = ctorInfo.hasDefaultCtor;
-    bool hasAllOptionalNoFinalParams = ctorInfo.hasAllOptionalPositionalCtor &&
-        fieldInfos.every((f) => !f.isFinal);
-
-    bool hasAllNamedAllFinalParams = ctorInfo.hasAllOptionalNamedCtor &&
-        fieldInfos.every((f) => f.isFinal) &&
-        UnorderedIterableEquality()
-            .equals(fieldInfos.map((e) => e.fieldName), ctorInfo.ctorParamNames);
-
-    if (hasDefaultCtor || hasAllOptionalNoFinalParams) {
+    if (ctorInfo.hasDefaultCtor || ctorInfo.hasAllOptionalPositionalCtor) {
       _generateFieldMapping(buffer);
-    } else if (hasAllNamedAllFinalParams) {
+    } else if (ctorInfo.hasAllOptionalPositionalCtor) {
       _generateAllFinalFieldMapping(buffer);
     } else {
-      if (!UnorderedIterableEquality()
-          .equals(fieldInfos.map((e) => e.fieldName), ctorInfo.ctorParamNames)) {
-        throw InvalidGenerationSourceError(
-            'Constructor parameters do not match with the fields of the class.');
-      }
-
-      if (!hasAllNamedAllFinalParams) {
-        throw InvalidGenerationSourceError(
-            'All fields of the class must be all final or all non-final.');
-      }
-
-      if (!hasAllOptionalNoFinalParams) {
-        throw InvalidGenerationSourceError(
-            'All fields of the class must be all final or all non-final.');
-      }
-
       throw InvalidGenerationSourceError(
           '`@Converter` can only be used on classes which has at least one '
           'public constructor which is either a default constructor or '
-          'one with all named arguments.');
+          'one with all optional arguments.');
     }
+
+    _generateSetterMapping(buffer);
 
     buffer.writeln('return entity;');
 
@@ -113,7 +88,7 @@ class ConverterWriter {
     buffer.writeln('var entity = ${_converterInfo.className}();');
     for (var fieldInfo in _converterInfo.fieldInfoList) {
       buffer.write('entity.${fieldInfo.fieldName} = ');
-      _generatePropertyMapping(fieldInfo, buffer);
+      _generateKeyMapping(fieldInfo, buffer);
     }
   }
 
@@ -121,39 +96,39 @@ class ConverterWriter {
     buffer.writeln('var entity = ${_converterInfo.className}(');
     for (var fieldInfo in _converterInfo.fieldInfoList) {
       buffer.write('${fieldInfo.fieldName}: ');
-      _generatePropertyMapping(fieldInfo, buffer);
+      _generateKeyMapping(fieldInfo, buffer);
     }
     buffer.writeln(');');
   }
 
-  void _generatePropertyMapping(FieldInfo fieldInfo, StringBuffer buffer) {
-    var propertyName = fieldInfo.fieldName;
+  void _generateKeyMapping(FieldInfo fieldInfo, StringBuffer buffer) {
+    var keyName = fieldInfo.fieldName;
     if (fieldInfo.aliasName.isNotEmpty) {
-      propertyName = fieldInfo.aliasName;
+      keyName = fieldInfo.aliasName;
     }
 
     var fieldType = fieldInfo.fieldType;
     if (isBuiltin(fieldType)) {
-      buffer.writeln("document['$propertyName'];");
+      buffer.writeln("document['$keyName'];");
     } else {
       if (fieldType.isDartCoreList) {
         buffer.writeln("EntityConverter."
-            "toList(document['$propertyName'], nitriteMapper);");
+            "toList(document['$keyName'], nitriteMapper);");
       } else if (fieldType.isDartCoreIterable) {
         buffer.writeln("EntityConverter."
-            "toIterable(document['$propertyName'], nitriteMapper);");
+            "toIterable(document['$keyName'], nitriteMapper);");
       } else if (fieldType.isDartCoreSet) {
         buffer.writeln("EntityConverter."
-            "toSet(document['$propertyName'], nitriteMapper);");
+            "toSet(document['$keyName'], nitriteMapper);");
       } else if (fieldType.isDartCoreMap) {
         buffer.writeln("EntityConverter."
-            "toMap(document['$propertyName'], nitriteMapper);");
+            "toMap(document['$keyName'], nitriteMapper);");
       } else {
         buffer.write('nitriteMapper.convert<');
         buffer.write(
             '${fieldInfo.fieldType.getDisplayString(withNullability: true)}');
         buffer.write(', Document>(');
-        buffer.write("document['$propertyName'])");
+        buffer.write("document['$keyName'])");
 
         if (fieldInfo.fieldType.nullabilitySuffix == NullabilitySuffix.none) {
           buffer.writeln('!;');
@@ -164,41 +139,119 @@ class ConverterWriter {
     }
   }
 
+  void _generateSetterMapping(StringBuffer buffer) {
+    for (var propInfo in _converterInfo.propertyInfoList) {
+      buffer.write('entity.${propInfo.setterFieldName} = ');
+
+      var keyName = propInfo.setterFieldName;
+      if (propInfo.aliasName.isNotEmpty) {
+        keyName = propInfo.aliasName;
+      }
+
+      var fieldType = propInfo.fieldType;
+      if (isBuiltin(fieldType)) {
+        buffer.writeln("document['$keyName'];");
+      } else {
+        if (fieldType.isDartCoreList) {
+          buffer.writeln("EntityConverter."
+              "toList(document['$keyName'], nitriteMapper);");
+        } else if (fieldType.isDartCoreIterable) {
+          buffer.writeln("EntityConverter."
+              "toIterable(document['$keyName'], nitriteMapper);");
+        } else if (fieldType.isDartCoreSet) {
+          buffer.writeln("EntityConverter."
+              "toSet(document['$keyName'], nitriteMapper);");
+        } else if (fieldType.isDartCoreMap) {
+          buffer.writeln("EntityConverter."
+              "toMap(document['$keyName'], nitriteMapper);");
+        } else {
+          buffer.write('nitriteMapper.convert<');
+          buffer.write(
+              '${propInfo.fieldType.getDisplayString(withNullability: true)}');
+          buffer.write(', Document>(');
+          buffer.write("document['$keyName'])");
+
+          if (propInfo.fieldType.nullabilitySuffix == NullabilitySuffix.none) {
+            buffer.writeln('!;');
+          } else {
+            buffer.writeln(';');
+          }
+        }
+      }
+    }
+  }
+
   String _generateToDocumentBody() {
     StringBuffer buffer = StringBuffer();
 
     buffer.writeln('var document = emptyDocument();');
 
+    // field mapping
     for (var fieldInfo in _converterInfo.fieldInfoList) {
-      var propertyName = fieldInfo.fieldName;
+      var keyName = fieldInfo.fieldName;
       if (fieldInfo.aliasName.isNotEmpty) {
-        propertyName = fieldInfo.aliasName;
+        keyName = fieldInfo.aliasName;
       }
 
       var fieldType = fieldInfo.fieldType;
 
       if (isBuiltin(fieldType)) {
         buffer.writeln(
-            "document.put('$propertyName', entity.${fieldInfo.fieldName});");
+            "document.put('$keyName', entity.${fieldInfo.fieldName});");
       } else {
         if (fieldType.isDartCoreList) {
-          buffer.writeln("document.put('$propertyName', EntityConverter."
+          buffer.writeln("document.put('$keyName', EntityConverter."
               "fromList(entity.${fieldInfo.fieldName}, nitriteMapper));");
         } else if (fieldType.isDartCoreIterable) {
-          buffer.writeln("document.put('$propertyName', EntityConverter."
+          buffer.writeln("document.put('$keyName', EntityConverter."
               "fromIterable(entity.${fieldInfo.fieldName}, nitriteMapper));");
         } else if (fieldType.isDartCoreSet) {
-          buffer.writeln("document.put('$propertyName', EntityConverter."
+          buffer.writeln("document.put('$keyName', EntityConverter."
               "fromSet(entity.${fieldInfo.fieldName}, nitriteMapper));");
         } else if (fieldType.isDartCoreMap) {
-          buffer.writeln("document.put('$propertyName', EntityConverter."
+          buffer.writeln("document.put('$keyName', EntityConverter."
               "fromMap(entity.${fieldInfo.fieldName}, nitriteMapper));");
         } else {
-          buffer.write("document.put('$propertyName', ");
+          buffer.write("document.put('$keyName', ");
           buffer.write('nitriteMapper.convert<Document, ');
           buffer.write(
               '${fieldInfo.fieldType.getDisplayString(withNullability: true)}');
           buffer.writeln('>(entity.${fieldInfo.fieldName}));');
+        }
+      }
+    }
+
+    // getter mapping
+    for (var propInfo in _converterInfo.propertyInfoList) {
+      var keyName = propInfo.getterFieldName;
+      if (propInfo.aliasName.isNotEmpty) {
+        keyName = propInfo.aliasName;
+      }
+
+      var fieldType = propInfo.fieldType;
+
+      if (isBuiltin(fieldType)) {
+        buffer.writeln(
+            "document.put('$keyName', entity.${propInfo.getterFieldName});");
+      } else {
+        if (fieldType.isDartCoreList) {
+          buffer.writeln("document.put('$keyName', EntityConverter."
+              "fromList(entity.${propInfo.getterFieldName}, nitriteMapper));");
+        } else if (fieldType.isDartCoreIterable) {
+          buffer.writeln("document.put('$keyName', EntityConverter."
+              "fromIterable(entity.${propInfo.getterFieldName}, nitriteMapper));");
+        } else if (fieldType.isDartCoreSet) {
+          buffer.writeln("document.put('$keyName', EntityConverter."
+              "fromSet(entity.${propInfo.getterFieldName}, nitriteMapper));");
+        } else if (fieldType.isDartCoreMap) {
+          buffer.writeln("document.put('$keyName', EntityConverter."
+              "fromMap(entity.${propInfo.getterFieldName}, nitriteMapper));");
+        } else {
+          buffer.write("document.put('$keyName', ");
+          buffer.write('nitriteMapper.convert<Document, ');
+          buffer.write(
+              '${propInfo.fieldType.getDisplayString(withNullability: true)}');
+          buffer.writeln('>(entity.${propInfo.getterFieldName}));');
         }
       }
     }

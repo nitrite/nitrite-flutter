@@ -73,8 +73,20 @@ class F {
 
 @Converter()
 class G {
-  String? field1;
-  String? field2;
+  String _field1;
+  String _field2;
 
-  F([this.field1 = "", this.field2 = ""]);
+  G([this._field1 = "", this._field2 = ""]);
+
+  @Property(alias: 'firstField')
+  String get field1 => _field1;
+
+  @Property(alias: 'secondField')
+  String get field2 => _field2;
+
+  @Property(alias: 'firstField')
+  void set field1(String value) => this._field1 = value;
+
+  @Property(alias: 'secondField')
+  void set field2(String value) => this._field2 = value;
 }
