@@ -1,5 +1,6 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
+import 'package:quiver/pattern.dart';
 import 'package:test/test.dart';
 
 import '../../test_utils.dart';
@@ -204,6 +205,40 @@ void main() {
       expect(defaultValue<bool?>(), isNull);
       expect(defaultValue<Object?>(), isNull);
       expect(defaultValue(), isNull);
+    });
+
+
+    test('Test IsBuiltInValueType', () {
+      var nitriteMapper = SimpleDocumentMapper();
+      nitriteMapper.addValueType<_B>();
+      nitriteMapper.registerEntityConverter(_FConverter());
+
+      expect(isBuiltInValueType<num>(), isTrue);
+      expect(isBuiltInValueType<num?>(), isTrue);
+      expect(isBuiltInValueType<int>(), isTrue);
+      expect(isBuiltInValueType<int?>(), isTrue);
+      expect(isBuiltInValueType<double>(), isTrue);
+      expect(isBuiltInValueType<double?>(), isTrue);
+      expect(isBuiltInValueType<String>(), isTrue);
+      expect(isBuiltInValueType<String?>(), isTrue);
+      expect(isBuiltInValueType<Runes>(), isTrue);
+      expect(isBuiltInValueType<Runes?>(), isTrue);
+      expect(isBuiltInValueType<bool>(), isTrue);
+      expect(isBuiltInValueType<bool?>(), isTrue);
+      expect(isBuiltInValueType<Null>(), isTrue);
+      expect(isBuiltInValueType<DateTime>(), isTrue);
+      expect(isBuiltInValueType<DateTime?>(), isTrue);
+      expect(isBuiltInValueType<Duration>(), isTrue);
+      expect(isBuiltInValueType<Duration?>(), isTrue);
+      expect(isBuiltInValueType<Symbol>(), isTrue);
+      expect(isBuiltInValueType<Symbol?>(), isTrue);
+
+      expect(isBuiltInValueType<Glob>(), isFalse);
+      expect(isBuiltInValueType<Glob?>(), isFalse);
+      expect(isBuiltInValueType<_B>(), isFalse);
+      expect(isBuiltInValueType<_B?>(), isFalse);
+      expect(isBuiltInValueType<_F>(), isFalse);
+      expect(isBuiltInValueType<_F?>(), isFalse);
     });
   });
 }

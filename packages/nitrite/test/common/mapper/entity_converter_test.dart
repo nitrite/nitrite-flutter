@@ -33,7 +33,7 @@ void main() {
   });
 }
 
-@Converter()
+@GenerateConverter()
 class _A {
   List<_B>? l;
   Set<_C>? s;
@@ -59,7 +59,7 @@ class _A {
       l.hashCode ^ s.hashCode ^ m.hashCode ^ ms.hashCode ^ ls.hashCode;
 }
 
-@Converter()
+@GenerateConverter()
 class _B {
   String? s;
 
@@ -74,7 +74,7 @@ class _B {
   int get hashCode => s.hashCode;
 }
 
-@Converter()
+@GenerateConverter()
 class _C {
   int? i;
 
@@ -89,7 +89,7 @@ class _C {
   int get hashCode => i.hashCode;
 }
 
-@Converter()
+@GenerateConverter()
 class _K {
   double? d;
 
@@ -104,7 +104,7 @@ class _K {
   int get hashCode => d.hashCode;
 }
 
-@Converter()
+@GenerateConverter()
 class _V {
   String? s;
 

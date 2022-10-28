@@ -87,7 +87,7 @@ Future<ConverterInfo> createConverterInfo(final String converter) async {
   });
 
   return library.classes
-      .where((element) => element.hasAnnotation(Converter))
+      .where((element) => element.hasAnnotation(GenerateConverter))
       .map((element) => ConverterParser(element).parse())
       .first;
 }

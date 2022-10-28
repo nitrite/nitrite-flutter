@@ -27,7 +27,7 @@ class ConverterParser extends Parser<ConverterInfo> {
 
   String _getConverterName() {
     var converterName = _classElement
-        .getAnnotation(Converter)
+        .getAnnotation(GenerateConverter)
         ?.getField(ConverterField.className)
         ?.toStringValue();
 
@@ -39,12 +39,12 @@ class ConverterParser extends Parser<ConverterInfo> {
   }
 
   bool _isValidField(FieldElement element) {
-    var ignored = element.getAnnotation(IgnoredProperty);
+    var ignored = element.getAnnotation(IgnoredKey);
     if (ignored != null) {
       return false;
     }
 
-    var property = element.getAnnotation(Property);
+    var property = element.getAnnotation(DocumentKey);
     if (property != null &&
         (element.isStatic || element.isPrivate || element.isSynthetic)) {
       throw InvalidGenerationSourceError(
@@ -136,7 +136,7 @@ class ConverterParser extends Parser<ConverterInfo> {
     var fieldElements = _classElement.fields;
     for (var element in fieldElements) {
       if (_isValidField(element)) {
-        var property = element.getAnnotation(Property);
+        var property = element.getAnnotation(DocumentKey);
         var aliasName =
             property?.getField(PropertyField.alias)?.toStringValue();
         aliasName ??= "";
@@ -156,7 +156,7 @@ class ConverterParser extends Parser<ConverterInfo> {
     var accessors = _classElement.accessors;
 
     for (var accessor in accessors) {
-      var ignored = accessor.getAnnotation(IgnoredProperty);
+      var ignored = accessor.getAnnotation(IgnoredKey);
       if (ignored != null || accessor.isSynthetic) {
         continue;
       }
@@ -176,7 +176,7 @@ class ConverterParser extends Parser<ConverterInfo> {
           var propInfo = PropertyInfo(accessor.returnType);
           propInfo.getterFieldName = accessor.displayName;
 
-          var property = accessor.getAnnotation(Property);
+          var property = accessor.getAnnotation(DocumentKey);
           var aliasName =
               property?.getField(PropertyField.alias)?.toStringValue();
           aliasName ??= "";
@@ -186,7 +186,7 @@ class ConverterParser extends Parser<ConverterInfo> {
           var propInfo = iterable.first;
           propInfo.getterFieldName = accessor.displayName;
 
-          var property = accessor.getAnnotation(Property);
+          var property = accessor.getAnnotation(DocumentKey);
           var aliasName =
               property?.getField(PropertyField.alias)?.toStringValue();
           aliasName ??= "";
@@ -200,7 +200,7 @@ class ConverterParser extends Parser<ConverterInfo> {
           var propInfo = PropertyInfo(accessor.variable.type);
           propInfo.setterFieldName = accessor.displayName;
 
-          var property = accessor.getAnnotation(Property);
+          var property = accessor.getAnnotation(DocumentKey);
           var aliasName =
               property?.getField(PropertyField.alias)?.toStringValue();
           aliasName ??= "";
@@ -210,7 +210,7 @@ class ConverterParser extends Parser<ConverterInfo> {
           var propInfo = iterable.first;
           propInfo.setterFieldName = accessor.displayName;
 
-          var property = accessor.getAnnotation(Property);
+          var property = accessor.getAnnotation(DocumentKey);
           var aliasName =
               property?.getField(PropertyField.alias)?.toStringValue();
           aliasName ??= "";

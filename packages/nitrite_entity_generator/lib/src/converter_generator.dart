@@ -8,7 +8,7 @@ import 'package:source_gen/source_gen.dart';
 
 import 'converter_writer.dart';
 
-class ConverterGenerator extends GeneratorForAnnotation<Converter> {
+class ConverterGenerator extends GeneratorForAnnotation<GenerateConverter> {
   final _dartfmt = DartFormatter();
 
   @override

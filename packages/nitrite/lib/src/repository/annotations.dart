@@ -25,7 +25,7 @@ class Index {
   const Index({required this.fields, this.type = IndexType.unique});
 }
 
-/// Represents an entity for an [ObjectRepository].
+/// Mark a class as an entity for an [ObjectRepository].
 @Target({TargetKind.classType})
 class Entity {
   /// Name of the [ObjectRepository]. By default,
@@ -38,21 +38,33 @@ class Entity {
   const Entity({this.name = "", this.indices = const []});
 }
 
+/// Specifies nitrite code generators to generate
+/// the code for [EntityConverter] implementation of
+/// the marked class.
 @Target({TargetKind.classType})
-class Converter {
+class GenerateConverter {
+  /// Specifies the generated class name, default is empty.
+  /// If empty, it will generate the class with name
+  /// <marked class name>Converter
   final String className;
 
-  const Converter({this.className = ""});
+  const GenerateConverter({this.className = ""});
 }
 
+/// Specifies nitrite code generators to consider the marked
+/// field/accessor as a document key while generating document
+/// mapping code.
 @Target({TargetKind.field, TargetKind.getter, TargetKind.setter})
-class Property {
+class DocumentKey {
+  /// Specifies the alias name of the key.
   final String alias;
 
-  const Property({this.alias = ""});
+  const DocumentKey({this.alias = ""});
 }
 
+/// Specifies nitrite code generators to ignore the marked
+/// field/accessor while generating document mapping code.
 @Target({TargetKind.field, TargetKind.getter, TargetKind.setter})
-class IgnoredProperty {
-  const IgnoredProperty();
+class IgnoredKey {
+  const IgnoredKey();
 }

@@ -2,7 +2,7 @@ import 'package:nitrite/nitrite.dart';
 
 part 'book.no2.dart';
 
-@Converter(className: 'MyBookConverter')
+@GenerateConverter(className: 'MyBookConverter')
 @Entity(name: 'books', indices: [
   Index(fields: ['tags'], type: IndexType.nonUnique),
   Index(fields: ['description'], type: IndexType.fullText),
@@ -10,7 +10,7 @@ part 'book.no2.dart';
 ])
 class Book with _$BookEntityMixin {
   @Id(fieldName: 'book_id', embeddedFields: ['isbn', 'book_name'])
-  @Property(alias: 'book_id')
+  @DocumentKey(alias: 'book_id')
   BookId? bookId;
 
   String? publisher;
@@ -29,13 +29,13 @@ class Book with _$BookEntityMixin {
       this.description]);
 }
 
-@Converter()
+@GenerateConverter()
 class BookId {
   String? isbn;
 
-  @Property(alias: "book_name")
+  @DocumentKey(alias: "book_name")
   String? name;
 
-  @IgnoredProperty()
+  @IgnoredKey()
   String? author;
 }
