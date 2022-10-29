@@ -1,9 +1,7 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/store/abstract_nitrite_store.dart';
 import 'package:nitrite/src/store/memory/in_memory_map.dart';
 import 'package:nitrite/src/store/memory/in_memory_rtree.dart';
 import 'package:nitrite/src/store/memory/in_memory_store_module.dart';
-import 'package:nitrite/src/store/memory/in_memory_meta.dart';
 
 class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   final Map<String, NitriteMap<dynamic, dynamic>> _nitriteMapRegistry;

@@ -170,7 +170,6 @@ class _AConverter extends EntityConverter<_A> {
   }
 }
 
-class _B {}
 
 class _C {}
 

@@ -28,7 +28,7 @@ class IdFieldParser implements Parser<EntityId> {
         idFieldName,
       );
     } else {
-      var typeElement = type.element;
+      var typeElement = type.element2;
       if (typeElement is! ClassElement) {
         throw InvalidGenerationSourceError(
           'Invalid type found for `@Id`',

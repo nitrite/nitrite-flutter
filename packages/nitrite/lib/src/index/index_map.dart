@@ -20,7 +20,10 @@ class IndexMap {
   }
 
   Future<dynamic> get(Comparable? comparable) async {
-    DBValue? dbKey = comparable == null ? DBNull.instance : DBValue(comparable);
+    DBValue? dbKey = comparable is DBNull
+        ? comparable
+        : (comparable == null ? DBNull.instance : DBValue(comparable));
+
     if (_nitriteMap != null) {
       return _nitriteMap![dbKey];
     } else if (_navigableMap != null) {
@@ -30,7 +33,10 @@ class IndexMap {
   }
 
   Future<dynamic> ceilingKey(Comparable? comparable) async {
-    DBValue? dbKey = comparable == null ? DBNull.instance : DBValue(comparable);
+    DBValue? dbKey = comparable is DBNull
+        ? comparable
+        : (comparable == null ? DBNull.instance : DBValue(comparable));
+
     if (!_reverseScan) {
       if (_nitriteMap != null) {
         dbKey = await _nitriteMap!.ceilingKey(dbKey);
@@ -49,7 +55,10 @@ class IndexMap {
   }
 
   Future<dynamic> higherKey(Comparable? comparable) async {
-    DBValue? dbKey = comparable == null ? DBNull.instance : DBValue(comparable);
+    DBValue? dbKey = comparable is DBNull
+        ? comparable
+        : (comparable == null ? DBNull.instance : DBValue(comparable));
+    
     if (!_reverseScan) {
       if (_nitriteMap != null) {
         dbKey = await _nitriteMap!.higherKey(dbKey);
@@ -68,7 +77,10 @@ class IndexMap {
   }
 
   Future<dynamic> floorKey(Comparable? comparable) async {
-    DBValue? dbKey = comparable == null ? DBNull.instance : DBValue(comparable);
+    DBValue? dbKey = comparable is DBNull
+        ? comparable
+        : (comparable == null ? DBNull.instance : DBValue(comparable));
+
     if (!_reverseScan) {
       if (_nitriteMap != null) {
         dbKey = await _nitriteMap!.floorKey(dbKey);
@@ -87,7 +99,10 @@ class IndexMap {
   }
 
   Future<dynamic> lowerKey(Comparable? comparable) async {
-    DBValue? dbKey = comparable == null ? DBNull.instance : DBValue(comparable);
+    DBValue? dbKey = comparable is DBNull
+        ? comparable
+        : (comparable == null ? DBNull.instance : DBValue(comparable));
+        
     if (!_reverseScan) {
       if (_nitriteMap != null) {
         dbKey = await _nitriteMap!.lowerKey(dbKey);

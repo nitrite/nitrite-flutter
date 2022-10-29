@@ -174,9 +174,6 @@ class ConverterWriter {
     buffer.writeln(');');
   }
 
-  void _generateKeyMapping(FieldInfo fieldInfo, StringBuffer buffer) {
-
-  }
 
   void _generateSetterMapping(StringBuffer buffer) {
     for (var propInfo in _converterInfo.propertyInfoList) {

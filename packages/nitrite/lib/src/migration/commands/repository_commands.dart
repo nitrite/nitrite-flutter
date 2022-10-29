@@ -2,7 +2,6 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/migration/commands/collection_commands.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
-import 'package:nitrite/src/migration/repository_instruction.dart';
 
 class RepositoryRenameCommand extends CollectionRenameCommand {
   RepositoryRenameCommand(Quartet<String, String?, String, String?> arguments)

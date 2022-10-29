@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/initializable.dart';
 import 'package:nitrite/src/store/store_catalog.dart';
 
 /// Represents a storage interface for Nitrite database.

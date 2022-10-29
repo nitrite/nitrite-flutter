@@ -89,7 +89,7 @@ class EntityParser extends Parser<EntityInfo> {
   EntityId? _getEntityId() {
     final fields = [
       ..._classElement.fields,
-      ..._classElement.allSupertypes.expand((type) => type.element.fields),
+      ..._classElement.allSupertypes.expand((type) => type.element2.fields),
     ];
 
     var idFields = fields

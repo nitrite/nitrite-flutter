@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/db_value.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/index_map.dart';
@@ -85,7 +86,7 @@ class FluentFilter {
   /// of the field is within the specified bound including the end values.
   ///
   /// ```dart
-  /// collection.find(where("age").between(40, 30));
+  /// collection.find(where("age").between(30, 40));
   /// ```
   NitriteFilter between(Comparable lowerBound, Comparable upperBound,
           {upperInclusive = true, lowerInclusive = true}) =>
@@ -96,19 +97,19 @@ class FluentFilter {
 
   /// Creates a text filter which performs a text search on the content of
   /// the fields indexed with a full-text index.
-  NitriteFilter text(dynamic value) => TextFilter(_field, value);
+  NitriteFilter text(String value) => TextFilter(_field, value);
 
   /// Creates a string filter which provides regular expression capabilities
   /// for pattern matching strings in documents.
-  NitriteFilter regex(dynamic value) => _RegexFilter(_field, value);
+  NitriteFilter regex(String value) => _RegexFilter(_field, value);
 
   /// Creates an in filter which matches the documents where
   /// the value of a field equals any value in the specified values.
-  NitriteFilter within(dynamic value) => _InFilter(_field, value);
+  NitriteFilter within(List<Comparable> value) => _InFilter(_field, value);
 
   /// Creates a notIn filter which matches the documents where
   /// the value of a field not equals any value in the specified values.
-  NitriteFilter notIn(dynamic value) => _NotInFilter(_field, value);
+  NitriteFilter notIn(List<Comparable> value) => _NotInFilter(_field, value);
 
   /// Creates an element match filter that matches documents that contain a list
   /// value with at least one element that matches the specified filter.
@@ -226,7 +227,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
     if (objectFilter && nitriteConfig != null) {
       var mapper = nitriteConfig!.nitriteMapper;
       validateSearchTerm(mapper, field, _value);
-      if (value is Comparable) {
+      if (_value is Comparable) {
         _value = mapper.convert<dynamic, Comparable>(_value);
       }
     }

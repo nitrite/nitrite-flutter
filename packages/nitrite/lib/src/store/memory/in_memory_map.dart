@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/splay_tree_extensions.dart';
-import 'package:nitrite/src/common/util/validation_utils.dart';
 
 class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   final SplayTreeMap<Key, Value> _backingMap;

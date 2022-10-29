@@ -13,12 +13,12 @@ class IndexScanFilter extends Filter {
 }
 
 class EqualsFilter extends ComparableFilter {
-  EqualsFilter(String field, dynamic value) : super(field, value);
+  EqualsFilter(String field, dynamic value) : super(field, _wrapNull(value));
 
   @override
   bool apply(Document doc) {
     var fieldValue = doc.get(field);
-    return deepEquals(fieldValue, value);
+    return deepEquals(fieldValue, _unwrapNull(value));
   }
 
   @override
@@ -55,7 +55,7 @@ class OrFilter extends LogicalFilter {
     buffer.write("(");
     for (var i = 0; i < filters.length; i++) {
       if (i > 0) {
-        buffer.write(" | ");
+        buffer.write(" || ");
       }
       buffer.write(filters[i].toString());
     }
@@ -91,7 +91,7 @@ class AndFilter extends LogicalFilter {
     buffer.write("(");
     for (var i = 0; i < filters.length; i++) {
       if (i > 0) {
-        buffer.write(" & ");
+        buffer.write(" && ");
       }
       buffer.write(filters[i].toString());
     }
@@ -137,8 +137,7 @@ class TextFilter extends StringFilter {
   @override
   String toString() => "($field like $value)";
 
-  Stream<NitriteId> applyOnTextIndex(
-      NitriteMap<String, List> indexMap) async* {
+  Stream<NitriteId> applyOnTextIndex(NitriteMap<String, List> indexMap) async* {
     field.notNullOrEmpty("Field cannot be empty");
     stringValue.notNullOrEmpty("Search term cannot be empty");
 
@@ -269,7 +268,7 @@ class _BetweenFilter<T> extends AndFilter {
 
   static Filter _lhs<R>(String field, _Bound<R> bound) {
     _validateBound(bound);
-    R value = bound.upperBound;
+    R value = bound.lowerBound;
     if (bound.lowerInclusive) {
       return _GreaterEqualFilter(field, value as Comparable);
     } else {
@@ -433,12 +432,13 @@ class _LesserThanFilter extends ComparableFilter {
 }
 
 class _NotEqualsFilter extends ComparableFilter {
-  _NotEqualsFilter(String field, dynamic value) : super(field, value);
+  _NotEqualsFilter(String field, dynamic value)
+      : super(field, _wrapNull(value));
 
   @override
   bool apply(Document doc) {
     var fieldValue = doc.get(field);
-    return !deepEquals(fieldValue, value);
+    return !deepEquals(fieldValue, _unwrapNull(value));
   }
 
   @override
@@ -486,7 +486,7 @@ class _InFilter extends ComparableArrayFilter {
     var fieldValue = doc.get(field);
 
     if (fieldValue is Comparable) {
-      return _comparableSet.contains(comparable);
+      return _comparableSet.contains(fieldValue);
     }
     return false;
   }
@@ -516,7 +516,7 @@ class _NotInFilter extends ComparableArrayFilter {
     var fieldValue = doc.get(field);
 
     if (fieldValue is Comparable) {
-      return !_comparableSet.contains(comparable);
+      return !_comparableSet.contains(fieldValue);
     }
     return false;
   }
@@ -758,3 +758,8 @@ class _ElementMatchFilter extends NitriteFilter {
     }
   }
 }
+
+Comparable _wrapNull(dynamic value) =>
+    value == null ? DBNull.instance : value as Comparable;
+
+dynamic _unwrapNull(dynamic value) => value is DBNull ? null : value;

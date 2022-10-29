@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import '../../test_utils.dart';
 
 void main() {
-  group('MappableMapper Test Suite', () {
+  group('SimpleDocumentMapper Test Suite', () {
     test('Test Convert Value Type', () {
       var mapper = SimpleDocumentMapper();
       {

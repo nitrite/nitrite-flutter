@@ -54,13 +54,13 @@ extension StringFilterExtension on FieldName {
 
   /// Creates an in filter which matches the documents where
   /// the value of a field equals any value in the specified values.
-  NitriteFilter within(List<dynamic> values) {
+  NitriteFilter within(List<Comparable> values) {
     return where(this).within(values);
   }
 
   /// Creates a notIn filter which matches the documents where
   /// the value of a field not equals any value in the specified values.
-  NitriteFilter notIn(List<dynamic> values) {
+  NitriteFilter notIn(List<Comparable> values) {
     return where(this).notIn(values);
   }
 
