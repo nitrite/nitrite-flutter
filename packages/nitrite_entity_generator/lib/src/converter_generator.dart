@@ -16,7 +16,7 @@ class ConverterGenerator extends GeneratorForAnnotation<GenerateConverter> {
       Element element, ConstantReader annotation, BuildStep buildStep) {
     if (element is! ClassElement) {
       throw InvalidGenerationSourceError(
-        '`@Converter` can only be used on classes.',
+        '`@GenerateConverter` can only be used on classes.',
         element: element,
       );
     }

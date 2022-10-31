@@ -8,7 +8,7 @@ void main() {
   group("Converter Parser Suite", () {
     test('Parse Ctor with All Required Params', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           String name;
           int age;
@@ -24,7 +24,7 @@ void main() {
 
     test('Parse Ctor with All Required final Params', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           final int age;
@@ -40,7 +40,7 @@ void main() {
 
     test('Parse Constant Ctor with All Required final Params', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           final int age;
@@ -56,7 +56,7 @@ void main() {
 
     test('Parse Redirecting Ctor', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           final int age;
@@ -76,7 +76,7 @@ void main() {
 
     test('Parse Named Ctor', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           final int age;
@@ -96,7 +96,7 @@ void main() {
 
     test('Parse Factory Ctor', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           final int age;
@@ -116,7 +116,7 @@ void main() {
 
     test('Parse Ctor with Some Positional Optional Param', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           int? age;
@@ -132,7 +132,7 @@ void main() {
 
     test('Parse Ctor with Some Named Optional Param', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           int? age;
@@ -149,7 +149,7 @@ void main() {
     test('Parse Ctor with Some Positional Optional Param with Default Value',
         () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           int? age;
@@ -165,7 +165,7 @@ void main() {
 
     test('Parse private Ctor', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           String? name;
           int? age;
@@ -179,9 +179,42 @@ void main() {
           throwsA(TypeMatcher<InvalidGenerationSourceError>()));
     });
 
+    test('Parse Ctor with All Positional Optional Params with Default Value',
+        () async {
+      final classElement = await createClassElement('''
+        @GenerateConverter()
+        class Customer {
+          final String name;
+          final int age;
+          final String location;
+          
+          Customer([this.name = "", this.age = 0, this.location = ""]);
+        }
+      ''');
+
+      expect(() => ConverterParser(classElement).parse(),
+          throwsA(TypeMatcher<InvalidGenerationSourceError>()));
+    });
+
+    test("Ignored Field with Non Nullable Type", () async {
+      final classElement = await createClassElement('''
+        @GenerateConverter()
+        class Customer {
+          @IgnoredKey()
+          String name;
+          int number;
+        
+          Customer({required this.name, required this.number});
+        }
+      ''');
+
+      expect(() => ConverterParser(classElement).parse(),
+          throwsA(TypeMatcher<InvalidGenerationSourceError>()));
+    });
+
     test('Parse Default Ctor', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           String? name;
           int? age;
@@ -194,7 +227,9 @@ void main() {
       expect(converterInfo.constructorInfo, isNotNull);
       expect(converterInfo.constructorInfo.hasDefaultCtor, isTrue);
       expect(converterInfo.constructorInfo.hasAllOptionalNamedCtor, isFalse);
-      expect(converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isFalse);
+      expect(converterInfo.constructorInfo.hasAllNamedCtor, isFalse);
+      expect(
+          converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isFalse);
       expect(converterInfo.className, 'Customer');
       expect(converterInfo.fieldInfoList, isNotEmpty);
       expect(converterInfo.fieldInfoList.length, 3);
@@ -203,7 +238,7 @@ void main() {
 
     test('Parse Ctor with All Named Optional Params', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           String? name;
           int? age;
@@ -218,7 +253,9 @@ void main() {
       expect(converterInfo.constructorInfo, isNotNull);
       expect(converterInfo.constructorInfo.hasDefaultCtor, isFalse);
       expect(converterInfo.constructorInfo.hasAllOptionalNamedCtor, isTrue);
-      expect(converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isTrue);
+      expect(converterInfo.constructorInfo.hasAllNamedCtor, isTrue);
+      expect(
+          converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isFalse);
       expect(converterInfo.className, 'Customer');
       expect(converterInfo.fieldInfoList, isNotEmpty);
       expect(converterInfo.fieldInfoList.length, 3);
@@ -227,7 +264,7 @@ void main() {
 
     test('Parse Ctor with All Positional Optional Params', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           String? name;
           int? age;
@@ -242,7 +279,9 @@ void main() {
       expect(converterInfo.constructorInfo, isNotNull);
       expect(converterInfo.constructorInfo.hasDefaultCtor, isFalse);
       expect(converterInfo.constructorInfo.hasAllOptionalNamedCtor, isFalse);
-      expect(converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isTrue);
+      expect(converterInfo.constructorInfo.hasAllNamedCtor, isFalse);
+      expect(
+          converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isTrue);
       expect(converterInfo.className, 'Customer');
       expect(converterInfo.fieldInfoList, isNotEmpty);
       expect(converterInfo.fieldInfoList.length, 3);
@@ -252,7 +291,7 @@ void main() {
     test('Parse Ctor with All Named Optional Params with Default Value',
         () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           final int age;
@@ -267,23 +306,24 @@ void main() {
       expect(converterInfo.constructorInfo, isNotNull);
       expect(converterInfo.constructorInfo.hasDefaultCtor, isFalse);
       expect(converterInfo.constructorInfo.hasAllOptionalNamedCtor, isTrue);
-      expect(converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isTrue);
+      expect(converterInfo.constructorInfo.hasAllNamedCtor, isTrue);
+      expect(
+          converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isFalse);
       expect(converterInfo.className, 'Customer');
       expect(converterInfo.fieldInfoList, isNotEmpty);
       expect(converterInfo.fieldInfoList.length, 3);
       expect(converterInfo.fieldInfoList.where((f) => f.isFinal).length, 3);
     });
 
-    test('Parse Ctor with All Positional Optional Params with Default Value',
-        () async {
+    test('Parse Ctor with All Named Params', () async {
       final classElement = await createClassElement('''
-        @Converter()
+        @GenerateConverter()
         class Customer {
           final String name;
           final int age;
           final String location;
           
-          Customer([this.name = "", this.age = 0, this.location = ""]);
+          Customer({required this.name, required this.age, required this.location});
         }
       ''');
 
@@ -292,7 +332,9 @@ void main() {
       expect(converterInfo.constructorInfo, isNotNull);
       expect(converterInfo.constructorInfo.hasDefaultCtor, isFalse);
       expect(converterInfo.constructorInfo.hasAllOptionalNamedCtor, isFalse);
-      expect(converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isTrue);
+      expect(converterInfo.constructorInfo.hasAllNamedCtor, isTrue);
+      expect(
+          converterInfo.constructorInfo.hasAllOptionalPositionalCtor, isFalse);
       expect(converterInfo.className, 'Customer');
       expect(converterInfo.fieldInfoList, isNotEmpty);
       expect(converterInfo.fieldInfoList.length, 3);

@@ -10,7 +10,7 @@ void main() {
   group("Converter Writer Test Suite", () {
     test("Test Converter Class Name", () async {
       final converterInfo = await createConverterInfo('''
-        @Converter(className: 'MyCustomConverter')
+        @GenerateConverter(className: 'MyCustomConverter')
         class Customer {
           final String stringName;
           
@@ -166,4 +166,26 @@ class H {
 
   @IgnoredKey()
   void set field2(String value) => this._field2 = value;
+}
+
+@GenerateConverter()
+class Employee {
+  @Id(fieldName: 'empId')
+  final int empId;
+  final DateTime? joinDate;
+  final String address;
+  final String emailAddress;
+  final List<int> blob;
+  @IgnoredKey()
+  final A? a;
+  final B? b;
+
+  Employee(
+      {this.empId = 0,
+        this.joinDate,
+        this.address = '',
+        this.emailAddress = '',
+        this.blob = const [],
+        this.a,
+        this.b});
 }

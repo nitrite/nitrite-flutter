@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_entity_generator/src/common.dart';
 import 'package:nitrite_entity_generator/src/extensions.dart';
@@ -39,16 +40,29 @@ class ConverterParser extends Parser<ConverterInfo> {
   }
 
   bool _isValidField(FieldElement element) {
-    var ignored = element.getAnnotation(IgnoredKey);
-    if (ignored != null) {
-      return false;
-    }
-
     var property = element.getAnnotation(DocumentKey);
     if (property != null &&
         (element.isStatic || element.isPrivate || element.isSynthetic)) {
+      /*
+      * class A {
+      *   @DocumentKey
+      *   static String a;
+      *
+      *   @DocumentKey
+      *   String? _b;
+      * }
+      *
+      * 1. private fields cannot be set from outside of the class.
+      *
+      * 2. static fields also does not hold any state of the object,
+      *    so converting it to a document is not valid.
+      *
+      * 3. synthetic fields are not part of the user objects, so
+      *    converting it to a document is also not valid.
+      * */
+
       throw InvalidGenerationSourceError(
-        '`@Property` cannot be used on a private/static/synthetic field.',
+        '`@DocumentKey` cannot be used on a private/static/synthetic field.',
         element: element,
       );
     }
@@ -62,15 +76,31 @@ class ConverterParser extends Parser<ConverterInfo> {
   String _getClassName() {
     // check mixin
     if (_classElement.mixins.isNotEmpty) {
+      /*
+      * mixin A {
+      *   String? a;
+      * }
+      *
+      * 1. mixins can not be instantiated
+      * */
+
       throw InvalidGenerationSourceError(
-        '`@Converter` can not be used with mixins.',
+        '`@GenerateConverter` can not be used with mixins.',
         element: _classElement,
       );
     }
 
     if (_classElement.isAbstract) {
+      /*
+      * abstract class A {
+      *   String? a;
+      * }
+      *
+      * 1. abstract class can not be instantiated
+      * */
+
       throw InvalidGenerationSourceError(
-        '`@Converter` can not be used on abstract class.',
+        '`@GenerateConverter` can not be used on abstract class.',
         element: _classElement,
       );
     }
@@ -80,27 +110,45 @@ class ConverterParser extends Parser<ConverterInfo> {
 
   ConstructorInfo _getConstructorInfo() {
     // check for valid constructors
-    // 1. default ctor
-    // 2. ctor with all positional optional parameters
-    //    2.1 all fields has to be non-final, otherwise those can not
-    //        be set in ctor with positional optional parameters
-    // 3. ctor with all named optional parameters
-    //    3.1 all fields either has to be final or all non-final, no
-    //        mix-and-match is allowed.
-    //    3.2 all field names in the class must match with ctor parameters
-    // 4. check for getter and setters properties
-
     var constructors = _classElement.constructors;
     var validConstructors = constructors.where((ctor) =>
         ctor.isPublic &&
         ctor.name.isEmpty &&
         (ctor.isGenerative || !ctor.isFactory || ctor.isDefaultConstructor));
 
+    /*
+      * Valid Constructor
+      *
+      *   1. DEFAULT CTOR
+      *
+      * class A {
+      *   String? name;
+      * }
+      *
+      *   2. CTOR WITH ALL POSITIONAL OPTIONAL PARAMETERS
+      *
+      * class A {
+      *   String name;
+      *   A([this.name = 'a']);
+      * }
+      *   3. CTOR WITH ALL NAMED (OPTIONAL/REQUIRED) PARAMETERS
+      *
+      * class A {
+      *   final String name;
+      *   A({this.name = 'a'});
+      * }
+      *
+      * class B {
+      *   final String name;
+      *   B({required this.name});
+      * }
+      * */
+
     if (validConstructors.isEmpty) {
       throw InvalidGenerationSourceError(
-        '`@Converter` can only be used on classes which has at least one public '
-        'constructor which is either a default constructor or one with all '
-        'optional parameters.',
+        '`@GenerateConverter` can only be used on classes which has at least '
+        'one public constructor which is either a default constructor or one '
+        'with all optional/named parameters.',
         element: _classElement,
       );
     }
@@ -116,11 +164,17 @@ class ConverterParser extends Parser<ConverterInfo> {
         ctor.parameters.isNotEmpty &&
         ctor.parameters.every((param) => param.isOptionalNamed));
 
-    var ctorParamNames = <String>[];
+    bool hasAllNamedCtor = validConstructors.any((ctor) =>
+        ctor.parameters.isNotEmpty &&
+        ctor.parameters.every((param) => param.isNamed));
+
+    var ctorParams = <ParamInfo>[];
     for (var ctor in validConstructors) {
-      var names = ctor.parameters.map((e) => e.displayName).toList();
-      if (names.length > ctorParamNames.length) {
-        ctorParamNames = names;
+      var params = ctor.parameters
+          .map((e) => ParamInfo(e.type, e.displayName, e.isRequired, e.isNamed))
+          .toList();
+      if (params.length > ctorParams.length) {
+        ctorParams = params;
       }
     }
 
@@ -128,7 +182,8 @@ class ConverterParser extends Parser<ConverterInfo> {
         hasDefaultCtor: hasDefaultCtor,
         hasAllOptionalNamedCtor: hasAllOptionalNamedCtor,
         hasAllOptionalPositionalCtor: hasAllOptionalPositionalCtor,
-        ctorParamNames: ctorParamNames);
+        hasAllNamedCtor: hasAllNamedCtor,
+        ctorParams: ctorParams);
   }
 
   List<FieldInfo> _getFieldInfoList() {
@@ -144,7 +199,9 @@ class ConverterParser extends Parser<ConverterInfo> {
         var fieldName = element.displayName;
         var isFinal = element.isFinal;
         var fieldType = element.type;
-        fieldInfos.add(FieldInfo(fieldName, fieldType, aliasName, isFinal));
+        var isIgnored = element.getAnnotation(IgnoredKey) != null;
+        fieldInfos.add(
+            FieldInfo(fieldName, fieldType, aliasName, isFinal, isIgnored));
       }
     }
 
@@ -156,12 +213,22 @@ class ConverterParser extends Parser<ConverterInfo> {
     var accessors = _classElement.accessors;
 
     for (var accessor in accessors) {
-      var ignored = accessor.getAnnotation(IgnoredKey);
-      if (ignored != null || accessor.isSynthetic) {
-        continue;
-      }
+      if (accessor.isSynthetic) continue;
 
       if (accessor.isSetter && accessor.correspondingGetter == null) {
+        /*
+        * class A {
+        *   // no way to get the value
+        *   String _name;
+        *
+        *   A([this._name = 'a']);
+        *
+        *   void set name(value) {
+        *     this._name = value;
+        *   }
+        * }
+        * */
+
         throw InvalidGenerationSourceError(
             'A getter accessor must be defined for corresponding setter '
             '${accessor.displayName}',
@@ -175,6 +242,7 @@ class ConverterParser extends Parser<ConverterInfo> {
         if (iterable.isEmpty) {
           var propInfo = PropertyInfo(accessor.returnType);
           propInfo.getterFieldName = accessor.displayName;
+          propInfo.isIgnored = accessor.getAnnotation(IgnoredKey) != null;
 
           var property = accessor.getAnnotation(DocumentKey);
           var aliasName =
@@ -185,6 +253,7 @@ class ConverterParser extends Parser<ConverterInfo> {
         } else {
           var propInfo = iterable.first;
           propInfo.getterFieldName = accessor.displayName;
+          propInfo.isIgnored = accessor.getAnnotation(IgnoredKey) != null;
 
           var property = accessor.getAnnotation(DocumentKey);
           var aliasName =
@@ -199,6 +268,7 @@ class ConverterParser extends Parser<ConverterInfo> {
         if (iterable.isEmpty) {
           var propInfo = PropertyInfo(accessor.variable.type);
           propInfo.setterFieldName = accessor.displayName;
+          propInfo.isIgnored = accessor.getAnnotation(IgnoredKey) != null;
 
           var property = accessor.getAnnotation(DocumentKey);
           var aliasName =
@@ -209,6 +279,7 @@ class ConverterParser extends Parser<ConverterInfo> {
         } else {
           var propInfo = iterable.first;
           propInfo.setterFieldName = accessor.displayName;
+          propInfo.isIgnored = accessor.getAnnotation(IgnoredKey) != null;
 
           var property = accessor.getAnnotation(DocumentKey);
           var aliasName =
@@ -227,12 +298,21 @@ class ConverterParser extends Parser<ConverterInfo> {
     // 1. ctor with all positional optional parameters
     //    1.1 all fields has to be non-final, otherwise those can not
     //        be set in ctor with positional optional parameters
-    // 2. ctor with all named optional parameters
-    //    2.1 all fields either has to be final or all non-final, no
-    //        mix-and-match is allowed.
-    //    2.2 all field names in the class must match with ctor parameters
+    // 2. ctor with all named (optional/required) parameters
+    //    2.1 all field names in the class must match with ctor parameters
 
     if (ctorInfo.hasAllOptionalPositionalCtor) {
+      /*
+      * class A {
+      *   // cannot set it in converter as ctor param is positional
+      *   final String name;
+      *   String? address;
+      *
+      *   A([this.name = 'a', this.address]);
+      * }
+      *
+      * */
+
       if (fieldInfoList.any((field) => field.isFinal)) {
         throw InvalidGenerationSourceError(
             'A class with a constructor having all positional optional '
@@ -241,23 +321,77 @@ class ConverterParser extends Parser<ConverterInfo> {
       }
     }
 
-    if (ctorInfo.hasAllOptionalNamedCtor) {
-      if (fieldInfoList.any((field) => field.isFinal) &&
-          fieldInfoList.any((field) => !field.isFinal)) {
-        throw InvalidGenerationSourceError(
-            'A class with a constructor having all named optional parameters '
-            'should either have all fields as final or all fields as non-final, '
-            'combination of final and non-final field is not allowed',
-            element: _classElement);
-      }
-
+    if (ctorInfo.hasAllOptionalNamedCtor || ctorInfo.hasAllNamedCtor) {
       if (!UnorderedIterableEquality().equals(
-          fieldInfoList.map((e) => e.fieldName), ctorInfo.ctorParamNames)) {
+          fieldInfoList.map((e) => e.fieldName),
+          ctorInfo.ctorParams.map((e) => e.paramName))) {
+
+        /*
+        * class A {
+        *   final String name;
+        *   String? address;
+        *
+        *   A({this.name = 'a'});
+        * }
+        *
+        * */
+
         throw InvalidGenerationSourceError(
-            'A class with a constructor having all named optional parameters '
+            'A class with a constructor having all named parameters '
             'should have all the fields\' names matching with the name of the '
             'constructor parameters.',
             element: _classElement);
+      }
+    }
+
+    if (!ctorInfo.hasDefaultCtor &&
+        !ctorInfo.hasAllOptionalNamedCtor &&
+        !ctorInfo.hasAllNamedCtor &&
+        !ctorInfo.hasAllOptionalPositionalCtor) {
+
+      // no allowable constructor found to instantiate the class
+
+      throw InvalidGenerationSourceError(
+          'No suitable constructor found for the class '
+          '${_classElement.displayName}. A class should have at least one public '
+          'constructor which is either a default constructor or one with all '
+          'optional/named parameters.',
+          element: _classElement);
+    }
+
+    for (var fieldInfo in fieldInfoList) {
+      if (fieldInfo.isIgnored) {
+        var ctorParams = ctorInfo.ctorParams;
+        var ctorParam = ctorParams
+            .where((p) => p.paramName == fieldInfo.fieldName)
+            .firstOrNull;
+
+        if (ctorParam != null && ctorParam.isRequired) {
+          var isNullable = ctorParam.paramType.nullabilitySuffix ==
+              NullabilitySuffix.question;
+          if (!isNullable) {
+            /*
+            * class A {
+            *   @IgnoredKey()
+            *   String name;
+            *   String address;
+            *
+            *   // nothing to set for this.name as it is required and
+            *   // at the same time ignored
+            *   A({required this.name, required this.address});
+            * }
+            *
+            * */
+
+            throw InvalidGenerationSourceError(
+                'A required named constructor parameter ${ctorParam.paramName} '
+                'with non-nullable type cannot be ignored',
+                element: _classElement);
+          } else {
+            // if nullable set null during constructor call
+            fieldInfo.setNull = true;
+          }
+        }
       }
     }
 
@@ -271,12 +405,31 @@ class ConverterParser extends Parser<ConverterInfo> {
     // throw error.
     for (var propInfo in propertyInfoList) {
       if (propInfo.getterFieldName.isEmpty) {
+        /*
+        * class A {
+        *   String? _name;
+        *
+        *   void set name(value) {
+        *     _name = value;
+        *   }
+        * }
+        * */
+
         throw InvalidGenerationSourceError(
             'Getter accessor is not defined for ${propInfo.setterFieldName}',
             element: _classElement);
       }
 
       if (propInfo.setterFieldName.isEmpty) {
+
+        /*
+        * class A {
+        *   String? _name;
+        *
+        *   String? get name => _name;
+        * }
+        * */
+
         throw InvalidGenerationSourceError(
             'Setter accessor is not defined for ${propInfo.getterFieldName}',
             element: _classElement);

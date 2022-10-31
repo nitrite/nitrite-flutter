@@ -68,15 +68,12 @@ class ConverterWriter {
 
     if (ctorInfo.hasDefaultCtor || ctorInfo.hasAllOptionalPositionalCtor) {
       _generateFieldMapping(buffer);
-    } else if (ctorInfo.hasAllOptionalNamedCtor) {
+    } else if (ctorInfo.hasAllOptionalNamedCtor || ctorInfo.hasAllNamedCtor) {
       _generateAllFinalFieldMapping(buffer);
     } else {
-      print(_converterInfo.className);
-      print(_converterInfo.constructorInfo);
-
       throw InvalidGenerationSourceError(
-          '`@Converter` can only be used on classes which has at least one '
-          'public constructor which is either a default constructor or '
+          '`@GenerateConverter` can only be used on classes which has at least '
+          'one public constructor which is either a default constructor or '
           'one with all optional arguments.');
     }
 
@@ -90,6 +87,8 @@ class ConverterWriter {
   void _generateFieldMapping(StringBuffer buffer) {
     buffer.writeln('var entity = ${_converterInfo.className}();');
     for (var fieldInfo in _converterInfo.fieldInfoList) {
+      if (fieldInfo.isIgnored) continue;
+
       buffer.write('entity.${fieldInfo.fieldName} = ');
 
       var keyName = fieldInfo.fieldName;
@@ -133,6 +132,13 @@ class ConverterWriter {
   void _generateAllFinalFieldMapping(StringBuffer buffer) {
     buffer.writeln('var entity = ${_converterInfo.className}(');
     for (var fieldInfo in _converterInfo.fieldInfoList) {
+      if (fieldInfo.isIgnored && fieldInfo.setNull) {
+        // if field is ignored, either we can set it null,
+        // or don't assign it so it takes the default value
+        buffer.write('${fieldInfo.fieldName}: null,');
+        continue;
+      }
+
       buffer.write('${fieldInfo.fieldName}: ');
 
       var keyName = fieldInfo.fieldName;
@@ -174,9 +180,10 @@ class ConverterWriter {
     buffer.writeln(');');
   }
 
-
   void _generateSetterMapping(StringBuffer buffer) {
     for (var propInfo in _converterInfo.propertyInfoList) {
+      if (propInfo.isIgnored) continue;
+
       buffer.write('entity.${propInfo.setterFieldName} = ');
 
       var keyName = propInfo.setterFieldName;
@@ -224,6 +231,8 @@ class ConverterWriter {
 
     // field mapping
     for (var fieldInfo in _converterInfo.fieldInfoList) {
+      if (fieldInfo.isIgnored) continue;
+
       var keyName = fieldInfo.fieldName;
       if (fieldInfo.aliasName.isNotEmpty) {
         keyName = fieldInfo.aliasName;
@@ -259,6 +268,8 @@ class ConverterWriter {
 
     // getter mapping
     for (var propInfo in _converterInfo.propertyInfoList) {
+      if (propInfo.isIgnored) continue;
+
       var keyName = propInfo.getterFieldName;
       if (propInfo.aliasName.isNotEmpty) {
         keyName = propInfo.aliasName;
