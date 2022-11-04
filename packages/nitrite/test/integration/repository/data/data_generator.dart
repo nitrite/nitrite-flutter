@@ -105,3 +105,27 @@ Manufacturer randomManufacturer() {
   manufacturer.address = faker.address.streetAddress();
   return manufacturer;
 }
+
+obj.ClassB randomClassB(int seed) {
+  var classB = obj.ClassB();
+  classB.number = seed + 100;
+  classB.text = faker.lorem.sentence();
+  return classB;
+}
+
+obj.ClassA randomClassA(int seed) {
+  var classA = obj.ClassA();
+  classA.b = randomClassB(seed);
+  classA.uid = faker.guid.guid();
+  classA.string = faker.lorem.sentence();
+  classA.blob = utf8.encode(faker.lorem.sentence());
+  return classA;
+}
+
+obj.ClassC randomClassC(int seed) {
+  var classC = obj.ClassC();
+  classC.id = seed * 5000;
+  classC.digit = seed * 69.65;
+  classC.parent = randomClassA(seed);
+  return classC;
+}

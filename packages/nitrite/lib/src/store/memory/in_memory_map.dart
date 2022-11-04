@@ -134,6 +134,8 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<void> close() async {
+    print('Map Closed');
+    print(StackTrace.current);
     _closedFlag = true;
   }
 
@@ -164,6 +166,5 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   }
 
   @override
-  Future<void> initialize() async {
-  }
+  Future<void> initialize() async {}
 }

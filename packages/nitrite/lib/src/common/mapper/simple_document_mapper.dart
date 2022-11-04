@@ -20,8 +20,6 @@ class SimpleDocumentMapper extends NitriteMapper {
     if (_isValue(source)) {
       if (source is! Target) {
         return source;
-        // throw ObjectMappingException(
-        //     "Cannot convert value type $Source to $Target");
       }
 
       return source as Target;
@@ -82,6 +80,8 @@ class SimpleDocumentMapper extends NitriteMapper {
       var serializer = _converterRegistry["$Source"] as EntityConverter<Source>;
       return serializer.toDocument(source, this);
     }
+
+    print(source);
 
     throw ObjectMappingException('Can\'t convert object of type '
         '${source.runtimeType} to Document, try registering a '

@@ -75,7 +75,7 @@ void main() {
 
       when(collection.find()).thenAnswer((_) => Future.value(documentCursor));
       when(collection.update(any, any, any)).thenAnswer((_) =>
-          Future.value(WriteResult(Stream.fromIterable([NitriteId.newId()]))));
+          Future.value(WriteResult([NitriteId.newId()])));
 
       when(mockProcessor.processBeforeWrite(any)).thenAnswer(
           (_) => Future.value(Document.createDocument("processed", true)));

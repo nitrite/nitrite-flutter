@@ -29,13 +29,10 @@ abstract class Processor {
         futures.add(Future.microtask(() async {
           // process all documents in parallel
           var processed = await processBeforeWrite(document);
-          var writeResult = await nitriteCollection!.update(
+          await nitriteCollection!.update(
               createUniqueFilter(document),
               processed,
               updateOptions(insertIfAbsent: false));
-
-          // listen to the write result to ensure that the document is updated
-          writeResult.listen(blackHole);
         }));
       }
       await Future.wait(futures);

@@ -62,7 +62,7 @@ class IndexManager {
             // run all futures in parallel
             futures.add(Future.microtask(() async {
               var indexMap =
-              await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
+                  await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
               await indexMap.close();
             }));
           }
@@ -150,7 +150,7 @@ class IndexManager {
             // run all futures in parallel
             futures.add(Future.microtask(() async {
               var indexMap =
-              await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
+                  await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
               await indexMap.clear();
             }));
           }

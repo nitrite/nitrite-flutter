@@ -227,7 +227,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
     if (objectFilter && nitriteConfig != null) {
       var mapper = nitriteConfig!.nitriteMapper;
       validateSearchTerm(mapper, field, _value);
-      if (_value is Comparable) {
+      if (_value is Comparable && _value is! DBNull) {
         _value = mapper.convert<dynamic, Comparable>(_value);
       }
     }

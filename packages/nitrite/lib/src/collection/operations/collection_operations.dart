@@ -69,9 +69,10 @@ class CollectionOperations {
     return _indexOperations.hasIndexEntry(indexFields);
   }
 
-  WriteResult insert(List<Document> documents) {
+  Future<WriteResult> insert(List<Document> documents) async {
     var stream = _writeOperations.insert(documents);
-    return WriteResult(stream);
+    var list = await stream.toList();
+    return WriteResult(list);
   }
 
   Future<bool> isIndexing(Fields indexFields) async {
@@ -90,14 +91,16 @@ class CollectionOperations {
     await _indexOperations.buildIndex(indexDescriptor, true);
   }
 
-  WriteResult removeDocument(Document document) {
+  Future<WriteResult> removeDocument(Document document) async {
     var stream = _writeOperations.removeDocument(document);
-    return WriteResult(stream);
+    var list = await stream.toList();
+    return WriteResult(list);
   }
 
-  WriteResult removeByFilter(Filter filter, bool once) {
+  Future<WriteResult> removeByFilter(Filter filter, bool once) async {
     var stream = _writeOperations.removeByFilter(filter, once);
-    return WriteResult(stream);
+    var list = await stream.toList();
+    return WriteResult(list);
   }
 
   Future<void> setAttributes(Attributes attributes) async {
@@ -108,10 +111,11 @@ class CollectionOperations {
     return _nitriteMap.size();
   }
 
-  WriteResult update(
-      Filter filter, Document update, UpdateOptions updateOptions) {
+  Future<WriteResult> update(
+      Filter filter, Document update, UpdateOptions updateOptions) async {
     var stream = _writeOperations.update(filter, update, updateOptions);
-    return WriteResult(stream);
+    var list = await stream.toList();
+    return WriteResult(list);
   }
 
   Future<void> clear() async {
@@ -124,7 +128,7 @@ class CollectionOperations {
     _indexOperations = IndexOperations(
         _collectionName, _nitriteConfig, _nitriteMap, _eventBus);
     await _indexOperations.initialize();
-    
+
     _readOperations = ReadOperations(_collectionName, _indexOperations,
         _nitriteConfig, _nitriteMap, _processorChain);
 

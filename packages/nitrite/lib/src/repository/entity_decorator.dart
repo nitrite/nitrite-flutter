@@ -17,8 +17,8 @@ abstract class EntityDecorator<T> {
   String get entityName => T.toString();
 }
 
-class EntityDecoratorReader {
-  final EntityDecorator _entityDecorator;
+class EntityDecoratorReader<T> {
+  final EntityDecorator<T> _entityDecorator;
   final NitriteCollection _collection;
 
   EntityId? _objectIdField;

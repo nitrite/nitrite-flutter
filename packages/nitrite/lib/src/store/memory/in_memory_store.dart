@@ -32,6 +32,7 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
 
   @override
   Future<void> close() async {
+    print('Store is closing');
     _closed = true;
 
     var futures = <Future<void>>[];
@@ -60,8 +61,8 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
 
   @override
   Future<bool> hasMap(String mapName) async {
-    return _nitriteMapRegistry.containsKey(mapName)
-        || _nitriteRTreeMapRegistry.containsKey(mapName);
+    return _nitriteMapRegistry.containsKey(mapName) ||
+        _nitriteRTreeMapRegistry.containsKey(mapName);
   }
 
   @override

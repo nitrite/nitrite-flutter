@@ -4,7 +4,7 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 class NitriteEntityReader<T> {
   final NitriteMapper _nitriteMapper;
   final NitriteCollection _nitriteCollection;
-  
+
   EntityId? _objectIdField;
 
   NitriteEntityReader(this._nitriteMapper, this._nitriteCollection);
@@ -16,9 +16,13 @@ class NitriteEntityReader<T> {
 
     if (entity.entityId != null) {
       _objectIdField = entity.entityId;
-      var hasIndex = await _nitriteCollection
-          .hasIndex(_objectIdField!.embeddedFieldNames);
-      if (!hasIndex) {
+      var requiredIndex = _objectIdField != null &&
+          _objectIdField!.embeddedFieldNames.isNotEmpty;
+
+      var hasIndex = requiredIndex &&
+          await _nitriteCollection.hasIndex(_objectIdField!.embeddedFieldNames);
+
+      if (!hasIndex && requiredIndex) {
         await _nitriteCollection
             .createIndex(_objectIdField!.embeddedFieldNames);
       }

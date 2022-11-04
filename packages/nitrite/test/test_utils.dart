@@ -1,8 +1,9 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
-Future<Nitrite> createDb([String? user, String? password]) =>
-    Nitrite.builder().fieldSeparator(".").openOrCreate(user, password);
+Future<Nitrite> createDb([String? user, String? password]) => Nitrite.builder()
+    .fieldSeparator(".")
+    .openOrCreate(username: user, password: password);
 
 const isNitriteException = TypeMatcher<NitriteException>();
 const isIndexingException = TypeMatcher<IndexingException>();

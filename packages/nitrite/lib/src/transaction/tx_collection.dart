@@ -65,13 +65,11 @@ class DefaultTransactionalCollection extends NitriteCollection {
     var journalEntry = JournalEntry(
       changeType: ChangeType.insert,
       commit: () async {
-        var stream = await _primary.insert(documents);
-        stream.listen(blackHole);
+        await _primary.insert(documents);
       },
       rollback: () async {
         for (var value in documents) {
-          var stream = await _primary.removeOne(value);
-          stream.listen(blackHole);
+          await _primary.removeOne(value);
         }
       },
     );
@@ -109,16 +107,13 @@ class DefaultTransactionalCollection extends NitriteCollection {
         }
 
         // update the documents
-        var stream = await _primary.update(filter, update, updateOptions!);
-        stream.listen(blackHole);
+        await _primary.update(filter, update, updateOptions!);
       },
       rollback: () async {
         for (var value in documentList) {
-          var stream = await _primary.removeOne(value);
-          stream.listen(blackHole);
+          await _primary.removeOne(value);
 
-          stream = await _primary.insert([value]);
-          stream.listen(blackHole);
+          await _primary.insert([value]);
         }
       },
     );
@@ -161,13 +156,11 @@ class DefaultTransactionalCollection extends NitriteCollection {
       changeType: ChangeType.remove,
       commit: () async {
         toRemove = await _primary.getById(document.id);
-        var stream = await _primary.removeOne(document);
-        stream.listen(blackHole);
+        await _primary.removeOne(document);
       },
       rollback: () async {
         if (toRemove != null) {
-          var stream = await _primary.insert([toRemove!]);
-          stream.listen(blackHole);
+          await _primary.insert([toRemove!]);
         }
       },
     );
@@ -203,13 +196,11 @@ class DefaultTransactionalCollection extends NitriteCollection {
         }
 
         // remove the documents
-        var stream = await _primary.remove(filter, justOne);
-        stream.listen(blackHole);
+        await _primary.remove(filter, justOne);
       },
       rollback: () async {
         for (var value in documentList) {
-          var stream = await _primary.insert([value]);
-          stream.listen(blackHole);
+          await _primary.insert([value]);
         }
       },
     );

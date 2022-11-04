@@ -128,8 +128,9 @@ class ChildClass extends ParentClass {
   int get hashCode => super.hashCode ^ name.hashCode;
 }
 
+@Entity()
 @GenerateConverter()
-class ClassA {
+class ClassA with _$ClassAEntityMixin {
   ClassB? b;
   String? uid;
   String? string;
@@ -172,8 +173,9 @@ class ClassB implements Comparable<ClassB> {
   int get hashCode => number.hashCode ^ text.hashCode;
 }
 
+@Entity()
 @GenerateConverter()
-class ClassC {
+class ClassC with _$ClassCEntityMixin {
   int? id;
   double? digit;
   ClassA? parent;
@@ -195,7 +197,7 @@ class ClassC {
   Index(fields: ['companyName'])
 ])
 @GenerateConverter()
-class Company {
+class Company with _$CompanyEntityMixin {
   @Id(fieldName: 'company_id')
   @DocumentKey(alias: 'company_id')
   final int companyId;
@@ -238,16 +240,16 @@ class Company {
   Index(fields: ["employeeNote.text"], type: IndexType.fullText),
 ])
 @GenerateConverter()
-class Employee {
+class Employee with _$EmployeeEntityMixin {
   @Id(fieldName: 'empId')
-  final int empId;
-  final DateTime? joinDate;
-  final String address;
-  final String emailAddress;
-  final List<int> blob;
+  int? empId;
+  DateTime? joinDate;
+  String address;
+  String emailAddress;
+  List<int> blob;
   @IgnoredKey()
-  final Company? company;
-  final Note? employeeNote;
+  Company? company;
+  Note? employeeNote;
 
   Employee(
       {this.empId = 0,
@@ -389,7 +391,7 @@ class EncryptedPerson {
   Index(fields: ['status'], type: IndexType.nonUnique)
 ])
 @GenerateConverter()
-class PersonEntity {
+class PersonEntity with _$PersonEntityEntityMixin {
   @Id(fieldName: 'uuid')
   String? uuid;
   String? name;
@@ -423,7 +425,7 @@ class PersonEntity {
   Index(fields: ['age'], type: IndexType.nonUnique)
 ])
 @GenerateConverter()
-class RepeatableIndexTest {
+class RepeatableIndexTest with _$RepeatableIndexTestEntityMixin {
   String? firstName;
   int? age;
   String? lastName;
@@ -616,4 +618,62 @@ class WithTransientField {
   int number;
 
   WithTransientField({required this.name, required this.number});
+}
+
+@Entity(indices: [
+  Index(fields: ['text'], type: IndexType.fullText)
+])
+@GenerateConverter()
+class TextData with _$TextDataEntityMixin {
+  int? id;
+  String? text;
+}
+
+@GenerateConverter()
+class TxData {
+  @Id(fieldName: 'id')
+  int? id;
+  String? name;
+}
+
+@Entity(indices: [
+  Index(fields: ["joinDate"], type: IndexType.nonUnique),
+  Index(fields: ["address"], type: IndexType.fullText),
+  Index(fields: ["employeeNote:text"], type: IndexType.fullText),
+])
+@GenerateConverter()
+class EmployeeForCustomSeparator with _$EmployeeForCustomSeparatorEntityMixin {
+  @Id(fieldName: 'empId')
+  int? empId;
+  DateTime? joinDate;
+  String? address;
+  String? emailAddress;
+  List<int>? blob;
+  @IgnoredKey()
+  Company? company;
+  Note? employeeNote;
+
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Employee &&
+          runtimeType == other.runtimeType &&
+          empId == other.empId &&
+          joinDate == other.joinDate &&
+          address == other.address &&
+          emailAddress == other.emailAddress &&
+          ListEquality().equals(blob, other.blob) &&
+          company == other.company &&
+          employeeNote == other.employeeNote;
+
+  @override
+  int get hashCode =>
+      empId.hashCode ^
+      joinDate.hashCode ^
+      address.hashCode ^
+      emailAddress.hashCode ^
+      blob.hashCode ^
+      company.hashCode ^
+      employeeNote.hashCode;
 }

@@ -99,7 +99,7 @@ class ProductId {
   int get hashCode => uniqueId.hashCode ^ productCode.hashCode;
 }
 
-class ProductDecorator extends EntityDecorator<ProductDecorator> {
+class ProductDecorator extends EntityDecorator<Product> {
   @override
   EntityId? get idField => EntityId('productId', ['uniqueId', 'productCode']);
 

@@ -10,17 +10,17 @@ class RepositoryOperations<T> {
   final EntityDecorator<T>? _entityDecorator;
 
   EntityId? _objectIdField;
-  EntityDecoratorReader? _entityDecoratorReader;
-  NitriteEntityReader? _nitriteEntityReader;
+  EntityDecoratorReader<T>? _entityDecoratorReader;
+  NitriteEntityReader<T>? _nitriteEntityReader;
 
   RepositoryOperations(
       this._entityDecorator, this._nitriteMapper, this._nitriteCollection) {
     if (_entityDecorator != null) {
       _entityDecoratorReader =
-          EntityDecoratorReader(_entityDecorator!, _nitriteCollection);
+          EntityDecoratorReader<T>(_entityDecorator!, _nitriteCollection);
     } else {
       _nitriteEntityReader =
-          NitriteEntityReader(_nitriteMapper, _nitriteCollection);
+          NitriteEntityReader<T>(_nitriteMapper, _nitriteCollection);
     }
   }
 
@@ -38,9 +38,48 @@ class RepositoryOperations<T> {
     for (var pair in document) {
       var key = pair.first;
       var value = pair.second;
-      var serializedValue = _nitriteMapper.convert<Document, dynamic>(value);
-      document.put(key, serializedValue);
+      document.put(key, serialize(value));
     }
+  }
+
+  dynamic serialize(dynamic value) {
+    dynamic serializedValue;
+    if (value is List) {
+      serializedValue = serializeList(value);
+    } else if (value is Set) {
+      serializedValue = serializeSet(value);
+    } else if (value is Iterable) {
+      serializedValue = serializeList(value.toList());
+    } else if (value is Map) {
+      serializedValue = serializeMap(value);
+    } else {
+      serializedValue = _nitriteMapper.convert<Document, dynamic>(value);
+    }
+    return serializedValue;
+  }
+
+  List<dynamic> serializeList(List<dynamic> value) {
+    var newList = [];
+    for (var item in value) {
+      newList.add(serialize(item));
+    }
+    return newList;
+  }
+
+  Set<dynamic> serializeSet(Set<dynamic> value) {
+    var newSet = <dynamic>{};
+    for (var item in value) {
+      newSet.add(serialize(item));
+    }
+    return newSet;
+  }
+
+  Map serializeMap(Map value) {
+    var newMap = <dynamic, dynamic>{};
+    for (var entry in value.entries) {
+      newMap[serialize(entry.key)] = serialize(entry.value);
+    }
+    return newMap;
   }
 
   List<Document> toDocuments(List<T> elements) {
@@ -56,7 +95,7 @@ class RepositoryOperations<T> {
   Document toDocument(T element, bool bool) {
     var document = _nitriteMapper.convert<Document, T>(element);
     if (document != null) {
-      serializeFields(document);
+      // serializeFields(document);
     } else {
       throw ObjectMappingException('Failed to map object to document');
     }

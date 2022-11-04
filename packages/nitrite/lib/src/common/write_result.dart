@@ -2,24 +2,16 @@ import 'dart:async';
 
 import 'package:nitrite/nitrite.dart';
 
-class WriteResult extends Stream<NitriteId> {
-  final Stream<NitriteId> _stream;
+class WriteResult extends Iterable<NitriteId> {
+  final List<NitriteId> _nitriteIds;
 
-  WriteResult(Stream<NitriteId> stream)
-      : _stream = stream.asBroadcastStream();
+  WriteResult(this._nitriteIds);
 
-  Future<int> getAffectedCount() {
-    return _stream.length;
+  int getAffectedCount() {
+    return _nitriteIds.length;
   }
 
   @override
-  StreamSubscription<NitriteId> listen(void Function(NitriteId event)? onData,
-      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return _stream.listen(
-      onData,
-      onError: onError,
-      onDone: onDone,
-      cancelOnError: cancelOnError,
-    );
-  }
+  Iterator<NitriteId> get iterator => _nitriteIds.iterator;
+
 }

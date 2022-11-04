@@ -4,27 +4,25 @@ import 'package:test/test.dart';
 void main() {
   group("Stack Test Suite", () {
     test("Test GetAffectedCount", () async {
-      var writeResult = WriteResult(Stream.fromIterable(
-          [NitriteId.newId(), NitriteId.newId(), NitriteId.newId()]));
-      await expectLater(writeResult.getAffectedCount(), completion(3));
+      var writeResult = WriteResult(
+          [NitriteId.newId(), NitriteId.newId(), NitriteId.newId()]);
+      expect(writeResult.getAffectedCount(), 3);
     });
 
     test("Test Broadcast", () async {
-      var writeResult = WriteResult(Stream.fromIterable([
+      var writeResult = WriteResult([
         NitriteId.createId("1"),
         NitriteId.createId("3"),
         NitriteId.createId("2"),
-      ]));
+      ]);
 
-      writeResult.listen(print);
-      writeResult.listen(print);
+      print(writeResult.toList());
 
-      await expectLater(writeResult, emitsInOrder([
+      expect(writeResult, [
         NitriteId.createId("1"),
         NitriteId.createId("3"),
         NitriteId.createId("2")
-      ]));
-
+      ]);
     });
   });
 }
