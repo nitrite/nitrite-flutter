@@ -316,6 +316,14 @@ class FindOptimizer {
 
   void _readLimitOption(FindOptions? findOptions, FindPlan findPlan) {
     if (findOptions != null) {
+      if (findOptions.limit != null && findOptions.limit! < 0) {
+        throw ValidationException("limit parameter must not be negative.");
+      }
+
+      if (findOptions.skip != null && findOptions.skip! < 0) {
+        throw ValidationException("skip parameter must not be negative.");
+      }
+
       findPlan.limit = findOptions.limit;
       findPlan.skip = findOptions.skip;
     }

@@ -48,7 +48,6 @@ void main() {
       nitriteMapper.registerEntityConverter(_PhoneConverter());
 
       var document = skeletonDocument<_Person>(nitriteMapper);
-      print(document);
       expect(document.isEmpty, isFalse);
       expect(document.containsKey('name'), isTrue);
       expect(document.containsKey('age'), isTrue);

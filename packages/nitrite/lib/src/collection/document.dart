@@ -43,6 +43,13 @@ abstract class Document extends Iterable<Pair<String, dynamic>> {
   /// or null if this document contains no mapping for the key.
   dynamic operator [](String key);
 
+  /// Associates the specified value with the specified key in this document.
+  ///
+  /// NOTE: An embedded field is also supported.
+  void operator []=(String key, dynamic value) {
+    put(key, value);
+  }
+
   /// Returns the value of type [T] to which the specified
   /// key is associated, or null if this document contains no mapping
   /// for the key.

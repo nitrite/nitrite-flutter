@@ -154,7 +154,7 @@ class PluginManager {
     if (_nitriteStore == null) {
       await loadModule(InMemoryStoreModule());
       _log.warning('No persistent storage module found, creating an '
-          'in-memory database');
+          'in-memory storage');
     }
   }
 }

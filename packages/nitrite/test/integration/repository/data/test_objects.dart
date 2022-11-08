@@ -320,6 +320,11 @@ class Note {
 
   @override
   int get hashCode => noteId.hashCode ^ text.hashCode;
+
+  @override
+  String toString() {
+    return 'Note{noteId: $noteId, text: $text}';
+  }
 }
 
 @GenerateConverter()
@@ -676,4 +681,16 @@ class EmployeeForCustomSeparator with _$EmployeeForCustomSeparatorEntityMixin {
       blob.hashCode ^
       company.hashCode ^
       employeeNote.hashCode;
+
+  @override
+  String toString() {
+    return 'EmployeeForCustomSeparator{'
+        'empId: $empId, '
+        'joinDate: $joinDate, '
+        'address: $address, '
+        'emailAddress: $emailAddress, '
+        'blob: $blob, '
+        'company: $company, '
+        'employeeNote: $employeeNote}';
+  }
 }

@@ -6,11 +6,11 @@ void main() {
     setUp(() {});
 
     test("Test OrderBy", () {
-      var orderByResult = FindOptions.orderBy("fieldName", SortOrder.ascending);
+      var orderByResult = orderBy("fieldName", SortOrder.ascending);
       expect(orderByResult.orderBy, isNotNull);
       expect(orderByResult.orderBy?.encodedName, "fieldName");
 
-      orderByResult = FindOptions.orderBy("fieldName1", SortOrder.descending)
+      orderByResult = orderBy("fieldName1", SortOrder.descending)
           .thenOrderBy("fieldName2", SortOrder.ascending);
       expect(orderByResult.orderBy, isNotNull);
       expect(orderByResult.orderBy?.encodedName,
@@ -18,19 +18,19 @@ void main() {
     });
 
     test("Test SkipBy", () {
-      var findOptions = FindOptions.skipBy(1);
+      var findOptions = skipBy(1);
       expect(findOptions.skip, 1);
       expect(findOptions.limit, isNull);
     });
 
     test("Test LimitBy", () {
-      var findOptions = FindOptions.limitBy(1);
+      var findOptions = limitBy(1);
       expect(findOptions.limit, 1);
       expect(findOptions.skip, isNull);
     });
 
     test("Test SkipBy and LimitBy", () {
-      var findOptions = FindOptions.skipBy(1).setLimit(1);
+      var findOptions = skipBy(1).setLimit(1);
       expect(findOptions.skip, 1);
       expect(findOptions.limit, 1);
     });
@@ -56,7 +56,7 @@ void main() {
     });
 
     test("Test Distinct", () {
-      var findOptions = FindOptions.distinct();
+      var findOptions = distinct();
       expect(findOptions.distinct, isTrue);
     });
 

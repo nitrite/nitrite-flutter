@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:test/test.dart';
 
 Future<Nitrite> createDb([String? user, String? password]) => Nitrite.builder()
@@ -38,3 +39,39 @@ final Matcher throwsNitriteSecurityException =
     throwsA(isNitriteSecurityException);
 final Matcher throwsMigrationException = throwsA(isMigrationException);
 final Matcher throwsTransactionException = throwsA(isTransactionException);
+
+bool isSorted<T extends Comparable<T>>(Iterable<T> iterable, bool ascending) {
+    var iterator = iterable.iterator;
+    if (!iterator.moveNext()) {
+        return true;
+    }
+
+    var t = iterator.current;
+    while (iterator.moveNext()) {
+        var t2 = iterator.current;
+        if (ascending) {
+            if (t.compareTo(t2) > 0) {
+                return false;
+            }
+        } else {
+            if (t.compareTo(t2) < 0) {
+                return false;
+            }
+        }
+        t = t2;
+    }
+
+    return true;
+}
+
+bool isSimilarDocument(Document? document, Document? other, List<String> fields) {
+    var result = true;
+    if (document == null && other != null) return false;
+    if (document != null && other == null) return false;
+    if (document == null && other == null) return true;
+
+    for (var field in fields) {
+      result = result && deepEquals(document![field], other![field]);
+    }
+    return result;
+}

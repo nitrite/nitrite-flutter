@@ -32,7 +32,6 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
 
   @override
   Future<void> close() async {
-    print('Store is closing');
     _closed = true;
 
     var futures = <Future<void>>[];

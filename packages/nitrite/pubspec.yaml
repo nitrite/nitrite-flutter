@@ -31,4 +31,5 @@ dev_dependencies:
   nitrite_entity_generator:
     path: ../nitrite_entity_generator
   mockito: ^5.2.0
+  encrypt: ^5.0.1
 

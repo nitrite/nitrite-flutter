@@ -81,8 +81,6 @@ class SimpleDocumentMapper extends NitriteMapper {
       return serializer.toDocument(source, this);
     }
 
-    print(source);
-
     throw ObjectMappingException('Can\'t convert object of type '
         '${source.runtimeType} to Document, try registering a '
         'EntityConverter for it.');

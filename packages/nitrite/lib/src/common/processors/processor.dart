@@ -1,6 +1,5 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/persistent_collection.dart';
-import 'package:nitrite/src/common/util/object_utils.dart';
 
 
 /// Represents a document processor.

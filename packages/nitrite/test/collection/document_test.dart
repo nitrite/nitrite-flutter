@@ -128,6 +128,63 @@ void main() {
       expect(doc["location:address:house.2"], isNull);
     });
 
+    test("Test []= Operator", () {
+      var document = emptyDocument();
+      document['score'] = 1034;
+      document['location'] = emptyDocument();
+      document['location.state'] = 'NY';
+      document['location.city'] = 'New York';
+      document['location.address'] = emptyDocument();
+      document['location.address.line1'] = '40';
+      document['location.address.line2'] = 'ABC Street';
+      document['location.address.house'] = ["1", "2", "3"];
+      document['category'] = ['food', 'produce', 'grocery'];
+      document['objArray'] = [
+        createDocument("value", 1),
+        createDocument("value", 2)
+      ];
+
+      expect(doc[""], null);
+      expect(doc["score"], 1034);
+      expect(doc["location.state"], "NY");
+      expect(
+          doc["location.address"],
+          emptyDocument()
+            ..put("line1", "40")
+            ..put("line2", "ABC Street")
+            ..put("house", ["1", "2", "3"]));
+      expect(doc["location.address.line1"], "40");
+      expect(doc["location.address.line2"], "ABC Street");
+      expect(doc["location.address.house"], ["1", "2", "3"]);
+      expect(doc["location.address.house.0"], "1");
+      expect(doc["location.address.house.1"], "2");
+      expect(doc["location.address.house.2"], "3");
+      expect(() => doc["location.address.house.3"], throwsValidationException);
+      expect(doc["location.category"], null);
+
+      expect(doc["category"], ['food', 'produce', 'grocery']);
+      expect(doc["category.0"], 'food');
+      expect(doc["category.1"], 'produce');
+      expect(doc["category.2"], 'grocery');
+
+      expect(doc["objArray"],
+          [createDocument("value", 1), createDocument("value", 2)]);
+      expect(doc["objArray.0"], createDocument("value", 1));
+      expect(doc["objArray.1"], createDocument("value", 2));
+      expect(doc["objArray.0.value"], 1);
+      expect(doc["objArray.1.value"], 2);
+
+      expect(
+          doc["location.address.test"],
+          isNot(emptyDocument()
+            ..put("line1", "40")
+            ..put("line2", "ABC Street")));
+      expect(doc["location.address.test"], isNot("a"));
+      expect(doc["."], isNull);
+      expect(doc[".."], isNull);
+      expect(doc["score.test"], isNull);
+    });
+
     test("Put NULL", () {
       var doc2 = doc.put("test", null);
       expect(doc2, isNotNull);

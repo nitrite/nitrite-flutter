@@ -197,14 +197,14 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<Cursor<T>> find([Filter? filter, FindOptions? findOptions]) {
+  Future<Cursor<T>> find({Filter? filter, FindOptions? findOptions}) {
     return _operations.find(filter, findOptions);
   }
 
   @override
   Future<T?> getById<I>(I id) async {
     var idFilter = _operations.createIdFilter<I>(id);
-    var cursor = await find(idFilter);
+    var cursor = await find(filter : idFilter);
     return cursor.first;
   }
 

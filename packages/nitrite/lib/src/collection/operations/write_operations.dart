@@ -45,13 +45,14 @@ class WriteOperations {
       _log.fine('Processed document with id : $nitriteId');
 
       _log.fine('Inserting document with id : $nitriteId');
-      var already = await _nitriteMap.putIfAbsent(nitriteId, processed);
+      var hasKey = await _nitriteMap.containsKey(nitriteId);
 
-      if (already != null) {
+      if (hasKey) {
         throw UniqueConstraintException('Document with id : $nitriteId already'
             ' exists in ${_nitriteMap.name}');
       } else {
         try {
+          await _nitriteMap.putIfAbsent(nitriteId, processed);
           await _documentIndexWriter.writeIndexEntry(processed);
         } catch (e) {
           if (e is UniqueConstraintException || e is IndexingException) {
@@ -106,6 +107,7 @@ class WriteOperations {
     var cursor = await _readOperations.find(filter, null);
 
     var count = 0;
+    var nitriteIds = <NitriteId, String>{};
     await for (var document in cursor) {
       count++;
 
@@ -113,7 +115,15 @@ class WriteOperations {
       var processed = await _processorChain.processAfterRead(unprocessed);
       _log.fine('Processed document with id : ${processed.id}');
 
-      var nitriteId = document.id;
+      nitriteIds[document.id] = document.source;
+
+      if (once) {
+        break;
+      }
+    }
+
+    for (var entry in nitriteIds.entries) {
+      var nitriteId = entry.key;
       var removed = await _nitriteMap.remove(nitriteId);
       if (removed != null) {
         var removedAt = DateTime.now().millisecondsSinceEpoch;
@@ -132,19 +142,16 @@ class WriteOperations {
           item: removed,
           timestamp: removedAt,
           eventType: EventType.remove,
-          originator: document.source,
+          originator: entry.value,
         );
 
         _alert(eventInfo);
-      }
-
-      if (once) {
-        break;
       }
     }
 
     if (count == 0) {
       _log.fine('No documents found for filter : $filter');
+      yield* Stream.empty();
     } else {
       _log.fine('Removed $count documents for filter : $filter');
     }
@@ -241,7 +248,7 @@ class WriteOperations {
 
   void _alert<T>(CollectionEventInfo<T> changedItem) {
     _log.fine('Alerting event listeners for action : ${changedItem.eventType} '
-        'in ${_nitriteMap.name}');
+        'in collection ${_nitriteMap.name}');
     _eventBus.fire(changedItem);
   }
 }

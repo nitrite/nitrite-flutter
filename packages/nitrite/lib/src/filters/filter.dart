@@ -12,7 +12,7 @@ part 'filter_impl.dart';
 FluentFilter $ = where("\$");
 
 /// A filter to select all elements.
-Filter all = _All();
+final Filter all = _All();
 
 /// Where clause for fluent filter api.
 FluentFilter where(String field) {
@@ -151,6 +151,13 @@ abstract class Filter {
   Filter operator ~() {
     return _NotFilter(this);
   }
+
+  /// Creates a not filter which performs a logical NOT operation on a filter
+  /// and selects the documents that **do not** satisfy the criteria.
+  /// This also includes documents that do not contain the value.
+  Filter not() {
+    return _NotFilter(this);
+  }
 }
 
 /// Represents a nitrite filter.
@@ -197,9 +204,16 @@ abstract class NitriteFilter extends Filter {
 }
 
 class _All extends Filter {
+  _All();
+
   @override
   bool apply(Document element) {
     return true;
+  }
+
+  @override
+  String toString() {
+    return 'ALL';
   }
 }
 

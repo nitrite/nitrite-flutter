@@ -1,8 +1,17 @@
+import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 
 late Nitrite db;
 late NitriteCollection collection;
 late Document doc1, doc2, doc3;
+
+void setUpLog() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    print('${record.time}: [${record.level.name}] ${record.loggerName} -'
+        ' ${record.message}');
+  });
+}
 
 Future<void> setUpNitriteTest() async {
   db = await Nitrite.builder()

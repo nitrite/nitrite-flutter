@@ -116,7 +116,7 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<Cursor<T>> find([Filter? filter, FindOptions? findOptions]) {
+  Future<Cursor<T>> find({Filter? filter, FindOptions? findOptions}) {
     return _operations.find(filter, findOptions);
   }
 
@@ -125,7 +125,7 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
     var item = await _primary.getById(id);
     if (item == null) {
       var idFilter = _operations.createIdFilter(id);
-      var cursor = await find(idFilter);
+      var cursor = await find(filter: idFilter);
       return cursor.first;
     }
     return item;

@@ -39,7 +39,7 @@ void main() {
     test("Test Optimize with Sort Order", () {
       var findOptimizer = FindOptimizer();
       var filter = MockFilter();
-      var findOptions = FindOptions.orderBy("Field Name", SortOrder.ascending);
+      var findOptions = orderBy("Field Name");
       var actualOptimizeResult =
           findOptimizer.optimize(filter, findOptions, []);
       expect(actualOptimizeResult, isNotNull);

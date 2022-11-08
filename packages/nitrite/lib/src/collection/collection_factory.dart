@@ -18,7 +18,7 @@ class CollectionFactory {
       String name, NitriteConfig nitriteConfig, bool writeCatalogue) async {
     name.notNullOrEmpty('Collection name is empty');
 
-    var lock = await _lockService.getLock(name);
+    var lock = await _lockService.getLock('CollectionFactory');
     return await lock.protectWrite(() async {
       if (_collectionMap.containsKey(name)) {
         var collection = _collectionMap[name]!;
@@ -103,25 +103,25 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
   @override
   Future<bool> get isDropped => _lock.protectRead(() async {
-    return _isDropped || _nitriteMap.isDropped;
-  });
+        return _isDropped || _nitriteMap.isDropped;
+      });
 
   @override
   Future<bool> get isOpen => _lock.protectRead(() async {
-    return !_nitriteStore.isClosed &&
-        !_isDropped &&
-        !_nitriteMap.isClosed &&
-        !_nitriteMap.isDropped;
-  });
+        return !_nitriteStore.isClosed &&
+            !_isDropped &&
+            !_nitriteMap.isClosed &&
+            !_nitriteMap.isDropped;
+      });
 
   @override
   String get name => _collectionName;
 
   @override
   Future<int> get size => _lock.protectRead(() async {
-    _checkOpened();
-    return _collectionOperations.getSize();
-  });
+        _checkOpened();
+        return _collectionOperations.getSize();
+      });
 
   @override
   Future<void> addProcessor(Processor processor) async {
@@ -198,7 +198,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
 
   @override
   Future<DocumentCursor> find(
-      [Filter? filter, FindOptions? findOptions]) async {
+      {Filter? filter, FindOptions? findOptions}) async {
     return _lock.protectRead(() async {
       _checkOpened();
       return _collectionOperations.find(filter, findOptions);

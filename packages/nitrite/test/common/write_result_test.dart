@@ -16,8 +16,6 @@ void main() {
         NitriteId.createId("2"),
       ]);
 
-      print(writeResult.toList());
-
       expect(writeResult, [
         NitriteId.createId("1"),
         NitriteId.createId("3"),

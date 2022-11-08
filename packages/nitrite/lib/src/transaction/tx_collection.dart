@@ -96,7 +96,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       changeType: ChangeType.update,
       commit: () async {
         // get the documents which are going to be updated in case of rollback
-        var cursor = await _primary.find(filter);
+        var cursor = await _primary.find(filter: filter);
         await for (var document in cursor) {
           if (updateOptions!.justOnce) {
             documentList.add(document);
@@ -185,7 +185,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       changeType: ChangeType.remove,
       commit: () async {
         // get the documents which are going to be removed in case of rollback
-        var cursor = await _primary.find(filter);
+        var cursor = await _primary.find(filter: filter);
         await for (var document in cursor) {
           if (justOne) {
             documentList.add(document);
@@ -209,7 +209,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
   }
 
   @override
-  Future<DocumentCursor> find([Filter? filter, FindOptions? findOptions]) {
+  Future<DocumentCursor> find({Filter? filter, FindOptions? findOptions}) {
     return _mutex.protectRead(() async {
       await _checkOpened();
       return _collectionOperations.find(filter, findOptions);

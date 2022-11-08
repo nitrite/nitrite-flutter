@@ -759,7 +759,6 @@ class _ElementMatchFilter extends NitriteFilter {
   }
 }
 
-Comparable _wrapNull(dynamic value) =>
-    value == null ? DBNull.instance : value as Comparable;
+dynamic _wrapNull(dynamic value) => value ?? DBNull.instance;
 
 dynamic _unwrapNull(dynamic value) => value is DBNull ? null : value;
