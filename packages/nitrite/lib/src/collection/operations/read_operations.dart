@@ -70,6 +70,8 @@ class ReadOperations {
   }
 
   DocumentCursor _createCursor(FindPlan findPlan) {
+    // a defer stream is used so that we can defer the
+    // calculation till the subscription.
     return DocumentStream(
         () => _findSuitableStream(findPlan), _processorChain, findPlan);
   }

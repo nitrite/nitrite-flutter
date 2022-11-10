@@ -675,7 +675,7 @@ void main() {
 
     test("Test Order by Nullable", () async {
       var col = await db.getCollection('test');
-      await col.createIndex(['id'], indexOptions(IndexType.unique));
+      await col.createIndex(['startTime'], indexOptions(IndexType.nonUnique));
       await col.createIndex(['group'], indexOptions(IndexType.nonUnique));
 
       await col.remove(all);
@@ -698,11 +698,255 @@ void main() {
           findOptions: orderBy('startTime', SortOrder.descending));
       expect(await cursor.length, 2);
 
-      expect(cursor, emitsInOrder([
-        emits(containsPair('startTime', isNotNull)),
-        emits(isNot(containsPair('startTime', isNotNull))),
-        emitsDone
-      ]));
+      expect(
+          cursor,
+          emitsInOrder([
+            emits(containsPair('startTime', isNotNull)),
+            emits(isNot(containsPair('startTime', isNotNull))),
+            emitsDone
+          ]));
+
+      // sort with invalid field
+      cursor = await col.find(
+          filter: where('group').eq('groupA'),
+          findOptions: orderBy('startTime2', SortOrder.descending));
+      expect(await cursor.length, 2);
+    });
+
+    test("Test Default Null Order", () async {
+      var col = await db.getCollection('test');
+      await col.createIndex(['startTime'], indexOptions(IndexType.nonUnique));
+      await col.remove(all);
+
+      var doc1 = emptyDocument()
+        ..put('id', 'test-1')
+        ..put('group', 'groupA');
+
+      var doc2 = emptyDocument()
+        ..put('id', 'test-2')
+        ..put('startTime', DateTime.parse('2019-10-19T02:45:15'))
+        ..put('group', 'groupA');
+
+      var doc3 = emptyDocument()
+        ..put('id', 'test-3')
+        ..put('startTime', DateTime.parse('2018-10-19T02:45:15'))
+        ..put('group', 'groupA');
+
+      var result = await col.insert([doc1, doc2, doc3]);
+      expect(result.length, 3);
+
+      var cursor = await col.find(
+          filter: where('group').eq('groupA'),
+          findOptions: orderBy('startTime', SortOrder.descending));
+      expect(await cursor.length, 3);
+
+      expect(
+          cursor,
+          emitsInOrder([
+            emits(containsPair('id', equals('test-2'))),
+            emits(containsPair('id', equals('test-3'))),
+            emits(containsPair('id', equals('test-1'))),
+            emitsDone
+          ]));
+
+      cursor = await col.find(
+          filter: where('group').eq('groupA'),
+          findOptions: orderBy('startTime', SortOrder.ascending));
+      expect(await cursor.length, 3);
+
+      expect(
+          cursor,
+          emitsInOrder([
+            emits(containsPair('id', equals('test-1'))),
+            emits(containsPair('id', equals('test-3'))),
+            emits(containsPair('id', equals('test-2'))),
+            emitsDone
+          ]));
+    });
+
+    test("Test Find Filter Invalid Accessor", () async {
+      await insert();
+
+      var cursor =
+          await collection.find(filter: where("lastName.name").eq("ln2"));
+      expect(await cursor.length, 0);
+    });
+
+    test("Test Find and Sort for Accented String", () async {
+      var doc1 = emptyDocument()
+        ..put('id', 'test-1')
+        ..put('fruit', 'Apple');
+
+      var doc2 = emptyDocument()
+        ..put('id', 'test-2')
+        ..put('fruit', 'Ôrange');
+
+      var doc3 = emptyDocument()
+        ..put('id', 'test-3')
+        ..put('fruit', 'Pineapple');
+
+      var doc4 = emptyDocument()
+        ..put('id', 'test-4')
+        ..put('fruit', 'Orange');
+
+      var col = await db.getCollection('test');
+      await col.insert([doc1, doc2, doc3, doc4]);
+
+      var cursor = await col.find(findOptions: orderBy('fruit'));
+      expect(await cursor.length, 4);
+
+      // there is no locale supported string sort in dart/flutter
+      // so Ôrange will come last.
+      expect(
+          cursor,
+          emitsInOrder([
+            emits(containsPair('id', equals('test-1'))),
+            emits(containsPair('id', equals('test-4'))),
+            emits(containsPair('id', equals('test-3'))),
+            emits(containsPair('id', equals('test-2'))),
+            emitsDone
+          ]));
+
+      cursor =
+          await col.find(findOptions: orderBy('fruit', SortOrder.descending));
+      expect(await cursor.length, 4);
+
+      expect(
+          cursor,
+          emitsInOrder([
+            emits(containsPair('id', equals('test-2'))),
+            emits(containsPair('id', equals('test-3'))),
+            emits(containsPair('id', equals('test-4'))),
+            emits(containsPair('id', equals('test-1'))),
+            emitsDone
+          ]));
+    });
+
+    test("Test Find by Nested Field in List", () async {
+      var doc1 = emptyDocument()
+        ..put('name', 'John')
+        ..put('tags', [
+          emptyDocument()
+            ..put('type', 'example')
+            ..put('other', 'value'),
+          emptyDocument()
+            ..put('type', 'another-example')
+            ..put('other', 'another-value')
+        ]);
+
+      var doc2 = emptyDocument()
+        ..put('name', 'Jane')
+        ..put('tags', [
+          emptyDocument()
+            ..put('type', 'example2')
+            ..put('other', 'value2'),
+          emptyDocument()
+            ..put('type', 'another-example2')
+            ..put('other', 'another-value2')
+        ]);
+
+      var col = await db.getCollection('test');
+      await col.insert([doc1, doc2]);
+
+      var cursor = await col.find(
+          filter: where('tags').elemMatch(where('type').eq('example')));
+
+      expect(
+          cursor,
+          emitsInOrder(
+              [emits(containsPair('name', equals('John'))), emitsDone]));
+    });
+
+    test("Test Find by Between Filter", () async {
+      var doc1 = emptyDocument()
+        ..put('age', 31)
+        ..put('tag', 'one');
+
+      var doc2 = emptyDocument()
+        ..put('age', 32)
+        ..put('tag', 'two');
+
+      var doc3 = emptyDocument()
+        ..put('age', 33)
+        ..put('tag', 'two');
+
+      var doc4 = emptyDocument()
+        ..put('age', 34)
+        ..put('tag', 'four');
+
+      var doc5 = emptyDocument()
+        ..put('age', 35)
+        ..put('tag', 'five');
+
+      var col = await db.getCollection('test');
+      await col.insert([doc1, doc2, doc3, doc4, doc5]);
+
+      var cursor = await col.find(filter: where('age').between(31, 35));
+      expect(await cursor.length, 5);
+
+      cursor = await col.find(
+          filter: where('age')
+              .between(31, 35, lowerInclusive: false, upperInclusive: false));
+      expect(await cursor.length, 3);
+
+      cursor = await col.find(
+          filter: where('age')
+              .between(31, 35, lowerInclusive: false, upperInclusive: true));
+      expect(await cursor.length, 4);
+
+      cursor = await col.find(
+          filter: where('age')
+              .between(31, 35, lowerInclusive: false, upperInclusive: false)
+              .not());
+      expect(await cursor.length, 2);
+
+      // create index and same search with same result
+      await col.createIndex(['age']);
+      cursor = await col.find(filter: where('age').between(31, 35));
+      expect(await cursor.length, 5);
+
+      cursor = await col.find(
+          filter: where('age')
+              .between(31, 35, lowerInclusive: false, upperInclusive: false));
+      expect(await cursor.length, 3);
+
+      cursor = await col.find(
+          filter: where('age')
+              .between(31, 35, lowerInclusive: false, upperInclusive: true));
+      expect(await cursor.length, 4);
+
+      cursor = await col.find(
+          filter: where('age')
+              .between(31, 35, lowerInclusive: false, upperInclusive: false)
+              .not());
+      expect(await cursor.length, 2);
+    });
+
+    test("Test Find byId", () async {
+      var doc1 = emptyDocument()
+        ..put('age', 31)
+        ..put('tag', 'one');
+
+      var doc2 = emptyDocument()
+        ..put('age', 32)
+        ..put('tag', 'two');
+
+      var doc3 = emptyDocument()
+        ..put('age', 33)
+        ..put('tag', 'two');
+
+      var doc4 = emptyDocument()
+        ..put('age', 34)
+        ..put('tag', 'four');
+
+      var doc5 = emptyDocument()
+        ..put('age', 35)
+        ..put('tag', 'five');
+
+      var col = await db.getCollection('test');
+      await col.insert([doc1, doc2, doc3, doc4, doc5]);
+
+      var 
     });
   });
 }

@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/filters/filter.dart';
 import 'package:nitrite/src/index/index_map.dart';
+import 'package:rxdart/rxdart.dart';
 
 class IndexScanner {
   final IndexMap _indexMap;
@@ -24,7 +25,8 @@ class IndexScanner {
       // apply the filter on the index map
       // result can be list of nitrite ids or list of navigable maps
       var scanResult =
-          comparableFilter.applyOnIndex(_indexMap).asBroadcastStream();
+          ReplayConnectableStream(comparableFilter.applyOnIndex(_indexMap));
+      scanResult.connect();
 
       if (await scanResult.isEmpty) {
         // no results found, return empty stream
@@ -37,7 +39,7 @@ class IndexScanner {
           // if this is a stream of nitrite ids then yield those
           // and no further scanning is required as we have
           // reached the terminal nitrite ids
-          yield* scanResult.cast();
+          yield* scanResult.cast<NitriteId>();
           break;
         case _StreamType.treeMap:
           // if this is a stream of sub maps, then take each of the sub map

@@ -26,9 +26,9 @@ class EqualsFilter extends ComparableFilter {
     var val = await indexMap.get(value as Comparable);
     if (val is List) {
       yield* Stream.fromIterable(val);
+    } else {
+      yield val;
     }
-
-    yield val;
   }
 
   @override
@@ -321,7 +321,7 @@ class _GreaterEqualFilter extends ComparableFilter {
       var val = await indexMap.get(ceilingKey);
       yield* yieldValues(val);
 
-      ceilingKey = await indexMap.higherKey(comparable);
+      ceilingKey = await indexMap.higherKey(ceilingKey);
     }
   }
 
@@ -349,13 +349,13 @@ class _GreaterThanFilter extends ComparableFilter {
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    var ceilingKey = await indexMap.higherKey(comparable);
-    while (ceilingKey != null) {
+    var higherKey = await indexMap.higherKey(comparable);
+    while (higherKey != null) {
       // get the starting value, it can be a navigable-map (compound index)
       // or list (single field index)
-      var val = await indexMap.get(ceilingKey);
+      var val = await indexMap.get(higherKey);
       yield* yieldValues(val);
-      ceilingKey = await indexMap.higherKey(comparable);
+      higherKey = await indexMap.higherKey(higherKey);
     }
   }
 
@@ -389,7 +389,7 @@ class _LesserEqualFilter extends ComparableFilter {
       // or list (single field index)
       var val = await indexMap.get(floorKey);
       yield* yieldValues(val);
-      floorKey = await indexMap.lowerKey(comparable);
+      floorKey = await indexMap.lowerKey(floorKey);
     }
   }
 
@@ -417,13 +417,13 @@ class _LesserThanFilter extends ComparableFilter {
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    var floorKey = await indexMap.lowerKey(comparable);
-    while (floorKey != null) {
+    var lowerKey = await indexMap.lowerKey(comparable);
+    while (lowerKey != null) {
       // get the starting value, it can be a navigable-map (compound index)
       // or list (single field index)
-      var val = await indexMap.get(floorKey);
+      var val = await indexMap.get(lowerKey);
       yield* yieldValues(val);
-      floorKey = await indexMap.lowerKey(comparable);
+      lowerKey = await indexMap.lowerKey(lowerKey);
     }
   }
 
