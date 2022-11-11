@@ -101,10 +101,10 @@ class FindOptimizer {
     IndexScanFilter? indexScanFilter;
     if (indexScanFilters.length == 1) {
       indexScanFilter = IndexScanFilter([indexScanFilters.first]);
-      findPlan.indexScanFilter = indexScanFilter;
     } else if (indexScanFilters.length > 1) {
       indexScanFilter = IndexScanFilter(indexScanFilters);
     }
+    findPlan.indexScanFilter = indexScanFilter;
 
     if (columnScanFilters.length == 1) {
       findPlan.collectionScanFilter = columnScanFilters.first;
