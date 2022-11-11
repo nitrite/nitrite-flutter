@@ -284,6 +284,8 @@ class _DefaultNitriteCollection extends NitriteCollection {
         _checkOpened();
         await _collectionOperations.rebuildIndex(indexDescriptor!);
       });
+    } else {
+      throw IndexingException('$fields is not indexed');
     }
   }
 

@@ -73,6 +73,7 @@ class IndexOperations {
 
     // recreate index manager to discard old native resources
     _indexManager = IndexManager(_collectionName, _nitriteConfig);
+    await _indexManager.initialize();
   }
 
   Future<void> dropIndex(Fields fields) async {

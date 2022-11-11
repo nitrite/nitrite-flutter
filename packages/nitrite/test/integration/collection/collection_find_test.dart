@@ -946,7 +946,22 @@ void main() {
       var col = await db.getCollection('test');
       await col.insert([doc1, doc2, doc3, doc4, doc5]);
 
-      var 
+      var documentList = await (await col.find()).toList();
+      var doc = documentList[0];
+      var nitriteId = doc.id;
+
+      var result = await (await col.find(filter: byId(nitriteId))).first;
+      expect(result, equals(doc));
+
+      result = await (await col.find(
+              filter: and([byId(nitriteId), where("age").notEq(null)])))
+          .first;
+      expect(result, equals(doc));
+
+      result = await (await col.find(
+              filter: and([byId(nitriteId), where("tag").eq(doc['tag'])])))
+          .first;
+      expect(result, equals(doc));
     });
   });
 }

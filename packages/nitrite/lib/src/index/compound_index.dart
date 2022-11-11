@@ -72,7 +72,7 @@ class CompoundIndex extends NitriteIndex {
     var firstValue = fieldValues.get(firstField);
 
     // NOTE: only first field can have iterable value, subsequent fields can not
-    validateIndexField(firstField, firstValue);
+    validateIndexField(firstValue, firstField);
 
     var indexMap = await _findIndexMap();
     if (firstValue == null) {
