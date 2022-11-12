@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 import '../../test_utils.dart';
 import '../string_field_encryption_processor.dart';
-import 'base_collection_test.dart';
+import 'base_collection_test_loader.dart';
 
 void main() {
   group("Collection Find Test Suite", () {

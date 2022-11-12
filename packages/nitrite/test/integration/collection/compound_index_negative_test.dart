@@ -3,7 +3,7 @@ import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 import '../../test_utils.dart';
-import 'base_collection_test.dart';
+import 'base_collection_test_loader.dart';
 
 void main() {
   group('Compound Index Negative Test', () {

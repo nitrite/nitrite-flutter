@@ -22,10 +22,10 @@ void main() {
     });
 
     tearDown(() async {
-      NitriteConfig.fieldSeparator = '.';
-      if (!db.isClosed) {
-        await db.close();
-      }
+      // NitriteConfig.fieldSeparator = '.';
+      // if (!db.isClosed) {
+      //   await db.close();
+      // }
     });
 
     test('Test Field Separator', () {

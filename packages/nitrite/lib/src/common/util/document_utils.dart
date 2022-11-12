@@ -18,6 +18,11 @@ Document skeletonDocument<T>(NitriteMapper nitriteMapper) {
   var dummy = newInstance<T>(nitriteMapper);
   var document = nitriteMapper.convert<Document, T>(dummy);
   if (document != null) {
+    if (document is! Document) {
+      throw ObjectMappingException(
+          'Cannot convert ${T.runtimeType} to document');
+    }
+
     return _removeValues(document);
   }
 

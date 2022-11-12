@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/db_value.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
+import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/index_map.dart';
 import 'package:nitrite/src/index/index_scanner.dart';
 import 'package:nitrite/src/index/nitrite_index.dart';
@@ -184,7 +185,7 @@ class CompoundIndex extends NitriteIndex {
 
     if (depth == fieldValues.values.length - 1) {
       // terminal field
-      var nitriteIds = subMap[dbValue];
+      var nitriteIds = subMap[dbValue] as List<NitriteId>;
       nitriteIds = removeNitriteIds(nitriteIds, fieldValues);
       if (nitriteIds.isNullOrEmpty) {
         subMap.remove(dbValue);

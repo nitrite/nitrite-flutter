@@ -3,7 +3,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
-import 'base_collection_test.dart';
+import 'base_collection_test_loader.dart';
 
 void main() {
   group("Custom Field Separator Test Suite", () {

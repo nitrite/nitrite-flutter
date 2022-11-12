@@ -2,6 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
+part 'mapper_test.no2.dart';
+
 void main() {
   group("Mapper Test Suite", () {
     test("Test With Converter", () {
@@ -69,6 +71,7 @@ void main() {
   });
 }
 
+@GenerateConverter()
 class _Employee {
   String? empId;
   String? name;
@@ -90,32 +93,7 @@ class _Employee {
       empId.hashCode ^ name.hashCode ^ joiningDate.hashCode ^ boss.hashCode;
 }
 
-class _EmployeeConverter extends EntityConverter<_Employee> {
-  @override
-  _Employee fromDocument(Document document, NitriteMapper nitriteMapper) {
-    _Employee entity = _Employee();
-    entity.empId = document.get('empId');
-    entity.name = document.get('name');
-    entity.joiningDate = document.get('joiningDate');
-    if (document.containsKey('boss') && document.get('boss') != null) {
-      entity.boss =
-          nitriteMapper.convert<_Employee, Document>(document.get("boss"));
-    }
-    return entity;
-  }
-
-  @override
-  Document toDocument(_Employee entity, NitriteMapper nitriteMapper) {
-    var document = Document.emptyDocument();
-    document.put('empId', entity.empId);
-    document.put('name', entity.name);
-    document.put('joiningDate', entity.joiningDate);
-    document.put(
-        'boss', nitriteMapper.convert<Document, _Employee>(entity.boss));
-    return document;
-  }
-}
-
+@GenerateConverter()
 class _Department {
   String? name;
   List<_Employee> employees = [];
@@ -132,32 +110,4 @@ class _Department {
   int get hashCode => name.hashCode ^ ListEquality().hash(employees);
 }
 
-class _DepartmentConverter extends EntityConverter<_Department> {
-  @override
-  _Department fromDocument(Document document, NitriteMapper nitriteMapper) {
-    _Department entity = _Department();
-    entity.name = document.get('name');
-    if (document.containsKey('employees') &&
-        document.get('employees') != null) {
-      var docs = document.get('employees') as List<Document?>;
-      for (var doc in docs) {
-        var emp = nitriteMapper.convert<_Employee, Document>(doc);
-        if (emp != null) {
-          entity.employees.add(emp);
-        }
-      }
-    }
-    return entity;
-  }
 
-  @override
-  Document toDocument(_Department entity, NitriteMapper nitriteMapper) {
-    var document = Document.emptyDocument();
-    document.put('name', entity.name);
-    var docs = entity.employees
-        .map((emp) => nitriteMapper.convert<Document, _Employee>(emp))
-        .toList();
-    document.put('employees', docs);
-    return document;
-  }
-}

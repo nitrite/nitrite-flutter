@@ -1,10 +1,8 @@
-import 'package:mockito/mockito.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/index/index.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
-import 'base_collection_test.dart';
+import 'base_collection_test_loader.dart';
 
 void main() {
   group('Compound Index Test Suite', () {
@@ -132,6 +130,36 @@ void main() {
         where('birthDay').gte(DateTime.now())
       ]));
       expect(result.getAffectedCount(), 0);
+    });
+
+    test('Test Rebuild Index on Running Index', () async {
+      await insert();
+      db.getStore().subscribe(print);
+      var futures = <Future<void>>[];
+      futures.add(collection.createIndex(['firstName', 'lastName']));
+      futures.add(collection.rebuildIndex(['firstName', 'lastName']));
+      await Future.wait(futures);
+
+      expectLater(
+          collection.hasIndex(['firstName', 'lastName']), completion(isTrue));
+    });
+
+    test('Test Null Values in Indexed Fields', () async {
+      await collection.createIndex(['firstName', 'lastName']);
+      await collection.createIndex(['birthDay', 'lastName']);
+      var document = emptyDocument()
+        ..put("firstName", null)
+        ..put("lastName", "ln1")
+        ..put("birthDay", DateTime.now())
+        ..put("data", [1, 2, 3])
+        ..put("list", ['one', 'two', 'three'])
+        ..put("body", 'a quick brown fox jump over the lazy dog');
+
+      await insert();
+      await collection.insert([document]);
+
+      var cursor = await collection.find(filter: where('firstName').eq(null));
+      expect(cursor, matcher)
     });
   });
 }
