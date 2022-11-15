@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/db_value.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
@@ -47,14 +48,15 @@ class SingleFieldIndex extends NitriteIndex {
       var dbValue = DBValue(element);
       await _removeIndexElement(indexMap, fieldValues, dbValue);
     } else if (element is Iterable) {
-      var futures = <Future<void>>[];
+      var executor = Executor();
       for (var item in element) {
         // wrap around db value
         var dbValue = item == null ? DBNull.instance : DBValue(item);
         // remove index element in parallel
-        futures.add(_removeIndexElement(indexMap, fieldValues, dbValue));
+        executor
+            .submit(() => _removeIndexElement(indexMap, fieldValues, dbValue));
       }
-      await Future.wait(futures);
+      await executor.execute();
     }
   }
 
@@ -75,14 +77,14 @@ class SingleFieldIndex extends NitriteIndex {
       var dbValue = DBValue(element);
       await _addIndexElement(indexMap, fieldValues, dbValue);
     } else if (element is Iterable) {
-      var futures = <Future<void>>[];
+      var executor = Executor();
       for (var item in element) {
         // wrap around db value
         var dbValue = item == null ? DBNull.instance : DBValue(item);
         // add index element in parallel
-        futures.add(_addIndexElement(indexMap, fieldValues, dbValue));
+        executor.submit(() => _addIndexElement(indexMap, fieldValues, dbValue));
       }
-      await Future.wait(futures);
+      await executor.execute();
     }
   }
 

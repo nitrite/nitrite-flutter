@@ -14,10 +14,10 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
       this._entityDecorator, this._nitriteConfig);
 
   @override
-  Future<bool> get isDropped => _backingCollection.isDropped;
+  bool get isDropped => _backingCollection.isDropped;
 
   @override
-  Future<bool> get isOpen => _backingCollection.isOpen;
+  bool get isOpen => _backingCollection.isOpen;
 
   @override
   Future<int> get size => _backingCollection.size;
@@ -72,7 +72,7 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<WriteResult> updateOne(T element, [bool insertIfAbsent = false]) {
+  Future<WriteResult> updateOne(T element, {bool insertIfAbsent = false}) {
     return update(_operations.createUniqueFilter(element), element,
         updateOptions(insertIfAbsent: insertIfAbsent, justOnce: true));
   }
@@ -91,7 +91,7 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
 
   @override
   Future<WriteResult> updateDocument(Filter filter, Document document,
-      [bool justOnce = false]) {
+      {bool justOnce = false}) {
     _operations.removeNitriteId(document);
     _operations.serializeFields(document);
 
@@ -105,9 +105,9 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<WriteResult> remove(Filter filter, [bool justOne = false]) {
-    return _backingCollection.remove(
-        _operations.asObjectFilter(filter), justOne);
+  Future<WriteResult> remove(Filter filter, {bool justOne = false}) {
+    return _backingCollection.remove(_operations.asObjectFilter(filter),
+        justOne: justOne);
   }
 
   @override
@@ -147,12 +147,12 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<void> subscribe<L>(CollectionEventListener<L> listener) {
+  void subscribe<L>(CollectionEventListener<L> listener) {
     return _backingCollection.subscribe(listener);
   }
 
   @override
-  Future<void> unsubscribe<L>(CollectionEventListener<L> listener) {
+  void unsubscribe<L>(CollectionEventListener<L> listener) {
     return _backingCollection.unsubscribe(listener);
   }
 

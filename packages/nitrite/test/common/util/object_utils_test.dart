@@ -9,13 +9,6 @@ part 'object_utils_test.no2.dart';
 
 void main() {
   group("Object Utils Test Suite", () {
-    test('Test BlackHole', () {
-      var stream = Stream.fromIterable([1, 2, 3]);
-      stream.listen(blackHole);
-
-      expect(() => stream.listen(blackHole), throwsStateError);
-    });
-
     test('Test IsSubtype', () {
       expect(isSubtype<int, num>(), isTrue);
       expect(isSubtype<num, int>(), isFalse);
@@ -206,7 +199,6 @@ void main() {
       expect(defaultValue<Object?>(), isNull);
       expect(defaultValue(), isNull);
     });
-
 
     test('Test IsBuiltInValueType', () {
       var nitriteMapper = SimpleDocumentMapper();

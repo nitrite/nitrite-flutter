@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 
 /// A class that implements this interface can be used to decorate
 /// an entity of type T for nitrite database where using [Entity]
@@ -30,7 +31,7 @@ class EntityDecoratorReader<T> {
   Future<void> readAndExecute() async {
     if (_entityDecorator.idField != null) {
       _objectIdField = _entityDecorator.idField;
-      
+
       var idFieldNames = _entityDecorator.idField!.embeddedFieldNames;
       var hasIndex = await _collection.hasIndex(idFieldNames);
       if (hasIndex) {
@@ -38,17 +39,17 @@ class EntityDecoratorReader<T> {
             idFieldNames, indexOptions(IndexType.unique));
       }
     }
-    
+
     var indexes = _entityDecorator.indexFields;
-    var futures = <Future<void>>[];
+    var executor = Executor();
     for (var index in indexes) {
       var fields = index.fieldNames;
       var hasIndex = await _collection.hasIndex(fields);
       if (hasIndex) {
-        futures.add(
+        executor.submit(() =>
             _collection.createIndex(fields, indexOptions(index.indexType)));
       }
     }
-    await Future.wait(futures);
+    await executor.execute();
   }
 }

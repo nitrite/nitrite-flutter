@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/migration/commands/collection_commands.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
@@ -24,16 +25,16 @@ class ChangeDataTypeCommand extends BaseCommand {
 
     await initialize(nitrite, repositoryName);
 
-    var futures = <Future<void>>[];
+    var executor = Executor();
     await for (var pair in nitriteMap!.entries()) {
       var document = pair.second;
       var value = document.get(fieldName);
       var newValue = typeConverter(value);
       document.put(fieldName, newValue);
 
-      futures.add(nitriteMap!.put(pair.first, document));
+      executor.submit(() => nitriteMap!.put(pair.first, document));
     }
-    await Future.wait(futures);
+    await executor.execute();
 
     var indexDescriptor =
         await operations?.findIndex(Fields.withNames([fieldName]));

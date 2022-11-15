@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 import 'package:nitrite/src/index/types.dart';
 
@@ -52,7 +53,7 @@ class IndexManager {
   Future<void> close() async {
     // close all index maps
     if (!_indexMetaMap.isClosed && !_indexMetaMap.isDropped) {
-      var futures = <Future<void>>[];
+      var executor = Executor();
 
       await for (var indexMeta in _indexMetaMap.values()) {
         if (indexMeta.indexDescriptor != null) {
@@ -60,16 +61,16 @@ class IndexManager {
 
           if (indexMapName != null) {
             // run all futures in parallel
-            futures.add(Future.microtask(() async {
+            executor.submit(() async {
               var indexMap =
                   await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
               await indexMap.close();
-            }));
+            });
           }
         }
       }
 
-      await Future.wait(futures);
+      await executor.execute();
       // close index meta
       await _indexMetaMap.close();
     }
@@ -140,7 +141,7 @@ class IndexManager {
   Future<void> clearAll() async {
     // close all index maps
     if (!_indexMetaMap.isClosed && !_indexMetaMap.isDropped) {
-      var futures = <Future<void>>[];
+      var executor = Executor();
 
       await for (var indexMeta in _indexMetaMap.values()) {
         if (indexMeta.indexDescriptor != null) {
@@ -148,16 +149,16 @@ class IndexManager {
 
           if (indexMapName != null) {
             // run all futures in parallel
-            futures.add(Future.microtask(() async {
+            executor.submit(() async {
               var indexMap =
                   await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
               await indexMap.clear();
-            }));
+            });
           }
         }
       }
 
-      await Future.wait(futures);
+      await executor.execute();
     }
   }
 

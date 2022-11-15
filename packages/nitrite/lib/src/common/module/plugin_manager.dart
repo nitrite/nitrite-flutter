@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/comparable_indexer.dart';
 import 'package:nitrite/src/index/nitrite_text_indexer.dart';
@@ -28,13 +29,12 @@ class PluginManager {
   /// Loads a [NitriteModule] instance.
   Future<void> loadModule(NitriteModule module) async {
     if (!module.plugins.isNullOrEmpty) {
-
-      var futures = <Future<void>>[];
+      var executor = Executor();
       for (var plugin in module.plugins) {
         // load all plugins in parallel
-        futures.add(_loadPlugin(plugin));
+        executor.submit(() => _loadPlugin(plugin));
       }
-      await Future.wait(futures);
+      await executor.execute();
     }
   }
 
@@ -59,22 +59,22 @@ class PluginManager {
     }
 
     if (_indexerMap.isNotEmpty) {
-      var futures = <Future<void>>[];
+      var executor = Executor();
       for (var indexer in _indexerMap.values) {
         // initialize all indexers in parallel
-        futures.add(_initializePlugin(indexer));
+        executor.submit(() => _initializePlugin(indexer));
       }
-      await Future.wait(futures);
+      await executor.execute();
     }
   }
 
   Future<void> close() async {
-    var futures = <Future<void>>[];
+    var executor = Executor();
     for (var indexer in _indexerMap.values) {
       // close all indexers in parallel
-      futures.add(indexer.close());
+      executor.submit(() => indexer.close());
     }
-    await Future.wait(futures);
+    await executor.execute();
 
     await _nitriteMapper?.close();
     return _nitriteStore?.close();

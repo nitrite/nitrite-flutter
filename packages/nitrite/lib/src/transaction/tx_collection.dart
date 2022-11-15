@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:event_bus/event_bus.dart';
-import 'package:mutex/mutex.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/collection_operations.dart';
-import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/transaction/tx.dart';
 import 'package:quiver/core.dart';
@@ -12,7 +10,6 @@ import 'package:quiver/core.dart';
 class DefaultTransactionalCollection extends NitriteCollection {
   final NitriteCollection _primary;
   final TransactionContext _context;
-  final ReadWriteMutex _mutex = ReadWriteMutex();
   final Map<int, StreamSubscription> _subscriptions = {};
 
   late String _collectionName;
@@ -29,21 +26,10 @@ class DefaultTransactionalCollection extends NitriteCollection {
   String get name => _collectionName;
 
   @override
-  Future<bool> get isDropped async => _isDropped;
+  bool get isDropped => _isDropped;
 
   @override
-  Future<bool> get isOpen async {
-    if (_nitriteStore.isClosed || _isDropped) {
-      try {
-        await close();
-      } catch (e, stackTrace) {
-        throw NitriteIOException('Failed to close collection',
-            cause: e, stackTrace: stackTrace);
-      }
-      return false;
-    }
-    return true;
-  }
+  bool get isOpen => !_nitriteStore.isClosed && !_isDropped;
 
   @override
   Future<int> get size async => (await (await find()).toList()).length;
@@ -57,10 +43,8 @@ class DefaultTransactionalCollection extends NitriteCollection {
       document.id;
     }
 
-    var result = await _mutex.protectWrite(() async {
-      await _checkOpened();
-      return _collectionOperations.insert(documents);
-    });
+    await _checkOpened();
+    var result = await _collectionOperations.insert(documents);
 
     var journalEntry = JournalEntry(
       changeType: ChangeType.insert,
@@ -85,10 +69,9 @@ class DefaultTransactionalCollection extends NitriteCollection {
     updateOptions.insertIfAbsent = false;
     updateOptions.justOnce = false;
 
-    var result = await _mutex.protectWrite(() async {
-      await _checkOpened();
-      return _collectionOperations.update(filter, update, updateOptions!);
-    });
+    await _checkOpened();
+    var result =
+        await _collectionOperations.update(filter, update, updateOptions);
 
     var documentList = <Document>[];
 
@@ -112,7 +95,6 @@ class DefaultTransactionalCollection extends NitriteCollection {
       rollback: () async {
         for (var value in documentList) {
           await _primary.removeOne(value);
-
           await _primary.insert([value]);
         }
       },
@@ -124,7 +106,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
 
   @override
   Future<WriteResult> updateOne(Document document,
-      [bool insertIfAbsent = false]) {
+      {bool insertIfAbsent = false}) {
     if (insertIfAbsent) {
       return update(createUniqueFilter(document), document,
           UpdateOptions(insertIfAbsent: true));
@@ -146,10 +128,8 @@ class DefaultTransactionalCollection extends NitriteCollection {
           ' found for the document');
     }
 
-    var result = await _mutex.protectWrite(() async {
-      await _checkOpened();
-      return _collectionOperations.removeDocument(document);
-    });
+    await _checkOpened();
+    var result = await _collectionOperations.removeDocument(document);
 
     Document? toRemove;
     var journalEntry = JournalEntry(
@@ -169,16 +149,14 @@ class DefaultTransactionalCollection extends NitriteCollection {
   }
 
   @override
-  Future<WriteResult> remove(Filter filter, [bool justOne = false]) async {
+  Future<WriteResult> remove(Filter filter, {bool justOne = false}) async {
     if (filter == all && justOne) {
       throw InvalidOperationException(
           'Remove all cannot be combined with just once');
     }
 
-    var result = await _mutex.protectWrite(() async {
-      await _checkOpened();
-      return _collectionOperations.removeByFilter(filter, justOne);
-    });
+    await _checkOpened();
+    var result = await _collectionOperations.removeByFilter(filter, justOne);
 
     var documentList = <Document>[];
     var journalEntry = JournalEntry(
@@ -196,7 +174,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
         }
 
         // remove the documents
-        await _primary.remove(filter, justOne);
+        await _primary.remove(filter, justOne: justOne);
       },
       rollback: () async {
         for (var value in documentList) {
@@ -209,42 +187,35 @@ class DefaultTransactionalCollection extends NitriteCollection {
   }
 
   @override
-  Future<DocumentCursor> find({Filter? filter, FindOptions? findOptions}) {
-    return _mutex.protectRead(() async {
-      await _checkOpened();
-      return _collectionOperations.find(filter, findOptions);
-    });
+  Future<DocumentCursor> find(
+      {Filter? filter, FindOptions? findOptions}) async {
+    await _checkOpened();
+    return _collectionOperations.find(filter, findOptions);
   }
 
   @override
-  Future<Document?> getById(NitriteId id) {
-    return _mutex.protectRead(() async {
-      await _checkOpened();
-      return _collectionOperations.getById(id);
-    });
+  Future<Document?> getById(NitriteId id) async {
+    await _checkOpened();
+    return _collectionOperations.getById(id);
   }
 
   @override
-  Future<void> addProcessor(Processor processor) {
-    return _mutex.protectWrite(() async {
-      await _checkOpened();
-      return _collectionOperations.addProcessor(processor);
-    });
+  Future<void> addProcessor(Processor processor) async {
+    await _checkOpened();
+    return _collectionOperations.addProcessor(processor);
   }
 
   @override
   Future<void> createIndex(List<String> fields,
       [IndexOptions? indexOptions]) async {
     var fieldNames = Fields.withNames(fields);
-    await _mutex.protectWrite(() async {
-      await _checkOpened();
-      if (indexOptions == null) {
-        await _collectionOperations.createIndex(fieldNames, IndexType.unique);
-      } else {
-        await _collectionOperations.createIndex(
-            fieldNames, indexOptions.indexType);
-      }
-    });
+    await _checkOpened();
+    if (indexOptions == null) {
+      await _collectionOperations.createIndex(fieldNames, IndexType.unique);
+    } else {
+      await _collectionOperations.createIndex(
+          fieldNames, indexOptions.indexType);
+    }
 
     var journalEntry = JournalEntry(
       changeType: ChangeType.createIndex,
@@ -262,10 +233,9 @@ class DefaultTransactionalCollection extends NitriteCollection {
   Future<void> rebuildIndex(List<String> fields) async {
     fields.notNullOrEmpty('Fields cannot be empty');
 
-    var indexDescriptor = await _mutex.protectRead(() async {
-      await _checkOpened();
-      return _collectionOperations.findIndex(Fields.withNames(fields));
-    });
+    await _checkOpened();
+    var indexDescriptor =
+        await _collectionOperations.findIndex(Fields.withNames(fields));
 
     if (indexDescriptor == null) {
       throw IndexingException('$fields is not indexed');
@@ -276,10 +246,8 @@ class DefaultTransactionalCollection extends NitriteCollection {
           'Indexing on fields $fields is currently running');
     }
 
-    await _mutex.protectWrite(() async {
-      await _checkOpened();
-      await _collectionOperations.rebuildIndex(indexDescriptor);
-    });
+    await _checkOpened();
+    await _collectionOperations.rebuildIndex(indexDescriptor);
 
     var journalEntry = JournalEntry(
       changeType: ChangeType.rebuildIndex,
@@ -295,34 +263,26 @@ class DefaultTransactionalCollection extends NitriteCollection {
 
   @override
   Future<Iterable<IndexDescriptor>> listIndexes() async {
-    return _mutex.protectRead(() async {
-      await _checkOpened();
-      return _collectionOperations.listIndexes();
-    });
+    await _checkOpened();
+    return _collectionOperations.listIndexes();
   }
 
   @override
   Future<bool> hasIndex(List<String> fields) async {
-    return _mutex.protectRead(() async {
-      await _checkOpened();
-      return _collectionOperations.hasIndex(Fields.withNames(fields));
-    });
+    await _checkOpened();
+    return _collectionOperations.hasIndex(Fields.withNames(fields));
   }
 
   @override
   Future<bool> isIndexing(List<String> fields) async {
-    return _mutex.protectRead(() async {
-      await _checkOpened();
-      return _collectionOperations.isIndexing(Fields.withNames(fields));
-    });
+    await _checkOpened();
+    return _collectionOperations.isIndexing(Fields.withNames(fields));
   }
 
   @override
   Future<void> dropIndex(List<String> fields) async {
-    await _mutex.protectWrite(() async {
-      await _checkOpened();
-      await _collectionOperations.dropIndex(Fields.withNames(fields));
-    });
+    await _checkOpened();
+    await _collectionOperations.dropIndex(Fields.withNames(fields));
 
     IndexDescriptor? indexDescriptor;
     var journalEntry = JournalEntry(
@@ -353,10 +313,8 @@ class DefaultTransactionalCollection extends NitriteCollection {
 
   @override
   Future<void> dropAllIndices() async {
-    await _mutex.protectWrite(() async {
-      await _checkOpened();
-      await _collectionOperations.dropAllIndices();
-    });
+    await _checkOpened();
+    await _collectionOperations.dropAllIndices();
 
     var indexEntries = <IndexDescriptor>[];
     var journalEntry = JournalEntry(
@@ -378,10 +336,8 @@ class DefaultTransactionalCollection extends NitriteCollection {
 
   @override
   Future<void> clear() async {
-    await _mutex.protectWrite(() async {
-      await _checkOpened();
-      await _collectionOperations.clear();
-    });
+    await _checkOpened();
+    await _collectionOperations.clear();
 
     var journalEntry = JournalEntry(
       changeType: ChangeType.clear,
@@ -395,10 +351,8 @@ class DefaultTransactionalCollection extends NitriteCollection {
 
   @override
   Future<void> drop() async {
-    await _mutex.protectWrite(() async {
-      await _checkOpened();
-      await _collectionOperations.dropCollection();
-    });
+    await _checkOpened();
+    await _collectionOperations.dropCollection();
     _isDropped = true;
 
     var journalEntry = JournalEntry(
@@ -425,44 +379,33 @@ class DefaultTransactionalCollection extends NitriteCollection {
   }
 
   @override
-  Future<void> subscribe<T>(CollectionEventListener<T> listener) {
-    return _mutex.protectWrite(() async {
-      _checkOpened();
-      var subscription =
-          _eventBus.on<CollectionEventInfo<T>>().listen(listener);
+  void subscribe<T>(CollectionEventListener<T> listener) {
+    var subscription = _eventBus.on<CollectionEventInfo<T>>().listen(listener);
 
-      var hashCode = hash2(listener, T);
-      _subscriptions[hashCode] = subscription;
-    });
+    var hashCode = hash2(listener, T);
+    _subscriptions[hashCode] = subscription;
   }
 
   @override
-  Future<void> unsubscribe<T>(CollectionEventListener<T> listener) {
-    return _mutex.protectWrite(() async {
-      _checkOpened();
-      var hashCode = hash2(listener, T);
-      var subscription = _subscriptions[hashCode];
-      if (subscription != null) {
-        subscription.cancel();
-        _subscriptions.remove(hashCode);
-      }
-    });
+  void unsubscribe<T>(CollectionEventListener<T> listener) {
+    var hashCode = hash2(listener, T);
+    var subscription = _subscriptions[hashCode];
+    if (subscription != null) {
+      subscription.cancel();
+      _subscriptions.remove(hashCode);
+    }
   }
 
   @override
-  Future<Attributes> getAttributes() {
-    return _mutex.protectRead(() async {
-      await _checkOpened();
-      return _collectionOperations.getAttributes();
-    });
+  Future<Attributes> getAttributes() async {
+    await _checkOpened();
+    return _collectionOperations.getAttributes();
   }
 
   @override
   Future<void> setAttributes(Attributes attributes) async {
-    await _mutex.protectWrite(() async {
-      await _checkOpened();
-      await _collectionOperations.setAttributes(attributes);
-    });
+    await _checkOpened();
+    await _collectionOperations.setAttributes(attributes);
 
     Attributes? original;
     var journalEntry = JournalEntry(
@@ -498,7 +441,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       throw TransactionException('Collection is closed');
     }
 
-    if (!await _primary.isOpen) {
+    if (!_primary.isOpen) {
       throw TransactionException('Store is closed');
     }
 

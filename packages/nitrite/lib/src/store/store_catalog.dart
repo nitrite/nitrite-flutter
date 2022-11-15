@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/store/meta_data.dart';
 
@@ -99,16 +100,16 @@ class StoreCatalog {
   Future<void> remove(String name) async {
     // iterate over all types of catalog and find which type contains the name
     // remove the name from there
-    var futures = <Future<void>>[];
+    var executor = Executor();
     await for (Pair<String, Document> entry in _catalog.entries()) {
       var catalog = entry.first;
       var doc = entry.second;
       var metaData = MapMetaData(doc);
       if (metaData.mapNames.contains(name)) {
         metaData.mapNames.remove(name);
-        futures.add(_catalog.put(catalog, metaData.getInfo()));
+        executor.submit(() => _catalog.put(catalog, metaData.getInfo()));
       }
     }
-    await Future.wait(futures);
+    await executor.execute();
   }
 }

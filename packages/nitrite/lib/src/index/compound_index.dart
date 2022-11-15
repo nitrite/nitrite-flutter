@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/db_value.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
@@ -53,14 +54,15 @@ class CompoundIndex extends NitriteIndex {
       var dbValue = DBValue(firstValue);
       await _removeIndexElement(indexMap, fieldValues, dbValue);
     } else if (firstValue is Iterable) {
-      var futures = <Future<void>>[];
+      var executor = Executor();
       for (var item in firstValue) {
         // wrap around db value
         var dbValue = item != null ? DBValue(item) : DBNull.instance;
         // remove index element in parallel
-        futures.add(_removeIndexElement(indexMap, fieldValues, dbValue));
+        executor
+            .submit(() => _removeIndexElement(indexMap, fieldValues, dbValue));
       }
-      await Future.wait(futures);
+      await executor.execute();
     }
   }
 
@@ -83,19 +85,18 @@ class CompoundIndex extends NitriteIndex {
       var dbValue = DBValue(firstValue);
       await _addIndexElement(indexMap, fieldValues, dbValue);
     } else if (firstValue is Iterable) {
-      var futures = <Future<void>>[];
+      var executor = Executor();
       for (var item in firstValue) {
         // wrap around db value
         var dbValue = item != null ? DBValue(item) : DBNull.instance;
         // add index element in parallel
-        futures.add(_addIndexElement(indexMap, fieldValues, dbValue));
+        executor.submit(() => _addIndexElement(indexMap, fieldValues, dbValue));
       }
-      await Future.wait(futures);
+      await executor.execute();
     }
   }
 
-  Future<NitriteMap<DBValue, SplayTreeMap<DBValue, dynamic>>>
-      _findIndexMap() {
+  Future<NitriteMap<DBValue, SplayTreeMap<DBValue, dynamic>>> _findIndexMap() {
     var mapName = deriveIndexMapName(_indexDescriptor);
     return _nitriteStore
         .openMap<DBValue, SplayTreeMap<DBValue, dynamic>>(mapName);

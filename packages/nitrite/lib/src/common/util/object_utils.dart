@@ -3,8 +3,6 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/number_utils.dart' as numbers;
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
-void blackHole(dynamic _) {}
-
 bool isSubtype<Subtype, Type>() => <Subtype>[] is List<Type>;
 
 String getKeyName(String collectionName) {
@@ -58,7 +56,9 @@ int compare(Comparable first, Comparable second) {
   if (first is num && second is num) {
     var result = numbers.compareNum(first, second);
     if (first.runtimeType != second.runtimeType) {
-      if (result == 0) return 1;
+      if (result == 0) {
+        return first.toString().compareTo(second.toString());
+      }
     }
     return result;
   }

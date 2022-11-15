@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/store/memory/in_memory_map.dart';
 import 'package:nitrite/src/store/memory/in_memory_rtree.dart';
 import 'package:nitrite/src/store/memory/in_memory_store_module.dart';
@@ -34,19 +35,19 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   Future<void> close() async {
     _closed = true;
 
-    var futures = <Future<void>>[];
+    var executor = Executor();
     for (var map in _nitriteMapRegistry.values) {
       // close all maps in parallel
-      futures.add(map.close());
+      executor.submit(() => map.close());
     }
-    await Future.wait(futures);
+    await executor.execute();
 
-    futures.clear();
+    executor = Executor();
     for (var rtree in _nitriteRTreeMapRegistry.values) {
       // close all rtree in parallel
-      futures.add(rtree.close());
+      executor.submit(() => rtree.close());
     }
-    await Future.wait(futures);
+    await executor.execute();
 
     _nitriteMapRegistry.clear();
     _nitriteRTreeMapRegistry.clear();

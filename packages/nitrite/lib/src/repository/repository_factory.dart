@@ -1,4 +1,3 @@
-import 'package:mutex/mutex.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/collection_factory.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
@@ -7,46 +6,41 @@ import 'package:nitrite/src/repository/repository_operations.dart';
 
 class RepositoryFactory {
   final Map<String, ObjectRepository<dynamic>> _repositoryMap = {};
-  final Mutex _lock = Mutex();
   final CollectionFactory _collectionFactory;
 
   RepositoryFactory(this._collectionFactory);
 
   Future<ObjectRepository<T>> getRepository<T>(NitriteConfig nitriteConfig,
-      [EntityDecorator<T>? entityDecorator, String? key]) {
+      [EntityDecorator<T>? entityDecorator, String? key]) async {
     var collectionName = entityDecorator == null
         ? findRepositoryNameByType<T>(nitriteConfig.nitriteMapper, key)
         : findRepositoryNameByDecorator(entityDecorator, key);
 
-    return _lock.protect(() async {
-      if (_repositoryMap.containsKey(collectionName)) {
-        var repository = _repositoryMap[collectionName]! as ObjectRepository<T>;
-        if (await repository.isDropped || !await repository.isOpen) {
-          _repositoryMap.remove(collectionName);
-          return _createRepository<T>(
-              nitriteConfig, collectionName, entityDecorator, key);
-        } else {
-          return repository;
-        }
-      } else {
+    if (_repositoryMap.containsKey(collectionName)) {
+      var repository = _repositoryMap[collectionName]! as ObjectRepository<T>;
+      if (repository.isDropped || !repository.isOpen) {
+        _repositoryMap.remove(collectionName);
         return _createRepository<T>(
             nitriteConfig, collectionName, entityDecorator, key);
+      } else {
+        return repository;
       }
-    });
+    } else {
+      return _createRepository<T>(
+          nitriteConfig, collectionName, entityDecorator, key);
+    }
   }
 
-  Future<void> clear() async {
-    await _lock.protect(() async {
-      try {
-        _repositoryMap.forEach((key, repository) {
-          repository.close();
-        });
-        _repositoryMap.clear();
-      } catch (e, stackTrace) {
-        throw NitriteIOException('Failed to clear an object repository',
-            cause: e, stackTrace: stackTrace);
-      }
-    });
+  void clear() {
+    try {
+      _repositoryMap.forEach((key, repository) {
+        repository.close();
+      });
+      _repositoryMap.clear();
+    } catch (e, stackTrace) {
+      throw NitriteIOException('Failed to clear an object repository',
+          cause: e, stackTrace: stackTrace);
+    }
   }
 
   Future<ObjectRepository<T>> _createRepository<T>(
@@ -96,10 +90,10 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
       this._entityDecorator, this._nitriteCollection, this._nitriteConfig);
 
   @override
-  Future<bool> get isDropped => _nitriteCollection.isDropped;
+  bool get isDropped => _nitriteCollection.isDropped;
 
   @override
-  Future<bool> get isOpen => _nitriteCollection.isOpen;
+  bool get isOpen => _nitriteCollection.isOpen;
 
   @override
   Future<int> get size => _nitriteCollection.size;
@@ -154,7 +148,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<WriteResult> updateOne(T element, [bool insertIfAbsent = false]) {
+  Future<WriteResult> updateOne(T element, {bool insertIfAbsent = false}) {
     return update(_operations.createUniqueFilter(element), element,
         updateOptions(insertIfAbsent: insertIfAbsent, justOnce: true));
   }
@@ -173,7 +167,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
 
   @override
   Future<WriteResult> updateDocument(Filter filter, Document document,
-      [bool justOnce = false]) {
+      {bool justOnce = false}) {
     _operations.removeNitriteId(document);
     _operations.serializeFields(document);
     return _nitriteCollection.update(_operations.asObjectFilter(filter),
@@ -186,9 +180,9 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<WriteResult> remove(Filter filter, [bool justOne = false]) {
-    return _nitriteCollection.remove(
-        _operations.asObjectFilter(filter), justOne);
+  Future<WriteResult> remove(Filter filter, {bool justOne = false}) {
+    return _nitriteCollection.remove(_operations.asObjectFilter(filter),
+        justOne: justOne);
   }
 
   @override
@@ -204,7 +198,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   @override
   Future<T?> getById<I>(I id) async {
     var idFilter = _operations.createIdFilter<I>(id);
-    var cursor = await find(filter : idFilter);
+    var cursor = await find(filter: idFilter);
     return cursor.first;
   }
 
@@ -224,12 +218,12 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<void> subscribe<L>(CollectionEventListener<L> listener) {
+  void subscribe<L>(CollectionEventListener<L> listener) {
     return _nitriteCollection.subscribe(listener);
   }
 
   @override
-  Future<void> unsubscribe<L>(CollectionEventListener<L> listener) {
+  void unsubscribe<L>(CollectionEventListener<L> listener) {
     return _nitriteCollection.unsubscribe(listener);
   }
 

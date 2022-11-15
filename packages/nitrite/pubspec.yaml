@@ -8,7 +8,6 @@ environment:
 dependencies:
    uuid: 3.0.6
    logging: ^1.0.2
-   mutex: ^3.0.0
    collection: ^1.16.0
    json_annotation: ^4.5.0
    dart_numerics: ^0.0.6

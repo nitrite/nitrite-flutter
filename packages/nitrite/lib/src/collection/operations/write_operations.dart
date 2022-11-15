@@ -56,8 +56,10 @@ class WriteOperations {
           await _documentIndexWriter.writeIndexEntry(processed);
         } catch (e) {
           if (e is UniqueConstraintException || e is IndexingException) {
-            _log.severe('Error while writing index entry for document with id'
-                ' : $nitriteId in ${_nitriteMap.name}');
+            _log.severe(
+                'Error while writing index entry for document with id'
+                ' : $nitriteId in ${_nitriteMap.name}',
+                e);
             await _nitriteMap.remove(nitriteId);
           }
           rethrow;

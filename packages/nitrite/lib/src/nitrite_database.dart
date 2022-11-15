@@ -1,8 +1,6 @@
 import 'package:logging/logging.dart';
-import 'package:mutex/mutex.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/collection_factory.dart';
-import 'package:nitrite/src/common/concurrent/lock_service.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/migration/migration_manager.dart';
@@ -14,17 +12,13 @@ class NitriteDatabase extends Nitrite {
 
   final NitriteConfig _nitriteConfig;
 
-  late LockService _lockService;
   late CollectionFactory _collectionFactory;
   late RepositoryFactory _repositoryFactory;
   late NitriteMap<String, Document> _storeInfo;
   late NitriteStore _nitriteStore;
-  late Mutex _mutex;
 
   NitriteDatabase(this._nitriteConfig) {
-    _lockService = LockService();
-    _mutex = Mutex();
-    _collectionFactory = CollectionFactory(_lockService);
+    _collectionFactory = CollectionFactory();
     _repositoryFactory = RepositoryFactory(_collectionFactory);
   }
 
@@ -104,30 +98,28 @@ class NitriteDatabase extends Nitrite {
       _nitriteStore as NitriteStore<T>;
 
   @override
-  Future<void> close() {
-    return _mutex.protect(() async {
-      checkOpened();
-      try {
-        await _nitriteStore.beforeClose();
-        if (await hasUnsavedChanges) {
-          _log.fine('Unsaved changes detected, committing the changes.');
-          await _nitriteStore.commit();
-        }
-
-        await _repositoryFactory.clear();
-        await _collectionFactory.clear();
-        await _storeInfo.close();
-        // close all plugins and store
-        await _nitriteConfig.close();
-
-        _log.info('Nitrite database has been closed successfully.');
-      } on NitriteIOException {
-        rethrow;
-      } on Exception catch (e, stackTrace) {
-        throw NitriteIOException('Error occurred while closing the database',
-            stackTrace: stackTrace, cause: e);
+  Future<void> close() async {
+    checkOpened();
+    try {
+      await _nitriteStore.beforeClose();
+      if (await hasUnsavedChanges) {
+        _log.fine('Unsaved changes detected, committing the changes.');
+        await _nitriteStore.commit();
       }
-    });
+
+      _repositoryFactory.clear();
+      await _collectionFactory.clear();
+      await _storeInfo.close();
+      // close all plugins and store
+      await _nitriteConfig.close();
+
+      _log.info('Nitrite database has been closed successfully.');
+    } on NitriteIOException {
+      rethrow;
+    } on Exception catch (e, stackTrace) {
+      throw NitriteIOException('Error occurred while closing the database',
+          stackTrace: stackTrace, cause: e);
+    }
   }
 
   @override
@@ -144,7 +136,7 @@ class NitriteDatabase extends Nitrite {
 
   @override
   Session createSession() {
-    return Session(this, _lockService);
+    return Session(this);
   }
 
   Future<void> initialize([String? username, String? password]) async {

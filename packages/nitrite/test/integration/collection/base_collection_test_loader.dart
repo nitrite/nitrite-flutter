@@ -10,6 +10,9 @@ void setUpLog() {
   Logger.root.onRecord.listen((record) {
     print('${record.time}: [${record.level.name}] ${record.loggerName} -'
         ' ${record.message}');
+    if (record.error != null) {
+      print('ERROR: ${record.error}');
+    }
   });
 }
 
@@ -46,7 +49,7 @@ Future<void> setUpNitriteTest() async {
 }
 
 Future<void> cleanUp() async {
-  if (!await collection.isDropped) {
+  if (!collection.isDropped) {
     await collection.close();
   }
 

@@ -2,62 +2,62 @@ import 'package:event_bus/event_bus.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/collection_operations.dart';
 import 'package:nitrite/src/collection/operations/index_manager.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
-
 
 class CollectionRenameCommand extends BaseCommand {
   final Pair<String, String> _arguments;
 
   CollectionRenameCommand(this._arguments);
-  
+
   @override
   Future<void> execute(Nitrite nitrite) async {
     var oldName = _arguments.first;
     var newName = _arguments.second;
-    
+
     await initialize(nitrite, oldName);
 
     var newMap = await nitriteStore?.openMap<NitriteId, Document>(newName);
-    var newOperations = CollectionOperations(
-        newName, newMap!, nitrite.config, EventBus());
+    var newOperations =
+        CollectionOperations(newName, newMap!, nitrite.config, EventBus());
 
     try {
       await newOperations.initialize();
 
-      var futures = <Future>[];
+      var executor = Executor();
       await for (var pair in nitriteMap!.entries()) {
         // copy all documents in parallel
-        futures.add(newMap.put(pair.first, pair.second));
+        executor.submit(() => newMap.put(pair.first, pair.second));
       }
-      await Future.wait(futures);
+      await executor.execute();
 
       var indexManager = IndexManager(oldName, nitrite.config);
       try {
         await indexManager.initialize();
 
         var indexEntries = await indexManager.getIndexDescriptors();
-        var futures = <Future<void>>[];
+        var executor = Executor();
         for (var indexDescriptor in indexEntries) {
           var field = indexDescriptor.fields;
           var indexType = indexDescriptor.indexType;
           // create indexes in parallel
-          futures.add(newOperations.createIndex(field, indexType));
+          executor.submit(() => newOperations.createIndex(field, indexType));
         }
-        await Future.wait(futures);
+        await executor.execute();
       } finally {
         await indexManager.close();
       }
     } finally {
       await newOperations.close();
     }
-  }  
+  }
 }
 
 class AddFieldCommand extends BaseCommand {
   final Triplet<String, String, dynamic> _arguments;
 
   AddFieldCommand(this._arguments);
-  
+
   @override
   Future<void> execute(Nitrite nitrite) async {
     var collectionName = _arguments.first;
@@ -67,9 +67,9 @@ class AddFieldCommand extends BaseCommand {
     await initialize(nitrite, collectionName);
 
     var indexDescriptor =
-    await operations?.findIndex(Fields.withNames([fieldName]));
+        await operations?.findIndex(Fields.withNames([fieldName]));
 
-    var futures = <Future<void>>[];
+    var executor = Executor();
     await for (var pair in nitriteMap!.entries()) {
       var document = pair.second;
       if (thirdArg is Generator) {
@@ -78,22 +78,22 @@ class AddFieldCommand extends BaseCommand {
         document.put(fieldName, thirdArg);
       }
       // update all documents in parallel
-      futures.add(nitriteMap!.put(pair.first, document));
+      executor.submit(() => nitriteMap!.put(pair.first, document));
     }
-    await Future.wait(futures);
+    await executor.execute();
 
     if (indexDescriptor != null) {
       await operations?.createIndex(
           Fields.withNames([fieldName]), indexDescriptor.indexType);
     }
-  }  
+  }
 }
 
 class RenameFieldCommand extends BaseCommand {
   final Triplet<String, String, String> _arguments;
 
   RenameFieldCommand(this._arguments);
-  
+
   @override
   Future<void> execute(Nitrite nitrite) async {
     var collectionName = _arguments.first;
@@ -105,9 +105,10 @@ class RenameFieldCommand extends BaseCommand {
     var indexManager = IndexManager(collectionName, nitrite.config);
     try {
       var oldField = Fields.withNames([oldName]);
-      var matchingIndexDescriptors = await indexManager.findMatchingIndexDescriptors(oldField);
+      var matchingIndexDescriptors =
+          await indexManager.findMatchingIndexDescriptors(oldField);
 
-      var futures = <Future<void>>[];
+      var executor = Executor();
       await for (var pair in nitriteMap!.entries()) {
         var document = pair.second;
         if (document.containsKey(oldName)) {
@@ -116,33 +117,35 @@ class RenameFieldCommand extends BaseCommand {
           document.remove(oldName);
 
           // update all documents in parallel
-          futures.add(nitriteMap!.put(pair.first, document));
+          executor.submit(() => nitriteMap!.put(pair.first, document));
         }
       }
-      await Future.wait(futures);
+      await executor.execute();
 
       if (matchingIndexDescriptors.isNotEmpty) {
-        var futures = <Future<void>>[];
+        var executor = Executor();
         for (var indexDescriptor in matchingIndexDescriptors) {
           var indexType = indexDescriptor.indexType;
 
           var oldIndexFields = indexDescriptor.fields;
-          var newIndexFields = _getNewIndexFields(oldIndexFields, oldName, newName);
+          var newIndexFields =
+              _getNewIndexFields(oldIndexFields, oldName, newName);
 
           // create indexes in parallel
-          futures.add(Future.microtask(() async {
+          executor.submit(() async {
             await operations!.dropIndex(indexDescriptor.fields);
             await operations!.createIndex(newIndexFields, indexType);
-          }));
+          });
         }
-        await Future.wait(futures);
+        await executor.execute();
       }
     } finally {
       await indexManager.close();
     }
   }
 
-  Fields _getNewIndexFields(Fields oldIndexFields, String oldName, String newName) {
+  Fields _getNewIndexFields(
+      Fields oldIndexFields, String oldName, String newName) {
     var newIndexFields = Fields();
     for (var fieldName in oldIndexFields.fieldNames) {
       if (fieldName == oldName) {
@@ -159,7 +162,7 @@ class DeleteFieldCommand extends BaseCommand {
   final Pair<String, String> _arguments;
 
   DeleteFieldCommand(this._arguments);
-  
+
   @override
   Future<void> execute(Nitrite nitrite) async {
     var collectionName = _arguments.first;
@@ -168,20 +171,20 @@ class DeleteFieldCommand extends BaseCommand {
     await initialize(nitrite, collectionName);
 
     var indexDescriptor =
-    await operations?.findIndex(Fields.withNames([fieldName]));
+        await operations?.findIndex(Fields.withNames([fieldName]));
 
-    var futures = <Future<void>>[];
+    var executor = Executor();
     await for (var pair in nitriteMap!.entries()) {
       var document = pair.second;
       document.remove(fieldName);
-      futures.add(nitriteMap!.put(pair.first, document));
+      executor.submit(() => nitriteMap!.put(pair.first, document));
     }
-    await Future.wait(futures);
+    await executor.execute();
 
     if (indexDescriptor != null) {
       await operations?.dropIndex(Fields.withNames([fieldName]));
     }
-  }  
+  }
 }
 
 class DropIndexCommand extends BaseCommand {

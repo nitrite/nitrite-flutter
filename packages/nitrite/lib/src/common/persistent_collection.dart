@@ -49,10 +49,10 @@ abstract class PersistentCollection<T>
   Future<void> drop();
 
   /// Returns `true` if the collection is dropped; otherwise, `false`.
-  Future<bool> get isDropped;
+  bool get isDropped;
 
   /// Returns `true` if the collection is open; otherwise, `false`.
-  Future<bool> get isOpen;
+  bool get isOpen;
 
   /// Returns the size of the [PersistentCollection].
   Future<int> get size;

@@ -1,6 +1,6 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/persistent_collection.dart';
-
 
 /// Represents a document processor.
 abstract class Processor {
@@ -23,18 +23,16 @@ abstract class Processor {
     if (nitriteCollection != null) {
       var documentCursor = await nitriteCollection.find();
 
-      var futures = <Future<void>>[];
+      var executor = Executor();
       await for (var document in documentCursor) {
-        futures.add(Future.microtask(() async {
+        executor.submit(() async {
           // process all documents in parallel
           var processed = await processBeforeWrite(document);
-          await nitriteCollection!.update(
-              createUniqueFilter(document),
-              processed,
-              updateOptions(insertIfAbsent: false));
-        }));
+          await nitriteCollection!.update(createUniqueFilter(document),
+              processed, updateOptions(insertIfAbsent: false));
+        });
       }
-      await Future.wait(futures);
+      await executor.execute();
     }
   }
 }
