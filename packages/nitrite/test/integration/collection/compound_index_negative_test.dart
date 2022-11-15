@@ -37,14 +37,25 @@ void main() {
     test('Test Create Index on Invalid Field', () async {
       await insert();
       // multiple null value will be created for an unique index
-      expect(() async => await collection.createIndex(['my-value', 'lastName']),
-          throwsUniqueConstraintException);
+      bool uniqueConstraintError = false;
+      try {
+        await collection.createIndex(['my-value', 'lastName']);
+      } catch (e) {
+        expect(e is UniqueConstraintException, isTrue);
+        uniqueConstraintError = true;
+      }
+      expect(uniqueConstraintError, isTrue);
 
       await collection.dropAllIndices();
-      expect(
-          () async => await collection.createIndex(
-              ['my-value', 'lastName'], indexOptions(IndexType.nonUnique)),
-          returnsNormally);
+
+      bool noError = true;
+      try {
+        await collection.createIndex(
+            ['my-value', 'lastName'], indexOptions(IndexType.nonUnique));
+      } catch (e) {
+        noError = false;
+      }
+      expect(noError, isTrue);
     });
 
     test('Test Drop Index on NonIndexed Field', () async {
