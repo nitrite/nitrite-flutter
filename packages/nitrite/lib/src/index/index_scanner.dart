@@ -1,11 +1,14 @@
 import 'dart:collection';
 
+import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/filters/filter.dart';
 import 'package:nitrite/src/index/index_map.dart';
 import 'package:rxdart/rxdart.dart';
 
 class IndexScanner {
+  static final Logger _log = Logger('IndexScanner');
+
   final IndexMap _indexMap;
 
   IndexScanner(this._indexMap);
@@ -69,6 +72,9 @@ class IndexScanner {
     } else if (first is NitriteId) {
       return _StreamType.nitriteId;
     } else {
+      _log.fine(
+          '''Unknown stream type is encountered - ${await stream.toList()},
+       with index map - ${await _indexMap.entries().toList()}''');
       throw FilterException('Unknown stream type');
     }
   }

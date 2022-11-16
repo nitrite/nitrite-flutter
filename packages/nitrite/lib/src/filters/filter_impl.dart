@@ -26,7 +26,7 @@ class EqualsFilter extends ComparableFilter {
     var val = await indexMap.get(value as Comparable);
     if (val is List) {
       yield* Stream.fromIterable(val);
-    } else {
+    } else if (val != null) {
       yield val;
     }
   }
