@@ -88,6 +88,7 @@ class ReadOperations {
 
       // concat all suitable stream of all sub plans
       rawStream = ConcatStream(subStreams);
+      rawStream.listen(print);
 
       // return only distinct items
       if (findPlan.distinct) {
@@ -111,7 +112,8 @@ class ReadOperations {
         var indexDescriptor = findPlan.indexDescriptor;
         if (indexDescriptor != null) {
           // get optimized filter
-          var indexer = await _nitriteConfig.findIndexer(indexDescriptor.indexType);
+          var indexer =
+              await _nitriteConfig.findIndexer(indexDescriptor.indexType);
           var nitriteIdStream = indexer.findByFilter(findPlan, _nitriteConfig);
 
           // create indexed stream from optimized filter

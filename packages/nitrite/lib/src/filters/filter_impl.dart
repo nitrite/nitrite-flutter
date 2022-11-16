@@ -28,6 +28,8 @@ class EqualsFilter extends ComparableFilter {
       yield* Stream.fromIterable(val);
     } else if (val != null) {
       yield val;
+    } else {
+      yield* Stream.empty();
     }
   }
 
