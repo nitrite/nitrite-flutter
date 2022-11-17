@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 import 'base_collection_test_loader.dart';
@@ -48,8 +49,14 @@ void main() {
 
       var cursor = await collection.find(
           filter: or([
-        and([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
-        and([where("firstName").eq("fn3"), where("lastName").eq("ln2")])
+        and([
+          where("lastName").eq("ln2"),
+          where("firstName").notEq("fn1"),
+        ]),
+        and([
+          where("firstName").eq("fn3"),
+          where("lastName").eq("ln2"),
+        ])
       ]));
 
       var findPlan = cursor.findPlan;
@@ -60,9 +67,7 @@ void main() {
       expect(findPlan.subPlans.length, 2);
       expect(findPlan.subPlans[0].indexScanFilter, isNotNull);
       expect(findPlan.subPlans[1].indexScanFilter, isNotNull);
-
-      print(findPlan.subPlans[0].indexScanFilter?.filters);
-      print(findPlan.subPlans[1].indexScanFilter?.filters);
+      expect(findPlan.distinct, isFalse);
 
       expect(
           await cursor
@@ -74,6 +79,20 @@ void main() {
               .where((d) => d['firstName'] == 'fn3' && d['lastName'] == 'ln2')
               .length,
           2);
+
+      // distinct test
+      cursor = await collection.find(
+          filter: or([
+            and([
+              where("lastName").eq("ln2"),
+              where("firstName").notEq("fn1"),
+            ]),
+            and([
+              where("firstName").eq("fn3"),
+              where("lastName").eq("ln2"),
+            ])
+          ]),
+          findOptions: distinct());
     });
   });
 }

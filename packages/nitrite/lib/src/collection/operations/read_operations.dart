@@ -88,7 +88,6 @@ class ReadOperations {
 
       // concat all suitable stream of all sub plans
       rawStream = ConcatStream(subStreams);
-      rawStream.listen(print);
 
       // return only distinct items
       if (findPlan.distinct) {
@@ -135,8 +134,8 @@ class ReadOperations {
         rawStream = rawStream.skip(findPlan.skip ?? 0);
         rawStream = rawStream.take(findPlan.limit ?? int64MaxValue);
       }
-
-      yield* rawStream;
     }
+
+    yield* rawStream;
   }
 }
