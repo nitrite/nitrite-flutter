@@ -19,7 +19,7 @@ void setUpLog() {
 Future<void> setUpNitriteTest() async {
   db = await Nitrite.builder()
       .fieldSeparator('.')
-      .openOrCreate(username: 'test-user', password: 'test-password');
+      .openOrCreate(username: 'test', password: 'test');
 
   doc1 = emptyDocument()
       .put("firstName", "fn1")
