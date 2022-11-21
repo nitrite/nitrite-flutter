@@ -205,5 +205,29 @@ void main() {
           filter: where('firstName').notIn(['fn1', 'fn2']));
       expect(await cursor.length, 1);
     });
+
+    test('Test Find by Fulltext Index After Insert', () async {
+      await insert();
+      await collection.createIndex(['body'], indexOptions(IndexType.fullText));
+
+      expect(await collection.hasIndex(['body']), isTrue);
+
+      var cursor = await collection.find(filter: where('body').text('Lorem'));
+      expect(await cursor.length, 1);
+
+      cursor = await collection.find(filter: where('body').text('nosql'));
+      expect(await cursor.length, 0);
+
+      await collection.dropIndex(['body']);
+      bool filterExceptions = false;
+      try {
+        cursor = await collection.find(filter: where('body').text('Lorem'));
+        expect(await cursor.length, 1);
+      } on FilterException {
+        filterExceptions = true;
+      } finally {
+        expect(filterExceptions, isTrue);
+      }
+    });
   });
 }

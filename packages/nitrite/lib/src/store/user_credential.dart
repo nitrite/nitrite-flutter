@@ -1,24 +1,18 @@
 import 'package:nitrite/nitrite.dart';
 
 class UserCredential {
-  List<int> _passwordHash;
-  List<int> _passwordSalt;
+  String _passwordHash;
 
   factory UserCredential.fromDocument(Document document) {
     var passwordHash = document.get('passwordHash');
-    var passwordSalt = document.get('passwordSalt');
-    return UserCredential(passwordHash, passwordSalt);
+    return UserCredential(passwordHash);
   }
 
-  UserCredential(this._passwordHash, this._passwordSalt);
+  UserCredential(this._passwordHash);
 
-  List<int> get passwordHash => _passwordHash;
-  List<int> get passwordSalt => _passwordSalt;
+  String get passwordHash => _passwordHash;
 
   Document toDocument() {
-    return Document.emptyDocument()
-      ..put('passwordHash', _passwordHash)
-      ..put('passwordSalt', _passwordSalt);
+    return Document.emptyDocument()..put('passwordHash', _passwordHash);
   }
 }
-

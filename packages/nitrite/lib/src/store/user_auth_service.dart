@@ -1,13 +1,9 @@
-import 'dart:convert';
-import 'dart:math';
-
-import 'package:cryptography/cryptography.dart';
+import 'package:crypt/crypt.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/store/user_credential.dart';
 
 class UserAuthenticationService {
-  final Random _random = Random.secure();
   final NitriteStore _nitriteStore;
 
   UserAuthenticationService(this._nitriteStore);
@@ -16,10 +12,9 @@ class UserAuthenticationService {
     var existing = await _nitriteStore.hasMap(userMap);
     if (!password.isNullOrEmpty && !username.isNullOrEmpty) {
       if (!existing) {
-        var salt = _getNextSalt();
-        var hash = await _hash(password!, salt);
+        var hash = _hash(password!);
 
-        var userCredential = UserCredential(hash, salt);
+        var userCredential = UserCredential(hash);
         var uMap = await _nitriteStore.openMap<String, Document>(userMap);
         await uMap.put(username!, userCredential.toDocument());
       } else {
@@ -27,10 +22,10 @@ class UserAuthenticationService {
         var doc = await uMap[username!];
         if (doc != null) {
           var userCredential = UserCredential.fromDocument(doc);
-          var salt = userCredential.passwordSalt;
           var expectedHash = userCredential.passwordHash;
+          var crypt = Crypt(expectedHash);
 
-          if (await _notExpectedPassword(password!, salt, expectedHash)) {
+          if (crypt.match(password!)) {
             throw NitriteSecurityException('Username or password is invalid');
           }
         } else {
@@ -51,10 +46,10 @@ class UserAuthenticationService {
       var doc = await uMap[username];
       if (doc != null) {
         var userCredential = UserCredential.fromDocument(doc);
-        var salt = userCredential.passwordSalt;
         var expectedHash = userCredential.passwordHash;
+        var crypt = Crypt(expectedHash);
 
-        if (await _notExpectedPassword(oldPassword, salt, expectedHash)) {
+        if (crypt.match(oldPassword)) {
           throw NitriteSecurityException('Username or password is invalid');
         }
       }
@@ -66,40 +61,13 @@ class UserAuthenticationService {
 
     uMap ??= await _nitriteStore.openMap<String, Document>(userMap);
 
-    var salt = _getNextSalt();
-    var hash = await _hash(newPassword, salt);
-    var userCredential = UserCredential(hash, salt);
+    var hash = _hash(newPassword);
+    var userCredential = UserCredential(hash);
     await uMap.put(username, userCredential.toDocument());
   }
 
-  List<int> _getNextSalt() {
-    var salt = <int>[];
-    for (var i = 0; i < 16; i++) {
-      salt.add(_random.nextInt(256));
-    }
-    return salt;
-  }
-
-  Future<List<int>> _hash(String password, List<int> salt) async {
-    final pbkdf2 = Pbkdf2(
-      macAlgorithm: Hmac.sha256(),
-      iterations: 100000,
-      bits: 128,
-    );
-
-    var secretKey = SecretKey(utf8.encode(password));
-    var newSecretKey =
-        await pbkdf2.deriveKey(secretKey: secretKey, nonce: salt);
-    return newSecretKey.extractBytes();
-  }
-
-  Future<bool> _notExpectedPassword(
-      String password, List<int> salt, List<int> expectedHash) async {
-    var pwdHash = await _hash(password, salt);
-    if (pwdHash.length != expectedHash.length) return true;
-    for (var i = 0; i < pwdHash.length; i++) {
-      if (pwdHash[i] != expectedHash[i]) return true;
-    }
-    return false;
+  String _hash(String password) {
+    final hash = Crypt.sha256(password);
+    return hash.toString();
   }
 }
