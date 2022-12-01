@@ -89,7 +89,7 @@ class TextIndex extends NitriteIndex {
     if (filters.length == 1 && filters.first is TextFilter) {
       var textFilter = filters.first as TextFilter;
       textFilter.textTokenizer = _textTokenizer;
-      yield* textFilter.applyOnTextIndex(indexMap);
+      yield* textFilter.applyOnTextIndex(indexMap).distinct();
     } else {
       throw FilterException("Text index only supports a single TextFilter");
     }

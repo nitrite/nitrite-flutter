@@ -141,7 +141,6 @@ class TextFilter extends StringFilter {
 
   Stream<NitriteId> applyOnTextIndex(NitriteMap<String, List> indexMap) async* {
     field.notNullOrEmpty("Field cannot be empty");
-    stringValue.notNullOrEmpty("Search term cannot be empty");
 
     var searchString = stringValue;
     if (searchString.startsWith("*") || searchString.endsWith("*")) {

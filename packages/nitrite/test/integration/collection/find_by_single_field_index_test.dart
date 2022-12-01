@@ -2,12 +2,13 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
+import '../../test_utils.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
   group('Collection Find by Single Field Index Test Suite', () {
     setUp(() async {
-      setUpLog();
+      // setUpLog();
       await setUpNitriteTest();
     });
 
@@ -228,6 +229,139 @@ void main() {
       } finally {
         expect(filterExceptions, isTrue);
       }
+    });
+
+    test('Test Find by Fulltext Index Before Insert', () async {
+      await collection.createIndex(['body'], indexOptions(IndexType.fullText));
+      expect(await collection.hasIndex(['body']), isTrue);
+      await insert();
+
+      var cursor = await collection.find(filter: where('body').text('Lorem'));
+      expect(await cursor.length, 1);
+
+      cursor = await collection.find(filter: where('body').text('quick brown'));
+      expect(await cursor.length, 2);
+
+      cursor = await collection.find(filter: where('body').text('nosql'));
+      expect(await cursor.length, 0);
+
+      await collection.dropIndex(['body']);
+      bool filterExceptions = false;
+      try {
+        cursor = await collection.find(filter: where('body').text('Lorem'));
+        expect(await cursor.toList(), []);
+      } on FilterException {
+        filterExceptions = true;
+      } finally {
+        expect(filterExceptions, isTrue);
+      }
+    });
+
+    test('Test Find by Indexed Sort Ascending', () async {
+      await insert();
+      await collection.createIndex(['birthDay']);
+
+      var cursor = await collection.find(findOptions: orderBy('birthDay'));
+      expect(await cursor.length, 3);
+      var dateList =
+          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
+      expect(isSorted(dateList, true), isTrue);
+    });
+
+    test('Test Find by Indexed Sort Descending', () async {
+      await insert();
+      await collection.createIndex(['birthDay']);
+
+      var cursor = await collection.find(
+          findOptions: orderBy('birthDay', SortOrder.descending));
+      expect(await cursor.length, 3);
+      var dateList =
+          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
+      expect(isSorted(dateList, false), isTrue);
+    });
+
+    test('Test Find by Index Limit & Sort', () async {
+      await insert();
+      await collection.createIndex(['birthDay']);
+
+      var cursor = await collection.find(
+          findOptions:
+              orderBy('birthDay', SortOrder.descending).setSkip(1).setLimit(2));
+      expect(await cursor.length, 2);
+      var dateList =
+          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
+      expect(isSorted(dateList, false), isTrue);
+
+      cursor = await collection.find(
+          findOptions: orderBy('birthDay').setSkip(1).setLimit(2));
+      expect(await cursor.length, 2);
+      dateList =
+          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
+      expect(isSorted(dateList, true), isTrue);
+
+      cursor = await collection.find(
+          findOptions: orderBy('firstName').setSkip(0).setLimit(30));
+      expect(await cursor.length, 3);
+      var nameList =
+          await cursor.map((doc) => doc['firstName'] as String).toList();
+      expect(isSorted(nameList, true), isTrue);
+    });
+
+    test('Test Find After Dropped Index', () async {
+      await insert();
+      await collection.createIndex(['firstName']);
+
+      var cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      expect(await cursor.length, 1);
+
+      await collection.dropIndex(['firstName']);
+      cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      expect(await cursor.length, 1);
+    });
+
+    test('Test Find Text with Wild Card', () async {
+      await insert();
+      await collection.createIndex(['body'], indexOptions(IndexType.fullText));
+
+      var cursor = await collection.find(filter: where('body').text('Lo'));
+      expect(await cursor.length, 0);
+
+      cursor = await collection.find(filter: where('body').text('Lo*'));
+      expect(await cursor.length, 1);
+
+      cursor = await collection.find(filter: where('body').text('*rem'));
+      expect(await cursor.length, 1);
+
+      cursor = await collection.find(filter: where('body').text('*or*'));
+      expect(await cursor.length, 2);
+    });
+
+    test('Test Find Text with Empty String', () async {
+      await insert();
+      await collection.createIndex(['body'], indexOptions(IndexType.fullText));
+
+      var cursor = await collection.find(filter: where('body').text(''));
+      expect(await cursor.length, 0);
+    });
+
+    test('Test Find with OR Indexed', () async {
+      var collection = await db.getCollection('testFindWithOrIndexed');
+      var doc1 = createDocument('firstName', 'John').put('lastName', 'Doe');
+      var doc2 = createDocument('firstName', 'Jane').put('lastName', 'Doe');
+      var doc3 = createDocument('firstName', 'Jonas').put('lastName', 'Doe');
+      var doc4 = createDocument('firstName', 'Johan').put('lastName', 'Day');
+
+      await collection
+          .createIndex(['firstName'], indexOptions(IndexType.unique));
+
+      await collection
+          .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
+
+      await collection.insert([doc1, doc2, doc3, doc4]);
+      var cursor = await collection.find(
+          filter:
+              where('firstName').eq('John').or(where('lastName').eq('Day')));
+      expect(await cursor.length, 2);
     });
   });
 }

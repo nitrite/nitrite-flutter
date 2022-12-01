@@ -1,46 +1,45 @@
-import 'package:string_splitter/string_splitter.dart';
+var _splitters = [
+  ' ',
+  '\t',
+  '\r\n',
+  '\n',
+  '\f',
+  '+',
+  '"',
+  '*',
+  '%',
+  '&',
+  '/',
+  '(',
+  ')',
+  '=',
+  '?',
+  '\'',
+  '!',
+  ',',
+  '.',
+  ';',
+  ':',
+  '-',
+  '_',
+  '#',
+  '@',
+  '|',
+  '^',
+  '~',
+  '`',
+  '{',
+  '}',
+  '[',
+  ']',
+  '<',
+  '>',
+  '\\'
+];
 
-List<String> tokenizeString(String text) {
-  return StringSplitter.split(
-    text,
-    splitters: [
-      ' ',
-      '\t',
-      '\r\n',
-      '\n',
-      '\f',
-      '+',
-      '"',
-      '*',
-      '%',
-      '&',
-      '/',
-      '(',
-      ')',
-      '=',
-      '?',
-      '\'',
-      '!',
-      ',',
-      '.',
-      ';',
-      ':',
-      '-',
-      '_',
-      '#',
-      '@',
-      '|',
-      '^',
-      '~',
-      '`',
-      '{',
-      '}',
-      '[',
-      ']',
-      '<',
-      '>',
-      '\\'
-    ],
-    trimParts: true,
-  ).where((element) => element.isNotEmpty).toList();
-}
+List<String> tokenizeString(String text) => _splitters.isEmpty
+    ? [text]
+    : text
+        .split(RegExp(_splitters.map(RegExp.escape).join('|')))
+        .where((element) => element.isNotEmpty)
+        .toList();
