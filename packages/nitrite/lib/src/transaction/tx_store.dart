@@ -53,11 +53,11 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
   Future<void> close() async {
     var executor = Executor();
     for (var map in _mapRegistry.values) {
-      executor.submit(() => map.close());
+      executor.submit(() async => await map.close());
     }
 
     for (var rTree in _rTreeRegistry.values) {
-      executor.submit(() => rTree.close());
+      executor.submit(() async => await rTree.close());
     }
 
     await executor.execute();

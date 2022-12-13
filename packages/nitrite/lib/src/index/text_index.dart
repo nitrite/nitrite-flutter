@@ -34,7 +34,7 @@ class TextIndex extends NitriteIndex {
       var executor = Executor();
       for (var item in element) {
         // add index element in parallel
-        executor.submit(() => _addIndexElement(indexMap, fieldValues, item));
+        executor.submit(() async => await _addIndexElement(indexMap, fieldValues, item));
       }
       await executor.execute();
     } else {
@@ -63,7 +63,7 @@ class TextIndex extends NitriteIndex {
       var executor = Executor();
       for (var item in element) {
         // remove index element in parallel
-        executor.submit(() => _removeIndexElement(indexMap, fieldValues, item));
+        executor.submit(() async => await _removeIndexElement(indexMap, fieldValues, item));
       }
       await executor.execute();
     } else {
@@ -110,7 +110,7 @@ class TextIndex extends NitriteIndex {
       nitriteIds ??= <NitriteId>[];
       nitriteIds = addNitriteIds(nitriteIds as List<NitriteId>, fieldValues);
       // update index map in parallel
-      executor.submit(() => indexMap.put(word, nitriteIds!));
+      executor.submit(() async => await indexMap.put(word, nitriteIds!));
     }
     await executor.execute();
   }

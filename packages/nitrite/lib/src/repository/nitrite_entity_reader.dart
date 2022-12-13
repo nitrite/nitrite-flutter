@@ -37,7 +37,7 @@ class NitriteEntityReader<T> {
         for (var index in indexes) {
           var hasIndex = await _nitriteCollection.hasIndex(index.fieldNames);
           if (!hasIndex) {
-            executor.submit(() => _nitriteCollection.createIndex(
+            executor.submit(() async => await _nitriteCollection.createIndex(
                 index.fieldNames, indexOptions(index.indexType)));
           }
         }

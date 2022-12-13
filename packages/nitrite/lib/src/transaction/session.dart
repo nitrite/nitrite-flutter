@@ -45,7 +45,7 @@ class Session {
     var executor = Executor();
     for (var tx in transactionMap.values) {
       if (tx.state != TransactionState.closed) {
-        executor.submit(() => tx.rollback());
+        executor.submit(() async => await tx.rollback());
       }
     }
     await executor.execute();

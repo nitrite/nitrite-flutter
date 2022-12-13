@@ -12,7 +12,7 @@ class Executor {
   /// task cannot be submitted.
   void submit(Future<void> Function() computation) {
     if (!_disposed) {
-      _futures.add(computation());
+      _futures.add(computation()..ignore());
     } else {
       throw InvalidOperationException('Executor is already disposed');
     }

@@ -32,7 +32,7 @@ class PluginManager {
       var executor = Executor();
       for (var plugin in module.plugins) {
         // load all plugins in parallel
-        executor.submit(() => _loadPlugin(plugin));
+        executor.submit(() async => await _loadPlugin(plugin));
       }
       await executor.execute();
     }
@@ -62,7 +62,7 @@ class PluginManager {
       var executor = Executor();
       for (var indexer in _indexerMap.values) {
         // initialize all indexers in parallel
-        executor.submit(() => _initializePlugin(indexer));
+        executor.submit(() async => await _initializePlugin(indexer));
       }
       await executor.execute();
     }
@@ -72,7 +72,7 @@ class PluginManager {
     var executor = Executor();
     for (var indexer in _indexerMap.values) {
       // close all indexers in parallel
-      executor.submit(() => indexer.close());
+      executor.submit(() async => await indexer.close());
     }
     await executor.execute();
 

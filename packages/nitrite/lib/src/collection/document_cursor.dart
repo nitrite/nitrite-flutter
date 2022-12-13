@@ -55,6 +55,7 @@ class DocumentStream extends DocumentCursor {
 
   @override
   Stream<Document> project(Document projection) {
+    _validateProjection(projection);
     return ProjectedDocumentStream(this, projection);
   }
 
@@ -68,5 +69,25 @@ class DocumentStream extends DocumentCursor {
       {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     return _stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
+
+  void _validateProjection(Document projection) {
+    for (var kvp in projection) {
+      _validateKeyValuePair(kvp);
+    }
+  }
+
+  void _validateKeyValuePair(Pair<String, dynamic> kvp) {
+    validateFn(item) => item is Document
+        ? _validateProjection(item)
+        : _validateKeyValuePair(item);
+
+    if (kvp.second != null) {
+      if (kvp.second is! Document && kvp.second is! Pair) {
+        throw ValidationException('Projection contains non-null values');
+      } else {
+        validateFn(kvp.second);
+      }
+    }
   }
 }

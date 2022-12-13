@@ -1,3 +1,4 @@
+import 'package:faker/faker.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
@@ -8,7 +9,7 @@ import 'base_collection_test_loader.dart';
 void main() {
   group('Collection Find by Single Field Index Test Suite', () {
     setUp(() async {
-      // setUpLog();
+      setUpLog();
       await setUpNitriteTest();
     });
 
@@ -362,6 +363,38 @@ void main() {
           filter:
               where('firstName').eq('John').or(where('lastName').eq('Day')));
       expect(await cursor.length, 2);
+    });
+
+    test('Test Find with Multi-key Index', () async {
+      var collection = await db.getCollection('testIssue45');
+      var faker = Faker();
+
+      var text1 = '${faker.lorem.sentence()} quick brown';
+      var text2 = '${faker.lorem.sentence()} fox jump';
+      var text3 = '${faker.lorem.sentence()} over lazy';
+      var text4 = '${faker.lorem.sentence()} dog';
+
+      var list1 = [text1, text2];
+      var list2 = [text1, text2, text3];
+      var list3 = [text2, text3];
+      var list4 = [text1, text2, text3, text4];
+
+      var doc1 = createDocument('firstName', 'John').put('notes', list1);
+      var doc2 = createDocument('firstName', 'Jane').put('notes', list2);
+      var doc3 = createDocument('firstName', 'Jonas').put('notes', list3);
+      var doc4 = createDocument('firstName', 'Johan').put('notes', list4);
+
+      await collection.createIndex(['notes'], indexOptions(IndexType.fullText));
+      await collection.insert([doc1, doc2, doc3, doc4]);
+
+      var cursor = await collection.find(filter: where('notes').text('fox'));
+      expect(await cursor.length, 4);
+
+      cursor = await collection.find(filter: where('notes').text('dog'));
+      expect(await cursor.length, 1);
+
+      cursor = await collection.find(filter: where('notes').text('lazy'));
+      expect(await cursor.length, 3);
     });
   });
 }

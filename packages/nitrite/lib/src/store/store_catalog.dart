@@ -107,7 +107,7 @@ class StoreCatalog {
       var metaData = MapMetaData(doc);
       if (metaData.mapNames.contains(name)) {
         metaData.mapNames.remove(name);
-        executor.submit(() => _catalog.put(catalog, metaData.getInfo()));
+        executor.submit(() async => await _catalog.put(catalog, metaData.getInfo()));
       }
     }
     await executor.execute();

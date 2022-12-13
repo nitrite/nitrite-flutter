@@ -38,14 +38,14 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
     var executor = Executor();
     for (var map in _nitriteMapRegistry.values) {
       // close all maps in parallel
-      executor.submit(() => map.close());
+      executor.submit(() async => await map.close());
     }
     await executor.execute();
 
     executor = Executor();
     for (var rtree in _nitriteRTreeMapRegistry.values) {
       // close all rtree in parallel
-      executor.submit(() => rtree.close());
+      executor.submit(() async => await rtree.close());
     }
     await executor.execute();
 

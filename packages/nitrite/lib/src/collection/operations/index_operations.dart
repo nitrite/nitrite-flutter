@@ -64,7 +64,7 @@ class IndexOperations {
     var executor = Executor();
     for (var index in indices) {
       // drop all indices in parallel
-      executor.submit(() => dropIndex(index.fields));
+      executor.submit(() async => await dropIndex(index.fields));
     }
 
     await executor.execute();
@@ -162,7 +162,7 @@ class IndexOperations {
         var fieldValues = getDocumentValues(document, indexDescriptor.fields);
 
         // write index entries in parallel
-        executor.submit(() => nitriteIndexer.writeIndexEntry(
+        executor.submit(() async => await nitriteIndexer.writeIndexEntry(
             fieldValues, indexDescriptor, _nitriteConfig));
       }
 

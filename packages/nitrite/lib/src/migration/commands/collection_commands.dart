@@ -27,7 +27,7 @@ class CollectionRenameCommand extends BaseCommand {
       var executor = Executor();
       await for (var pair in nitriteMap!.entries()) {
         // copy all documents in parallel
-        executor.submit(() => newMap.put(pair.first, pair.second));
+        executor.submit(() async => await newMap.put(pair.first, pair.second));
       }
       await executor.execute();
 
@@ -41,7 +41,7 @@ class CollectionRenameCommand extends BaseCommand {
           var field = indexDescriptor.fields;
           var indexType = indexDescriptor.indexType;
           // create indexes in parallel
-          executor.submit(() => newOperations.createIndex(field, indexType));
+          executor.submit(() async => await newOperations.createIndex(field, indexType));
         }
         await executor.execute();
       } finally {
@@ -78,7 +78,7 @@ class AddFieldCommand extends BaseCommand {
         document.put(fieldName, thirdArg);
       }
       // update all documents in parallel
-      executor.submit(() => nitriteMap!.put(pair.first, document));
+      executor.submit(() async => await nitriteMap!.put(pair.first, document));
     }
     await executor.execute();
 
@@ -117,7 +117,7 @@ class RenameFieldCommand extends BaseCommand {
           document.remove(oldName);
 
           // update all documents in parallel
-          executor.submit(() => nitriteMap!.put(pair.first, document));
+          executor.submit(() async => await nitriteMap!.put(pair.first, document));
         }
       }
       await executor.execute();
@@ -177,7 +177,7 @@ class DeleteFieldCommand extends BaseCommand {
     await for (var pair in nitriteMap!.entries()) {
       var document = pair.second;
       document.remove(fieldName);
-      executor.submit(() => nitriteMap!.put(pair.first, document));
+      executor.submit(() async => await nitriteMap!.put(pair.first, document));
     }
     await executor.execute();
 

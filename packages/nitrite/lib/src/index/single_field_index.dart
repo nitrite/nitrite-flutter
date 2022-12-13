@@ -82,7 +82,7 @@ class SingleFieldIndex extends NitriteIndex {
         // wrap around db value
         var dbValue = item == null ? DBNull.instance : DBValue(item);
         // add index element in parallel
-        executor.submit(() => _addIndexElement(indexMap, fieldValues, dbValue));
+        executor.submit(() async => await _addIndexElement(indexMap, fieldValues, dbValue));
       }
       await executor.execute();
     }

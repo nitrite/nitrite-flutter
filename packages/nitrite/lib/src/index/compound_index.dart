@@ -90,7 +90,7 @@ class CompoundIndex extends NitriteIndex {
         // wrap around db value
         var dbValue = item != null ? DBValue(item) : DBNull.instance;
         // add index element in parallel
-        executor.submit(() => _addIndexElement(indexMap, fieldValues, dbValue));
+        executor.submit(() async => await _addIndexElement(indexMap, fieldValues, dbValue));
       }
       await executor.execute();
     }

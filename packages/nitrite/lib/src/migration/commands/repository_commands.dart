@@ -32,7 +32,7 @@ class ChangeDataTypeCommand extends BaseCommand {
       var newValue = typeConverter(value);
       document.put(fieldName, newValue);
 
-      executor.submit(() => nitriteMap!.put(pair.first, document));
+      executor.submit(() async => await nitriteMap!.put(pair.first, document));
     }
     await executor.execute();
 
