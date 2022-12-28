@@ -1,6 +1,5 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:test/expect.dart';
-import 'package:test/scaffolding.dart';
+import 'package:test/test.dart';
 
 import 'data/data_generator.dart';
 import 'data/test_objects.dart';
@@ -19,6 +18,7 @@ void main() {
       mapper.registerEntityConverter(NoteConverter());
 
       repository = await db.getRepository<EmployeeForCustomSeparator>();
+      await repository.clear();
     });
 
     tearDown(() async {

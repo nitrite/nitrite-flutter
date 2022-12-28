@@ -26,10 +26,10 @@ class RepositoryOperations<T> {
 
   Future<void> createIndices() async {
     if (_entityDecoratorReader != null) {
-      _entityDecoratorReader!.readAndExecute();
+      await _entityDecoratorReader!.readAndExecute();
       _objectIdField = _entityDecoratorReader!.objectIdField;
     } else if (isSubtype<T, NitriteEntity>()) {
-      _nitriteEntityReader!.readAndExecute();
+      await _nitriteEntityReader!.readAndExecute();
       _objectIdField = _nitriteEntityReader!.objectIdField;
     }
   }

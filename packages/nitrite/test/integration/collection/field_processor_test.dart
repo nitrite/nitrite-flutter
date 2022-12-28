@@ -2,6 +2,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
+import '../../test_utils.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
@@ -147,47 +148,4 @@ void main() {
       expect(await cursor.isEmpty, true);
     });
   });
-}
-
-class TestProcessor extends Processor {
-  final Future<Document> Function(Document document) processAfterReadFn;
-  final Future<Document> Function(Document document) processBeforeWriteFn;
-
-  TestProcessor({
-    required this.processAfterReadFn,
-    required this.processBeforeWriteFn,
-  });
-
-  @override
-  Future<Document> processAfterRead(Document document) {
-    return processAfterReadFn(document);
-  }
-
-  @override
-  Future<Document> processBeforeWrite(Document document) {
-    return processBeforeWriteFn(document);
-  }
-}
-
-class FieldEncrypterProcessor extends Processor {
-  final Encrypter _encrypter;
-  final IV _iv;
-  final String _field;
-  FieldEncrypterProcessor(this._encrypter, this._iv, this._field) : super();
-
-  @override
-  Future<Document> processAfterRead(Document document) async {
-    var encrypted = document[_field];
-    var raw = _encrypter.decrypt64(encrypted, iv: _iv);
-    document[_field] = raw;
-    return document;
-  }
-
-  @override
-  Future<Document> processBeforeWrite(Document document) async {
-    var raw = document[_field];
-    var encrypted = _encrypter.encrypt(raw, iv: _iv);
-    document[_field] = encrypted.base64;
-    return document;
-  }
 }

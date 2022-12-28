@@ -150,9 +150,10 @@ class IndexManager {
           if (indexMapName != null) {
             // run all futures in parallel
             executor.submit(() async {
-              var indexMap =
-                  await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
-              await indexMap.clear();
+              if (await _nitriteStore.hasMap(indexMapName)) {
+                var indexMap = await _nitriteStore.openMap(indexMapName);
+                await indexMap.clear();
+              }
             });
           }
         }

@@ -107,7 +107,7 @@ class NitriteDatabase extends Nitrite {
         await _nitriteStore.commit();
       }
 
-      _repositoryFactory.clear();
+      await _repositoryFactory.clear();
       await _collectionFactory.clear();
       await _storeInfo.close();
       // close all plugins and store

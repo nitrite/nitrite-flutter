@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 
 import 'data/data_generator.dart';
@@ -13,7 +14,18 @@ late ObjectRepository<Book> bookRepository;
 late ObjectRepository<Product> productRepository;
 late ObjectRepository<Product> upcomingProductRepository;
 
-Future<void> setUp() async {
+void setUpLog() {
+  Logger.root.level = Level.FINE;
+  Logger.root.onRecord.listen((record) {
+    print('${record.time}: [${record.level.name}] ${record.loggerName} -'
+        ' ${record.message}');
+    if (record.error != null) {
+      print('ERROR: ${record.error}');
+    }
+  });
+}
+
+Future<void> setUpNitriteTest() async {
   await _openDb();
 
   companyRepository = await db.getRepository<Company>();
@@ -49,7 +61,7 @@ Future<void> setUp() async {
   }
 }
 
-Future<void> clear() async {
+Future<void> cleanUp() async {
   if (!companyRepository.isDropped) {
     await companyRepository.remove(all);
   }

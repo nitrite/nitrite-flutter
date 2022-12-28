@@ -20,22 +20,22 @@ class RepositoryFactory {
       var repository = _repositoryMap[collectionName]! as ObjectRepository<T>;
       if (repository.isDropped || !repository.isOpen) {
         _repositoryMap.remove(collectionName);
-        return _createRepository<T>(
+        return await _createRepository<T>(
             nitriteConfig, collectionName, entityDecorator, key);
       } else {
         return repository;
       }
     } else {
-      return _createRepository<T>(
+      return await _createRepository<T>(
           nitriteConfig, collectionName, entityDecorator, key);
     }
   }
 
-  void clear() {
+  Future<void> clear() async {
     try {
-      _repositoryMap.forEach((key, repository) {
-        repository.close();
-      });
+      for (var entry in _repositoryMap.entries) {
+        await entry.value.close();
+      }
       _repositoryMap.clear();
     } catch (e, stackTrace) {
       throw NitriteIOException('Failed to clear an object repository',
@@ -61,11 +61,13 @@ class RepositoryFactory {
         collectionName, nitriteConfig, false);
     var repository = _DefaultObjectRepository<T>(
         entityDecorator, nitriteCollection, nitriteConfig);
+
+    // initialize
     await repository.initialize();
 
     _repositoryMap[collectionName] = repository;
 
-    _writeCatalog(store, collectionName, key);
+    await _writeCatalog(store, collectionName, key);
     return repository;
   }
 
