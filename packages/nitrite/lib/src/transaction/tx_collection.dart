@@ -65,9 +65,11 @@ class DefaultTransactionalCollection extends NitriteCollection {
   @override
   Future<WriteResult> update(Filter filter, Document update,
       [UpdateOptions? updateOptions]) async {
-    updateOptions ??= UpdateOptions();
-    updateOptions.insertIfAbsent = false;
-    updateOptions.justOnce = false;
+    if (updateOptions == null) {
+      updateOptions = UpdateOptions();
+      updateOptions.insertIfAbsent = false;
+      updateOptions.justOnce = false;
+    }
 
     await _checkOpened();
     var result =

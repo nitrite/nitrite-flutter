@@ -12,7 +12,7 @@ void main() {
     });
 
     tearDown(() async {
-      // await cleanUp();
+      await cleanUp();
     });
 
     test('Test Create Invalid Unique Index', () async {
@@ -46,6 +46,30 @@ void main() {
           () async => await collection
               .createIndex(['birthDay'], indexOptions(IndexType.fullText)),
           throwsIndexingException);
+    });
+
+    test('Test Drop Index on Non Indexed Field', () async {
+      expect(() async => await collection.dropIndex(['data']),
+          throwsIndexingException);
+    });
+
+    test('Test Rebuild Index on Invalid Field', () async {
+      expect(() async => await collection.rebuildIndex(['unknown']),
+          throwsIndexingException);
+    });
+
+    test('Test Multiple Text Index', () async {
+      expect(
+          () async => await collection.createIndex(
+              ['body', 'lastName'], indexOptions(IndexType.fullText)),
+          throwsIndexingException);
+    });
+
+    test('Test Create Index on Empty Fields', () async {
+      expect(
+          () async => await collection
+              .createIndex([], indexOptions(IndexType.fullText)),
+          throwsValidationException);
     });
   });
 }

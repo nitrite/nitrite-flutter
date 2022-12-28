@@ -5,6 +5,7 @@ import 'package:nitrite/src/common/processors/processor.dart';
 import 'package:nitrite/src/common/stream/joined_document_stream.dart';
 import 'package:nitrite/src/common/stream/processed_document_stream.dart';
 import 'package:nitrite/src/common/stream/projected_document_stream.dart';
+import 'package:rxdart/streams.dart';
 
 /// An interface to iterate over [NitriteCollection.find] results. It provides a
 /// mechanism to iterate over all [NitriteId]s of the result.
@@ -56,12 +57,15 @@ class DocumentStream extends DocumentCursor {
   @override
   Stream<Document> project(Document projection) {
     _validateProjection(projection);
-    return ProjectedDocumentStream(this, projection);
+    return ReplayConnectableStream(ProjectedDocumentStream(this, projection))
+      ..connect();
   }
 
   @override
   Stream<Document> leftJoin(DocumentCursor foreignCursor, LookUp lookup) {
-    return JoinedDocumentStream(this, foreignCursor, lookup);
+    return ReplayConnectableStream(
+        JoinedDocumentStream(this, foreignCursor, lookup))
+      ..connect();
   }
 
   @override

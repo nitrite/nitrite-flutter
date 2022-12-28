@@ -1,5 +1,3 @@
-import 'package:nitrite/nitrite.dart';
-
 /// A rudimentary parallel task executor.
 class Executor {
   final List<Future<void>> _futures = [];
@@ -14,7 +12,7 @@ class Executor {
     if (!_disposed) {
       _futures.add(computation()..ignore());
     } else {
-      throw InvalidOperationException('Executor is already disposed');
+      throw StateError('Executor is already disposed');
     }
   }
 

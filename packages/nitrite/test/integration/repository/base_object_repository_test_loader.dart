@@ -50,31 +50,31 @@ Future<void> setUp() async {
 }
 
 Future<void> clear() async {
-  if (!await companyRepository.isDropped) {
+  if (!companyRepository.isDropped) {
     await companyRepository.remove(all);
   }
 
-  if (!await employeeRepository.isDropped) {
+  if (!employeeRepository.isDropped) {
     await employeeRepository.remove(all);
   }
 
-  if (!await aObjectRepository.isDropped) {
+  if (!aObjectRepository.isDropped) {
     await aObjectRepository.remove(all);
   }
 
-  if (!await cObjectRepository.isDropped) {
+  if (!cObjectRepository.isDropped) {
     await cObjectRepository.remove(all);
   }
 
-  if (!await bookRepository.isDropped) {
+  if (!bookRepository.isDropped) {
     await bookRepository.remove(all);
   }
 
-  if (!await productRepository.isDropped) {
+  if (!productRepository.isDropped) {
     await productRepository.remove(all);
   }
 
-  if (!await upcomingProductRepository.isDropped) {
+  if (!upcomingProductRepository.isDropped) {
     await upcomingProductRepository.remove(all);
   }
 

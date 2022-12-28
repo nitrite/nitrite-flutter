@@ -287,11 +287,12 @@ class _DefaultNitriteCollection extends NitriteCollection {
   @override
   Future<WriteResult> updateOne(Document document,
       {bool insertIfAbsent = false}) async {
-    var filter = createUniqueFilter(document);
     if (insertIfAbsent) {
+      var filter = createUniqueFilter(document);
       return update(filter, document, UpdateOptions(insertIfAbsent: true));
     } else {
       if (document.hasId) {
+        var filter = createUniqueFilter(document);
         return update(filter, document, UpdateOptions(insertIfAbsent: false));
       } else {
         throw NotIdentifiableException('Update operation failed as the '
@@ -303,9 +304,11 @@ class _DefaultNitriteCollection extends NitriteCollection {
   @override
   Future<WriteResult> update(Filter filter, Document update,
       [UpdateOptions? updateOptions]) async {
-    updateOptions ??= UpdateOptions();
-    updateOptions.insertIfAbsent = false;
-    updateOptions.justOnce = false;
+    if (updateOptions == null) {
+      updateOptions = UpdateOptions();
+      updateOptions.insertIfAbsent = false;
+      updateOptions.justOnce = false;
+    }
 
     _checkOpened();
     return _collectionOperations.update(filter, update, updateOptions);
@@ -322,7 +325,10 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   void _checkOpened() {
-    var opened = !_nitriteStore.isClosed && !_isDropped;
+    var opened = !_nitriteStore.isClosed &&
+        !_isDropped &&
+        !_nitriteMap.isClosed &&
+        !_nitriteMap.isDropped;
     if (opened) return;
     throw NitriteIOException("Collection is closed");
   }

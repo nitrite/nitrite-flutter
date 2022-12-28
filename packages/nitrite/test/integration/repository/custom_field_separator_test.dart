@@ -6,10 +6,10 @@ import 'data/data_generator.dart';
 import 'data/test_objects.dart';
 
 void main() {
-  group("Custom Field Separator Test Suite", () {
-    late Nitrite db;
-    late ObjectRepository<EmployeeForCustomSeparator> repository;
+  late Nitrite db;
+  late ObjectRepository<EmployeeForCustomSeparator> repository;
 
+  group("Custom Field Separator Test Suite", () {
     setUp(() async {
       db = await Nitrite.builder().fieldSeparator(':').openOrCreate();
 
@@ -22,10 +22,10 @@ void main() {
     });
 
     tearDown(() async {
-      // NitriteConfig.fieldSeparator = '.';
-      // if (!db.isClosed) {
-      //   await db.close();
-      // }
+      NitriteConfig.fieldSeparator = '.';
+      if (!db.isClosed) {
+        await db.close();
+      }
     });
 
     test('Test Field Separator', () {
@@ -33,24 +33,26 @@ void main() {
     });
 
     test('Test Find By Embedded Field', () async {
+      expect(await repository.hasIndex(['joinDate']), true);
+      expect(await repository.hasIndex(['address']), true);
+      expect(await repository.hasIndex(['employeeNote:text']), true);
+
       var emp1 = EmployeeForCustomSeparator();
       emp1.company = generateCompanyRecord();
-      emp1.employeeNote = generateNote();
+      emp1.employeeNote = Note(noteId: 567, text: 'Dummy Note');
       emp1.empId = 123;
       emp1.blob = [];
       emp1.address = 'Dummy Address';
 
       await repository.insert([emp1]);
 
-      var result1 = await repository.find(filter: where('employeeNote.text').eq(null));
-      var result2 =
-          await repository.find(filter: where('employeeNote:text').notEq(null));
+      var cursor1 = await repository.find(
+          filter: where('employeeNote.text').eq('Dummy Note'));
+      var cursor2 = await repository.find(
+          filter: where('employeeNote:text').text('Dummy Note'));
 
-      print(await result1.toList());
-      print(await result2.toList());
-
-      // expect(await result1.toList(), isEmpty);
-      // expect(await result2.toList(), isNotEmpty);
+      expect(await cursor1.length, 0);
+      expect(await cursor2.length, 1);
     });
   });
 }
