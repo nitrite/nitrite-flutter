@@ -120,7 +120,6 @@ void main() {
       var cursor = await collection.find(
           filter:
               and([where('firstName').eq('fn1'), where('lastName').eq('ln1')]));
-      print('Found objects');
       cursor.listen(print);
 
       var result = await collection.remove(

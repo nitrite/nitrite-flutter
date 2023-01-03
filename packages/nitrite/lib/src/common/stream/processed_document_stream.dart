@@ -17,6 +17,7 @@ class ProcessedDocumentStream extends DeferStream<Document> {
 
   static Future<Document> _process(
       ProcessorChain processorChain, Document doc) {
-    return processorChain.processAfterRead(doc);
+    var cloned = doc.clone();
+    return processorChain.processAfterRead(cloned);
   }
 }

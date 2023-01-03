@@ -14,7 +14,7 @@ void main() {
 
   group('Field Processor Test Suite', () {
     setUp(() async {
-      // setUpLog();
+      setUpLog();
       await setUpNitriteTest();
 
       var key = Key.fromLength(32);
@@ -35,12 +35,8 @@ void main() {
       person.expiryDate = DateTime.now();
       await persons.insert([person]);
 
-      print(1);
       await creditCardProcessor.process(persons);
-      print(2);
       await persons.addProcessor(creditCardProcessor);
-      print(3);
-
 
       person = EncryptedPerson();
       person.name = 'Jane Doe';
@@ -62,49 +58,39 @@ void main() {
           findRepositoryNameByType<EncryptedPerson>(nitriteMapper));
 
       var documents = nitriteMap?.values() as Stream<Document>;
-
-      // var documents = await persons.documentCollection?.find();
-
       await for (var document in documents) {
-        print(document);
+        if (document['creditCardNumber'] == '5548960345687452') {
+          fail('unencrypted secret text found');
+        }
 
-        // if (document['creditCardNumber'] == '5548960345687452') {
-        //   fail('unencrypted secret text found');
-        // }
+        if (document['creditCardNumber'] == '5500960345687452') {
+          fail('unencrypted secret text found');
+        }
 
-        // if (document['creditCardNumber'] == '5500960345687452') {
-        //   fail('unencrypted secret text found');
-        // }
+        if (document['cvv'] == '008') {
+          fail('unencrypted secret text found');
+        }
 
-        // if (document['cvv'] == '008') {
-        //   fail('unencrypted secret text found');
-        // }
-
-        // if (document['cvv'] == '007') {
-        //   fail('unencrypted secret text found');
-        // }
+        if (document['cvv'] == '007') {
+          fail('unencrypted secret text found');
+        }
       }
     });
 
     test('Test Successful Decryption', () async {
-      var collection = persons.documentCollection;
-      var cursor = await collection?.find();
-      print(await cursor?.toList());
+      var cursor = await persons.find(filter: where('name').eq('Jane Doe'));
+      var person = await cursor.first;
 
-      // var cursor = await persons.find(filter: where('name').eq('Jane Doe'));
-      // print(await (await persons.find()).toList());
-      // var person = await cursor.first;
+      expect(person, isNotNull);
+      expect(person.creditCardNumber, '5500960345687452');
+      expect(person.cvv, '008');
 
-      // expect(person, isNotNull);
-      // expect(person.creditCardNumber, '5500960345687452');
-      // expect(person.cvv, '008');
+      cursor = await persons.find(filter: where('name').eq('John Doe'));
+      person = await cursor.first;
 
-      // cursor = await persons.find(filter: where('name').eq('John Doe'));
-      // person = await cursor.first;
-
-      // expect(person, isNotNull);
-      // expect(person.creditCardNumber, '5548960345687452');
-      // expect(person.cvv, '007');
+      expect(person, isNotNull);
+      expect(person.creditCardNumber, '5548960345687452');
+      expect(person.cvv, '007');
     });
   });
 }

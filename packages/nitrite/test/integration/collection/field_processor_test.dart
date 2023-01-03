@@ -70,7 +70,7 @@ void main() {
       }
     });
 
-    test('Test Sucessful Decryption', () async {
+    test('Test Successful Decryption', () async {
       var cursor = await collection.find(filter: where('name').eq('Jane Doe'));
       var document = await cursor.first;
       expect(document, isNotNull);
