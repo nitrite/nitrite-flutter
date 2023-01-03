@@ -76,24 +76,26 @@ class SimpleDocumentMapper extends NitriteMapper {
 
   /// Converts an object of type [Source] to a document.
   Document _convertToDocument<Source>(Source source) {
-    if (_converterRegistry.containsKey("$Source")) {
-      var serializer = _converterRegistry["$Source"] as EntityConverter<Source>;
+    var type = source != null ? source.runtimeType.toString() : "$Source";
+    if (_converterRegistry.containsKey(type)) {
+      var serializer = _converterRegistry[type] as EntityConverter<Source>;
       return serializer.toDocument(source, this);
     }
 
     throw ObjectMappingException('Can\'t convert object of type '
-        '${source.runtimeType} to Document, try registering a '
+        '$type to Document, try registering a '
         'EntityConverter for it.');
   }
 
   /// Converts a document to a target object of type [Target].
   Target? _convertFromDocument<Target, Source>(Document source) {
-    if (_converterRegistry.containsKey("$Target")) {
-      var serializer = _converterRegistry["$Target"] as EntityConverter<Target>;
+    var type = "$Target";
+    if (_converterRegistry.containsKey(type)) {
+      var serializer = _converterRegistry[type] as EntityConverter<Target>;
       return serializer.fromDocument(source, this);
     }
 
     throw ObjectMappingException('Can\'t convert Document to type '
-        '${Target.runtimeType}, try registering a EntityConverter for it.');
+        '$type, try registering a EntityConverter for it.');
   }
 }

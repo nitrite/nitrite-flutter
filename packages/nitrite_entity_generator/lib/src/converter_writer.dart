@@ -98,7 +98,12 @@ class ConverterWriter {
 
       var fieldType = fieldInfo.fieldType;
       if (isBuiltin(fieldType)) {
-        buffer.writeln("document['$keyName'];");
+        if (fieldType.nullabilitySuffix == NullabilitySuffix.none) {
+          buffer.write("document['$keyName'] ?? ");
+          buffer.writeln("${defaultValue(fieldType)};");
+        } else {
+          buffer.writeln("document['$keyName'];");
+        }
       } else {
         if (fieldType.isDartCoreList) {
           buffer.writeln("EntityConverter."
@@ -148,7 +153,12 @@ class ConverterWriter {
 
       var fieldType = fieldInfo.fieldType;
       if (isBuiltin(fieldType)) {
-        buffer.writeln("document['$keyName'],");
+        if (fieldType.nullabilitySuffix == NullabilitySuffix.none) {
+          buffer.write("document['$keyName'] ?? ");
+          buffer.writeln("${defaultValue(fieldType)},");
+        } else {
+          buffer.writeln("document['$keyName'],");
+        }
       } else {
         if (fieldType.isDartCoreList) {
           buffer.writeln("EntityConverter."

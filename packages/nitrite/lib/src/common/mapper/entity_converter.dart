@@ -19,7 +19,13 @@ abstract class EntityConverter<T> {
     var docList = [];
     if (list != null) {
       for (var item in list) {
-        docList.add(nitriteMapper.convert<Document, L>(item));
+        if (item is Iterable) {
+          docList.add(fromIterable(item, nitriteMapper));
+        } else if (item is Map) {
+          docList.add(fromMap(item, nitriteMapper));
+        } else {
+          docList.add(nitriteMapper.convert<Document, L>(item));
+        }
       }
     }
     return docList;
@@ -28,11 +34,18 @@ abstract class EntityConverter<T> {
   /// Converts a collection of objects of type [I] to a list of [Document]s.
   /// If the type [I] is a registered value type, it will return the
   /// same list without converting its elements.
-  static dynamic fromIterable<I>(Iterable<I>? iterable, NitriteMapper nitriteMapper) {
+  static dynamic fromIterable<I>(
+      Iterable<I>? iterable, NitriteMapper nitriteMapper) {
     var docList = [];
     if (iterable != null) {
       for (var item in iterable) {
-        docList.add(nitriteMapper.convert<Document, I>(item));
+        if (item is Iterable) {
+          docList.add(fromIterable(item, nitriteMapper));
+        } else if (item is Map) {
+          docList.add(fromMap(item, nitriteMapper));
+        } else {
+          docList.add(nitriteMapper.convert<Document, I>(item));
+        }
       }
     }
     return docList;
@@ -45,7 +58,13 @@ abstract class EntityConverter<T> {
     var docSet = <dynamic>{};
     if (set != null) {
       for (var item in set) {
-        docSet.add(nitriteMapper.convert<Document, S>(item));
+        if (item is Iterable) {
+          docSet.add(fromIterable(item, nitriteMapper));
+        } else if (item is Map) {
+          docSet.add(fromMap(item, nitriteMapper));
+        } else {
+          docSet.add(nitriteMapper.convert<Document, S>(item));
+        }
       }
     }
     return docSet;
@@ -59,8 +78,16 @@ abstract class EntityConverter<T> {
     if (map != null) {
       for (var entry in map.entries) {
         var key = nitriteMapper.convert<Document, K>(entry.key);
-        var value = nitriteMapper.convert<Document, V>(entry.value);
-        docMap[key] = value;
+        if (entry.value != null && entry.value is Iterable) {
+          var list = fromIterable(entry.value as Iterable, nitriteMapper);
+          docMap[key] = list;
+        } else if (entry.value != null && entry.value is Map) {
+          var map = fromMap(entry.value as Map, nitriteMapper);
+          docMap[key] = map;
+        } else {
+          var value = nitriteMapper.convert<Document, V>(entry.value);
+          docMap[key] = value;
+        }
       }
     }
     return docMap;
@@ -71,9 +98,18 @@ abstract class EntityConverter<T> {
     var resultList = <L>[];
     if (list is List) {
       for (var item in list) {
-        var element = nitriteMapper.convert<L, dynamic>(item);
-        if (element != null) {
-          resultList.add(element);
+        if (item is List) {
+          var list = toList(item, nitriteMapper);
+          resultList.add(list as L);
+        }
+        if (item is Map) {
+          var map = toMap(item, nitriteMapper);
+          resultList.add(map as L);
+        } else {
+          var element = nitriteMapper.convert<L, dynamic>(item);
+          if (element != null) {
+            resultList.add(element);
+          }
         }
       }
     }
@@ -85,9 +121,18 @@ abstract class EntityConverter<T> {
     var resultList = <I>[];
     if (list is Iterable) {
       for (var item in list) {
-        var element = nitriteMapper.convert<I, dynamic>(item);
-        if (element != null) {
-          resultList.add(element);
+        if (item is List) {
+          var list = toList(item, nitriteMapper);
+          resultList.add(list as I);
+        }
+        if (item is Map) {
+          var map = toMap(item, nitriteMapper);
+          resultList.add(map as I);
+        } else {
+          var element = nitriteMapper.convert<I, dynamic>(item);
+          if (element != null) {
+            resultList.add(element);
+          }
         }
       }
     }
@@ -99,9 +144,18 @@ abstract class EntityConverter<T> {
     var resultSet = <S>{};
     if (set is Set) {
       for (var item in set) {
-        var element = nitriteMapper.convert<S, dynamic>(item);
-        if (element != null) {
-          resultSet.add(element);
+        if (item is List) {
+          var list = toList(item, nitriteMapper);
+          resultSet.add(list as S);
+        }
+        if (item is Map) {
+          var map = toMap(item, nitriteMapper);
+          resultSet.add(map as S);
+        } else {
+          var element = nitriteMapper.convert<S, dynamic>(item);
+          if (element != null) {
+            resultSet.add(element);
+          }
         }
       }
     }
@@ -114,9 +168,19 @@ abstract class EntityConverter<T> {
     if (map is Map) {
       for (var item in map.entries) {
         var key = nitriteMapper.convert<K, dynamic>(item.key);
-        var value = nitriteMapper.convert<V, dynamic>(item.value);
-        if (key != null) {
+        var v = item.value;
+
+        if (v is List) {
+          var value = toList(v, nitriteMapper);
           resultMap[key] = value as V;
+        } else if (v is Map) {
+          var map = toMap(v, nitriteMapper);
+          resultMap[key] = map as V;
+        } else {
+          var value = nitriteMapper.convert<V, dynamic>(item.value);
+          if (key != null) {
+            resultMap[key] = value as V;
+          }
         }
       }
     }

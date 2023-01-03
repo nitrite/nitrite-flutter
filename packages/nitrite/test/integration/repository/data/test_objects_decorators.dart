@@ -51,8 +51,8 @@ class MiniProduct {
 
 @GenerateConverter()
 class Product {
-  final ProductId productId;
-  final Manufacturer manufacturer;
+  final ProductId? productId;
+  final Manufacturer? manufacturer;
   final String productName;
   final double price;
 

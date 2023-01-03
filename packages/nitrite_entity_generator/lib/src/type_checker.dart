@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -28,10 +29,24 @@ bool isBuiltin(DartType type) {
   if (isString.isExactlyType(type)) return true;
   if (isRunes.isExactlyType(type)) return true;
   if (isBool.isExactlyType(type)) return true;
-  if (isNum.isExactlyType(type)) return true;
   if (isDateTime.isExactlyType(type)) return true;
   if (isDuration.isExactlyType(type)) return true;
   if (isSymbol.isExactlyType(type)) return true;
 
   return false;
+}
+
+String defaultValue(DartType type) {
+  if (type.nullabilitySuffix == NullabilitySuffix.question) return "null";
+  if (isNum.isExactlyType(type)) return "0";
+  if (isInt.isExactlyType(type)) return "0";
+  if (isDouble.isExactlyType(type)) return "0.0";
+  if (isString.isExactlyType(type)) return '\"\"';
+  if (isRunes.isExactlyType(type)) return '\"\"';
+  if (isBool.isExactlyType(type)) return "false";
+  if (isDateTime.isExactlyType(type)) return "DateTime.now()";
+  if (isDuration.isExactlyType(type)) return "Duration.zero";
+  if (isSymbol.isExactlyType(type)) return "Symbol.empty";
+
+  return "null";
 }

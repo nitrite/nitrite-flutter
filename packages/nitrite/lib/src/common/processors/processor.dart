@@ -24,16 +24,45 @@ abstract class Processor {
       var documentCursor = await nitriteCollection.find();
 
       var executor = Executor();
+      var tempMap = await _getTemporaryMap(collection);
+      print(1.1);
       await for (var document in documentCursor) {
+        tempMap.put(document.id, document);
+        // executor.submit(() async {
+        //   // process all documents in parallel
+        //   var processed = await processBeforeWrite(document);
+        //   await tempMap.put(document.id, processed);
+        // });
+      }
+      // await executor.execute();
+      print(1.2);
+      // executor = Executor();
+      await for (var entry in tempMap.entries()) {
         executor.submit(() async {
-          // process all documents in parallel
-          var processed = await processBeforeWrite(document);
-          await nitriteCollection!.update(createUniqueFilter(document),
-              processed, updateOptions(insertIfAbsent: false));
+          print('1.2.1');
+          var processed = await processBeforeWrite(entry.second);
+          print('1.2.2');
+          print(processed);
+          await nitriteCollection!.update(byId(entry.first), processed,
+              updateOptions(insertIfAbsent: false));
+          print('1.2.3');
         });
       }
+
       await executor.execute();
+      await tempMap.drop();
+      print(1.3);
     }
+  }
+
+  Future<NitriteMap<NitriteId, Document>> _getTemporaryMap(
+      PersistentCollection collection) async {
+    var store = collection.getStore();
+    var name = collection is NitriteCollection
+        ? collection.name
+        : (collection as ObjectRepository).documentCollection?.name;
+
+    return store.openMap<NitriteId, Document>('${name!}|__temp');
   }
 }
 
@@ -57,6 +86,8 @@ class ProcessorChain extends Processor {
   Future<Document> processAfterRead(Document document) async {
     for (var processor in processors) {
       // cannot run in parallel because of the order of the processors
+      print('1.2.2.1.2.2.1.1');
+      print(document);
       document = await processor.processAfterRead(document);
     }
     return document;
