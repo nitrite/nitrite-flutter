@@ -32,7 +32,10 @@ class EntityDecoratorReader<T> {
     if (_entityDecorator.idField != null) {
       _objectIdField = _entityDecorator.idField;
 
-      var idFieldNames = _entityDecorator.idField!.embeddedFieldNames;
+      var idFieldNames = _entityDecorator.idField!.isEmbedded
+          ? _entityDecorator.idField!.embeddedFieldNames
+          : [_entityDecorator.idField!.fieldName];
+
       var hasIndex = await _collection.hasIndex(idFieldNames);
       if (hasIndex) {
         return _collection.createIndex(
@@ -46,8 +49,8 @@ class EntityDecoratorReader<T> {
       var fields = index.fieldNames;
       var hasIndex = await _collection.hasIndex(fields);
       if (hasIndex) {
-        executor.submit(() async =>
-            await _collection.createIndex(fields, indexOptions(index.indexType)));
+        executor.submit(() async => await _collection.createIndex(
+            fields, indexOptions(index.indexType)));
       }
     }
     await executor.execute();

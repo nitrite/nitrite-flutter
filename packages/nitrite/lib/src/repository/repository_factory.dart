@@ -101,7 +101,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   Future<int> get size => _nitriteCollection.size;
 
   @override
-  NitriteCollection? get documentCollection => _nitriteCollection;
+  NitriteCollection get documentCollection => _nitriteCollection;
 
   @override
   Future<void> addProcessor(Processor processor) {
@@ -146,6 +146,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   @override
   Future<WriteResult> insert(List<T> elements) {
     elements.notNullOrEmpty('Element list is empty');
+    elements.notContainsNull('A null object cannot be inserted');
     return _nitriteCollection.insert(_operations.toDocuments(elements));
   }
 
@@ -201,7 +202,11 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   Future<T?> getById<I>(I id) async {
     var idFilter = _operations.createIdFilter<I>(id);
     var cursor = await find(filter: idFilter);
-    return cursor.first;
+    try {
+      return await cursor.first;
+    } on StateError {
+      throw InvalidIdException('No element found using the specified id');
+    }
   }
 
   @override

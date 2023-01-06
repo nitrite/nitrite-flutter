@@ -23,7 +23,7 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   Future<int> get size => _backingCollection.size;
 
   @override
-  NitriteCollection? get documentCollection => _backingCollection;
+  NitriteCollection get documentCollection => _backingCollection;
 
   @override
   Future<void> addProcessor(Processor processor) {

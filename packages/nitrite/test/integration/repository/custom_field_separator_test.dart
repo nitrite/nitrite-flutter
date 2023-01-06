@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
+import 'base_object_repository_test_loader.dart';
 import 'data/data_generator.dart';
 import 'data/test_objects.dart';
 
@@ -10,6 +11,8 @@ void main() {
 
   group("Custom Field Separator Test Suite", () {
     setUp(() async {
+      setUpLog();
+      
       db = await Nitrite.builder().fieldSeparator(':').openOrCreate();
 
       var mapper = db.config.nitriteMapper as SimpleDocumentMapper;

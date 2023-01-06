@@ -97,5 +97,5 @@ abstract class ObjectRepository<T> extends PersistentCollection<T> {
   Type getType();
 
   /// Returns the underlying [NitriteCollection] instance.
-  NitriteCollection? get documentCollection;
+  NitriteCollection get documentCollection;
 }

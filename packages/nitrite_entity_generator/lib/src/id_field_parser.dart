@@ -17,7 +17,7 @@ class IdFieldParser implements Parser<EntityId> {
     var embeddedFields = _getEmbeddedFields();
 
     var type = _fieldElement.type;
-    if (isBuiltin(type)) {
+    if (isBuiltin(type) || isNitriteId.isExactlyType(type)) {
       if (embeddedFields.isNotEmpty) {
         throw InvalidGenerationSourceError(
             'Id field of build-in type cannot be embedded',

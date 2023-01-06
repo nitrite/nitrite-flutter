@@ -139,7 +139,7 @@ class RepositoryOperations<T> {
       throw InvalidIdException('Id cannot be null');
     }
 
-    return _objectIdField!.createUniqueFilter(id, _nitriteMapper);
+    return _objectIdField!.createIdFilter(id, _nitriteMapper);
   }
 
   Filter asObjectFilter(Filter filter) {

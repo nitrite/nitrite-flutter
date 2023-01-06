@@ -79,7 +79,11 @@ class SimpleDocumentMapper extends NitriteMapper {
     var type = source != null ? source.runtimeType.toString() : "$Source";
     if (_converterRegistry.containsKey(type)) {
       var serializer = _converterRegistry[type] as EntityConverter<Source>;
-      return serializer.toDocument(source, this);
+      try {
+        return serializer.toDocument(source, this);
+      } on StackOverflowError {
+        throw ObjectMappingException('Circular reference detected in $type');
+      }
     }
 
     throw ObjectMappingException('Can\'t convert object of type '

@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:nitrite/nitrite.dart';
 import 'package:source_gen/source_gen.dart';
 
 TypeChecker typeChecker(final Type type) => TypeChecker.fromRuntime(type);
@@ -22,6 +23,8 @@ final isBool = typeChecker(bool);
 
 final isSymbol = typeChecker(Symbol);
 
+final isNitriteId = typeChecker(NitriteId);
+
 bool isBuiltin(DartType type) {
   if (isNum.isExactlyType(type)) return true;
   if (isInt.isExactlyType(type)) return true;
@@ -35,6 +38,10 @@ bool isBuiltin(DartType type) {
 
   return false;
 }
+
+// bool isNitriteId(DartType type) {
+//   return isNitriteId.isExactlyType(type);
+// }
 
 String defaultValue(DartType type) {
   if (type.nullabilitySuffix == NullabilitySuffix.question) return "null";

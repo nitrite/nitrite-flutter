@@ -105,4 +105,16 @@ extension ValidationUtils<T> on T {
       throw ValidationException(message);
     }
   }
+
+  void notContainsNull(String message) {
+    if (this is List) {
+      if ((this as List).contains(null)) {
+        throw ValidationException(message);
+      }
+    } else if (this is Set) {
+      if ((this as Set).contains(null)) {
+        throw ValidationException(message);
+      }
+    }
+  }
 }

@@ -549,8 +549,18 @@ class WithEmptyStringId {
   int get hashCode => name.hashCode;
 }
 
+class WithEmptyStringIdEntityDecorator
+    extends EntityDecorator<WithEmptyStringId> {
+  @override
+  EntityId? get idField => EntityId('name');
+
+  @override
+  List<EntityIndex> get indexFields => [];
+}
+
+@Entity()
 @GenerateConverter()
-class WithNitriteId {
+class WithNitriteId with _$WithNitriteIdEntityMixin {
   @Id(fieldName: 'idField')
   NitriteId? idField;
   String? name;
@@ -565,10 +575,16 @@ class WithNitriteId {
 
   @override
   int get hashCode => idField.hashCode ^ name.hashCode;
+
+  @override
+  String toString() {
+    return "{idField: $idField, name: $name}";
+  }
 }
 
+@Entity()
 @GenerateConverter()
-class WithNullId {
+class WithNullId with _$WithNullIdEntityMixin {
   @Id(fieldName: 'name')
   String? name;
   int? number;
@@ -614,6 +630,14 @@ class WithOutId implements Comparable<WithOutId> {
   int get hashCode => name.hashCode ^ number.hashCode;
 }
 
+class WithOutIdEntityDecorator extends EntityDecorator<WithOutId> {
+  @override
+  EntityId? get idField => null;
+
+  @override
+  List<EntityIndex> get indexFields => [];
+}
+
 @GenerateConverter()
 class WithTransientField {
   @IgnoredKey()
@@ -657,7 +681,6 @@ class EmployeeForCustomSeparator with _$EmployeeForCustomSeparatorEntityMixin {
   @IgnoredKey()
   Company? company;
   Note? employeeNote;
-
 
   @override
   bool operator ==(Object other) =>

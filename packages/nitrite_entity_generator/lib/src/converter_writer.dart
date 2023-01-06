@@ -97,7 +97,9 @@ class ConverterWriter {
       }
 
       var fieldType = fieldInfo.fieldType;
-      if (isBuiltin(fieldType)) {
+      if (isNitriteId.isExactlyType(fieldType)) {
+        buffer.writeln("document.id;");
+      } else if (isBuiltin(fieldType)) {
         if (fieldType.nullabilitySuffix == NullabilitySuffix.none) {
           buffer.write("document['$keyName'] ?? ");
           buffer.writeln("${defaultValue(fieldType)};");
@@ -152,7 +154,9 @@ class ConverterWriter {
       }
 
       var fieldType = fieldInfo.fieldType;
-      if (isBuiltin(fieldType)) {
+      if (isNitriteId.isExactlyType(fieldType)) {
+        buffer.writeln("document.id,");
+      } else if (isBuiltin(fieldType)) {
         if (fieldType.nullabilitySuffix == NullabilitySuffix.none) {
           buffer.write("document['$keyName'] ?? ");
           buffer.writeln("${defaultValue(fieldType)},");
@@ -202,7 +206,9 @@ class ConverterWriter {
       }
 
       var fieldType = propInfo.fieldType;
-      if (isBuiltin(fieldType)) {
+      if (isNitriteId.isExactlyType(fieldType)) {
+        buffer.writeln("document.id;");
+      } else if (isBuiltin(fieldType)) {
         buffer.writeln("document['$keyName'];");
       } else {
         if (fieldType.isDartCoreList) {
@@ -250,7 +256,10 @@ class ConverterWriter {
 
       var fieldType = fieldInfo.fieldType;
 
-      if (isBuiltin(fieldType)) {
+      if (isNitriteId.isExactlyType(fieldType)) {
+        buffer.writeln("document.put('$keyName', "
+            "entity.${fieldInfo.fieldName} ?? document.id);");
+      } else if (isBuiltin(fieldType)) {
         buffer.writeln(
             "document.put('$keyName', entity.${fieldInfo.fieldName});");
       } else {
