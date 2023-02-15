@@ -424,9 +424,7 @@ void main() {
       var size = await employeeRepository.size;
       var result = await employeeRepository.insert([employee]);
       expect(result.getAffectedCount(), 1);
-      print(size);
-      print(await (await employeeRepository.find()).length);
-      expect(await employeeRepository.size, 10);
+      expect(await employeeRepository.size, size + 1);
 
       await employeeRepository.removeOne(employee);
       expect(await employeeRepository.size, size);

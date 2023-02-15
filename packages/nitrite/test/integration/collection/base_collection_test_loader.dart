@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
+import 'package:test/expect.dart';
 
 late Nitrite db;
 late NitriteCollection collection;
@@ -58,6 +59,9 @@ Future<void> cleanUp() async {
   }
 }
 
-Future<WriteResult> insert() {
-  return collection.insert([doc1, doc2, doc3]);
+Future<WriteResult> insert() async {
+  var result = await collection.insert([doc1, doc2, doc3]);
+
+  expect(await collection.size, 3);
+  return result;
 }

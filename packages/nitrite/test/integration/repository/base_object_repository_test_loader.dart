@@ -1,5 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
+import 'package:test/expect.dart';
 
 import 'data/data_generator.dart';
 import 'data/test_objects.dart';
@@ -45,20 +46,28 @@ Future<void> setUpNitriteTest() async {
 
     var employee = generateEmployee(company);
     employee.empId = i + 1;
-    employeeRepository.insert([employee]);
+    await employeeRepository.insert([employee]);
 
-    aObjectRepository.insert([randomClassA(i + 50)]);
-    cObjectRepository.insert([randomClassC(i + 50)]);
+    await aObjectRepository.insert([randomClassA(i + 50)]);
+    await cObjectRepository.insert([randomClassC(i + 50)]);
 
     var book = randomBook();
-    bookRepository.insert([book]);
+    await bookRepository.insert([book]);
 
     var product = randomProduct();
-    productRepository.insert([product]);
+    await productRepository.insert([product]);
 
     product = randomProduct();
-    upcomingProductRepository.insert([product]);
+    await upcomingProductRepository.insert([product]);
   }
+
+  expect(await companyRepository.size, 10);
+  expect(await employeeRepository.size, 10);
+  expect(await aObjectRepository.size, 10);
+  expect(await cObjectRepository.size, 10);
+  expect(await bookRepository.size, 10);
+  expect(await productRepository.size, 10);
+  expect(await upcomingProductRepository.size, 10);
 }
 
 Future<void> cleanUp() async {
@@ -89,6 +98,14 @@ Future<void> cleanUp() async {
   if (!upcomingProductRepository.isDropped) {
     await upcomingProductRepository.remove(all);
   }
+
+  expect(await companyRepository.size, 0);
+  expect(await employeeRepository.size, 0);
+  expect(await aObjectRepository.size, 0);
+  expect(await cObjectRepository.size, 0);
+  expect(await bookRepository.size, 0);
+  expect(await productRepository.size, 0);
+  expect(await upcomingProductRepository.size, 0);
 
   if (!db.isClosed) {
     await db.commit();
