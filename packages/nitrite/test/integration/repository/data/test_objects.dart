@@ -292,7 +292,7 @@ class Employee with _$EmployeeEntityMixin {
   Company? company;
   Note? employeeNote;
 
-  factory Employee.clone(Employee employee) {
+  static Employee clone(Employee employee) {
     return Employee(
         address: employee.address,
         blob: employee.blob,

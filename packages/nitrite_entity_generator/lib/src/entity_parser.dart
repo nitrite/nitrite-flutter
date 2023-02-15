@@ -166,7 +166,7 @@ class _IndexScanner {
     // get index details from all super classes
     var superTypes = _classElement.allSupertypes;
     superTypes.forEach((type) {
-      var scanner = _IndexScanner(type.element);
+      var scanner = _IndexScanner(type.element as ClassElement);
       indexes.addAll(scanner.getIndexes());
     });
 
