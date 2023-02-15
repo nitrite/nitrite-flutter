@@ -45,7 +45,8 @@ class EntityWriter {
         StringBuffer buffer = StringBuffer();
         _entityInfo.entityIndices.forEach((index) {
           buffer.write('EntityIndex([');
-          buffer.write(index.fieldNames.map((field) => '\"${field}\"').join(', '));
+          buffer.write(
+              index.fieldNames.map((field) => '\"${field}\"').join(', '));
           buffer.write('], ');
           switch (index.indexType) {
             case IndexType.unique:
@@ -88,12 +89,15 @@ class EntityWriter {
       } else {
         builder.returns = refer('EntityId');
 
+        var isNitriteId = _entityInfo.entityId!.isNitriteId;
         if (_entityInfo.entityId!.subFields.isEmpty) {
-          builder.body = Code('EntityId(\"${_entityInfo.entityId!.fieldName}\")');
+          builder.body = Code(
+              'EntityId(\"${_entityInfo.entityId!.fieldName}\", $isNitriteId)');
         } else {
           builder.body = Code('''
             EntityId(
               \"${_entityInfo.entityId!.fieldName}\",
+              $isNitriteId,
               [${_entityInfo.entityId!.subFields.map((field) => '\"${field}\"').join(', ')}],
             )
           ''');

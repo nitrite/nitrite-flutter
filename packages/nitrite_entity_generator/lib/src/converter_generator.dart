@@ -8,12 +8,15 @@ import 'package:source_gen/source_gen.dart';
 
 import 'converter_writer.dart';
 
+// Generates codes for @GenerateConverter annotation.
 class ConverterGenerator extends GeneratorForAnnotation<GenerateConverter> {
   final _dartfmt = DartFormatter();
 
   @override
   generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
+
+    // @GenerateConverter is class level annotation only.
     if (element is! ClassElement) {
       throw InvalidGenerationSourceError(
         '`@GenerateConverter` can only be used on classes.',
@@ -21,6 +24,7 @@ class ConverterGenerator extends GeneratorForAnnotation<GenerateConverter> {
       );
     }
 
+    // parse the metadata from the annotation
     var converterParser = ConverterParser(element);
     var converter = converterParser.parse();
 

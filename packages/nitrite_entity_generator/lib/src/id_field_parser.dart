@@ -15,18 +15,17 @@ class IdFieldParser implements Parser<EntityId> {
   EntityId parse() {
     var idFieldName = _getIdFieldName();
     var embeddedFields = _getEmbeddedFields();
-
     var type = _fieldElement.type;
-    if (isBuiltin(type) || isNitriteId.isExactlyType(type)) {
+    var isNitriteIdType = isNitriteId.isExactlyType(type);
+
+    if (isBuiltin(type) || isNitriteIdType) {
       if (embeddedFields.isNotEmpty) {
         throw InvalidGenerationSourceError(
             'Id field of build-in type cannot be embedded',
             element: _fieldElement);
       }
 
-      return EntityId(
-        idFieldName,
-      );
+      return EntityId(idFieldName, isNitriteIdType);
     } else {
       var typeElement = type.element;
       if (typeElement is! ClassElement) {
@@ -45,6 +44,7 @@ class IdFieldParser implements Parser<EntityId> {
 
       return EntityId(
         idFieldName,
+        isNitriteIdType,
         embeddedFields,
       );
     }

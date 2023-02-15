@@ -3,6 +3,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:nitrite_entity_generator/src/type_checker.dart';
 
 extension IterableExtension<T> on Iterable<T> {
+  // discard null values and transform only non-null values
   Iterable<R> mapNotNull<R>(R? Function(T element) transform) sync* {
     for (final element in this) {
       final transformed = transform(element);
@@ -12,6 +13,7 @@ extension IterableExtension<T> on Iterable<T> {
 }
 
 extension FieldElementExtension on FieldElement {
+  // field should not be static or synthetic
   bool shouldBeIncluded() {
     return !(isStatic || isSynthetic);
   }

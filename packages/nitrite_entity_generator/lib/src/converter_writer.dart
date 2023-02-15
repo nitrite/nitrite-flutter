@@ -19,6 +19,7 @@ class ConverterWriter {
     });
   }
 
+  // fromDocument method builder
   Method _generateFromDocument() {
     return Method((builder) {
       builder
@@ -40,6 +41,7 @@ class ConverterWriter {
     });
   }
 
+  // toDocument method builder
   Method _generateToDocument() {
     return Method((builder) {
       builder
@@ -98,6 +100,7 @@ class ConverterWriter {
 
       var fieldType = fieldInfo.fieldType;
       if (isNitriteId.isExactlyType(fieldType)) {
+        // if type is NitriteId handle it specially
         buffer.writeln("document.id;");
       } else if (isBuiltin(fieldType)) {
         if (fieldType.nullabilitySuffix == NullabilitySuffix.none) {
@@ -155,6 +158,7 @@ class ConverterWriter {
 
       var fieldType = fieldInfo.fieldType;
       if (isNitriteId.isExactlyType(fieldType)) {
+        // if type is NitriteId handle it specially
         buffer.writeln("document.id,");
       } else if (isBuiltin(fieldType)) {
         if (fieldType.nullabilitySuffix == NullabilitySuffix.none) {
@@ -207,6 +211,7 @@ class ConverterWriter {
 
       var fieldType = propInfo.fieldType;
       if (isNitriteId.isExactlyType(fieldType)) {
+        // if type is NitriteId handle it specially
         buffer.writeln("document.id;");
       } else if (isBuiltin(fieldType)) {
         buffer.writeln("document['$keyName'];");
@@ -257,8 +262,9 @@ class ConverterWriter {
       var fieldType = fieldInfo.fieldType;
 
       if (isNitriteId.isExactlyType(fieldType)) {
+        // if type is NitriteId handle it specially
         buffer.writeln("document.put('$keyName', "
-            "entity.${fieldInfo.fieldName} ?? document.id);");
+            "entity.${fieldInfo.fieldName});");
       } else if (isBuiltin(fieldType)) {
         buffer.writeln(
             "document.put('$keyName', entity.${fieldInfo.fieldName});");
@@ -296,7 +302,11 @@ class ConverterWriter {
 
       var fieldType = propInfo.fieldType;
 
-      if (isBuiltin(fieldType)) {
+      if (isNitriteId.isExactlyType(fieldType)) {
+        // if type is NitriteId handle it specially
+        buffer.writeln("document.put('$keyName', "
+            "entity.${propInfo.getterFieldName});");
+      } else if (isBuiltin(fieldType)) {
         buffer.writeln(
             "document.put('$keyName', entity.${propInfo.getterFieldName});");
       } else {

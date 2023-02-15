@@ -1,6 +1,9 @@
 import 'package:collection/collection.dart';
+import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/db_value.dart';
 import 'package:test/test.dart';
+
+import '../test_utils.dart';
 
 void main() {
   group("DBValue Test Suite", () {
@@ -14,26 +17,30 @@ void main() {
     test("Test CompareTo 2", () {
       var dbValue = DBValue(DBValue('a'));
 
-      expect(() => dbValue.compareTo(DBValue(2)), throwsA(isA<TypeError>()));
-      expect(() => dbValue.compareTo(DBValue('c')), throwsA(isA<TypeError>()));
+      expect(
+          () => dbValue.compareTo(DBValue(2)), throwsInvalidOperationException);
+      expect(() => dbValue.compareTo(DBValue('c')),
+          throwsInvalidOperationException);
       expect(() => dbValue.compareTo(DBValue(DateTime.now())),
-          throwsA(isA<TypeError>()));
+          throwsInvalidOperationException);
       expect(dbValue.compareTo(DBValue(DBValue('a'))), 0);
     });
 
     test("Test CompareTo 3", () {
       var dbValue = DBValue(DBNull.instance);
 
-      expect(() => dbValue.compareTo(DBValue(2)), throwsA(isA<TypeError>()));
+      expect(
+          () => dbValue.compareTo(DBValue(2)), throwsInvalidOperationException);
       expect(dbValue.compareTo(DBValue(DBNull.instance)), 0);
     });
 
     test("Test CompareTo 4", () {
       var dbValue = DBValue(UnknownType());
 
-      expect(() => dbValue.compareTo(DBValue(2)), throwsA(isA<TypeError>()));
+      expect(
+          () => dbValue.compareTo(DBValue(2)), throwsInvalidOperationException);
       expect(() => dbValue.compareTo(DBValue(DBNull.instance)),
-          throwsA(isA<TypeError>()));
+          throwsInvalidOperationException);
       expect(dbValue.compareTo(DBValue(UnknownType())), 0);
     });
 
@@ -56,11 +63,8 @@ void main() {
     test("Test Invalid Comparison", () {
       var list = [DBValue(10), DBValue('a'), DBValue(5)];
 
-      expect(() => list.sort(), throwsA(isA<TypeError>()));
+      expect(() => list.sort(), throwsInvalidOperationException);
     });
   });
 
-  group("DBNull Test Suite", () {});
-
-  group("UnknownType Test Suite", () {});
 }

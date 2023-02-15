@@ -37,8 +37,8 @@ class EntityDecoratorReader<T> {
           : [_entityDecorator.idField!.fieldName];
 
       var hasIndex = await _collection.hasIndex(idFieldNames);
-      if (hasIndex) {
-        return _collection.createIndex(
+      if (!hasIndex) {
+        await _collection.createIndex(
             idFieldNames, indexOptions(IndexType.unique));
       }
     }

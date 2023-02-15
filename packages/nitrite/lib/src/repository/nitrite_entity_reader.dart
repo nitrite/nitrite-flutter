@@ -17,15 +17,16 @@ class NitriteEntityReader<T> {
 
     if (entity.entityId != null) {
       _objectIdField = entity.entityId;
-      var requiredIndex = _objectIdField != null &&
-          _objectIdField!.embeddedFieldNames.isNotEmpty;
 
-      var hasIndex = requiredIndex &&
-          await _nitriteCollection.hasIndex(_objectIdField!.embeddedFieldNames);
+      var idFieldNames = _objectIdField!.isEmbedded
+          ? _objectIdField!.embeddedFieldNames
+          : [_objectIdField!.fieldName];
 
-      if (!hasIndex && requiredIndex) {
-        await _nitriteCollection
-            .createIndex(_objectIdField!.embeddedFieldNames);
+      var hasIndex = await _nitriteCollection.hasIndex(idFieldNames);
+
+      if (!hasIndex) {
+        await _nitriteCollection.createIndex(
+            idFieldNames, indexOptions(IndexType.unique));
       }
     }
 

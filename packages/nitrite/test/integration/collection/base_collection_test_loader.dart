@@ -6,7 +6,7 @@ late NitriteCollection collection;
 late Document doc1, doc2, doc3;
 
 void setUpLog() {
-  Logger.root.level = Level.FINE;
+  Logger.root.level = Level.OFF;
   Logger.root.onRecord.listen((record) {
     print('${record.time}: [${record.level.name}] ${record.loggerName} -'
         ' ${record.message}');

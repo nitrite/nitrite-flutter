@@ -46,7 +46,7 @@ class Book with _$BookEntityMixin {
       bookId.hashCode ^
       publisher.hashCode ^
       price.hashCode ^
-      tags.hashCode ^
+      ListEquality().hash(tags) ^
       description.hashCode;
 }
 
@@ -75,8 +75,7 @@ class BookId {
 
 @Index(fields: ['text'], type: IndexType.fullText)
 abstract class SuperDuperClass {
-  final String text;
-  SuperDuperClass({this.text = ''});
+  String? text;
 
   @override
   bool operator ==(Object other) =>
@@ -92,10 +91,8 @@ abstract class SuperDuperClass {
 @Index(fields: ['date'])
 abstract class ParentClass extends SuperDuperClass {
   @Id(fieldName: 'id')
-  final int id;
-  final DateTime? date;
-
-  ParentClass({this.id = 0, this.date});
+  int? id;
+  DateTime? date;
 
   @override
   bool operator ==(Object other) =>
@@ -110,11 +107,10 @@ abstract class ParentClass extends SuperDuperClass {
   int get hashCode => super.hashCode ^ id.hashCode ^ date.hashCode;
 }
 
+@Entity()
 @GenerateConverter()
-class ChildClass extends ParentClass {
-  final String name;
-
-  ChildClass({this.name = ''});
+class ChildClass extends ParentClass with _$ChildClassEntityMixin {
+  String? name;
 
   @override
   bool operator ==(Object other) =>
@@ -196,7 +192,6 @@ class ClassC with _$ClassCEntityMixin {
 @Entity(indices: [
   Index(fields: ['companyName'])
 ])
-@GenerateConverter()
 class Company with _$CompanyEntityMixin {
   @Id(fieldName: 'company_id')
   @DocumentKey(alias: 'company_id')
@@ -234,6 +229,52 @@ class Company with _$CompanyEntityMixin {
       employeeRecord.hashCode;
 }
 
+class CompanyConverter extends EntityConverter<Company> {
+  @override
+  Company fromDocument(
+    Document document,
+    NitriteMapper nitriteMapper,
+  ) {
+    var map = <String, List<Employee>>{};
+    var employeeRecords = document['employeeRecord'] == null
+        ? {}
+        : document['employeeRecord'] as Map;
+
+    for (var entry in employeeRecords.entries) {
+      var key = nitriteMapper.convert<String, dynamic>(entry.key);
+      var value = EntityConverter.toList<Employee>(entry.value, nitriteMapper);
+      map[key] = value;
+    }
+
+    var entity = Company(
+      companyId: document['company_id'] ?? 0,
+      companyName: document['companyName'] ?? "",
+      dateCreated: document['dateCreated'],
+      departments:
+          EntityConverter.toList(document['departments'], nitriteMapper),
+      employeeRecord: map,
+    );
+
+    return entity;
+  }
+
+  @override
+  Document toDocument(
+    Company entity,
+    NitriteMapper nitriteMapper,
+  ) {
+    var document = emptyDocument();
+    document.put('company_id', entity.companyId);
+    document.put('companyName', entity.companyName);
+    document.put('dateCreated', entity.dateCreated);
+    document.put('departments',
+        EntityConverter.fromList(entity.departments, nitriteMapper));
+    document.put('employeeRecord',
+        EntityConverter.fromMap(entity.employeeRecord, nitriteMapper));
+    return document;
+  }
+}
+
 @Entity(indices: [
   Index(fields: ["joinDate"], type: IndexType.nonUnique),
   Index(fields: ["address"], type: IndexType.fullText),
@@ -251,8 +292,19 @@ class Employee with _$EmployeeEntityMixin {
   Company? company;
   Note? employeeNote;
 
+  factory Employee.clone(Employee employee) {
+    return Employee(
+        address: employee.address,
+        blob: employee.blob,
+        company: employee.company,
+        emailAddress: employee.emailAddress,
+        empId: employee.empId,
+        joinDate: employee.joinDate,
+        employeeNote: employee.employeeNote);
+  }
+
   Employee(
-      {this.empId = 0,
+      {this.empId,
       this.joinDate,
       this.address = '',
       this.emailAddress = '',
@@ -282,6 +334,11 @@ class Employee with _$EmployeeEntityMixin {
       blob.hashCode ^
       company.hashCode ^
       employeeNote.hashCode;
+
+  @override
+  String toString() {
+    return "{empId: $empId}";
+  }
 }
 
 @GenerateConverter()
@@ -448,8 +505,9 @@ class RepeatableIndexTest with _$RepeatableIndexTestEntityMixin {
   int get hashCode => firstName.hashCode ^ age.hashCode ^ lastName.hashCode;
 }
 
+@Entity()
 @GenerateConverter()
-class StressRecord {
+class StressRecord with _$StressRecordEntityMixin {
   String? firstName;
   String? lastName;
   bool? processed;
@@ -529,6 +587,14 @@ class WithDateId {
 
   @override
   int get hashCode => id.hashCode ^ name.hashCode;
+}
+
+class WithDateIdDecorator extends EntityDecorator<WithDateId> {
+  @override
+  EntityId? get idField => EntityId('id');
+
+  @override
+  List<EntityIndex> get indexFields => [];
 }
 
 @GenerateConverter()
@@ -647,6 +713,14 @@ class WithTransientField {
   int number;
 
   WithTransientField({required this.name, required this.number});
+}
+
+class WithTransientFieldDecorator extends EntityDecorator<WithTransientField> {
+  @override
+  EntityId? get idField => EntityId('number');
+
+  @override
+  List<EntityIndex> get indexFields => [];
 }
 
 @Entity(indices: [

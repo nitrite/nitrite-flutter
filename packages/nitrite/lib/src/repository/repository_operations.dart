@@ -92,15 +92,27 @@ class RepositoryOperations<T> {
     return documents;
   }
 
-  Document toDocument(T element, bool bool) {
+  Document toDocument(T element, bool update) {
     var document = _nitriteMapper.convert<Document, T>(element);
-    if (document != null) {
-      // serializeFields(document);
-    } else {
+    if (document == null) {
       throw ObjectMappingException('Failed to map object to document');
     }
 
     if (_objectIdField != null) {
+      var idFieldValue = document[_objectIdField!.fieldName];
+
+      if (_objectIdField!.isNitriteId) {
+        if (idFieldValue == null) {
+          var nitriteId = document.id;
+          document[_objectIdField!.fieldName] = nitriteId;
+        } else if (!update) {
+          // if it is an insert, then we should not allow to insert the
+          // document with user provided id
+          throw InvalidIdException(
+              "Auto generated id should not be set manually");
+        }
+      }
+
       var idValue = document.get(_objectIdField!.fieldName);
       if (idValue == null) {
         throw InvalidIdException('Id cannot be null');
@@ -124,7 +136,9 @@ class RepositoryOperations<T> {
 
   void removeNitriteId(Document document) {
     document.remove(docId);
-    if (_objectIdField != null && !_objectIdField!.isEmbedded) {
+    if (_objectIdField != null &&
+        !_objectIdField!.isEmbedded &&
+        _objectIdField!.isNitriteId) {
       document.remove(_objectIdField!.fieldName);
     }
   }

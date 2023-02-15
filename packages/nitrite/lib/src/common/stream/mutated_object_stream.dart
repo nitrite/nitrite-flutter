@@ -8,13 +8,14 @@ class MutatedObjectStream<T> extends StreamView<T> {
       [bool stripId = true])
       : super(_mutate<T>(documentStream, nitriteMapper, stripId));
 
-  static Stream<M> _mutate<M>(
-      Stream<Document> documentStream, NitriteMapper nitriteMapper, bool stripId) {
+  static Stream<M> _mutate<M>(Stream<Document> documentStream,
+      NitriteMapper nitriteMapper, bool stripId) {
     return documentStream.map((document) {
       var record = document.clone();
       if (stripId) {
         record.remove(docId);
       }
+
       return nitriteMapper.convert<M, Document>(record)!;
     });
   }

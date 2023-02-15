@@ -6,6 +6,7 @@ import 'package:nitrite_entity_generator/src/extensions.dart';
 import 'package:nitrite_entity_generator/src/parser.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:collection/collection.dart';
+import 'package:nitrite_entity_generator/src/type_validator.dart';
 
 class ConverterParser extends Parser<ConverterInfo> {
   final ClassElement _classElement;
@@ -15,11 +16,20 @@ class ConverterParser extends Parser<ConverterInfo> {
   @override
   ConverterInfo parse() {
     var className = _getClassName();
+
+    // generated class name
     var converterName = _getConverterName();
+
+    // constructor information
     var ctorInfo = _getConstructorInfo();
+
+    // field information
     var fieldInfoList = _getFieldInfoList();
+
+    // property information
     var propertyInfoList = _getPropertyInfoList();
 
+    // validate the class and filter out duplicate information
     _validateConverter(ctorInfo, propertyInfoList, fieldInfoList);
 
     return ConverterInfo(
@@ -40,6 +50,9 @@ class ConverterParser extends Parser<ConverterInfo> {
   }
 
   bool _isValidField(FieldElement element) {
+    // validate valid type
+    element.type.accept(TypeValidator(element));
+
     var property = element.getAnnotation(DocumentKey);
     if (property != null &&
         (element.isStatic || element.isPrivate || element.isSynthetic)) {
@@ -67,8 +80,15 @@ class ConverterParser extends Parser<ConverterInfo> {
       );
     }
 
-    if (element.isStatic) return false;
+    // if (_classElement.displayName.contains('Company')) {
+    //   var type = element.type;
+    //   if (type.isDartCoreMap) {
+    //     type.accept(GenericTypeVisitor());
+    //   }
+    // }
+
     if (element.isPrivate) return false;
+    if (element.isStatic) return false;
     if (element.isSynthetic) return false;
     return true;
   }
@@ -187,10 +207,11 @@ class ConverterParser extends Parser<ConverterInfo> {
   }
 
   List<FieldInfo> _getFieldInfoList() {
-    var fieldInfos = <FieldInfo>[];
+    var fieldInfos = <FieldInfo>{};
     var fieldElements = _classElement.fields;
     for (var element in fieldElements) {
       if (_isValidField(element)) {
+        // find out if alias is provided
         var property = element.getAnnotation(DocumentKey);
         var aliasName =
             property?.getField(PropertyField.alias)?.toStringValue();
@@ -205,14 +226,29 @@ class ConverterParser extends Parser<ConverterInfo> {
       }
     }
 
-    return fieldInfos;
+    // get field details from parents
+    var supertypes = _classElement.allSupertypes;
+    supertypes.forEach((type) {
+      // use recursion to scan the heirarchy
+      var superParser = ConverterParser(type.element);
+      var superFieldInfos = superParser._getFieldInfoList();
+      if (superFieldInfos.isNotEmpty) {
+        fieldInfos.addAll(superFieldInfos);
+      }
+    });
+
+    return fieldInfos.toList();
   }
 
   List<PropertyInfo> _getPropertyInfoList() {
-    var propInfos = <PropertyInfo>[];
+    var propInfos = <PropertyInfo>{};
     var accessors = _classElement.accessors;
 
     for (var accessor in accessors) {
+      // validate valid type
+      accessor.type.accept(TypeValidator(accessor));
+
+      // synthentic properties are ignored
       if (accessor.isSynthetic) continue;
 
       if (accessor.isSetter && accessor.correspondingGetter == null) {
@@ -236,10 +272,12 @@ class ConverterParser extends Parser<ConverterInfo> {
       }
 
       if (accessor.isGetter) {
+        // combine getter and setter accessors
         var iterable = propInfos.where(
             (element) => element.setterFieldName == accessor.displayName);
 
         if (iterable.isEmpty) {
+          // setter not found yet, build the propInfo based on getter first
           var propInfo = PropertyInfo(accessor.returnType);
           propInfo.getterFieldName = accessor.displayName;
           propInfo.isIgnored = accessor.getAnnotation(IgnoredKey) != null;
@@ -251,6 +289,7 @@ class ConverterParser extends Parser<ConverterInfo> {
           propInfo.aliasName = aliasName;
           propInfos.add(propInfo);
         } else {
+          // setter already found, update the getter info in existing propInfo
           var propInfo = iterable.first;
           propInfo.getterFieldName = accessor.displayName;
           propInfo.isIgnored = accessor.getAnnotation(IgnoredKey) != null;
@@ -262,10 +301,12 @@ class ConverterParser extends Parser<ConverterInfo> {
           propInfo.aliasName = aliasName;
         }
       } else if (accessor.isSetter) {
+        // combine getter and setter accessors
         var iterable = propInfos.where(
             (element) => element.getterFieldName == accessor.displayName);
 
         if (iterable.isEmpty) {
+          // getter not found yet, build the propInfo based on setter first
           var propInfo = PropertyInfo(accessor.variable.type);
           propInfo.setterFieldName = accessor.displayName;
           propInfo.isIgnored = accessor.getAnnotation(IgnoredKey) != null;
@@ -277,6 +318,7 @@ class ConverterParser extends Parser<ConverterInfo> {
           propInfo.aliasName = aliasName;
           propInfos.add(propInfo);
         } else {
+          // getter already found, update the setter info in existing propInfo
           var propInfo = iterable.first;
           propInfo.setterFieldName = accessor.displayName;
           propInfo.isIgnored = accessor.getAnnotation(IgnoredKey) != null;
@@ -290,7 +332,18 @@ class ConverterParser extends Parser<ConverterInfo> {
       }
     }
 
-    return propInfos;
+    // get property info from parents
+    var supertypes = _classElement.allSupertypes;
+    supertypes.forEach((type) {
+      // use recursion to scan the heirarchy
+      var superParser = ConverterParser(type.element);
+      var superPropInfos = superParser._getPropertyInfoList();
+      if (superPropInfos.isNotEmpty) {
+        propInfos.addAll(superPropInfos);
+      }
+    });
+
+    return propInfos.toList();
   }
 
   void _validateConverter(ConstructorInfo ctorInfo,
@@ -325,7 +378,6 @@ class ConverterParser extends Parser<ConverterInfo> {
       if (!UnorderedIterableEquality().equals(
           fieldInfoList.map((e) => e.fieldName),
           ctorInfo.ctorParams.map((e) => e.paramName))) {
-
         /*
         * class A {
         *   final String name;
@@ -348,7 +400,6 @@ class ConverterParser extends Parser<ConverterInfo> {
         !ctorInfo.hasAllOptionalNamedCtor &&
         !ctorInfo.hasAllNamedCtor &&
         !ctorInfo.hasAllOptionalPositionalCtor) {
-
       // no allowable constructor found to instantiate the class
 
       throw InvalidGenerationSourceError(
@@ -395,11 +446,16 @@ class ConverterParser extends Parser<ConverterInfo> {
       }
     }
 
-    // remove getters from Object class
+    // remove inherited getters of Object class
     propertyInfoList
         .removeWhere((propInfo) => 'hashCode' == propInfo.getterFieldName);
     propertyInfoList
         .removeWhere((propInfo) => 'runtimeType' == propInfo.getterFieldName);
+
+    // remove property which is same with existing field names
+    propertyInfoList.removeWhere((propInfo) => fieldInfoList
+        .map((fieldInfo) => fieldInfo.fieldName)
+        .contains(propInfo.getterFieldName));
 
     // check for an accessor if getter-setter both are available, otherwise
     // throw error.
@@ -421,7 +477,6 @@ class ConverterParser extends Parser<ConverterInfo> {
       }
 
       if (propInfo.setterFieldName.isEmpty) {
-
         /*
         * class A {
         *   String? _name;

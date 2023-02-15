@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
+import '../../test_utils.dart';
 import 'base_object_repository_test_loader.dart';
 import 'data/test_objects.dart';
 
@@ -54,15 +55,7 @@ void main() {
       item.name = 'first';
       item.idField = NitriteId.newId();
 
-      var result = await repo.insert([item]);
-      expect(result.getAffectedCount(), 1);
-
-      var first = await (await repo.find()).first;
-      expect(first.idField, isNot(item.idField));
-
-      var second = await repo.getById(first.idField);
-      expect(second, isNotNull);
-      expect(first.idField, second?.idField);
+      expect(() async => await repo.insert([item]), throwsInvalidIdException);
     });
 
     test('Test Change Id During Update', () async {

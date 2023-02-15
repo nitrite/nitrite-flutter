@@ -39,7 +39,7 @@ class SimpleDocumentMapper extends NitriteMapper {
 
     throw ObjectMappingException(
       'Cannot convert object of type ${source.runtimeType} '
-      'to type ${Target.runtimeType}',
+      'to type $Target',
     );
   }
 

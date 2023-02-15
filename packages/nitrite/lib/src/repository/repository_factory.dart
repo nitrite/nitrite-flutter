@@ -200,12 +200,13 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
 
   @override
   Future<T?> getById<I>(I id) async {
-    var idFilter = _operations.createIdFilter<I>(id);
-    var cursor = await find(filter: idFilter);
     try {
+      var idFilter = _operations.createIdFilter<I>(id);
+      var cursor = await find(filter: idFilter);
       return await cursor.first;
-    } on StateError {
-      throw InvalidIdException('No element found using the specified id');
+    } catch (e) {
+      throw InvalidIdException('No element found using the specified id',
+          cause: e);
     }
   }
 

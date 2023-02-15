@@ -15,7 +15,7 @@ late ObjectRepository<Product> productRepository;
 late ObjectRepository<Product> upcomingProductRepository;
 
 void setUpLog() {
-  Logger.root.level = Level.FINE;
+  Logger.root.level = Level.OFF;
   Logger.root.onRecord.listen((record) {
     print('${record.time}: [${record.level.name}] ${record.loggerName} -'
         ' ${record.message}');

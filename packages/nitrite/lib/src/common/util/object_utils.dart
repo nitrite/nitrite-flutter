@@ -62,7 +62,13 @@ int compare(Comparable first, Comparable second) {
     }
     return result;
   }
-  return first.compareTo(second);
+
+  try {
+    return first.compareTo(second);
+  } on TypeError {
+    throw InvalidOperationException(
+        'Could not compare type ${first.runtimeType} to ${second.runtimeType}');
+  }
 }
 
 String findRepositoryNameByType<T>(NitriteMapper nitriteMapper, [String? key]) {

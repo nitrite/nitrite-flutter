@@ -96,11 +96,11 @@ abstract class EntityConverter<T> {
   /// Converts a list of [Document]s to a list of object type [L].
   static List<L> toList<L>(dynamic list, NitriteMapper nitriteMapper) {
     var resultList = <L>[];
-    if (list is List) {
+    if (list is Iterable && list is! Document) {
       for (var item in list) {
-        if (item is List) {
-          var list = toList(item, nitriteMapper);
-          resultList.add(list as L);
+        if (item is Iterable && list is! Document) {
+          var list = toList<L>(item, nitriteMapper);
+          resultList.addAll(list);
         }
         if (item is Map) {
           var map = toMap(item, nitriteMapper);
@@ -119,11 +119,11 @@ abstract class EntityConverter<T> {
   /// Converts a collection of [Document]s to a list of object type [I].
   static Iterable<I> toIterable<I>(dynamic list, NitriteMapper nitriteMapper) {
     var resultList = <I>[];
-    if (list is Iterable) {
+    if (list is Iterable && list is! Document) {
       for (var item in list) {
-        if (item is List) {
-          var list = toList(item, nitriteMapper);
-          resultList.add(list as I);
+        if (item is Iterable && item is! Document) {
+          var list = toList<I>(item, nitriteMapper);
+          resultList.addAll(list);
         }
         if (item is Map) {
           var map = toMap(item, nitriteMapper);
@@ -142,11 +142,11 @@ abstract class EntityConverter<T> {
   /// Converts a set of [Document]s to a set of object type [S].
   static Set<S> toSet<S>(dynamic set, NitriteMapper nitriteMapper) {
     var resultSet = <S>{};
-    if (set is Set) {
+    if (set is Iterable && set is! Document) {
       for (var item in set) {
-        if (item is List) {
-          var list = toList(item, nitriteMapper);
-          resultSet.add(list as S);
+        if (item is Iterable && item is! Document) {
+          var list = toList<S>(item, nitriteMapper);
+          resultSet.addAll(list);
         }
         if (item is Map) {
           var map = toMap(item, nitriteMapper);
@@ -170,7 +170,7 @@ abstract class EntityConverter<T> {
         var key = nitriteMapper.convert<K, dynamic>(item.key);
         var v = item.value;
 
-        if (v is List) {
+        if (v is Iterable && v is! Document) {
           var value = toList(v, nitriteMapper);
           resultMap[key] = value as V;
         } else if (v is Map) {

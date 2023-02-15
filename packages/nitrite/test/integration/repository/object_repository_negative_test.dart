@@ -13,7 +13,7 @@ void main() {
 
     setUp(() async {
       setUpLog();
-      
+
       db = await Nitrite.builder().openOrCreate();
       var documentMapper = db.config.nitriteMapper as SimpleDocumentMapper;
       documentMapper.registerEntityConverter(WithObjectIdConverter());
@@ -140,7 +140,6 @@ void main() {
     test('Test Get By Null Id', () async {
       var repository = await db.getRepository<WithNitriteId>();
       var object = WithNitriteId();
-      object.idField = NitriteId.newId();
       object.name = 'test';
 
       await repository.insert([object]);
@@ -167,11 +166,11 @@ void main() {
     test('Test Get by Wrong Id Type', () async {
       var repository = await db.getRepository<WithNitriteId>();
       var object = WithNitriteId();
-      object.idField = NitriteId.createId('1');
       object.name = 'test';
-      var result = await repository.updateOne(object, insertIfAbsent: true);
-      expect(result.getAffectedCount(), 1);
 
+      var result = await repository.insert([object]);
+      
+      expect(result.getAffectedCount(), 1);
       expect(
           () async => await repository.getById("1"), throwsInvalidIdException);
     });

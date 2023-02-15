@@ -39,10 +39,6 @@ bool isBuiltin(DartType type) {
   return false;
 }
 
-// bool isNitriteId(DartType type) {
-//   return isNitriteId.isExactlyType(type);
-// }
-
 String defaultValue(DartType type) {
   if (type.nullabilitySuffix == NullabilitySuffix.question) return "null";
   if (isNum.isExactlyType(type)) return "0";

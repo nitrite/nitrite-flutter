@@ -101,13 +101,14 @@ class ProductId {
 
 class ProductDecorator extends EntityDecorator<Product> {
   @override
-  EntityId? get idField => EntityId('productId', ['uniqueId', 'productCode']);
+  EntityId? get idField =>
+      EntityId('productId', false, ['uniqueId', 'productCode']);
 
   @override
   List<EntityIndex> get indexFields => [
-    EntityIndex(['manufacturer.name'], IndexType.nonUnique),
-    EntityIndex(['productName', 'manufacturer.uniqueId']),
-  ];
+        EntityIndex(['manufacturer.name'], IndexType.nonUnique),
+        EntityIndex(['productName', 'manufacturer.uniqueId']),
+      ];
 
   @override
   String get entityName => 'product';

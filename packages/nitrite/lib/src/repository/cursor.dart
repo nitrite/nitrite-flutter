@@ -56,7 +56,7 @@ class ObjectCursor<T> extends Cursor<T> {
 
   @override
   Stream<Projection> project<Projection>() {
-    var dummyDoc = _emptyDocument(_nitriteMapper);
+    var dummyDoc = _emptyDocument<Projection>(_nitriteMapper);
     var projectedStream = _documentCursor.project(dummyDoc);
     return MutatedObjectStream(projectedStream, _nitriteMapper);
   }

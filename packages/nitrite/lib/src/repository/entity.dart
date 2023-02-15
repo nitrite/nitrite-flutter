@@ -5,11 +5,15 @@ import 'package:nitrite/nitrite.dart';
 /// Represents an entity id declaration.
 class EntityId {
   final String _fieldName;
+  final bool _isNitriteId;
   final List<String> _fields;
 
-  EntityId(this._fieldName, [this._fields = const []]);
+  EntityId(this._fieldName,
+      [this._isNitriteId = false, this._fields = const []]);
 
   String get fieldName => _fieldName;
+
+  bool get isNitriteId => _isNitriteId;
 
   List<String> get subFields => _fields;
 
@@ -61,7 +65,7 @@ class EntityId {
       nitriteFilter.objectFilter = true;
       return nitriteFilter;
     } else {
-      if (id is NitriteId) {
+      if (isNitriteId) {
         return where(docId).eq(id.idValue);
       } else {
         return where(_fieldName).eq(id);
@@ -75,10 +79,14 @@ class EntityId {
       other is EntityId &&
           runtimeType == other.runtimeType &&
           _fieldName == other._fieldName &&
+          _isNitriteId == other._isNitriteId &&
           const ListEquality().equals(_fields, other._fields);
 
   @override
-  int get hashCode => _fieldName.hashCode ^ _fields.hashCode;
+  int get hashCode =>
+      _fieldName.hashCode ^
+      _isNitriteId.hashCode ^
+      ListEquality().hash(_fields);
 }
 
 /// Represents an entity index declaration.
@@ -101,7 +109,12 @@ class EntityIndex {
           _type == other._type;
 
   @override
-  int get hashCode => _fields.hashCode ^ _type.hashCode;
+  int get hashCode => ListEquality().hash(_fields) ^ _type.hashCode;
+
+  @override
+  String toString() {
+    return "EntityIndex(_fields = $_fields, _type = $_type)";
+  }
 }
 
 /// For internal use only

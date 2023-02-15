@@ -1,29 +1,35 @@
 import 'package:analyzer/dart/element/type.dart';
 import 'package:nitrite/nitrite.dart';
 
+// Fields for @Entity annotation.
 abstract class EntityField {
   static const entityName = 'name';
   static const entityIndices = 'indices';
 }
 
+// Fields for @Index annotation.
 abstract class IndexField {
   static const fields = "fields";
   static const type = "type";
 }
 
+// Fields for @Id annotation.
 abstract class IdField {
   static const fieldName = "fieldName";
   static const embeddedFields = "embeddedFields";
 }
 
+// Fields for @GenerateConverter annotation.
 abstract class ConverterField {
   static const className = 'className';
 }
 
+// Fields for @Property annotation.
 abstract class PropertyField {
   static const alias = 'alias';
 }
 
+// Metadata for @Entity annotation.
 class EntityInfo {
   final String className;
 
@@ -35,6 +41,7 @@ class EntityInfo {
   EntityInfo(this.className);
 }
 
+// Metadata for @GenerateConverter annotation.
 class ConverterInfo {
   final String className;
   final String converterName;
@@ -59,6 +66,8 @@ class ConverterInfo {
   }
 }
 
+
+// Metadata for @Field annotation.
 class FieldInfo {
   final String fieldName;
   final DartType fieldType;
@@ -83,8 +92,30 @@ class FieldInfo {
         'setNull: $setNull, '
         'isIgnored: $isIgnored}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FieldInfo &&
+          runtimeType == other.runtimeType &&
+          fieldName == other.fieldName &&
+          fieldType == other.fieldType &&
+          aliasName == other.aliasName &&
+          isFinal == other.isFinal &&
+          setNull == other.setNull &&
+          isIgnored == other.isIgnored;
+
+  @override
+  int get hashCode =>
+      fieldName.hashCode ^
+      fieldType.hashCode ^
+      aliasName.hashCode ^
+      isFinal.hashCode ^
+      setNull.hashCode ^
+      isIgnored.hashCode;
 }
 
+// Metadata for @Property annotation.
 class PropertyInfo {
   String getterFieldName;
   String setterFieldName;
@@ -107,8 +138,28 @@ class PropertyInfo {
         'aliasName: $aliasName, '
         'isIgnored: $isIgnored}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PropertyInfo &&
+          runtimeType == other.runtimeType &&
+          getterFieldName == other.getterFieldName &&
+          setterFieldName == other.setterFieldName &&
+          fieldType == other.fieldType &&
+          aliasName == other.aliasName &&
+          isIgnored == other.isIgnored;
+
+  @override
+  int get hashCode =>
+      getterFieldName.hashCode ^
+      setterFieldName.hashCode ^
+      fieldType.hashCode ^
+      aliasName.hashCode ^
+      isIgnored.hashCode;
 }
 
+// Metadata for method parameters.
 class ParamInfo {
   final String paramName;
   final DartType paramType;
@@ -127,6 +178,7 @@ class ParamInfo {
   }
 }
 
+// Metadata for constructors.
 class ConstructorInfo {
   final bool hasDefaultCtor;
   final bool hasAllOptionalNamedCtor;

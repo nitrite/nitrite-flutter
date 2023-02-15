@@ -13,6 +13,7 @@ class NitriteEntityGenerator extends GeneratorForAnnotation<Entity> {
   @override
   String generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
+    // @Entity is a class level annotation.
     if (element is! ClassElement) {
       throw InvalidGenerationSourceError(
         '`@Entity` can only be used on classes.',
@@ -20,13 +21,12 @@ class NitriteEntityGenerator extends GeneratorForAnnotation<Entity> {
       );
     }
 
+    // parse the metadata from the annotation
     var entityParser = EntityParser(element);
     var entity = entityParser.parse();
 
     final library = Library((builder) {
       builder
-        ..body.add(
-            const Code("// ignore_for_file: invalid_use_of_internal_member\n"))
         ..body.add(const Code('\n'))
         ..body.add(EntityWriter(entity).write());
     });
