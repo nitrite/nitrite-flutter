@@ -14,19 +14,18 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<Value?> operator [](Key key) async {
-    var val = await _lazyBox.get(key, defaultValue: null);
+    var val = await _lazyBox.get(_wrapKey(key), defaultValue: null);
     return val as Value?;
   }
 
   @override
   Future<Key?> ceilingKey(Key key) async {
     var iterable = _lazyBox.keys;
+    var wrappedKey = _wrapKey(key);
     for (var item in iterable) {
-      if (item is Key) {
-        var result = _keyComparator(item, key);
-        if (result >= 0) {
-          return item;
-        }
+      var result = _keyComparator(item, wrappedKey);
+      if (result >= 0) {
+        return _unWrapKey(item);
       }
     }
     return null;
@@ -48,7 +47,7 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<bool> containsKey(Key key) async {
-    return _lazyBox.containsKey(key);
+    return _lazyBox.containsKey(_wrapKey(key));
   }
 
   @override
@@ -63,21 +62,20 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Stream<Pair<Key, Value>> entries() async* {
-    for (Key key in _lazyBox.keys) {
+    for (var key in _lazyBox.keys) {
       var val = await _lazyBox.get(key);
-      yield Pair(key, val);
+      yield Pair(_unWrapKey(key), val);
     }
   }
 
   @override
   Future<Key?> floorKey(Key key) async {
     var iterable = _lazyBox.keys;
+    var wrappedKey = _wrapKey(key);
     for (var item in iterable) {
-      if (item is Key) {
-        var result = _keyComparator(item, key);
-        if (result <= 0) {
-          return item;
-        }
+      var result = _keyComparator(item, wrappedKey);
+      if (result <= 0) {
+        return _unWrapKey(item);
       }
     }
     return null;
@@ -90,12 +88,11 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   @override
   Future<Key?> higherKey(Key key) async {
     var iterable = _lazyBox.keys;
+    var wrappedKey = _wrapKey(key);
     for (var item in iterable) {
-      if (item is Key) {
-        var result = _keyComparator(item, key);
-        if (result > 0) {
-          return item;
-        }
+      var result = _keyComparator(item, wrappedKey);
+      if (result > 0) {
+        return _unWrapKey(item);
       }
     }
     return null;
@@ -117,20 +114,19 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Stream<Key> keys() async* {
-    for (Key key in _lazyBox.keys) {
-      yield key;
+    for (var key in _lazyBox.keys) {
+      yield _unWrapKey(key) as Key;
     }
   }
 
   @override
   Future<Key?> lowerKey(Key key) async {
     var iterable = _lazyBox.keys;
+    var wrappedKey = _wrapKey(key);
     for (var item in iterable) {
-      if (item is Key) {
-        var result = _keyComparator(item, key);
-        if (result < 0) {
-          return item;
-        }
+      var result = _keyComparator(item, wrappedKey);
+      if (result < 0) {
+        return _unWrapKey(item);
       }
     }
     return null;
@@ -141,13 +137,18 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<void> put(Key key, Value value) async {
-    await _lazyBox.put(key, value);
-    await updateLastModifiedTime();
+    try {
+      await _lazyBox.put(_wrapKey(key), value);
+      await updateLastModifiedTime();
+    } catch (e, s) {
+      throw NitriteException('Failed to put $key: $value pair in map',
+          cause: e, stackTrace: s);
+    }
   }
 
   @override
   Future<Value?> putIfAbsent(Key key, Value value) async {
-    var val = await _lazyBox.get(key);
+    var val = await _lazyBox.get(_wrapKey(key));
     if (val == null) {
       await put(key, value);
       return null;
@@ -157,12 +158,13 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<Value?> remove(Key key) async {
-    if (!_lazyBox.containsKey(key)) {
+    var wrappedKey = _wrapKey(key);
+    if (!_lazyBox.containsKey(wrappedKey)) {
       return null;
     }
 
-    var val = await _lazyBox.get(key);
-    await _lazyBox.delete(key);
+    var val = await _lazyBox.get(wrappedKey);
+    await _lazyBox.delete(wrappedKey);
     await updateLastModifiedTime();
     return val;
   }
@@ -172,7 +174,7 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
     var reversedKeys = _lazyBox.keys.toList().reversed;
     for (var key in reversedKeys) {
       var val = await _lazyBox.get(key);
-      yield Pair(key, val);
+      yield Pair(_unWrapKey(key), val);
     }
   }
 
@@ -187,5 +189,21 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
       var value = await _lazyBox.get(key) as Value;
       yield value;
     }
+  }
+
+  // Keys need to be Strings or integers
+  dynamic _wrapKey(Key key) {
+    if (key is NitriteId) {
+      return key.idValue;
+    }
+    return key;
+  }
+
+  // Keys need to be Strings or integers
+  dynamic _unWrapKey(dynamic key) {
+    if (Key == NitriteId) {
+      return NitriteId.createId(key);
+    }
+    return key;
   }
 }

@@ -12,10 +12,9 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
 
   late StoreCatalog _storeCatalog;
   late NitriteConfig _nitriteConfig;
+  bool _catalogInitialized = false;
 
-  AbstractNitriteStore(this._storeConfig) {
-    _storeCatalog = StoreCatalog(this);
-  }
+  AbstractNitriteStore(this._storeConfig);
 
   void initEventBus() {
     _storeConfig.eventListeners.forEach(subscribe);
@@ -27,14 +26,22 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
   }
 
   @override
-  Future<Set<String>> get collectionNames => _storeCatalog.collectionNames;
+  Future<Set<String>> get collectionNames async {
+    var catalog = await getCatalog();
+    return catalog.collectionNames;
+  }
 
   @override
-  Future<Set<String>> get repositoryRegistry => _storeCatalog.repositoryNames;
+  Future<Set<String>> get repositoryRegistry async {
+    var catalog = await getCatalog();
+    return catalog.repositoryNames;
+  }
 
   @override
-  Future<Map<String, Set<String>>> get keyedRepositoryRegistry =>
-      _storeCatalog.keyedRepositoryNames;
+  Future<Map<String, Set<String>>> get keyedRepositoryRegistry async {
+    var catalog = await getCatalog();
+    return catalog.keyedRepositoryNames;
+  }
 
   @override
   Config? get storeConfig => _storeConfig;
@@ -69,15 +76,15 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
   @override
   Future<void> initialize(NitriteConfig nitriteConfig) async {
     _nitriteConfig = nitriteConfig;
-    await _storeCatalog.initialize();
   }
 
   @override
   Future<StoreCatalog> getCatalog() async {
-    // if (!_catalogInitialized) {
-    //   await _storeCatalog.initialize();
-    //   _catalogInitialized = true;
-    // }
+    if (!_catalogInitialized) {
+      _storeCatalog = StoreCatalog(this);
+      await _storeCatalog.initialize();
+      _catalogInitialized = true;
+    }
     return _storeCatalog;
   }
 

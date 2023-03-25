@@ -12,7 +12,7 @@ class MapMetaData implements MetaData {
   Set<String> get mapNames => _mapNames;
 
   MapMetaData(Document document) {
-    var mapNames = document.get<Set<String>?>(tagMapMetaData);
+    var mapNames = document[tagMapMetaData]?.cast<String>();
     mapNames ??= HashSet<String>();
     _mapNames = mapNames;
   }

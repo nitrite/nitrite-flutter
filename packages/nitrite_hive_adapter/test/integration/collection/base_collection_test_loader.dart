@@ -70,7 +70,7 @@ Future<void> cleanUp() async {
   }
 
   var dbFile = File(dbPath);
-  await dbFile.delete();
+  await dbFile.delete(recursive: true);
 }
 
 Future<WriteResult> insert() async {

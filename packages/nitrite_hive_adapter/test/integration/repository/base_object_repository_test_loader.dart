@@ -115,6 +115,9 @@ Future<void> cleanUp() async {
     await db.commit();
     await db.close();
   }
+
+  var dbFile = File(dbPath);
+  await dbFile.delete(recursive: true);
 }
 
 Future<void> _openDb() async {

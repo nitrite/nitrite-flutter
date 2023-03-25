@@ -1,12 +1,13 @@
 // ignore_for_file: implementation_imports
 
+import 'package:hive/src/hive_impl.dart';
+import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite_hive_adapter/src/adapters/attributes_adapter.dart';
+import 'package:nitrite_hive_adapter/src/adapters/dbvalue_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/document_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/nitrite_id_adapter.dart';
+import 'package:nitrite_hive_adapter/src/adapters/set_adapter.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_module.dart';
-import 'package:nitrite/src/common/util/object_utils.dart';
-
-import 'package:hive/src/hive_impl.dart';
 
 Future<HiveImpl> openHiveDb(HiveConfig hiveConfig) async {
   var hive = HiveImpl();
@@ -27,6 +28,8 @@ void _registerBuiltinTypeAdapters(HiveImpl hive) {
   hive.registerAdapter(DocumentAdapter());
   hive.registerAdapter(NitriteIdAdapter());
   hive.registerAdapter(AttributesAdapter());
+  hive.registerAdapter(SetAdapter());
+  hive.registerAdapter(DBValueAdapter());
 }
 
 int nitriteKeyComparator(dynamic k1, dynamic k2) {

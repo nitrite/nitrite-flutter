@@ -25,7 +25,7 @@ class UserAuthenticationService {
           var expectedHash = userCredential.passwordHash;
           var crypt = Crypt(expectedHash);
 
-          if (crypt.match(password!)) {
+          if (!crypt.match(password!)) {
             throw NitriteSecurityException('Username or password is invalid');
           }
         } else {
@@ -49,7 +49,7 @@ class UserAuthenticationService {
         var expectedHash = userCredential.passwordHash;
         var crypt = Crypt(expectedHash);
 
-        if (crypt.match(oldPassword)) {
+        if (!crypt.match(oldPassword)) {
           throw NitriteSecurityException('Username or password is invalid');
         }
       }

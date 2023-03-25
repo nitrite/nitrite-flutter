@@ -23,6 +23,8 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   build_runner: ^2.3.3
   hive_generator: ^2.0.0
+  nitrite_entity_generator:
+    path: ../nitrite_entity_generator
   test: ^1.16.0
   encrypt: ^5.0.1
 

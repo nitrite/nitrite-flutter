@@ -1,9 +1,11 @@
 // ignore_for_file: unused_import
 
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/src/adapters/document_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/nitrite_id_adapter.dart';

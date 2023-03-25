@@ -84,6 +84,8 @@ void main() {
         await repo.insert([record]);
       }
 
+      print('Insertion Time (s) - ${stopWatch.elapsed.inMilliseconds}');
+
       var cursor = await repo.find(filter: where('failed').eq(false));
       await for (var record in cursor) {
         record.processed = true;
