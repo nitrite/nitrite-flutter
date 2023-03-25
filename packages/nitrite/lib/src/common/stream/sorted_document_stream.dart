@@ -16,7 +16,7 @@ class SortedDocumentStream extends StreamView<Document> {
     }
   }
 
-  static _compare(
+  static int _compare(
       Document a, Document b, List<Pair<String, SortOrder>> sortOrder) {
     if (sortOrder.isEmpty) {
       return 0;
@@ -57,5 +57,8 @@ class SortedDocumentStream extends StreamView<Document> {
         return result;
       }
     }
+
+    // all values are equals and no next sort order left
+    return 0;
   }
 }

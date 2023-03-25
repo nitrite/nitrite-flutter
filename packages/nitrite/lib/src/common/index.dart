@@ -7,3 +7,4 @@ export 'constants.dart';
 export 'fields.dart';
 export 'params.dart';
 export 'write_result.dart';
+export 'util/spatial_key.dart';

@@ -140,4 +140,5 @@ Future<void> _openDb() async {
   mapper.registerEntityConverter(ProductIdConverter());
   mapper.registerEntityConverter(ManufacturerConverter());
   mapper.registerEntityConverter(MiniProductConverter());
+  mapper.registerEntityConverter(WithNullIdConverter());
 }

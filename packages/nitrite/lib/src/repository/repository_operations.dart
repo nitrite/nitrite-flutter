@@ -44,6 +44,8 @@ class RepositoryOperations<T> {
 
   dynamic serialize(dynamic value) {
     dynamic serializedValue;
+    if (value is Document) return value;
+
     if (value is List) {
       serializedValue = serializeList(value);
     } else if (value is Set) {

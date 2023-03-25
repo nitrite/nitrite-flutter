@@ -2,10 +2,6 @@
 /// THIS FILE IS AUTOMATICALLY OVER WRITTEN BY MetaUpdate 
 
 Map<String, String> meta = <String, String>{
-  "name": "nitrite",
-  "description":
-      // ignore: lines_longer_than_80_chars
-      "An embedded nosql document store for dart/flutter.",  
   "version":"0.0.1",
 };
   

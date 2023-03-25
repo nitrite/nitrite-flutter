@@ -8,10 +8,18 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
     implements NitriteStore<Config> {
   final EventBus _eventBus = EventBus();
   final Map<int, StreamSubscription> _subscriptions = {};
+  final Config _storeConfig;
 
-  StoreCatalog? _storeCatalog;
-  late Config _storeConfig;
+  late StoreCatalog _storeCatalog;
   late NitriteConfig _nitriteConfig;
+
+  AbstractNitriteStore(this._storeConfig) {
+    _storeCatalog = StoreCatalog(this);
+  }
+
+  void initEventBus() {
+    _storeConfig.eventListeners.forEach(subscribe);
+  }
 
   /// Alerts about a [StoreEvents] to all subscribed [StoreEventListener]s.
   void alert(StoreEvents eventType) {
@@ -19,14 +27,14 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
   }
 
   @override
-  Future<Set<String>> get collectionNames => catalog.collectionNames;
+  Future<Set<String>> get collectionNames => _storeCatalog.collectionNames;
 
   @override
-  Future<Set<String>> get repositoryRegistry => catalog.repositoryNames;
+  Future<Set<String>> get repositoryRegistry => _storeCatalog.repositoryNames;
 
   @override
   Future<Map<String, Set<String>>> get keyedRepositoryRegistry =>
-      catalog.keyedRepositoryNames;
+      _storeCatalog.keyedRepositoryNames;
 
   @override
   Config? get storeConfig => _storeConfig;
@@ -61,22 +69,21 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
   @override
   Future<void> initialize(NitriteConfig nitriteConfig) async {
     _nitriteConfig = nitriteConfig;
-    _storeCatalog = StoreCatalog(this);
-    await _storeCatalog!.initialize();
+    await _storeCatalog.initialize();
   }
 
   @override
-  StoreCatalog get catalog {
-    return _storeCatalog!;
+  Future<StoreCatalog> getCatalog() async {
+    // if (!_catalogInitialized) {
+    //   await _storeCatalog.initialize();
+    //   _catalogInitialized = true;
+    // }
+    return _storeCatalog;
   }
 
   @override
   Future<void> close() async {
     alert(StoreEvents.closed);
     _eventBus.destroy();
-  }
-
-  void setStoreConfig(Config value) {
-    _storeConfig = value;
   }
 }

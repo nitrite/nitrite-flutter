@@ -6,28 +6,36 @@ environment:
   sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
-   uuid: ^3.0.7
-   logging: ^1.0.2
-   collection: ^1.16.0
-   json_annotation: ^4.5.0
-   dart_numerics: ^0.0.6
-   rxdart: ^0.27.4
-   event_bus: ^2.0.0
-   quiver: ^3.1.0
-   yaml: ^3.1.1
-   crypt: ^4.2.1
-   build: any
-   source_gen: ^1.2.7
-   analyzer: ^5.5.0
-   meta: ^1.8.0
-   faker: ^2.0.0
+  flutter:
+    sdk: flutter
+  uuid: ^3.0.7
+  logging: ^1.0.2
+  collection: ^1.16.0
+  json_annotation: ^4.5.0
+  dart_numerics: ^0.0.6
+  rxdart: ^0.27.4
+  event_bus: ^2.0.0
+  quiver: ^3.1.0
+  yaml: ^3.1.1
+  crypt: ^4.2.1
+  build: any
+  source_gen: ^1.2.7
+  analyzer: ^5.5.0
+  meta: ^1.8.0
+  faker: ^2.0.0
 
 dev_dependencies:
-  lints: ^2.0.0
-  test: ^1.16.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
   build_runner: ^2.3.3
   nitrite_entity_generator:
     path: ../nitrite_entity_generator
   mockito: ^5.2.0
   encrypt: ^5.0.1
+  test: ^1.16.0
 
+flutter:
+  uses-material-design: true
+  assets:
+    - pubspec.yaml

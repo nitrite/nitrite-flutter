@@ -22,7 +22,7 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
   final Map<String, NitriteMap<dynamic, dynamic>> _mapRegistry = {};
   final Map<String, NitriteRTree<dynamic, dynamic>> _rTreeRegistry = {};
 
-  TransactionStore(this._primaryStore);
+  TransactionStore(this._primaryStore) : super(_primaryStore.storeConfig!);
 
   @override
   bool get isClosed => false;

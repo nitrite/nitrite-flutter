@@ -33,8 +33,7 @@ class InMemoryStoreModule extends StoreModule {
 
   @override
   NitriteStore<Config> getStore<Config extends StoreConfig>() {
-    var store = InMemoryStore();
-    store.setStoreConfig(_storeConfig);
+    var store = InMemoryStore(_storeConfig);
     return store as NitriteStore<Config>;
   }
 

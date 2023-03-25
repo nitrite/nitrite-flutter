@@ -73,7 +73,7 @@ class RepositoryFactory {
 
   Future<void> _writeCatalog(
       NitriteStore store, String collectionName, String? key) async {
-    var storeCatalog = store.catalog;
+    var storeCatalog = await store.getCatalog();
     if (key.isNullOrEmpty) {
       await storeCatalog.writeRepositoryEntry(collectionName);
     } else {

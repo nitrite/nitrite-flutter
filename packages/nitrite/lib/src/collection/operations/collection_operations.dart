@@ -38,7 +38,7 @@ class CollectionOperations {
     await _indexOperations.dropAllIndices();
 
     // remove the collection name from the catalog
-    var catalog = _nitriteMap.getStore().catalog;
+    var catalog = await _nitriteMap.getStore().getCatalog();
     await catalog.remove(_nitriteMap.name);
 
     // drop the map

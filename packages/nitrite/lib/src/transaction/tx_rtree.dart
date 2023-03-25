@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/util/spatial_key.dart';
 import 'package:nitrite/src/store/memory/in_memory_rtree.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -13,7 +12,7 @@ class TransactionalRTree<Key extends BoundingBox, Value>
       _map = <SpatialKey, Key>{};
 
   @override
-  Future<int> get size async => _map.length;
+  Future<int> size() async => _map.length;
 
   @override
   Future<void> add(Key key, NitriteId? value) async {

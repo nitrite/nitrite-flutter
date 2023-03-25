@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/util/spatial_key.dart';
 
 class InMemoryRTree<Key extends BoundingBox, Value>
     extends NitriteRTree<Key, Value> {
@@ -12,7 +11,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   bool _closedFlag = false;
 
   @override
-  Future<int> get size async {
+  Future<int> size() async {
     _checkOpened();
     return _backingMap.length;
   }

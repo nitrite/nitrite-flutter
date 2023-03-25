@@ -124,7 +124,7 @@ class _NitriteTransaction extends Transaction {
     var txContext = TransactionContext(name, txMap, _transactionConfig);
     var primaryCollection = primary.documentCollection;
     var backingCollection =
-        DefaultTransactionalCollection(primaryCollection!, txContext);
+        DefaultTransactionalCollection(primaryCollection, txContext);
     await backingCollection.initialize();
 
     var txRepository = DefaultTransactionalRepository<T>(

@@ -1,16 +1,44 @@
-import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
-import 'package:test/test.dart';
+// ignore_for_file: unused_import
+
+import 'dart:io';
+import 'dart:async';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:hive/hive.dart';
+import 'package:nitrite/nitrite.dart';
+import 'package:nitrite_hive_adapter/src/adapters/document_adapter.dart';
+import 'package:nitrite_hive_adapter/src/adapters/nitrite_id_adapter.dart';
+import 'package:nitrite_hive_adapter/src/store/hive_module.dart';
+import 'package:nitrite_hive_adapter/src/store/hive_store.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
-  group('A group of tests', () {
-    final awesome = Awesome();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-    setUp(() {
-      // Additional setup goes here.
-    });
+  group('Demo test', () {
+    test('First Test', () async {
+      var dbPath = '${Directory.current.path}/db';
 
-    test('First Test', () {
-      expect(awesome.isAwesome, isTrue);
+      var storeModule =
+          HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
+
+      var builder = await Nitrite.builder().loadModule(storeModule);
+
+      var db = await builder
+          .fieldSeparator('.')
+          .openOrCreate(username: 'test', password: 'test');
+
+      print('Path - $dbPath');
+
+      var document = createDocument('first', DateTime.now().toIso8601String())
+          .put('second', createDocument('array', [0, 1, 2]))
+          .put('third', null)
+          .put('fourth', NitriteId.newId())
+          .put('fifth', emptyDocument())
+          .put('sixth', 12.5);
+
+      var col = await db.getCollection('test');
+      var result = await col.insert([document]);
+      print(result.getAffectedCount());
     });
   });
 }

@@ -6,6 +6,7 @@ import 'package:nitrite/src/collection/operations/read_operations.dart';
 import 'package:nitrite/src/common/processors/processor.dart';
 import 'package:nitrite/src/store/memory/in_memory_map.dart';
 import 'package:nitrite/src/store/memory/in_memory_store.dart';
+import 'package:nitrite/src/store/memory/in_memory_store_module.dart';
 import 'package:test/test.dart';
 
 import 'read_operation_test.mocks.dart';
@@ -22,8 +23,8 @@ main() {
     var indexOperations = MockIndexOperations();
     when(indexOperations.listIndexes()).thenAnswer((_) => Future.value([]));
     var nitriteConfig = NitriteConfig();
-    var nitriteMap =
-        InMemoryMap<NitriteId, Document>("Map Name", InMemoryStore());
+    var nitriteMap = InMemoryMap<NitriteId, Document>(
+        "Map Name", InMemoryStore(InMemoryConfig()));
 
     var readOperation = ReadOperations("Collection Name", indexOperations,
         nitriteConfig, nitriteMap, ProcessorChain());
@@ -43,8 +44,8 @@ main() {
         .thenAnswer((_) => Future.value([indexDescriptor]));
 
     var nitriteConfig = NitriteConfig();
-    var nitriteMap =
-        InMemoryMap<NitriteId, Document>("Map Name", InMemoryStore());
+    var nitriteMap = InMemoryMap<NitriteId, Document>(
+        "Map Name", InMemoryStore(InMemoryConfig()));
 
     var readOperation = ReadOperations("Collection Name", indexOperations,
         nitriteConfig, nitriteMap, ProcessorChain());
@@ -60,8 +61,8 @@ main() {
     var indexOperations = MockIndexOperations();
     when(indexOperations.listIndexes()).thenAnswer((_) => Future.value([]));
     var nitriteConfig = NitriteConfig();
-    var nitriteMap =
-        InMemoryMap<NitriteId, Document>("Map Name", InMemoryStore());
+    var nitriteMap = InMemoryMap<NitriteId, Document>(
+        "Map Name", InMemoryStore(InMemoryConfig()));
 
     var readOperation = ReadOperations("Collection Name", indexOperations,
         nitriteConfig, nitriteMap, ProcessorChain());

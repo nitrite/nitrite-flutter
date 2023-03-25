@@ -48,7 +48,7 @@ class EntityDecoratorReader<T> {
     for (var index in indexes) {
       var fields = index.fieldNames;
       var hasIndex = await _collection.hasIndex(fields);
-      if (hasIndex) {
+      if (!hasIndex) {
         executor.submit(() async => await _collection.createIndex(
             fields, indexOptions(index.indexType)));
       }

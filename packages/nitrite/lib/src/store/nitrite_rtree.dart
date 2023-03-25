@@ -17,7 +17,7 @@ abstract class NitriteRTree<Key, Value> implements Initializable {
   Stream<NitriteId> findContainedKeys(Key key);
 
   /// Gets the size of the rtree.
-  Future<int> get size;
+  Future<int> size();
 
   /// Closes this [NitriteRTree] instance.
   Future<void> close();

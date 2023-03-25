@@ -70,5 +70,5 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   Config? get storeConfig;
 
   /// Gets the store catalog.
-  StoreCatalog get catalog;
+  Future<StoreCatalog> getCatalog();
 }

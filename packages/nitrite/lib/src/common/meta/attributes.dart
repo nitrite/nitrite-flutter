@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:uuid/uuid.dart';
 
-
 /// Interface to be implemented by database objects that wish to be
 /// aware of their metadata attributes.
 abstract class AttributesAware {
@@ -28,7 +27,7 @@ class Attributes {
   static final String localTombstoneMarker = "local_tombstone_marker";
   static final String remoteTombstoneMarker = "remote_tombstone_marker";
   static final String replica = "replica";
-  
+
   Map<String, String> _attributes = {};
 
   /// Instantiates a new Attributes.
@@ -45,8 +44,8 @@ class Attributes {
   /// Set attributes.
   Attributes set(String key, String value) {
     _attributes[key] = value;
-    _attributes[lastModifiedTime] = DateTime.now()
-        .millisecondsSinceEpoch.toString();
+    _attributes[lastModifiedTime] =
+        DateTime.now().millisecondsSinceEpoch.toString();
     return this;
   }
 
@@ -59,4 +58,6 @@ class Attributes {
   bool hasKey(String key) {
     return _attributes.containsKey(key);
   }
+
+  Map<String, String> toMap() => Map.unmodifiable(_attributes);
 }

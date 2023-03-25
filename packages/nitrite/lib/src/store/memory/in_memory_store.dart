@@ -9,7 +9,7 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   final Map<String, NitriteRTree<dynamic, dynamic>> _nitriteRTreeMapRegistry;
   bool _closed = false;
 
-  InMemoryStore()
+  InMemoryStore(super._storeConfig)
       : _nitriteMapRegistry = <String, NitriteMap<dynamic, dynamic>>{},
         _nitriteRTreeMapRegistry = <String, NitriteRTree<dynamic, dynamic>>{};
 
@@ -104,6 +104,7 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
       }
 
       _nitriteMapRegistry.remove(mapName);
+      var catalog = await getCatalog();
       await catalog.remove(mapName);
     }
   }

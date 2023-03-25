@@ -94,7 +94,7 @@ class EntityIndex {
   final List<String> _fields;
   final String _type;
 
-  const EntityIndex(this._fields, [this._type = "unique"]);
+  const EntityIndex(this._fields, [this._type = IndexType.unique]);
 
   List<String> get fieldNames => _fields;
 
