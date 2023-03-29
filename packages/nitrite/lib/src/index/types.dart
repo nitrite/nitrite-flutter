@@ -31,6 +31,27 @@ class IndexMeta {
   IndexDescriptor? indexDescriptor;
   String? indexMap;
   bool isDirty = false;
+
+  IndexMeta();
+
+  factory IndexMeta.fromDocument(Document document) {
+    if ('IndexMeta' == document[typeId]) {
+      var indexDescriptor =
+          IndexDescriptor.fromDocument(document['indexDescriptor']);
+      var indexMap = document['indexMap'];
+      var isDirty = document['isDirty'];
+      return IndexMeta()
+        ..indexDescriptor = indexDescriptor
+        ..indexMap = indexMap
+        ..isDirty = isDirty;
+    }
+    throw NitriteException('document is not a valid IndexMeta');
+  }
+
+  Document toDocument() => createDocument(typeId, 'IndexMeta')
+      .put('indexDescriptor', indexDescriptor?.toDocument())
+      .put('indexMap', indexMap)
+      .put('isDirty', isDirty);
 }
 
 /// Represents a nitrite database index.
@@ -40,6 +61,21 @@ class IndexDescriptor implements Comparable<IndexDescriptor> {
   final String _collectionName;
 
   IndexDescriptor(this._indexType, this._indexFields, this._collectionName);
+
+  factory IndexDescriptor.fromDocument(Document document) {
+    if ('IndexDescriptor' == document[typeId]) {
+      var indexType = document['indexType'] as String;
+      var indexFields = Fields.withNames(document['indexFields']);
+      var collectionName = document['collectionName'] as String;
+      return IndexDescriptor(indexType, indexFields, collectionName);
+    }
+    throw NitriteException('document is not a valid IndexDescriptor');
+  }
+
+  Document toDocument() => createDocument(typeId, 'IndexDescriptor')
+      .put('indexType', _indexType)
+      .put('indexFields', _indexFields.fieldNames)
+      .put('collectionName', _collectionName);
 
   /// Specifies the type of the index.
   String get indexType => _indexType;

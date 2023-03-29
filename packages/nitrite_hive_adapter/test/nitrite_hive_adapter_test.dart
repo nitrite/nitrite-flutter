@@ -11,6 +11,7 @@ import 'package:nitrite_hive_adapter/src/adapters/document_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/nitrite_id_adapter.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_module.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_store.dart';
+import 'package:nitrite_hive_adapter/src/store/key_encoder.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() {

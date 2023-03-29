@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/src/store/box_map.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_meta.dart';
+import 'package:nitrite_hive_adapter/src/store/key_encoder.dart';
 
 import 'box_tree.dart';
 import 'hive_module.dart';
@@ -20,6 +21,7 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
   bool _closed = true;
 
   late HiveImpl _hive;
+  late KeyCodec _keyCodec;
 
   HiveStore(this._hiveConfig) : super(_hiveConfig);
 
@@ -82,6 +84,7 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
     try {
       if (_closed) {
         _hive = await openHiveDb(_hiveConfig);
+        _keyCodec = KeyCodec(_hive);
         _closed = false;
         initEventBus();
         alert(StoreEvents.opened);
@@ -139,6 +142,7 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
         keyComparator: nitriteKeyComparator,
         crashRecovery: crashRecovery);
 
-    return BoxMap<Key, Value>(mapName, box, this, nitriteKeyComparator);
+    return BoxMap<Key, Value>(
+        mapName, box, this, _keyCodec, nitriteKeyComparator);
   }
 }

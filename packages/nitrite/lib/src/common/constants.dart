@@ -70,5 +70,6 @@ const String tagMapMetaData = "mapNames";
 
 const String replicator = "Replicator.$no2";
 
-String nitriteVersion = meta["version"]!;
+const String typeId = "typeId";
 
+String nitriteVersion = meta["version"]!;

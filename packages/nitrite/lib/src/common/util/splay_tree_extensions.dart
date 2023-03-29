@@ -1,6 +1,15 @@
 import 'dart:collection';
 
+
 extension SplayTreeMapExtension on SplayTreeMap {
+  static SplayTreeMap fromMap(Map map) {
+    var stm = SplayTreeMap();
+    for (var entry in map.entries) {
+      stm[entry.key] = entry.value;
+    }
+    return stm;
+  }
+
   dynamic higherKey(dynamic key) {
     return firstKeyAfter(key);
   }
@@ -21,5 +30,13 @@ extension SplayTreeMapExtension on SplayTreeMap {
 
   Iterable<MapEntry> get reversedEntries {
     return entries.toList().reversed;
+  }
+
+  Map toMap() {
+    var map = <dynamic, dynamic>{};
+    for (var entry in entries) {
+      map[entry.key] = entry.value;
+    }
+    return map;
   }
 }

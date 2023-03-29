@@ -1,17 +1,16 @@
 import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/db_value.dart';
 import 'package:nitrite/src/common/util/splay_tree_extensions.dart';
 
 class IndexMap {
   final NitriteMap<DBValue, dynamic>? _nitriteMap;
-  final SplayTreeMap<DBValue, dynamic>? _navigableMap;
+  final SplayTreeMap<dynamic, dynamic>? _navigableMap;
   bool _reverseScan = false;
 
   IndexMap(
       {NitriteMap<DBValue, dynamic>? nitriteMap,
-      SplayTreeMap<DBValue, dynamic>? navigableMap})
+      SplayTreeMap<dynamic, dynamic>? navigableMap})
       : _nitriteMap = nitriteMap,
         _navigableMap = navigableMap;
 
@@ -58,7 +57,7 @@ class IndexMap {
     DBValue? dbKey = comparable is DBNull
         ? comparable
         : (comparable == null ? DBNull.instance : DBValue(comparable));
-    
+
     if (!_reverseScan) {
       if (_nitriteMap != null) {
         dbKey = await _nitriteMap!.higherKey(dbKey);
@@ -102,7 +101,7 @@ class IndexMap {
     DBValue? dbKey = comparable is DBNull
         ? comparable
         : (comparable == null ? DBNull.instance : DBValue(comparable));
-        
+
     if (!_reverseScan) {
       if (_nitriteMap != null) {
         dbKey = await _nitriteMap!.lowerKey(dbKey);
@@ -175,8 +174,9 @@ class IndexMap {
       }
 
       // if the value is not terminal, scan recursively
-      if (entry.second is SplayTreeMap) {
-        var subMap = entry.second as SplayTreeMap<DBValue, dynamic>;
+      if (entry.second is Map) {
+        var subMap = SplayTreeMapExtension.fromMap(entry.second)
+            as SplayTreeMap<DBValue, dynamic>;
         var indexMap = IndexMap(navigableMap: subMap);
         yield* indexMap.getTerminalNitriteIds();
       }

@@ -1,21 +1,29 @@
 import 'package:hive/hive.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_store.dart';
+import 'package:nitrite_hive_adapter/src/store/key_encoder.dart';
 
 class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   final String _mapName;
   final LazyBox _lazyBox;
   final HiveStore _store;
   final KeyComparator _keyComparator;
+  final KeyCodec _keyCodec;
   bool _dropped = false;
   bool _closed = false;
 
-  BoxMap(this._mapName, this._lazyBox, this._store, this._keyComparator);
+  BoxMap(this._mapName, this._lazyBox, this._store, this._keyCodec,
+      this._keyComparator);
 
   @override
   Future<Value?> operator [](Key key) async {
     var val = await _lazyBox.get(_wrapKey(key), defaultValue: null);
-    return val as Value?;
+    try {
+      return val as Value?;
+    } catch (e, s) {
+      print(e);
+      print(s);
+    }
   }
 
   @override
@@ -193,17 +201,11 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   // Keys need to be Strings or integers
   dynamic _wrapKey(Key key) {
-    if (key is NitriteId) {
-      return key.idValue;
-    }
-    return key;
+    return _keyCodec.encode(key);
   }
 
   // Keys need to be Strings or integers
   dynamic _unWrapKey(dynamic key) {
-    if (Key == NitriteId) {
-      return NitriteId.createId(key);
-    }
-    return key;
+    return _keyCodec.decode(key);
   }
 }

@@ -5,8 +5,11 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite_hive_adapter/src/adapters/attributes_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/dbvalue_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/document_adapter.dart';
+import 'package:nitrite_hive_adapter/src/adapters/fields_adapter.dart';
+import 'package:nitrite_hive_adapter/src/adapters/index_meta_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/nitrite_id_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/set_adapter.dart';
+import 'package:nitrite_hive_adapter/src/adapters/splaytree_map_adapter.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_module.dart';
 
 Future<HiveImpl> openHiveDb(HiveConfig hiveConfig) async {
@@ -30,6 +33,10 @@ void _registerBuiltinTypeAdapters(HiveImpl hive) {
   hive.registerAdapter(AttributesAdapter());
   hive.registerAdapter(SetAdapter());
   hive.registerAdapter(DBValueAdapter());
+  hive.registerAdapter(FieldsAdapter());
+  hive.registerAdapter(IndexMetaAdapter());
+  hive.registerAdapter(IndexDescriptorAdapter());
+  hive.registerAdapter(SplayTreeMapAdapter());
 }
 
 int nitriteKeyComparator(dynamic k1, dynamic k2) {

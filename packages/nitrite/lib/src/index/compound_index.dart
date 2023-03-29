@@ -1,8 +1,5 @@
-import 'dart:collection';
-
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/async/executor.dart';
-import 'package:nitrite/src/common/db_value.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/index_map.dart';
@@ -90,20 +87,20 @@ class CompoundIndex extends NitriteIndex {
         // wrap around db value
         var dbValue = item != null ? DBValue(item) : DBNull.instance;
         // add index element in parallel
-        executor.submit(() async => await _addIndexElement(indexMap, fieldValues, dbValue));
+        executor.submit(
+            () async => await _addIndexElement(indexMap, fieldValues, dbValue));
       }
       await executor.execute();
     }
   }
 
-  Future<NitriteMap<DBValue, SplayTreeMap<DBValue, dynamic>>> _findIndexMap() {
+  Future<NitriteMap<DBValue, Map>> _findIndexMap() {
     var mapName = deriveIndexMapName(_indexDescriptor);
-    return _nitriteStore
-        .openMap<DBValue, SplayTreeMap<DBValue, dynamic>>(mapName);
+    return _nitriteStore.openMap<DBValue, Map>(mapName);
   }
 
-  Stream<NitriteId> _scanIndex(FindPlan findPlan,
-      NitriteMap<DBValue, SplayTreeMap<DBValue, dynamic>> indexMap) {
+  Stream<NitriteId> _scanIndex(
+      FindPlan findPlan, NitriteMap<DBValue, Map> indexMap) {
     var filters = findPlan.indexScanFilter?.filters;
     var iMap = IndexMap(nitriteMap: indexMap);
     var indexScanner = IndexScanner(iMap);
@@ -112,29 +109,26 @@ class CompoundIndex extends NitriteIndex {
         .distinctUnique();
   }
 
-  Future<void> _addIndexElement(
-      NitriteMap<DBValue, SplayTreeMap<DBValue, dynamic>> indexMap,
-      FieldValues fieldValues,
-      DBValue element) async {
+  Future<void> _addIndexElement(NitriteMap<DBValue, Map> indexMap,
+      FieldValues fieldValues, DBValue element) async {
     var subMap = await indexMap[element];
-    subMap ??= SplayTreeMap<DBValue, dynamic>();
+    subMap ??= <DBValue, dynamic>{};
 
     _populateSubMap(subMap, fieldValues, 1);
     return indexMap.put(element, subMap);
   }
 
-  Future<void> _removeIndexElement(
-      NitriteMap<DBValue, SplayTreeMap<DBValue, dynamic>> indexMap,
-      FieldValues fieldValues,
-      DBValue element) async {
+  Future<void> _removeIndexElement(NitriteMap<DBValue, Map> indexMap,
+      FieldValues fieldValues, DBValue element) async {
     var subMap = await indexMap[element];
+    
     if (subMap != null && subMap.isNotEmpty) {
       _deleteFromSubMap(subMap, fieldValues, 1);
       return indexMap.put(element, subMap);
     }
   }
 
-  void _populateSubMap(SplayTreeMap<DBValue, dynamic> subMap,
+  void _populateSubMap(Map subMap,
       FieldValues fieldValues, int depth) {
     if (depth >= fieldValues.values.length) return;
 
@@ -163,14 +157,14 @@ class CompoundIndex extends NitriteIndex {
     } else {
       // intermediate fields
       var subMap2 = subMap[dbValue];
-      subMap2 ??= SplayTreeMap<DBValue, dynamic>();
+      subMap2 ??= <DBValue, dynamic>{};
 
       subMap[dbValue] = subMap2;
       _populateSubMap(subMap2, fieldValues, depth + 1);
     }
   }
 
-  void _deleteFromSubMap(SplayTreeMap<DBValue, dynamic> subMap,
+  void _deleteFromSubMap(Map subMap,
       FieldValues fieldValues, int depth) {
     var pair = fieldValues.values[depth];
     var value = pair.second;

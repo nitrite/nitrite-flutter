@@ -1,7 +1,6 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
-import 'package:nitrite/src/index/types.dart';
 
 class IndexManager {
   final NitriteConfig _nitriteConfig;
@@ -9,14 +8,14 @@ class IndexManager {
   final String _collectionName;
 
   Iterable<IndexDescriptor>? _indexDescriptorCache;
-  late NitriteMap<Fields, IndexMeta> _indexMetaMap;
+  late NitriteMap<Fields, Document> _indexMetaMap;
 
   IndexManager(this._collectionName, this._nitriteConfig)
       : _nitriteStore = _nitriteConfig.getNitriteStore();
 
   Future<void> initialize() async {
     var mapName = deriveIndexMetaMapName(_collectionName);
-    _indexMetaMap = await _nitriteStore.openMap<Fields, IndexMeta>(mapName);
+    _indexMetaMap = await _nitriteStore.openMap<Fields, Document>(mapName);
     await _updateIndexDescriptorCache();
   }
 
@@ -43,7 +42,8 @@ class IndexManager {
   }
 
   Future<IndexDescriptor?> findExactIndexDescriptor(Fields fields) async {
-    var meta = await _indexMetaMap[fields];
+    var metaDoc = await _indexMetaMap[fields];
+    var meta = metaDoc != null ? IndexMeta.fromDocument(metaDoc) : null;
     if (meta != null) {
       return meta.indexDescriptor;
     }
@@ -55,7 +55,8 @@ class IndexManager {
     if (!_indexMetaMap.isClosed && !_indexMetaMap.isDropped) {
       var executor = Executor();
 
-      await for (var indexMeta in _indexMetaMap.values()) {
+      await for (var indexMetaDoc in _indexMetaMap.values()) {
+        var indexMeta = IndexMeta.fromDocument(indexMetaDoc);
         if (indexMeta.indexDescriptor != null) {
           var indexMapName = indexMeta.indexMap;
 
@@ -77,7 +78,8 @@ class IndexManager {
   }
 
   Future<bool> isDirtyIndex(Fields fields) async {
-    var meta = await _indexMetaMap[fields];
+    var metaDoc = await _indexMetaMap[fields];
+    var meta = metaDoc == null ? null : IndexMeta.fromDocument(metaDoc);
     if (meta != null) {
       return meta.isDirty;
     }
@@ -87,7 +89,8 @@ class IndexManager {
   Future<Iterable<IndexDescriptor>> listIndexDescriptors() async {
     var list = <IndexDescriptor>[];
     var iterable = _indexMetaMap.values();
-    await for (var indexMeta in iterable) {
+    await for (var indexMetaDoc in iterable) {
+      var indexMeta = IndexMeta.fromDocument(indexMetaDoc);
       var indexDescriptor = indexMeta.indexDescriptor;
       if (indexDescriptor != null) {
         list.add(indexDescriptor);
@@ -106,13 +109,15 @@ class IndexManager {
     indexMeta.indexMap = deriveIndexMapName(index);
     indexMeta.isDirty = false;
 
-    await _indexMetaMap.put(fields, indexMeta);
+    await _indexMetaMap.put(fields, indexMeta.toDocument());
     await _updateIndexDescriptorCache();
     return index;
   }
 
   Future<void> dropIndexDescriptor(Fields fields) async {
-    var indexMeta = await _indexMetaMap[fields];
+    var indexMetaDoc = await _indexMetaMap[fields];
+    var indexMeta =
+        indexMetaDoc == null ? null : IndexMeta.fromDocument(indexMetaDoc);
     if (indexMeta != null) {
       var indexMapName = indexMeta.indexMap;
       if (indexMapName != null) {
@@ -143,7 +148,8 @@ class IndexManager {
     if (!_indexMetaMap.isClosed && !_indexMetaMap.isDropped) {
       var executor = Executor();
 
-      await for (var indexMeta in _indexMetaMap.values()) {
+      await for (var indexMetaDoc in _indexMetaMap.values()) {
+        var indexMeta = IndexMeta.fromDocument(indexMetaDoc);
         if (indexMeta.indexDescriptor != null) {
           var indexMapName = indexMeta.indexMap;
 
@@ -164,10 +170,11 @@ class IndexManager {
   }
 
   Future<void> _markDirty(Fields fields, bool dirty) async {
-    var meta = await _indexMetaMap[fields];
+    var metaDoc = await _indexMetaMap[fields];
+    var meta = metaDoc == null ? null : IndexMeta.fromDocument(metaDoc);
     if (meta != null) {
       meta.isDirty = dirty;
-      await _indexMetaMap.put(fields, meta);
+      await _indexMetaMap.put(fields, meta.toDocument());
     }
   }
 
