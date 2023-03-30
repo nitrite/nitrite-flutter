@@ -1,3 +1,4 @@
+import 'package:faker/faker.dart' as fk;
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
@@ -77,6 +78,7 @@ void main() {
     });
 
     test('Test Get byId no Id', () async {
+      var faker = fk.Faker();
       var repository = await db.getRepository<Note>();
       var n1 = Note(
         noteId: 10000,

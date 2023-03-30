@@ -14,7 +14,6 @@ dependencies:
   path: ^1.8.2
   nitrite: ^0.0.1
   path_provider: ^2.0.13
-  yaml: ^3.1.1
   logging: ^1.0.2
 
 dev_dependencies:
@@ -27,6 +26,9 @@ dev_dependencies:
     path: ../nitrite_entity_generator
   test: ^1.16.0
   encrypt: ^5.0.1
+  faker: ^2.0.0
+  yaml: ^3.1.1
+  uuid: ^3.0.7
 
 dependency_overrides:
   nitrite:

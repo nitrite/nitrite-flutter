@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:faker/faker.dart' as fk;
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
@@ -18,6 +19,7 @@ late ObjectRepository<Book> bookRepository;
 late ObjectRepository<Product> productRepository;
 late ObjectRepository<Product> upcomingProductRepository;
 late String dbPath;
+late fk.Faker faker;
 
 void setUpLog() {
   Logger.root.level = Level.OFF;
@@ -121,7 +123,8 @@ Future<void> cleanUp() async {
 }
 
 Future<void> _openDb() async {
-  dbPath = '${Directory.current.path}/db';
+  faker = fk.Faker();
+  dbPath = '${Directory.current.path}/db/${faker.guid.guid()}';
 
   var storeModule =
       HiveModule.withConfig().crashRecovery(true).path(dbPath).build();

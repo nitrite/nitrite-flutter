@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:faker/faker.dart';
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
@@ -9,6 +10,7 @@ late Nitrite db;
 late NitriteCollection collection;
 late Document doc1, doc2, doc3;
 late String dbPath;
+late Faker faker;
 
 void setUpLog() {
   Logger.root.level = Level.OFF;
@@ -22,7 +24,8 @@ void setUpLog() {
 }
 
 Future<void> setUpNitriteTest() async {
-  dbPath = '${Directory.current.path}/db';
+  faker = Faker();
+  dbPath = '${Directory.current.path}/db/${faker.guid.guid()}';
 
   var storeModule =
       HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
