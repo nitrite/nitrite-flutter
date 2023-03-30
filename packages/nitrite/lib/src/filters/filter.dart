@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/db_value.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/index_map.dart';
@@ -276,8 +275,8 @@ abstract class ComparableFilter extends FieldBasedFilter {
       // if it is a list then it is filtering on either single field index,
       // or it is a terminal filter on compound index, emit the nitrite-ids
       yield* Stream.fromIterable(value);
-    } else if (value is SplayTreeMap) {
-      // if it is a tree-map then filtering on compound index, emit sub-map
+    } else if (value is Map) {
+      // if it is a map then filtering on compound index, emit sub-map
       yield value;
     }
   }

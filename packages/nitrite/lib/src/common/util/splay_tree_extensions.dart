@@ -1,8 +1,8 @@
 import 'dart:collection';
 
-
-extension SplayTreeMapExtension on SplayTreeMap {
-  static SplayTreeMap fromMap(Map map) {
+extension SplayTreeMapEx on SplayTreeMap {
+  static SplayTreeMap? fromMap(Map? map) {
+    if (map == null) return null;
     var stm = SplayTreeMap();
     for (var entry in map.entries) {
       stm[entry.key] = entry.value;

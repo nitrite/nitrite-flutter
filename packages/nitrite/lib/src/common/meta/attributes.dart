@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:collection/collection.dart';
+import 'package:nitrite/nitrite.dart';
 import 'package:uuid/uuid.dart';
 
 /// Interface to be implemented by database objects that wish to be
@@ -41,6 +43,16 @@ class Attributes {
     set(uniqueId, uuid.v4());
   }
 
+  factory Attributes.fromDocument(Document document) {
+    Attributes attr = Attributes();
+    for (var pair in document) {
+      if (pair.first != docId) {
+        attr._attributes[pair.first] = pair.second;
+      }
+    }
+    return attr;
+  }
+
   /// Set attributes.
   Attributes set(String key, String value) {
     _attributes[key] = value;
@@ -59,5 +71,15 @@ class Attributes {
     return _attributes.containsKey(key);
   }
 
-  Map<String, String> toMap() => Map.unmodifiable(_attributes);
+  Document toDocument() => Document.fromMap(_attributes);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Attributes &&
+          runtimeType == other.runtimeType &&
+          MapEquality<String, String>().equals(_attributes, other._attributes);
+
+  @override
+  int get hashCode => MapEquality<String, String>().hash(_attributes);
 }

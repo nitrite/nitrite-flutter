@@ -321,7 +321,6 @@ class _GreaterEqualFilter extends ComparableFilter {
       // or list (single field index)
       var val = await indexMap.get(ceilingKey);
       yield* yieldValues(val);
-
       ceilingKey = await indexMap.higherKey(ceilingKey);
     }
   }

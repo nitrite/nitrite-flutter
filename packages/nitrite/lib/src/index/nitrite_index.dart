@@ -26,10 +26,9 @@ abstract class NitriteIndex {
 
   /// Adds a [NitriteId] of the [FieldValues] to the existing indexed
   /// list of [NitriteId]s.
-  List<NitriteId> addNitriteIds(
-      List<NitriteId>? nitriteIds, FieldValues fieldValues) {
-
-    nitriteIds = nitriteIds ?? [];
+  List<dynamic> addNitriteIds(
+      List<dynamic>? nitriteIds, FieldValues fieldValues) {
+    nitriteIds = nitriteIds ?? <NitriteId>[];
 
     if (isUnique && nitriteIds.length == 1) {
       // if key is already exists for unique type, throw error

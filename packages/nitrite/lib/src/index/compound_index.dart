@@ -121,15 +121,14 @@ class CompoundIndex extends NitriteIndex {
   Future<void> _removeIndexElement(NitriteMap<DBValue, Map> indexMap,
       FieldValues fieldValues, DBValue element) async {
     var subMap = await indexMap[element];
-    
+
     if (subMap != null && subMap.isNotEmpty) {
       _deleteFromSubMap(subMap, fieldValues, 1);
       return indexMap.put(element, subMap);
     }
   }
 
-  void _populateSubMap(Map subMap,
-      FieldValues fieldValues, int depth) {
+  void _populateSubMap(Map subMap, FieldValues fieldValues, int depth) {
     if (depth >= fieldValues.values.length) return;
 
     var pair = fieldValues.values[depth];
@@ -164,8 +163,7 @@ class CompoundIndex extends NitriteIndex {
     }
   }
 
-  void _deleteFromSubMap(Map subMap,
-      FieldValues fieldValues, int depth) {
+  void _deleteFromSubMap(Map subMap, FieldValues fieldValues, int depth) {
     var pair = fieldValues.values[depth];
     var value = pair.second;
     DBValue dbValue;

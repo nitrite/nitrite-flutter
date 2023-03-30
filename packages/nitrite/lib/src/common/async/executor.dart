@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /// A rudimentary parallel task executor.
 class Executor {
   final List<Future<void>> _futures = [];

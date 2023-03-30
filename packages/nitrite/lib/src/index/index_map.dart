@@ -9,10 +9,9 @@ class IndexMap {
   bool _reverseScan = false;
 
   IndexMap(
-      {NitriteMap<DBValue, dynamic>? nitriteMap,
-      SplayTreeMap<dynamic, dynamic>? navigableMap})
+      {NitriteMap<DBValue, dynamic>? nitriteMap, Map<dynamic, dynamic>? subMap})
       : _nitriteMap = nitriteMap,
-        _navigableMap = navigableMap;
+        _navigableMap = SplayTreeMapEx.fromMap(subMap);
 
   set reverseScan(bool reverseScan) {
     _reverseScan = reverseScan;
@@ -175,9 +174,8 @@ class IndexMap {
 
       // if the value is not terminal, scan recursively
       if (entry.second is Map) {
-        var subMap = SplayTreeMapExtension.fromMap(entry.second)
-            as SplayTreeMap<DBValue, dynamic>;
-        var indexMap = IndexMap(navigableMap: subMap);
+        var subMap = entry.second;
+        var indexMap = IndexMap(subMap: subMap);
         yield* indexMap.getTerminalNitriteIds();
       }
     }

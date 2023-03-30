@@ -1,7 +1,6 @@
+import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/initializable.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
-
-import 'package:nitrite/nitrite.dart';
 
 /// Represents a Nitrite key-value pair map. Every piece of
 /// data in a Nitrite database is stored in [NitriteMap].
@@ -85,16 +84,15 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
   @override
   Future<Attributes> getAttributes() async {
     if (!isDropped) {
-      NitriteMap<String, Attributes> metaMap =
+      NitriteMap<String, Document> metaMap =
           await getStore().openMap(metaMapName);
 
       if (name != metaMapName) {
-        var attributes = await metaMap[name];
-        if (attributes != null) {
-          return attributes;
-        } else {
-          return Attributes();
-        }
+        var attributesDoc = await metaMap[name];
+        var attributes = attributesDoc == null
+            ? Attributes()
+            : Attributes.fromDocument(attributesDoc);
+        return attributes;
       }
     }
     return Attributes();
@@ -104,10 +102,10 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
   @override
   Future<void> setAttributes(Attributes attributes) async {
     if (!isDropped) {
-      var metaMap = await getStore().openMap<String, Attributes>(metaMapName);
+      var metaMap = await getStore().openMap<String, Document>(metaMapName);
 
       if (name != metaMapName) {
-        await metaMap.put(name, attributes);
+        await metaMap.put(name, attributes.toDocument());
       }
     }
   }
@@ -119,16 +117,16 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
         return;
       }
 
-      var metaMap = await getStore().openMap<String, Attributes>(metaMapName);
+      var metaMap = await getStore().openMap<String, Document>(metaMapName);
 
-      var attributes = await metaMap[name];
-      if (attributes == null) {
-        attributes = Attributes(name);
-        metaMap.put(name, attributes);
-      }
+      var attributesDoc = await metaMap[name];
+      var attributes = attributesDoc == null
+          ? Attributes(name)
+          : Attributes.fromDocument(attributesDoc);
 
       attributes.set(Attributes.lastModifiedTime,
           DateTime.now().millisecondsSinceEpoch.toString());
+      metaMap.put(name, attributes.toDocument());
     }
   }
 }

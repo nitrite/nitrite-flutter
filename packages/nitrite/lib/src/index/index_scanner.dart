@@ -1,8 +1,5 @@
-import 'dart:collection';
-
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/util/splay_tree_extensions.dart';
 import 'package:nitrite/src/filters/filter.dart';
 import 'package:nitrite/src/index/index_map.dart';
 import 'package:rxdart/rxdart.dart';
@@ -53,8 +50,7 @@ class IndexScanner {
           await for (var subMap in scanResult) {
             // create an index map from the sub map and scan to get the
             // terminal nitrite ids
-            var navigableMap = SplayTreeMapExtension.fromMap(subMap);
-            var iMap = IndexMap(navigableMap: navigableMap);
+            var iMap = IndexMap(subMap: subMap);
             var subScanner = IndexScanner(iMap);
             yield* subScanner.doScan(remainingFilters, indexScanOrder);
           }
