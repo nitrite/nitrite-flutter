@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/transaction/tx_map.dart';
 import 'package:nitrite/src/transaction/tx_rtree.dart';
 
@@ -51,16 +50,14 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
 
   @override
   Future<void> close() async {
-    var executor = Executor();
     for (var map in _mapRegistry.values) {
-      executor.submit(() async => await map.close());
+      await map.close();
     }
 
     for (var rTree in _rTreeRegistry.values) {
-      executor.submit(() async => await rTree.close());
+      await rTree.close();
     }
 
-    await executor.execute();
     _mapRegistry.clear();
     _rTreeRegistry.clear();
     await super.close();

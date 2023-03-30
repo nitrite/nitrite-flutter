@@ -43,8 +43,8 @@ abstract class NitriteIndex {
 
   /// Removes a [NitriteId] of the [FieldValues] from the existing indexed
   /// list of [NitriteId]s.
-  List<NitriteId> removeNitriteIds(
-      List<NitriteId> nitriteIds, FieldValues fieldValues) {
+  List<dynamic> removeNitriteIds(
+      List<dynamic> nitriteIds, FieldValues fieldValues) {
     nitriteIds.remove(fieldValues.nitriteId!);
     return nitriteIds;
   }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/stack.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/transaction/tx.dart';
@@ -42,13 +41,11 @@ class Session {
 
   Future<void> close() async {
     _active = false;
-    var executor = Executor();
     for (var tx in transactionMap.values) {
       if (tx.state != TransactionState.closed) {
-        executor.submit(() async => await tx.rollback());
+        await tx.rollback();
       }
     }
-    await executor.execute();
   }
 }
 

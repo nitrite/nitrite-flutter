@@ -1,7 +1,6 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/index_manager.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
 
 class IndexOperations {
@@ -61,13 +60,10 @@ class IndexOperations {
 
     var indices = await listIndexes();
 
-    var executor = Executor();
     for (var index in indices) {
-      // drop all indices in parallel
-      executor.submit(() async => await dropIndex(index.fields));
+      await dropIndex(index.fields);
     }
 
-    await executor.execute();
     await _indexManager.dropIndexMeta();
     _indexBuildTracker.clear();
     await _indexManager.close();
@@ -156,17 +152,13 @@ class IndexOperations {
         await nitriteIndexer.dropIndex(indexDescriptor, _nitriteConfig);
       }
 
-      var executor = Executor();
       await for (var entry in _nitriteMap.entries()) {
         var document = entry.second;
         var fieldValues = getDocumentValues(document, indexDescriptor.fields);
 
-        // write index entries in parallel
-        executor.submit(() async => await nitriteIndexer.writeIndexEntry(
-            fieldValues, indexDescriptor, _nitriteConfig));
+        await nitriteIndexer.writeIndexEntry(
+            fieldValues, indexDescriptor, _nitriteConfig);
       }
-
-      await executor.execute();
     } finally {
       // remove dirty marker to denote indexing completed successfully
       // if dirty marker is found in any index, it needs to be rebuilt

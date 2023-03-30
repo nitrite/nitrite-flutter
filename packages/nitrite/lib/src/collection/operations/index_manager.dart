@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 
 class IndexManager {
@@ -53,25 +52,19 @@ class IndexManager {
   Future<void> close() async {
     // close all index maps
     if (!_indexMetaMap.isClosed && !_indexMetaMap.isDropped) {
-      var executor = Executor();
-
       await for (var indexMetaDoc in _indexMetaMap.values()) {
         var indexMeta = IndexMeta.fromDocument(indexMetaDoc);
         if (indexMeta.indexDescriptor != null) {
           var indexMapName = indexMeta.indexMap;
 
           if (indexMapName != null) {
-            // run all futures in parallel
-            executor.submit(() async {
-              var indexMap =
-                  await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
-              await indexMap.close();
-            });
+            var indexMap =
+                await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
+            await indexMap.close();
           }
         }
       }
 
-      await executor.execute();
       // close index meta
       await _indexMetaMap.close();
     }
@@ -146,26 +139,19 @@ class IndexManager {
   Future<void> clearAll() async {
     // close all index maps
     if (!_indexMetaMap.isClosed && !_indexMetaMap.isDropped) {
-      var executor = Executor();
-
       await for (var indexMetaDoc in _indexMetaMap.values()) {
         var indexMeta = IndexMeta.fromDocument(indexMetaDoc);
         if (indexMeta.indexDescriptor != null) {
           var indexMapName = indexMeta.indexMap;
 
           if (indexMapName != null) {
-            // run all futures in parallel
-            executor.submit(() async {
-              if (await _nitriteStore.hasMap(indexMapName)) {
-                var indexMap = await _nitriteStore.openMap(indexMapName);
-                await indexMap.clear();
-              }
-            });
+            if (await _nitriteStore.hasMap(indexMapName)) {
+              var indexMap = await _nitriteStore.openMap(indexMapName);
+              await indexMap.clear();
+            }
           }
         }
       }
-
-      await executor.execute();
     }
   }
 

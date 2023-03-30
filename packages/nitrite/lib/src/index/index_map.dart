@@ -168,7 +168,8 @@ class IndexMap {
     await for (var entry in entries()) {
       // if the value is terminal, collect all nitrite-ids
       if (entry.second is List) {
-        var nitriteIds = entry.second as List<NitriteId>;
+        var second = entry.second as List;
+        var nitriteIds = second.map((e) => e as NitriteId).toList();
         yield* Stream.fromIterable(nitriteIds);
       }
 

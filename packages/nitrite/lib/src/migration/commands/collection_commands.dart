@@ -2,7 +2,6 @@ import 'package:event_bus/event_bus.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/collection_operations.dart';
 import 'package:nitrite/src/collection/operations/index_manager.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
 
 class CollectionRenameCommand extends BaseCommand {
@@ -24,26 +23,21 @@ class CollectionRenameCommand extends BaseCommand {
     try {
       await newOperations.initialize();
 
-      var executor = Executor();
       await for (var pair in nitriteMap!.entries()) {
-        // copy all documents in parallel
-        executor.submit(() async => await newMap.put(pair.first, pair.second));
+        await newMap.put(pair.first, pair.second);
       }
-      await executor.execute();
 
       var indexManager = IndexManager(oldName, nitrite.config);
       try {
         await indexManager.initialize();
 
         var indexEntries = await indexManager.getIndexDescriptors();
-        var executor = Executor();
         for (var indexDescriptor in indexEntries) {
           var field = indexDescriptor.fields;
           var indexType = indexDescriptor.indexType;
           // create indexes in parallel
-          executor.submit(() async => await newOperations.createIndex(field, indexType));
+          await newOperations.createIndex(field, indexType);
         }
-        await executor.execute();
       } finally {
         await indexManager.close();
       }
@@ -69,7 +63,6 @@ class AddFieldCommand extends BaseCommand {
     var indexDescriptor =
         await operations?.findIndex(Fields.withNames([fieldName]));
 
-    var executor = Executor();
     await for (var pair in nitriteMap!.entries()) {
       var document = pair.second;
       if (thirdArg is Generator) {
@@ -78,9 +71,8 @@ class AddFieldCommand extends BaseCommand {
         document.put(fieldName, thirdArg);
       }
       // update all documents in parallel
-      executor.submit(() async => await nitriteMap!.put(pair.first, document));
+      await nitriteMap!.put(pair.first, document);
     }
-    await executor.execute();
 
     if (indexDescriptor != null) {
       await operations?.createIndex(
@@ -108,7 +100,6 @@ class RenameFieldCommand extends BaseCommand {
       var matchingIndexDescriptors =
           await indexManager.findMatchingIndexDescriptors(oldField);
 
-      var executor = Executor();
       await for (var pair in nitriteMap!.entries()) {
         var document = pair.second;
         if (document.containsKey(oldName)) {
@@ -117,13 +108,11 @@ class RenameFieldCommand extends BaseCommand {
           document.remove(oldName);
 
           // update all documents in parallel
-          executor.submit(() async => await nitriteMap!.put(pair.first, document));
+          await nitriteMap!.put(pair.first, document);
         }
       }
-      await executor.execute();
 
       if (matchingIndexDescriptors.isNotEmpty) {
-        var executor = Executor();
         for (var indexDescriptor in matchingIndexDescriptors) {
           var indexType = indexDescriptor.indexType;
 
@@ -131,13 +120,9 @@ class RenameFieldCommand extends BaseCommand {
           var newIndexFields =
               _getNewIndexFields(oldIndexFields, oldName, newName);
 
-          // create indexes in parallel
-          executor.submit(() async {
-            await operations!.dropIndex(indexDescriptor.fields);
-            await operations!.createIndex(newIndexFields, indexType);
-          });
+          await operations!.dropIndex(indexDescriptor.fields);
+          await operations!.createIndex(newIndexFields, indexType);
         }
-        await executor.execute();
       }
     } finally {
       await indexManager.close();
@@ -173,13 +158,11 @@ class DeleteFieldCommand extends BaseCommand {
     var indexDescriptor =
         await operations?.findIndex(Fields.withNames([fieldName]));
 
-    var executor = Executor();
     await for (var pair in nitriteMap!.entries()) {
       var document = pair.second;
       document.remove(fieldName);
-      executor.submit(() async => await nitriteMap!.put(pair.first, document));
+      await nitriteMap!.put(pair.first, document);
     }
-    await executor.execute();
 
     if (indexDescriptor != null) {
       await operations?.dropIndex(Fields.withNames([fieldName]));

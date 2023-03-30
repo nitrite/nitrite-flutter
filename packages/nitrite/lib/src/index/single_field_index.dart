@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/index_map.dart';
@@ -47,15 +46,11 @@ class SingleFieldIndex extends NitriteIndex {
       var dbValue = DBValue(element);
       await _removeIndexElement(indexMap, fieldValues, dbValue);
     } else if (element is Iterable) {
-      var executor = Executor();
       for (var item in element) {
         // wrap around db value
         var dbValue = item == null ? DBNull.instance : DBValue(item);
-        // remove index element in parallel
-        executor
-            .submit(() => _removeIndexElement(indexMap, fieldValues, dbValue));
+        await _removeIndexElement(indexMap, fieldValues, dbValue);
       }
-      await executor.execute();
     }
   }
 
@@ -76,15 +71,11 @@ class SingleFieldIndex extends NitriteIndex {
       var dbValue = DBValue(element);
       await _addIndexElement(indexMap, fieldValues, dbValue);
     } else if (element is Iterable) {
-      var executor = Executor();
       for (var item in element) {
         // wrap around db value
         var dbValue = item == null ? DBNull.instance : DBValue(item);
-        // add index element in parallel
-        executor.submit(
-            () async => await _addIndexElement(indexMap, fieldValues, dbValue));
+        await _addIndexElement(indexMap, fieldValues, dbValue);
       }
-      await executor.execute();
     }
   }
 
@@ -102,9 +93,9 @@ class SingleFieldIndex extends NitriteIndex {
 
   Future<void> _removeIndexElement(NitriteMap<DBValue, List<dynamic>> indexMap,
       FieldValues fieldValues, DBValue element) async {
-    var nitriteIds = await indexMap[element] as List<NitriteId>?;
-    if (!nitriteIds.isNullOrEmpty) {
-      nitriteIds!.remove(fieldValues.nitriteId);
+    var nitriteIds = await indexMap[element];
+    if (nitriteIds != null) {
+      nitriteIds.remove(fieldValues.nitriteId);
       if (nitriteIds.isEmpty) {
         await indexMap.remove(element);
       } else {

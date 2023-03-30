@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 
 class NitriteEntityReader<T> {
@@ -34,16 +33,13 @@ class NitriteEntityReader<T> {
       var indexes = entity.entityIndexes;
 
       if (indexes != null) {
-        var executor = Executor();
         for (var index in indexes) {
           var hasIndex = await _nitriteCollection.hasIndex(index.fieldNames);
           if (!hasIndex) {
-            executor.submit(() async => await _nitriteCollection.createIndex(
-                index.fieldNames, indexOptions(index.indexType)));
+            await _nitriteCollection.createIndex(
+                index.fieldNames, indexOptions(index.indexType));
           }
         }
-
-        await executor.execute();
       }
     }
   }

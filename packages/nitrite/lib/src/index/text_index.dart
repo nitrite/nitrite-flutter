@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/nitrite_index.dart';
@@ -31,12 +30,9 @@ class TextIndex extends NitriteIndex {
     } else if (element is Iterable) {
       validateStringIterableIndexField(element, firstField);
 
-      var executor = Executor();
       for (var item in element) {
-        // add index element in parallel
-        executor.submit(() async => await _addIndexElement(indexMap, fieldValues, item));
+        await _addIndexElement(indexMap, fieldValues, item);
       }
-      await executor.execute();
     } else {
       throw IndexingException("Index field $firstField must be a "
           "String or Iterable<String>");
@@ -60,12 +56,9 @@ class TextIndex extends NitriteIndex {
     } else if (element is Iterable) {
       validateStringIterableIndexField(element, firstField);
 
-      var executor = Executor();
       for (var item in element) {
-        // remove index element in parallel
-        executor.submit(() async => await _removeIndexElement(indexMap, fieldValues, item));
+        await _removeIndexElement(indexMap, fieldValues, item);
       }
-      await executor.execute();
     } else {
       throw IndexingException("Index field $firstField must be a "
           "String or Iterable<String>");
@@ -104,37 +97,30 @@ class TextIndex extends NitriteIndex {
       FieldValues fieldValues, String? value) async {
     var words = _decompose(value);
 
-    var executor = Executor();
     for (var word in words) {
-      var nitriteIds = await indexMap[word];
-      nitriteIds ??= <NitriteId>[];
-      nitriteIds = addNitriteIds(nitriteIds as List<NitriteId>, fieldValues);
-      // update index map in parallel
-      executor.submit(() async => await indexMap.put(word, nitriteIds!));
+      var values = await indexMap[word];
+      values ??= <NitriteId>[];
+      List nitriteIds = values.map((e) => e as NitriteId).toList();
+      nitriteIds = addNitriteIds(nitriteIds, fieldValues);
+      await indexMap.put(word, nitriteIds);
     }
-    await executor.execute();
   }
 
   Future<void> _removeIndexElement(NitriteMap<String, List<dynamic>> indexMap,
       FieldValues fieldValues, String? value) async {
     var words = _decompose(value);
 
-    var executor = Executor();
     for (var word in words) {
       var nitriteIds = await indexMap[word];
       if (!nitriteIds.isNullOrEmpty) {
         nitriteIds!.remove(fieldValues.nitriteId);
-        // update index map in parallel
-        executor.submit(() async {
-          if (nitriteIds.isEmpty) {
-            await indexMap.remove(word);
-          } else {
-            await indexMap.put(word, nitriteIds);
-          }
-        });
+        if (nitriteIds.isEmpty) {
+          await indexMap.remove(word);
+        } else {
+          await indexMap.put(word, nitriteIds);
+        }
       }
     }
-    await executor.execute();
   }
 
   Set<String> _decompose(String? value) {

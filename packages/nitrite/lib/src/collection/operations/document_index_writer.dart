@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/index_operations.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
 
 class DocumentIndexWriter {
@@ -13,53 +12,36 @@ class DocumentIndexWriter {
 
   Future<void> writeIndexEntry(Document document) async {
     var indexEntries = await _indexOperations.listIndexes();
-    var executor = Executor();
 
     for (var indexDescriptor in indexEntries) {
       var indexType = indexDescriptor.indexType;
 
-      // run the job for all index entries in parallel
-      executor.submit(() async {
-        var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
-        await _writeIndexEntryInternal(
-            indexDescriptor, document, nitriteIndexer);
-      });
+      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
+      await _writeIndexEntryInternal(indexDescriptor, document, nitriteIndexer);
     }
-    await executor.execute();
   }
 
   Future<void> updateIndexEntry(Document oldDoc, Document newDoc) async {
     var indexEntries = await _indexOperations.listIndexes();
-    var executor = Executor();
-
     for (var indexDescriptor in indexEntries) {
       var indexType = indexDescriptor.indexType;
       var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
-      // run the job for all index entries in parallel
-      executor.submit(() async {
-        await _removeIndexEntryInternal(
+      await _removeIndexEntryInternal(
             indexDescriptor, oldDoc, nitriteIndexer);
         await _writeIndexEntryInternal(indexDescriptor, newDoc, nitriteIndexer);
-      });
     }
-    await executor.execute();
   }
 
   Future<void> removeIndexEntry(Document document) async {
     var indexEntries = await _indexOperations.listIndexes();
-    var executor = Executor();
-
     for (var indexDescriptor in indexEntries) {
       var indexType = indexDescriptor.indexType;
-      executor.submit(() async {
-        var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
+      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
         await _removeIndexEntryInternal(
             indexDescriptor, document, nitriteIndexer);
-      });
     }
-    await executor.execute();
   }
 
   Future<void> _writeIndexEntryInternal(IndexDescriptor indexDescriptor,

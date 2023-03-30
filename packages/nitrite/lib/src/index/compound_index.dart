@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/async/executor.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/index_map.dart';
@@ -51,15 +50,11 @@ class CompoundIndex extends NitriteIndex {
       var dbValue = DBValue(firstValue);
       await _removeIndexElement(indexMap, fieldValues, dbValue);
     } else if (firstValue is Iterable) {
-      var executor = Executor();
       for (var item in firstValue) {
         // wrap around db value
         var dbValue = item != null ? DBValue(item) : DBNull.instance;
-        // remove index element in parallel
-        executor
-            .submit(() => _removeIndexElement(indexMap, fieldValues, dbValue));
+        await _removeIndexElement(indexMap, fieldValues, dbValue);
       }
-      await executor.execute();
     }
   }
 
@@ -82,15 +77,11 @@ class CompoundIndex extends NitriteIndex {
       var dbValue = DBValue(firstValue);
       await _addIndexElement(indexMap, fieldValues, dbValue);
     } else if (firstValue is Iterable) {
-      var executor = Executor();
       for (var item in firstValue) {
         // wrap around db value
         var dbValue = item != null ? DBValue(item) : DBNull.instance;
-        // add index element in parallel
-        executor.submit(
-            () async => await _addIndexElement(indexMap, fieldValues, dbValue));
+        await _addIndexElement(indexMap, fieldValues, dbValue);
       }
-      await executor.execute();
     }
   }
 
@@ -178,9 +169,9 @@ class CompoundIndex extends NitriteIndex {
 
     if (depth == fieldValues.values.length - 1) {
       // terminal field
-      var nitriteIds = subMap[dbValue] as List<NitriteId>;
+      var nitriteIds = subMap[dbValue] as List;
       nitriteIds = removeNitriteIds(nitriteIds, fieldValues);
-      if (nitriteIds.isNullOrEmpty) {
+      if (nitriteIds.isEmpty) {
         subMap.remove(dbValue);
       } else {
         subMap[dbValue] = nitriteIds;
