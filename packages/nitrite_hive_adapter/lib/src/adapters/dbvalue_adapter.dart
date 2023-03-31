@@ -16,3 +16,18 @@ class DBValueAdapter extends TypeAdapter<DBValue> {
     writer.write(obj.value);
   }
 }
+
+class DBNullAdapter extends TypeAdapter<DBNull> {
+  @override
+  int get typeId => 6;
+
+  @override
+  void write(BinaryWriter writer, DBNull obj) {
+    writer.write(null);
+  }
+
+  @override
+  DBNull read(BinaryReader reader) {
+    return DBNull.instance;
+  }
+}

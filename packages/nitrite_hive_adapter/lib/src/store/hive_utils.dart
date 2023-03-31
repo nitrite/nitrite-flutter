@@ -29,6 +29,7 @@ void _registerBuiltinTypeAdapters(HiveImpl hive) {
   hive.registerAdapter(NitriteIdAdapter());
   hive.registerAdapter(SetAdapter());
   hive.registerAdapter(DBValueAdapter());
+  hive.registerAdapter(DBNullAdapter());
   hive.registerAdapter(FieldsAdapter());
 }
 

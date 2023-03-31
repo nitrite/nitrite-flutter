@@ -42,7 +42,7 @@ class IndexScanner {
           // reached the terminal nitrite ids
           yield* scanResult.cast<NitriteId>();
           break;
-        case _StreamType.treeMap:
+        case _StreamType.map:
           // if this is a stream of sub maps, then take each of the sub map
           // and the next filter and scan the sub map
           var remainingFilters = filters.skip(1);
@@ -66,7 +66,7 @@ class IndexScanner {
   Future<_StreamType> _streamType(Stream<dynamic> stream) async {
     var first = await stream.first;
     if (first is Map) {
-      return _StreamType.treeMap;
+      return _StreamType.map;
     } else if (first is NitriteId) {
       return _StreamType.nitriteId;
     } else {
@@ -80,5 +80,5 @@ class IndexScanner {
 
 enum _StreamType {
   nitriteId,
-  treeMap,
+  map,
 }
