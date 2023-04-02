@@ -2,6 +2,7 @@
 
 import 'package:hive/src/hive_impl.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
+import 'package:nitrite_hive_adapter/src/adapters/datetime_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/dbvalue_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/document_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/fields_adapter.dart';
@@ -25,12 +26,13 @@ Future<HiveImpl> openHiveDb(HiveConfig hiveConfig) async {
 }
 
 void _registerBuiltinTypeAdapters(HiveImpl hive) {
-  hive.registerAdapter(DocumentAdapter());
   hive.registerAdapter(NitriteIdAdapter());
+  hive.registerAdapter(DocumentAdapter());
   hive.registerAdapter(SetAdapter());
   hive.registerAdapter(DBValueAdapter());
   hive.registerAdapter(DBNullAdapter());
   hive.registerAdapter(FieldsAdapter());
+  hive.registerAdapter(DateTimeAdapter(), internal: true);
 }
 
 int nitriteKeyComparator(dynamic k1, dynamic k2) {

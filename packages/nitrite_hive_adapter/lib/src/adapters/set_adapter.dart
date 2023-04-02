@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 class SetAdapter implements TypeAdapter<Set<dynamic>> {
   @override
-  int get typeId => 4;
+  int get typeId => 3;
 
   @override
   Set read(BinaryReader reader) {

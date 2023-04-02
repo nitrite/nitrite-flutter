@@ -3,7 +3,7 @@ import 'package:nitrite/nitrite.dart';
 
 class FieldsAdapter extends TypeAdapter<Fields> {
   @override
-  int get typeId => 7;
+  int get typeId => 6;
 
   @override
   Fields read(BinaryReader reader) {

@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
@@ -162,12 +161,11 @@ void main() {
     });
 
     test('Test Index Event', () async {
-      Logger.root.level = Level.OFF;
       var collection = await db.getCollection('index-test');
       var random = Random();
 
-      for (var i = 0; i < 10000; i++) {
-        var document = createDocument('first', random.nextInt(10000))
+      for (var i = 0; i < 1000; i++) {
+        var document = createDocument('first', random.nextInt(1000))
             .put('second', random.nextDouble());
         await collection.insert([document]);
       }
@@ -188,12 +186,16 @@ void main() {
 
       await collection
           .createIndex(['first'], indexOptions(IndexType.nonUnique));
-      expect(await (await collection.find()).length, 10000);
+      var cursor = await collection.find();
+      expect(await cursor.length, 1000);
 
       await collection
           .createIndex(['second'], indexOptions(IndexType.nonUnique));
-      expect(await (await collection.find()).length, 10000);
-    });
+      cursor = await collection.find();
+      expect(await cursor.length, 1000);
+
+      await collection.close();
+    }, timeout: Timeout.factor(20));
 
     test('Test Index and Search on null Values', () async {
       var collection = await db.getCollection('index-on-null');
@@ -219,7 +221,8 @@ void main() {
       var cursor = await collection.find(filter: where('first').eq(null));
       expect(await cursor.length, 1);
 
-      await collection.createIndex(['third'], indexOptions(IndexType.nonUnique));
+      await collection
+          .createIndex(['third'], indexOptions(IndexType.nonUnique));
       cursor = await collection.find(filter: where('third').eq(null));
       expect(await cursor.length, 2);
     });

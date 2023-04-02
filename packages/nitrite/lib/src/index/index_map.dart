@@ -3,6 +3,8 @@ import 'dart:collection';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/splay_tree_extensions.dart';
 
+import '../common/util/object_utils.dart';
+
 class IndexMap {
   final NitriteMap<DBValue, dynamic>? _nitriteMap;
   final SplayTreeMap<dynamic, dynamic>? _navigableMap;
@@ -169,7 +171,7 @@ class IndexMap {
       // if the value is terminal, collect all nitrite-ids
       if (entry.second is List) {
         var second = entry.second as List;
-        var nitriteIds = second.map((e) => e as NitriteId).toList();
+        var nitriteIds = castList<NitriteId>(second);
         yield* Stream.fromIterable(nitriteIds);
       }
 

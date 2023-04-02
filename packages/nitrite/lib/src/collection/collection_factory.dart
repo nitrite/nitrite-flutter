@@ -29,11 +29,11 @@ class CollectionFactory {
 
   Future<void> clear() async {
     try {
-      _collectionMap.forEach((key, value) async {
-        if (value.isOpen) {
-          await value.close();
+      for (var entry in _collectionMap.entries) {
+        if (entry.value.isOpen) {
+          await entry.value.close();
         }
-      });
+      }
       _collectionMap.clear();
     } catch (e, stackTrace) {
       throw NitriteIOException("Failed to close a collection",

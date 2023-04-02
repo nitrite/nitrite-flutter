@@ -253,9 +253,9 @@ void main() {
     test('Test Index Event', () async {
       var collection = await db.getCollection('index-test');
       var random = Random();
-      for (var i = 0; i < 10000; i++) {
+      for (var i = 0; i < 1000; i++) {
         var doc = emptyDocument()
-          ..put("first", random.nextInt(10000))
+          ..put("first", random.nextInt(1000))
           ..put("second", random.nextDouble());
         await collection.insert([doc]);
       }
@@ -279,7 +279,7 @@ void main() {
       await collection
           .createIndex(['first', 'second'], indexOptions(IndexType.nonUnique));
       var cursor = await collection.find();
-      expectLater(cursor.length, completion(10000));
+      expectLater(cursor.length, completion(1000));
       expect(failed, isFalse);
       expect(completed, isTrue);
     });

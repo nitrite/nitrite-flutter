@@ -1,6 +1,5 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
-import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/index_map.dart';
 import 'package:nitrite/src/index/index_scanner.dart';
 import 'package:nitrite/src/index/nitrite_index.dart';
@@ -106,7 +105,7 @@ class CompoundIndex extends NitriteIndex {
     subMap ??= <DBValue, dynamic>{};
 
     _populateSubMap(subMap, fieldValues, 1);
-    return indexMap.put(element, subMap);
+    await indexMap.put(element, subMap);
   }
 
   Future<void> _removeIndexElement(NitriteMap<DBValue, Map> indexMap,

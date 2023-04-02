@@ -208,7 +208,7 @@ class TextFilter extends StringFilter {
     await for (var entry in indexMap.entries()) {
       var key = entry.first;
       if (key.endsWith(term.toLowerCase())) {
-        yield* Stream.fromIterable(entry.second as List<NitriteId>);
+        yield* Stream.fromIterable(castList<NitriteId>(entry.second));
       }
     }
   }
@@ -224,7 +224,7 @@ class TextFilter extends StringFilter {
     await for (var entry in indexMap.entries()) {
       var key = entry.first;
       if (key.startsWith(term.toLowerCase())) {
-        yield* Stream.fromIterable(entry.second as List<NitriteId>);
+        yield* Stream.fromIterable(castList<NitriteId>(entry.second));
       }
     }
   }
@@ -234,7 +234,7 @@ class TextFilter extends StringFilter {
     await for (var entry in indexMap.entries()) {
       var key = entry.first;
       if (key.contains(term.toLowerCase())) {
-        yield* Stream.fromIterable(entry.second as List<NitriteId>);
+        yield* Stream.fromIterable(castList<NitriteId>(entry.second));
       }
     }
   }

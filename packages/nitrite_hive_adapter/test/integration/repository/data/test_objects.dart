@@ -346,7 +346,9 @@ class Employee with _$EmployeeEntityMixin {
 
   @override
   String toString() {
-    return "{empId: $empId}";
+    return "{empId: $empId, joinDate: $joinDate, address: $address, "
+        "emailAddress: $emailAddress, blob: $blob, company: $company, "
+        "employeeNote: $employeeNote}";
   }
 }
 

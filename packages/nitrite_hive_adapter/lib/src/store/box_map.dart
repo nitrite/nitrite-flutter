@@ -18,22 +18,16 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   @override
   Future<Value?> operator [](Key key) async {
     var val = await _lazyBox.get(_wrapKey(key), defaultValue: null);
-    try {
-      return val as Value?;
-    } catch (e, s) {
-      print(e);
-      print(s);
-    }
+    return val as Value?;
   }
 
   @override
   Future<Key?> ceilingKey(Key key) async {
-    var iterable = _lazyBox.keys;
-    var wrappedKey = _wrapKey(key);
-    for (var item in iterable) {
-      var result = _keyComparator(item, wrappedKey);
+    var keys = _sortedKeys();
+    for (var item in keys) {
+      var result = _keyComparator(item, key);
       if (result >= 0) {
-        return _unWrapKey(item);
+        return item;
       }
     }
     return null;
@@ -78,12 +72,11 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<Key?> floorKey(Key key) async {
-    var iterable = _lazyBox.keys;
-    var wrappedKey = _wrapKey(key);
-    for (var item in iterable) {
-      var result = _keyComparator(item, wrappedKey);
+    var keys = _sortedKeys().reversed;
+    for (var item in keys) {
+      var result = _keyComparator(item, key);
       if (result <= 0) {
-        return _unWrapKey(item);
+        return item;
       }
     }
     return null;
@@ -95,12 +88,11 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<Key?> higherKey(Key key) async {
-    var iterable = _lazyBox.keys;
-    var wrappedKey = _wrapKey(key);
-    for (var item in iterable) {
-      var result = _keyComparator(item, wrappedKey);
+    var keys = _sortedKeys();
+    for (var item in keys) {
+      var result = _keyComparator(item, key);
       if (result > 0) {
-        return _unWrapKey(item);
+        return item;
       }
     }
     return null;
@@ -129,12 +121,11 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<Key?> lowerKey(Key key) async {
-    var iterable = _lazyBox.keys;
-    var wrappedKey = _wrapKey(key);
-    for (var item in iterable) {
-      var result = _keyComparator(item, wrappedKey);
+    var keys = _sortedKeys().reversed;
+    for (var item in keys) {
+      var result = _keyComparator(item, key);
       if (result < 0) {
-        return _unWrapKey(item);
+        return item;
       }
     }
     return null;
@@ -149,7 +140,7 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
       await _lazyBox.put(_wrapKey(key), value);
       await updateLastModifiedTime();
     } catch (e, s) {
-      throw NitriteException('Failed to put $key: $value pair in map',
+      throw NitriteException('Failed to put $key: $value pair in $_mapName',
           cause: e, stackTrace: s);
     }
   }
@@ -207,5 +198,11 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   // Keys need to be Strings or integers
   dynamic _unWrapKey(dynamic key) {
     return _keyCodec.decode(key);
+  }
+
+  List<Key> _sortedKeys() {
+    var list = _lazyBox.keys.map((e) => _unWrapKey(e) as Key).toList();
+    list.sort(_keyComparator);
+    return list;
   }
 }

@@ -166,3 +166,7 @@ T? defaultValue<T>() {
     return null;
   }
 }
+
+List<T> castList<T>(List<dynamic> dynamicList) {
+  return dynamicList.map((e) => e as T).toList();
+}

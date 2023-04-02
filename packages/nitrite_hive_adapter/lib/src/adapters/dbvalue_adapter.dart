@@ -3,7 +3,7 @@ import 'package:nitrite/nitrite.dart';
 
 class DBValueAdapter extends TypeAdapter<DBValue> {
   @override
-  int get typeId => 5;
+  int get typeId => 4;
 
   @override
   DBValue read(BinaryReader reader) {
@@ -19,7 +19,7 @@ class DBValueAdapter extends TypeAdapter<DBValue> {
 
 class DBNullAdapter extends TypeAdapter<DBNull> {
   @override
-  int get typeId => 6;
+  int get typeId => 5;
 
   @override
   void write(BinaryWriter writer, DBNull obj) {
@@ -28,6 +28,7 @@ class DBNullAdapter extends TypeAdapter<DBNull> {
 
   @override
   DBNull read(BinaryReader reader) {
+    reader.read();
     return DBNull.instance;
   }
 }

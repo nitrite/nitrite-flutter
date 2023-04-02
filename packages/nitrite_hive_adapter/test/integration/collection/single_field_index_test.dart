@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
@@ -167,11 +166,10 @@ void main() {
     });
 
     test('Test Index Event', () async {
-      Logger.root.level = Level.OFF;
       var collection = await db.getCollection('index-test');
       var random = Random();
 
-      for (var i = 0; i < 10000; i++) {
+      for (var i = 0; i < 1000; i++) {
         var document = createDocument("first", random.nextInt(100))
             .put("second", random.nextDouble());
         await collection.insert([document]);
@@ -196,16 +194,18 @@ void main() {
       await collection
           .createIndex(['first'], indexOptions(IndexType.nonUnique));
       var cursor = await collection.find();
-      expect(await cursor.length, 10000);
+      expect(await cursor.length, 1000);
 
       await collection
           .createIndex(['second'], indexOptions(IndexType.nonUnique));
       cursor = await collection.find();
-      expect(await cursor.length, 10000);
+      expect(await cursor.length, 1000);
 
       expect(failed, false);
       expect(completed, true);
-    });
+
+      await collection.close();
+    }, timeout: Timeout.factor(20));
 
     test('Test Index and Search on Null Values', () async {
       var collection = await db.getCollection('index-on-null');

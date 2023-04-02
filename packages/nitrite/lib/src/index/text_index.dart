@@ -1,5 +1,6 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
+import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/nitrite_index.dart';
 
@@ -100,7 +101,7 @@ class TextIndex extends NitriteIndex {
     for (var word in words) {
       var values = await indexMap[word];
       values ??= <NitriteId>[];
-      List nitriteIds = values.map((e) => e as NitriteId).toList();
+      List nitriteIds = castList<NitriteId>(values);
       nitriteIds = addNitriteIds(nitriteIds, fieldValues);
       await indexMap.put(word, nitriteIds);
     }

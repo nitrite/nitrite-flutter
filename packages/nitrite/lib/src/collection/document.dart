@@ -24,13 +24,13 @@ abstract class Document extends Iterable<Pair<String, dynamic>> {
   /// Creates a new document initialized with the given map.
   static Document fromMap(Map<String, dynamic> map) {
     var doc = emptyDocument();
-    map.forEach((key, value) {
-      if (value is Map<String, dynamic>) {
-        doc.put(key, fromMap(value));
+    for (var entry in map.entries) {
+      if (entry.value is Map<String, dynamic>) {
+        doc.put(entry.key, fromMap(entry.value));
       } else {
-        doc.put(key, value);
+        doc.put(entry.key, entry.value);
       }
-    });
+    }
     return doc;
   }
 
@@ -200,13 +200,13 @@ class _NitriteDocument extends Document {
     var cloned = {..._documentMap};
 
     // create the clone of any embedded documents as well
-    cloned.forEach((key, value) {
-      if (value is Document) {
+    for (var entry in cloned.entries) {
+      if (entry.value is Document) {
         // this will recursively take care any embedded document
         // of the clone as well
-        cloned[key] = value.clone();
+        cloned[entry.key] = entry.value.clone();
       }
-    });
+    }
 
     var newDoc = _NitriteDocument();
     newDoc._documentMap.addAll(cloned);

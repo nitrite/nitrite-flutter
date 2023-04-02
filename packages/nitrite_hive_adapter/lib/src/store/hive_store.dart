@@ -1,7 +1,7 @@
 // ignore_for_file: implementation_imports
 
-import 'package:hive/src/hive_impl.dart';
 import 'package:hive/src/box/default_compaction_strategy.dart';
+import 'package:hive/src/hive_impl.dart';
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/src/store/box_map.dart';

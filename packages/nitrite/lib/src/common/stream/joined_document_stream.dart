@@ -18,14 +18,14 @@ class JoinedDocumentStream extends StreamView<Document> {
       if (localObject == null) return newDoc;
 
       var docList = <Document>{};
-      await foreignCursor.forEach((foreignDoc) {
+      await for (var foreignDoc in foreignCursor) {
         var foreignObject = foreignDoc[lookup.foreignField];
         if (foreignObject != null) {
           if (deepEquals(foreignObject, localObject)) {
             docList.add(foreignDoc);
           }
         }
-      });
+      }
 
       // process the result
       if (docList.isNotEmpty) {

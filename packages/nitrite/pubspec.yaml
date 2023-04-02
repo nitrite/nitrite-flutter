@@ -14,6 +14,7 @@ dependencies:
   event_bus: ^2.0.0
   quiver: ^3.1.0
   crypt: ^4.2.1
+  collection: ^1.16.0
 
 dev_dependencies:
   flutter_test:
@@ -28,7 +29,6 @@ dev_dependencies:
   faker: ^2.0.0
   uuid: ^3.0.7
   yaml: ^3.1.1
-  collection: ^1.16.0
 
 flutter:
   uses-material-design: true
