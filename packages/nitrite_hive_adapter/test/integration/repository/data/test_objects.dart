@@ -802,3 +802,40 @@ class EmployeeForCustomSeparator with _$EmployeeForCustomSeparatorEntityMixin {
         'employeeNote: $employeeNote}';
   }
 }
+
+@Entity(name: 'old', indices: [
+  Index(fields: ["firstName"], type: IndexType.nonUnique),
+  Index(fields: ["lastName"], type: IndexType.nonUnique),
+  Index(fields: ["literature.text"], type: IndexType.fullText),
+  Index(fields: ["literature.ratings"], type: IndexType.nonUnique),
+])
+@GenerateConverter()
+class OldClass with _$OldClassEntityMixin {
+  @Id(fieldName: 'uuid')
+  String? uuid;
+  String? empId;
+  String? firstName;
+  String? lastName;
+  Literature? literature;
+}
+
+@GenerateConverter()
+class Literature {
+  String? text;
+  double? ratings;
+}
+
+@Entity(name: 'new', indices: [
+  Index(fields: ["familyName"], type: IndexType.nonUnique),
+  Index(fields: ["fullName"], type: IndexType.nonUnique),
+  Index(fields: ["literature.ratings"], type: IndexType.nonUnique),
+])
+@GenerateConverter()
+class NewClass with _$NewClassEntityMixin {
+  @Id(fieldName: 'empId')
+  int? empId;
+  String? firstName;
+  String? familyName;
+  String? fullName;
+  Literature? literature;
+}

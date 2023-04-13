@@ -148,7 +148,8 @@ class NitriteDatabase extends Nitrite {
       await _nitriteStore.openOrCreate();
       await _prepareDatabaseMetaData();
 
-      var migrationManager = MigrationManager(this);
+      var nitriteMapper = _nitriteConfig.nitriteMapper;
+      var migrationManager = MigrationManager(this, nitriteMapper);
       await migrationManager.initialize();
       await migrationManager.doMigrate();
 

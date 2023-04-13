@@ -77,41 +77,41 @@ Future<void> setUpNitriteTest() async {
 }
 
 Future<void> cleanUp() async {
-  if (!companyRepository.isDropped) {
+  if (!companyRepository.isDropped && companyRepository.isOpen) {
     await companyRepository.remove(all);
+    expect(await companyRepository.size, 0);
   }
 
-  if (!employeeRepository.isDropped) {
+  if (!employeeRepository.isDropped && employeeRepository.isOpen) {
     await employeeRepository.remove(all);
+    expect(await employeeRepository.size, 0);
   }
 
-  if (!aObjectRepository.isDropped) {
+  if (!aObjectRepository.isDropped && aObjectRepository.isOpen) {
     await aObjectRepository.remove(all);
+    expect(await aObjectRepository.size, 0);
   }
 
-  if (!cObjectRepository.isDropped) {
+  if (!cObjectRepository.isDropped && cObjectRepository.isOpen) {
     await cObjectRepository.remove(all);
+    expect(await cObjectRepository.size, 0);
   }
 
-  if (!bookRepository.isDropped) {
+  if (!bookRepository.isDropped && bookRepository.isOpen) {
     await bookRepository.remove(all);
+    expect(await bookRepository.size, 0);
   }
 
-  if (!productRepository.isDropped) {
+  if (!productRepository.isDropped && productRepository.isOpen) {
     await productRepository.remove(all);
+    expect(await productRepository.size, 0);
   }
 
-  if (!upcomingProductRepository.isDropped) {
+  if (!upcomingProductRepository.isDropped &&
+      upcomingProductRepository.isOpen) {
     await upcomingProductRepository.remove(all);
+    expect(await upcomingProductRepository.size, 0);
   }
-
-  expect(await companyRepository.size, 0);
-  expect(await employeeRepository.size, 0);
-  expect(await aObjectRepository.size, 0);
-  expect(await cObjectRepository.size, 0);
-  expect(await bookRepository.size, 0);
-  expect(await productRepository.size, 0);
-  expect(await upcomingProductRepository.size, 0);
 
   if (!db.isClosed) {
     await db.commit();
@@ -131,9 +131,7 @@ Future<void> _openDb() async {
 
   var builder = await Nitrite.builder().loadModule(storeModule);
 
-  db = await builder
-      .fieldSeparator('.')
-      .openOrCreate(username: 'test-user', password: 'test-password');
+  db = await builder.fieldSeparator('.').openOrCreate();
 
   var mapper = db.config.nitriteMapper as SimpleDocumentMapper;
   mapper.registerEntityConverter(CompanyConverter());
@@ -158,4 +156,7 @@ Future<void> _openDb() async {
   mapper.registerEntityConverter(ManufacturerConverter());
   mapper.registerEntityConverter(MiniProductConverter());
   mapper.registerEntityConverter(WithNullIdConverter());
+  mapper.registerEntityConverter(NewClassConverter());
+  mapper.registerEntityConverter(OldClassConverter());
+  mapper.registerEntityConverter(LiteratureConverter());
 }

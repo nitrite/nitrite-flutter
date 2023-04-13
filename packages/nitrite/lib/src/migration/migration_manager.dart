@@ -11,11 +11,12 @@ import 'package:nitrite/src/migration/migration.dart';
 
 class MigrationManager {
   final Nitrite _database;
+  final NitriteMapper _nitriteMapper;
 
   late NitriteConfig _nitriteConfig;
   late StoreMetaData _storeMetaData;
 
-  MigrationManager(this._database);
+  MigrationManager(this._database, this._nitriteMapper);
 
   Future<void> initialize() async {
     _nitriteConfig = _database.config;
@@ -95,8 +96,11 @@ class MigrationManager {
           shouldAddToPath = targetVersion >= end && targetVersion < start;
         }
 
-        if (shouldAddToPath) {
-          result.add(targetNodes[targetVersion]!);
+        if (shouldAddToPath && targetNodes.containsKey(targetVersion)) {
+          var migration = targetNodes[targetVersion]!;
+          migration.nitriteMapper = _nitriteMapper;
+          
+          result.add(migration);
           start = targetVersion;
           found = true;
           break;

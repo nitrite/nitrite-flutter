@@ -10,10 +10,13 @@ class Migration {
   final int _toVersion;
   final void Function(InstructionSet instructionSet) _instructionFunction;
 
+  late NitriteMapper _nitriteMapper;
+
   bool _executed = false;
 
   int get fromVersion => _fromVersion;
   int get toVersion => _toVersion;
+  set nitriteMapper(NitriteMapper value) => _nitriteMapper = value;
 
   Migration(this._fromVersion, this._toVersion, this._instructionFunction);
 
@@ -25,7 +28,7 @@ class Migration {
   }
 
   void _execute() {
-    var instructionSet = _NitriteInstructionSet(_migrationSteps);
+    var instructionSet = _NitriteInstructionSet(_migrationSteps, _nitriteMapper);
     _prepare(instructionSet);
     _executed = true;
   }
@@ -48,8 +51,9 @@ class MigrationStep {
 
 class _NitriteInstructionSet extends InstructionSet {
   final Queue<MigrationStep> _migrationSteps;
+  final NitriteMapper _nitriteMapper;
 
-  _NitriteInstructionSet(this._migrationSteps);
+  _NitriteInstructionSet(this._migrationSteps, this._nitriteMapper);
 
   @override
   DatabaseInstruction forDatabase() {
@@ -62,11 +66,11 @@ class _NitriteInstructionSet extends InstructionSet {
   }
 
   @override
-  RepositoryInstruction forRepository<T>(NitriteMapper nitriteMapper,
+  RepositoryInstruction forRepository<T>(
       {EntityDecorator<T>? entityDecorator, String? key}) {
     var entityName = entityDecorator != null
         ? entityDecorator.entityName
-        : getEntityName<T>(nitriteMapper);
+        : getEntityName<T>(_nitriteMapper);
     return _RepositoryInstruction(_migrationSteps, entityName, key);
   }
 }

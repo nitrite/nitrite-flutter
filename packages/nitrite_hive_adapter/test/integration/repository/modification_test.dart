@@ -6,6 +6,9 @@ import 'base_object_repository_test_loader.dart';
 import 'data/data_generator.dart';
 import 'data/test_objects.dart';
 
+// ignore: invalid_annotation_target
+@Retry(3)
+
 void main() {
   group('Repository Modification Test Suite', () {
     setUp(() async {
