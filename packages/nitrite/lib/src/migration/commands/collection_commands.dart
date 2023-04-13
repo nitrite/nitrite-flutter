@@ -38,6 +38,8 @@ class CollectionRenameCommand extends BaseCommand {
           // create indexes in parallel
           await newOperations.createIndex(field, indexType);
         }
+
+        await operations?.dropCollection();
       } finally {
         await indexManager.close();
       }
@@ -96,6 +98,7 @@ class RenameFieldCommand extends BaseCommand {
 
     var indexManager = IndexManager(collectionName, nitrite.config);
     try {
+      await indexManager.initialize();
       var oldField = Fields.withNames([oldName]);
       var matchingIndexDescriptors =
           await indexManager.findMatchingIndexDescriptors(oldField);

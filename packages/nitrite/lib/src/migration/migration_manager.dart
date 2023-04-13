@@ -99,7 +99,7 @@ class MigrationManager {
         if (shouldAddToPath && targetNodes.containsKey(targetVersion)) {
           var migration = targetNodes[targetVersion]!;
           migration.nitriteMapper = _nitriteMapper;
-          
+
           result.add(migration);
           start = targetVersion;
           found = true;
@@ -132,104 +132,112 @@ class MigrationManager {
   }
 
   Future<void> _executeStep(MigrationStep step) async {
-    Command command;
-    switch (step.instructionType) {
-      case InstructionType.addPassword:
-        command = AddPasswordCommand(step.arguments as Pair<String, String>);
-        break;
-      case InstructionType.changePassword:
-        command = ChangePasswordCommand(
-            step.arguments as Triplet<String, String, String>);
-        break;
-      case InstructionType.dropCollection:
-        command = DropCollectionCommand(step.arguments as String);
-        break;
-      case InstructionType.dropRepository:
-        command =
-            DropRepositoryCommand(step.arguments as Pair<String, String?>);
-        break;
-      case InstructionType.custom:
-        command = CustomCommand(step.arguments as CustomInstruction);
-        break;
-      case InstructionType.collectionRename:
-        command =
-            CollectionRenameCommand(step.arguments as Pair<String, String>);
-        break;
-      case InstructionType.collectionAddField:
-        command =
-            AddFieldCommand(step.arguments as Triplet<String, String, dynamic>);
-        break;
-      case InstructionType.collectionRenameField:
-        command = RenameFieldCommand(
-            step.arguments as Triplet<String, String, String>);
-        break;
-      case InstructionType.collectionDeleteField:
-        command = DeleteFieldCommand(step.arguments as Pair<String, String>);
-        break;
-      case InstructionType.collectionDropIndex:
-        command = DropIndexCommand(step.arguments as Pair<String, Fields?>);
-        break;
-      case InstructionType.collectionDropIndices:
-        command = DropIndexCommand(Pair(step.arguments as String, null));
-        break;
-      case InstructionType.collectionCreateIndex:
-        command = CreateIndexCommand(
-            step.arguments as Triplet<String, Fields, String>);
-        break;
-      case InstructionType.renameRepository:
-        command = RepositoryRenameCommand(
-            step.arguments as Quartet<String, String?, String, String?>);
-        break;
-      case InstructionType.repositoryAddField:
-        var args = step.arguments as Quartet<String, String?, String, dynamic>;
-        var repositoryName =
-            findRepositoryNameByTypeName(args.first, args.second);
-        command =
-            AddFieldCommand(Triplet(repositoryName, args.third, args.fourth));
-        break;
-      case InstructionType.repositoryRenameField:
-        var args = step.arguments as Quartet<String, String?, String, String>;
-        var repositoryName =
-            findRepositoryNameByTypeName(args.first, args.second);
-        command = RenameFieldCommand(
-            Triplet(repositoryName, args.third, args.fourth));
-        break;
-      case InstructionType.repositoryDeleteField:
-        var args = step.arguments as Triplet<String, String?, String>;
-        var repositoryName =
-            findRepositoryNameByTypeName(args.first, args.second);
-        command = DeleteFieldCommand(Pair(repositoryName, args.third));
-        break;
-      case InstructionType.repositoryChangeDataType:
-        command = ChangeDataTypeCommand(
-            step.arguments as Quartet<String, String?, String, TypeConverter>);
-        break;
-      case InstructionType.repositoryChangeIdField:
-        command = ChangeIdFieldCommand(
-            step.arguments as Quartet<String, String?, Fields, Fields>);
-        break;
-      case InstructionType.repositoryDropIndex:
-        var args = step.arguments as Triplet<String, String?, Fields>;
-        var repositoryName =
-            findRepositoryNameByTypeName(args.first, args.second);
-        command = DropIndexCommand(Pair(repositoryName, args.third));
-        break;
-      case InstructionType.repositoryDropIndices:
-        var args = step.arguments as Pair<String, String?>;
-        var repositoryName =
-            findRepositoryNameByTypeName(args.first, args.second);
-        command = DropIndexCommand(Pair(repositoryName, null));
-        break;
-      case InstructionType.repositoryCreateIndex:
-        var args = step.arguments as Quartet<String, String?, Fields, String>;
-        var repositoryName =
-            findRepositoryNameByTypeName(args.first, args.second);
-        command = CreateIndexCommand(
-            Triplet(repositoryName, args.third, args.fourth));
-        break;
-    }
+    try {
+      Command command;
+      switch (step.instructionType) {
+        case InstructionType.addPassword:
+          command = AddPasswordCommand(step.arguments as Pair<String, String>);
+          break;
+        case InstructionType.changePassword:
+          command = ChangePasswordCommand(
+              step.arguments as Triplet<String, String, String>);
+          break;
+        case InstructionType.dropCollection:
+          command = DropCollectionCommand(step.arguments as String);
+          break;
+        case InstructionType.dropRepository:
+          command =
+              DropRepositoryCommand(step.arguments as Pair<String, String?>);
+          break;
+        case InstructionType.custom:
+          command = CustomCommand(step.arguments as CustomInstruction);
+          break;
+        case InstructionType.collectionRename:
+          command =
+              CollectionRenameCommand(step.arguments as Pair<String, String>);
+          break;
+        case InstructionType.collectionAddField:
+          command = AddFieldCommand(
+              step.arguments as Triplet<String, String, dynamic>);
+          break;
+        case InstructionType.collectionRenameField:
+          command = RenameFieldCommand(
+              step.arguments as Triplet<String, String, String>);
+          break;
+        case InstructionType.collectionDeleteField:
+          command = DeleteFieldCommand(step.arguments as Pair<String, String>);
+          break;
+        case InstructionType.collectionDropIndex:
+          command = DropIndexCommand(step.arguments as Pair<String, Fields?>);
+          break;
+        case InstructionType.collectionDropIndices:
+          command = DropIndexCommand(Pair(step.arguments as String, null));
+          break;
+        case InstructionType.collectionCreateIndex:
+          command = CreateIndexCommand(
+              step.arguments as Triplet<String, Fields, String>);
+          break;
+        case InstructionType.renameRepository:
+          command = RepositoryRenameCommand(
+              step.arguments as Quartet<String, String?, String, String?>);
+          break;
+        case InstructionType.repositoryAddField:
+          var args =
+              step.arguments as Quartet<String, String?, String, dynamic>;
+          var repositoryName =
+              findRepositoryNameByTypeName(args.first, args.second);
+          command =
+              AddFieldCommand(Triplet(repositoryName, args.third, args.fourth));
+          break;
+        case InstructionType.repositoryRenameField:
+          var args = step.arguments as Quartet<String, String?, String, String>;
+          var repositoryName =
+              findRepositoryNameByTypeName(args.first, args.second);
+          command = RenameFieldCommand(
+              Triplet(repositoryName, args.third, args.fourth));
+          break;
+        case InstructionType.repositoryDeleteField:
+          var args = step.arguments as Triplet<String, String?, String>;
+          var repositoryName =
+              findRepositoryNameByTypeName(args.first, args.second);
+          command = DeleteFieldCommand(Pair(repositoryName, args.third));
+          break;
+        case InstructionType.repositoryChangeDataType:
+          command = ChangeDataTypeCommand(step.arguments
+              as Quartet<String, String?, String, TypeConverter>);
+          break;
+        case InstructionType.repositoryChangeIdField:
+          command = ChangeIdFieldCommand(
+              step.arguments as Quartet<String, String?, Fields, Fields>);
+          break;
+        case InstructionType.repositoryDropIndex:
+          var args = step.arguments as Triplet<String, String?, Fields>;
+          var repositoryName =
+              findRepositoryNameByTypeName(args.first, args.second);
+          command = DropIndexCommand(Pair(repositoryName, args.third));
+          break;
+        case InstructionType.repositoryDropIndices:
+          var args = step.arguments as Pair<String, String?>;
+          var repositoryName =
+              findRepositoryNameByTypeName(args.first, args.second);
+          command = DropIndexCommand(Pair(repositoryName, null));
+          break;
+        case InstructionType.repositoryCreateIndex:
+          var args = step.arguments as Quartet<String, String?, Fields, String>;
+          var repositoryName =
+              findRepositoryNameByTypeName(args.first, args.second);
+          command = CreateIndexCommand(
+              Triplet(repositoryName, args.third, args.fourth));
+          break;
+      }
 
-    await command.execute(_database);
-    await command.close();
+      await command.execute(_database);
+      await command.close();
+    } catch (e, s) {
+      throw MigrationException(
+          'Migration failed during ${step.instructionType.name} stage.',
+          cause: e,
+          stackTrace: s);
+    }
   }
 }

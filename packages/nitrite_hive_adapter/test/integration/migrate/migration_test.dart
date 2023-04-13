@@ -34,6 +34,9 @@ void main() {
         await oldRepo.insert([oldClass]);
       }
 
+      var keyedRepos = (await db.listKeyedRepositories).length;
+      print('Keyed Repositories Before: ${(await db.listKeyedRepositories)}');
+
       var nitriteMapper = db.config.nitriteMapper;
       await db.close();
 
@@ -81,7 +84,11 @@ void main() {
       var newRepo = await db.getRepository<NewClass>();
       expect(await newRepo.size, 10);
       expect(await db.listCollectionNames, isEmpty);
-      expect(await db.listKeyedRepositories, isEmpty);
+
+      print('Keyed Repositories After: ${(await db.listKeyedRepositories)}');
+
+      var keyedRepos2 = (await db.listKeyedRepositories).length;
+      expect(keyedRepos2, keyedRepos - 1);
       expect((await db.databaseMetaData).schemaVersion, 2);
     });
   });

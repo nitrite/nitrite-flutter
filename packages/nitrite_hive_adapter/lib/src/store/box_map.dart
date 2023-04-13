@@ -43,6 +43,7 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   Future<void> close() async {
     if (!_closed && !_dropped) {
       await _lazyBox.close();
+      await _store.closeMap(_mapName);
       _closed = true;
     }
   }
