@@ -42,7 +42,7 @@ class CollectionOperations {
     await catalog.remove(_nitriteMap.name);
 
     // drop the map
-    await _nitriteMap.close();
+    await _nitriteMap.drop();
   }
 
   Future<void> dropAllIndices() async {

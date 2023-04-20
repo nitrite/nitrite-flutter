@@ -25,12 +25,10 @@ void main() {
       var doc = mapper.convert<Document, _Employee>(emp);
       stopWatch.stop();
       expect(doc, isNotNull);
-      print("Time Taken: ${stopWatch.elapsedMilliseconds}");
-
+      
       stopWatch.start();
       var emp2 = mapper.convert<_Employee, Document>(doc);
       stopWatch.stop();
-      print("Time Taken: ${stopWatch.elapsedMilliseconds}");
       expect(emp2, emp);
     });
 
@@ -60,12 +58,10 @@ void main() {
       var doc = mapper.convert<Document, _Department>(dept);
       stopWatch.stop();
       expect(doc, isNotNull);
-      print("Time Taken: ${stopWatch.elapsedMilliseconds}");
-
+      
       stopWatch.start();
       var dept2 = mapper.convert<_Department, Document>(doc);
       stopWatch.stop();
-      print("Time Taken: ${stopWatch.elapsedMilliseconds}");
       expect(dept2, dept);
     });
   });

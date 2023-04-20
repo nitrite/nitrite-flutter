@@ -14,8 +14,6 @@ void main() async {
       var attributes = Attributes("test");
       collection.setAttributes(attributes);
 
-      print(collection.getAttributes());
-      print(attributes);
       expect(await collection.getAttributes(), attributes);
     });
   });

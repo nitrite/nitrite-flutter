@@ -335,7 +335,6 @@ void main() {
 
       expect(await employeeRepository.size, count);
       cursor = await employeeRepository.find(filter: where('empId').eq(oldId));
-      print(await (await employeeRepository.find()).toList());
       expect(await cursor.length, 0);
     });
 

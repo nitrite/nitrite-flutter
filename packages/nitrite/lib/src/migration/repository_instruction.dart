@@ -24,7 +24,7 @@ abstract class RepositoryInstruction implements Instruction {
         InstructionType.renameRepository,
         Quartet(this.entityName, this.key, entityName, key));
     addStep(migrationStep);
-    return _DelegatedInstruction(this);
+    return _DelegatedInstruction(this, entityName, key);
   }
 
   /// Adds an instruction to add new field with either a default value
@@ -123,9 +123,7 @@ class _DelegatedInstruction extends RepositoryInstruction {
   @override
   String? get key => _key;
 
-  _DelegatedInstruction(this._delegate)
-      : _entityName = _delegate.entityName,
-        _key = _delegate.key;
+  _DelegatedInstruction(this._delegate, this._entityName, this._key);
 
   @override
   void addStep(MigrationStep step) {
