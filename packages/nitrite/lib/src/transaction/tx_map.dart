@@ -74,6 +74,7 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
   Future<void> clear() async {
     await _backingMap.clear();
     _cleared = true;
+    await _store.closeMap(_mapName);
   }
 
   @override
@@ -191,7 +192,7 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
   }
 
   @override
-  Future<K?> lowerKey(K key) async{
+  Future<K?> lowerKey(K key) async {
     if (_cleared) return null;
 
     var primaryKey = await _primaryMap.lowerKey(key);
@@ -242,6 +243,7 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
       _tombstones.clear();
       _cleared = true;
       _droppedFlag = true;
+      await _store.closeMap(_mapName);
     }
   }
 
@@ -251,9 +253,9 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     _tombstones.clear();
     _cleared = true;
     _closedFlag = true;
+    await _store.closeMap(_mapName);
   }
 
   @override
-  Future<void> initialize() async {
-  }
+  Future<void> initialize() async {}
 }

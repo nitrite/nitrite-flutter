@@ -4,11 +4,14 @@ import 'package:nitrite/nitrite.dart';
 
 class InMemoryRTree<Key extends BoundingBox, Value>
     extends NitriteRTree<Key, Value> {
-  final Map<SpatialKey, Key> _backingMap =
-      SplayTreeMap<SpatialKey, Key>();
+  final Map<SpatialKey, Key> _backingMap = SplayTreeMap<SpatialKey, Key>();
+  final NitriteStore _nitriteStore;
+  final String _mapName;
 
   bool _droppedFlag = false;
   bool _closedFlag = false;
+
+  InMemoryRTree(this._mapName, this._nitriteStore);
 
   @override
   Future<int> size() async {
@@ -39,7 +42,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
     _checkOpened();
     var spatialKey = _getKey(key, 0);
 
-    for(var sk in _backingMap.keys) {
+    for (var sk in _backingMap.keys) {
       if (_isOverlap(sk, spatialKey)) {
         yield NitriteId.createId(sk.id.toString());
       }
@@ -51,7 +54,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
     _checkOpened();
     var spatialKey = _getKey(key, 0);
 
-    for(var sk in _backingMap.keys) {
+    for (var sk in _backingMap.keys) {
       if (_isInside(sk, spatialKey)) {
         yield NitriteId.createId(sk.id.toString());
       }
@@ -62,11 +65,13 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   Future<void> clear() async {
     _checkOpened();
     _backingMap.clear();
+    await _nitriteStore.closeMap(_mapName);
   }
 
   @override
   Future<void> close() async {
     _closedFlag = true;
+    await _nitriteStore.closeMap(_mapName);
   }
 
   @override
@@ -74,6 +79,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
     _checkOpened();
     _droppedFlag = true;
     _backingMap.clear();
+    await _nitriteStore.closeMap(_mapName);
   }
 
   SpatialKey _getKey(Key key, int id) {
@@ -108,7 +114,5 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   }
 
   @override
-  Future<void> initialize() async {
-  }
+  Future<void> initialize() async {}
 }
-

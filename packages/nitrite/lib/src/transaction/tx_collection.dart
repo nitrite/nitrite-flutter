@@ -432,10 +432,13 @@ class DefaultTransactionalCollection extends NitriteCollection {
     var nitriteConfig = _context.config;
     _nitriteStore = nitriteConfig.getNitriteStore();
     _isDropped = false;
+    _isClosed = false;
 
     _eventBus = EventBus();
     _collectionOperations = CollectionOperations(
         _collectionName, _nitriteMap, nitriteConfig, _eventBus);
+
+    await _collectionOperations.initialize();
   }
 
   Future<void> _checkOpened() async {

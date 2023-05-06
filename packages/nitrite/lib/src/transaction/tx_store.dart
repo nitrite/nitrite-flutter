@@ -50,16 +50,19 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
 
   @override
   Future<void> close() async {
-    for (var map in _mapRegistry.values) {
-      await map.close();
-    }
+    // close all maps and rtree
+    close(MapEntry entry) => entry.value.close();
 
-    for (var rTree in _rTreeRegistry.values) {
-      await rTree.close();
-    }
+    // to avoid concurrent modification exception
+    var tempMap = Map<String, NitriteMap<dynamic, dynamic>>.from(_mapRegistry);
+    tempMap.entries.forEach(close);
+
+    tempMap = Map<String, NitriteMap<dynamic, dynamic>>.from(_rTreeRegistry);
+    tempMap.entries.forEach(close);
 
     _mapRegistry.clear();
     _rTreeRegistry.clear();
+
     await super.close();
   }
 
@@ -99,14 +102,12 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
 
   @override
   Future<void> closeMap(String mapName) async {
-    // nothing to close as it is volatile map, moreover,
-    // removing it from registry means losing the map
+    _mapRegistry.remove(mapName);
   }
 
   @override
   Future<void> closeRTree(String rTreeName) async {
-    // nothing to close as it is volatile map, moreover,
-    // removing it from registry means losing the map
+    _rTreeRegistry.remove(rTreeName);
   }
 
   @override
@@ -126,7 +127,7 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
       primaryRTree = await _primaryStore.openRTree<Key, Value>(rTreeName);
     }
 
-    var txRtree = TransactionalRTree<Key, Value>(primaryRTree);
+    var txRtree = TransactionalRTree<Key, Value>(rTreeName, primaryRTree, this);
     await txRtree.initialize();
     _rTreeRegistry[rTreeName] = txRtree;
     return txRtree;

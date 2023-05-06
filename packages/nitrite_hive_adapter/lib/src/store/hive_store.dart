@@ -32,6 +32,8 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
       _closed = true;
     }
 
+    _nitriteMapRegistry.clear();
+    _nitriteRTreeMapRegistry.clear();
     return super.close();
   }
 

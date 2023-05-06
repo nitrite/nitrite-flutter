@@ -251,6 +251,9 @@ class WriteOperations {
   void _alert<T>(CollectionEventInfo<T> changedItem) {
     _log.fine('Alerting event listeners for action : ${changedItem.eventType} '
         'in collection ${_nitriteMap.name}');
-    _eventBus.fire(changedItem);
+
+    if (!_eventBus.streamController.isClosed) {
+      _eventBus.fire(changedItem);
+    }
   }
 }

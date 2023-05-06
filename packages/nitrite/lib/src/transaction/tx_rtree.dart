@@ -1,15 +1,17 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/store/memory/in_memory_rtree.dart';
 import 'package:rxdart/rxdart.dart';
 
 class TransactionalRTree<Key extends BoundingBox, Value>
     extends NitriteRTree<Key, Value> {
   final Map<SpatialKey, Key> _map;
   final NitriteRTree<Key, Value> _primaryRTree;
+  final String _mapName;
+  final NitriteStore _store;
 
-  TransactionalRTree(NitriteRTree<Key, Value>? primaryRTree) :
-      _primaryRTree = primaryRTree ?? InMemoryRTree<Key, Value>(),
-      _map = <SpatialKey, Key>{};
+  TransactionalRTree(
+      this._mapName, NitriteRTree<Key, Value>? primaryRTree, this._store)
+      : _primaryRTree = primaryRTree!,
+        _map = <SpatialKey, Key>{};
 
   @override
   Future<int> size() async => _map.length;
@@ -66,15 +68,16 @@ class TransactionalRTree<Key extends BoundingBox, Value>
     ]);
   }
 
-
   @override
   Future<void> clear() async {
     _map.clear();
+    await _store.closeMap(_mapName);
   }
 
   @override
   Future<void> close() async {
     _map.clear();
+    await _store.closeMap(_mapName);
   }
 
   @override
@@ -105,7 +108,5 @@ class TransactionalRTree<Key extends BoundingBox, Value>
   }
 
   @override
-  Future<void> initialize() async {
-  }
-
+  Future<void> initialize() async {}
 }

@@ -22,7 +22,9 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
 
   /// Alerts about a [StoreEvents] to all subscribed [StoreEventListener]s.
   void alert(StoreEvents eventType) {
-    _eventBus.fire(EventInfo(eventType, _nitriteConfig));
+    if (!_eventBus.streamController.isClosed) {
+      _eventBus.fire(EventInfo(eventType, _nitriteConfig));
+    }
   }
 
   @override

@@ -65,7 +65,6 @@ class IndexOperations {
       var indexType = indexDescriptor.indexType;
       var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
       await nitriteIndexer.dropIndex(indexDescriptor, _nitriteConfig);
-
       await _indexManager.dropIndexDescriptor(fields);
     } else {
       throw IndexingException('Index does not exist on fields: $fields');
@@ -128,6 +127,9 @@ class IndexOperations {
         item: field,
         timestamp: DateTime.now().millisecondsSinceEpoch,
         originator: 'IndexOperations');
-    _eventBus.fire(eventInfo);
+
+    if (!_eventBus.streamController.isClosed) {
+      _eventBus.fire(eventInfo);
+    }
   }
 }

@@ -32,15 +32,18 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
 
   @override
   Future<void> close() async {
+    // close all maps and rtree
+    close(MapEntry entry) => entry.value.close();
     _closed = true;
 
-    for (var map in _nitriteMapRegistry.values) {
-      await map.close();
-    }
+    // to avoid concurrent modification exception
+    var tempMap = Map<String, NitriteMap<dynamic, dynamic>>.from(
+        _nitriteMapRegistry);
+    tempMap.entries.forEach(close);
 
-    for (var rtree in _nitriteRTreeMapRegistry.values) {
-       await rtree.close();
-    }
+    tempMap = Map<String, NitriteMap<dynamic, dynamic>>.from(
+        _nitriteRTreeMapRegistry);
+    tempMap.entries.forEach(close);
 
     _nitriteMapRegistry.clear();
     _nitriteRTreeMapRegistry.clear();
@@ -76,14 +79,12 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
 
   @override
   Future<void> closeMap(String mapName) async {
-    // nothing to close as it is volatile map, moreover,
-    // removing it from registry means losing the map
+    _nitriteMapRegistry.remove(mapName);
   }
 
   @override
   Future<void> closeRTree(String rTreeName) async {
-    // nothing to close as it is volatile map, moreover,
-    // removing it from registry means losing the map
+    _nitriteRTreeMapRegistry.remove(rTreeName);
   }
 
   @override
@@ -92,7 +93,6 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
       var map = _nitriteMapRegistry[mapName]!;
 
       if (!map.isClosed && !map.isDropped) {
-        await map.clear();
         await map.close();
       }
 
@@ -109,7 +109,7 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
       return _nitriteRTreeMapRegistry[rTreeName]! as InMemoryRTree<Key, Value>;
     }
 
-    var nitriteRTree = InMemoryRTree<Key, Value>();
+    var nitriteRTree = InMemoryRTree<Key, Value>(rTreeName, this);
     _nitriteRTreeMapRegistry[rTreeName] = nitriteRTree;
     return nitriteRTree;
   }

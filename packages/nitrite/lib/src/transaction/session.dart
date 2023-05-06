@@ -17,26 +17,39 @@ class Session {
 
   Session(this._nitrite);
 
-  Future<void> transaction(Future<void> Function(Transaction tx) action) {
+  Future<Transaction> beginTransaction() async {
     if (!_active) {
       throw TransactionException('Session is closed');
     }
 
-    return runZoned(() async {
-      var tx = _NitriteTransaction(_nitrite);
-      await tx.prepare();
-      transactionMap[tx.id] = tx;
-      try {
-        await action(tx);
-      } catch (e, stackTrace) {
+    var tx = _NitriteTransaction(_nitrite);
+    await tx.prepare();
+    transactionMap[tx.id] = tx;
+    return tx;
+  }
+
+  Future<void> executeTransaction(Future<void> Function(Transaction tx) action,
+      {List<Type> rollbackFor = const []}) async {
+    if (!_active) {
+      throw TransactionException('Session is closed');
+    }
+
+    var tx = await beginTransaction();
+    try {
+      await action(tx);
+      await tx.commit();
+    } catch (e) {
+      if (rollbackFor.any((error) => e.runtimeType == error) ||
+          rollbackFor.isEmpty) {
         await tx.rollback();
-        throw TransactionException('Transaction rolled back',
-            cause: e, stackTrace: stackTrace);
-      } finally {
-        await tx.close();
-        transactionMap.remove(tx.id);
+      } else {
+        await tx.commit();
       }
-    });
+      rethrow;
+    } finally {
+      await tx.close();
+      transactionMap.remove(tx.id);
+    }
   }
 
   Future<void> close() async {
@@ -148,7 +161,7 @@ class _NitriteTransaction extends Transaction {
 
       try {
         var commitLog = txContext.journal;
-        for (var i = 0; i < commitLog.length; i++) {
+        while (commitLog.isNotEmpty) {
           var entry = commitLog.removeFirst();
           var commitCommand = entry.commit;
           try {
@@ -182,7 +195,7 @@ class _NitriteTransaction extends Transaction {
     for (var entry in _undoRegistry.entries) {
       var undoLog = entry.value;
 
-      for (var i = 0; i < undoLog.length; i++) {
+      while (undoLog.isNotEmpty) {
         var undoEntry = undoLog.pop();
         await undoEntry.rollback();
       }
@@ -217,13 +230,14 @@ class _NitriteTransaction extends Transaction {
 
     var nitriteStore = _nitrite.getStore();
     var nitriteConfig = _nitrite.config;
-    var txConfig = TransactionConfig(nitriteConfig);
-    await txConfig
+    _transactionConfig = TransactionConfig(nitriteConfig);
+    await _transactionConfig
         .loadModule(NitriteModule.module([TransactionStore(nitriteStore)]));
 
-    await txConfig.autoConfigure();
-    await txConfig.initialize();
-    _transactionStore = txConfig.getNitriteStore() as TransactionStore;
+    await _transactionConfig.autoConfigure();
+    await _transactionConfig.initialize();
+    _transactionStore =
+        _transactionConfig.getNitriteStore() as TransactionStore;
     _state = TransactionState.active;
   }
 

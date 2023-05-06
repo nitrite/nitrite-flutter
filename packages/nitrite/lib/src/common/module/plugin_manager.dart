@@ -70,7 +70,7 @@ class PluginManager {
     }
 
     await _nitriteMapper?.close();
-    return _nitriteStore?.close();
+    await _nitriteStore?.close();
   }
 
   Future<void> _loadPlugin(NitritePlugin plugin) async {

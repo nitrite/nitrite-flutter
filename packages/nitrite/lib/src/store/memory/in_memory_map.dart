@@ -135,16 +135,18 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   @override
   Future<void> close() async {
     _closedFlag = true;
+    await _nitriteStore.closeMap(_mapName);
   }
 
   @override
   bool get isClosed => _closedFlag;
 
   @override
-  Future<void> clear() {
+  Future<void> clear() async {
     _checkOpened();
     _backingMap.clear();
-    return updateLastModifiedTime();
+    await _nitriteStore.closeMap(_mapName);
+    await updateLastModifiedTime();
   }
 
   static int _comp(k1, k2) {
