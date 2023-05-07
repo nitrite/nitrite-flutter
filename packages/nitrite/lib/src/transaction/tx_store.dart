@@ -20,6 +20,7 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
   final NitriteStore<T> _primaryStore;
   final Map<String, NitriteMap<dynamic, dynamic>> _mapRegistry = {};
   final Map<String, NitriteRTree<dynamic, dynamic>> _rTreeRegistry = {};
+  final List<String> _deletedMap = [];
 
   TransactionStore(this._primaryStore) : super(_primaryStore.storeConfig!);
 
@@ -68,6 +69,10 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
 
   @override
   Future<bool> hasMap(String mapName) async {
+    if (_deletedMap.contains(mapName)) {
+      return false;
+    }
+
     var result = await _primaryStore.hasMap(mapName);
     if (!result) {
       result = _mapRegistry.containsKey(mapName);
@@ -111,11 +116,6 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
   }
 
   @override
-  Future<void> removeMap(String mapName) async {
-    _mapRegistry.remove(mapName);
-  }
-
-  @override
   Future<NitriteRTree<Key, Value>> openRTree<Key extends BoundingBox, Value>(
       String rTreeName) async {
     if (_rTreeRegistry.containsKey(rTreeName)) {
@@ -134,8 +134,15 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
   }
 
   @override
+  Future<void> removeMap(String mapName) async {
+    _mapRegistry.remove(mapName);
+    _deletedMap.add(mapName);
+  }
+
+  @override
   Future<void> removeRTree(String rTreeName) async {
     _rTreeRegistry.remove(rTreeName);
+    _deletedMap.add(rTreeName);
   }
 
   @override

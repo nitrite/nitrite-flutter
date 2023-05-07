@@ -79,7 +79,7 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
 
   @override
   Stream<V> values() async* {
-    if (_cleared) return;
+    if (_cleared) Stream.empty();
 
     await for (var entry in entries()) {
       yield entry.second;
@@ -243,7 +243,7 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
       _tombstones.clear();
       _cleared = true;
       _droppedFlag = true;
-      await _store.closeMap(_mapName);
+      await _store.removeMap(_mapName);
     }
   }
 

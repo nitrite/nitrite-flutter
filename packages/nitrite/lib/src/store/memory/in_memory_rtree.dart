@@ -65,13 +65,13 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   Future<void> clear() async {
     _checkOpened();
     _backingMap.clear();
-    await _nitriteStore.closeMap(_mapName);
+    await _nitriteStore.closeRTree(_mapName);
   }
 
   @override
   Future<void> close() async {
     _closedFlag = true;
-    await _nitriteStore.closeMap(_mapName);
+    await _nitriteStore.closeRTree(_mapName);
   }
 
   @override
@@ -79,7 +79,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
     _checkOpened();
     _droppedFlag = true;
     _backingMap.clear();
-    await _nitriteStore.closeMap(_mapName);
+    await _nitriteStore.removeRTree(_mapName);
   }
 
   SpatialKey _getKey(Key key, int id) {

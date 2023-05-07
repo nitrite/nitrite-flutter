@@ -71,18 +71,19 @@ class TransactionalRTree<Key extends BoundingBox, Value>
   @override
   Future<void> clear() async {
     _map.clear();
-    await _store.closeMap(_mapName);
+    await _store.closeRTree(_mapName);
   }
 
   @override
   Future<void> close() async {
     _map.clear();
-    await _store.closeMap(_mapName);
+    await _store.closeRTree(_mapName);
   }
 
   @override
   Future<void> drop() async {
     _map.clear();
+    await _store.removeRTree(_mapName);
   }
 
   SpatialKey _getKey(Key key, int id) {

@@ -114,14 +114,9 @@ class IndexManager {
     if (indexMeta != null) {
       var indexMapName = indexMeta.indexMap;
       if (indexMapName != null) {
-        print('[IndexManager] dropping index map $indexMapName');
-        print(await _nitriteStore.hasMap(indexMapName));
         var indexMap =
             await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
         await indexMap.drop();
-        print('dropped index map $indexMapName');
-        print(indexMap.runtimeType);
-        print(await _nitriteStore.hasMap(indexMapName));
       }
 
       await _indexMetaMap.remove(fields);

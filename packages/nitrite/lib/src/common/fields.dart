@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
@@ -66,6 +67,16 @@ class Fields implements Comparable<Fields> {
     }
     return result;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Fields &&
+          runtimeType == other.runtimeType &&
+          DeepCollectionEquality().equals(_fieldNames, other._fieldNames);
+
+  @override
+  int get hashCode => DeepCollectionEquality().hash(_fieldNames);
 }
 
 /// Represents a list of document field with
