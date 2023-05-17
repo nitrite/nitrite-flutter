@@ -42,12 +42,6 @@ enum ChangeType {
   insert,
   update,
   remove,
-  clear,
-  createIndex,
-  rebuildIndex,
-  dropIndex,
-  dropAllIndexes,
-  dropCollection,
   setAttributes
 }
 

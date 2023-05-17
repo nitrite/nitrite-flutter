@@ -210,162 +210,58 @@ class DefaultTransactionalCollection extends NitriteCollection {
   @override
   Future<void> createIndex(List<String> fields,
       [IndexOptions? indexOptions]) async {
-    var fieldNames = Fields.withNames(fields);
     await _checkOpened();
-    if (indexOptions == null) {
-      await _collectionOperations.createIndex(fieldNames, IndexType.unique);
-    } else {
-      await _collectionOperations.createIndex(
-          fieldNames, indexOptions.indexType);
-    }
-
-    var journalEntry = JournalEntry(
-      changeType: ChangeType.createIndex,
-      commit: () async {
-        await _primary.createIndex(fields, indexOptions);
-      },
-      rollback: () async {
-        await _primary.dropIndex(fields);
-      },
-    );
-    _context.journal.add(journalEntry);
+    await _primary.createIndex(fields, indexOptions);
   }
 
   @override
   Future<void> rebuildIndex(List<String> fields) async {
-    fields.notNullOrEmpty('Fields cannot be empty');
-
     await _checkOpened();
-    var indexDescriptor =
-        await _collectionOperations.findIndex(Fields.withNames(fields));
-
-    if (indexDescriptor == null) {
-      throw IndexingException('$fields is not indexed');
-    }
-
-    if (await isIndexing(indexDescriptor.fields.fieldNames)) {
-      throw IndexingException(
-          'Indexing on fields $fields is currently running');
-    }
-
-    await _checkOpened();
-    await _collectionOperations.rebuildIndex(indexDescriptor);
-
-    var journalEntry = JournalEntry(
-      changeType: ChangeType.rebuildIndex,
-      commit: () async {
-        await _primary.rebuildIndex(fields);
-      },
-      rollback: () async {
-        await _primary.rebuildIndex(fields);
-      },
-    );
-    _context.journal.add(journalEntry);
+    await _primary.rebuildIndex(fields);
   }
 
   @override
   Future<Iterable<IndexDescriptor>> listIndexes() async {
     await _checkOpened();
-    return _collectionOperations.listIndexes();
+    return _primary.listIndexes();
   }
 
   @override
   Future<bool> hasIndex(List<String> fields) async {
     await _checkOpened();
-    return _collectionOperations.hasIndex(Fields.withNames(fields));
+    return _primary.hasIndex(fields);
   }
 
   @override
   Future<bool> isIndexing(List<String> fields) async {
     await _checkOpened();
-    return _collectionOperations.isIndexing(Fields.withNames(fields));
+    return _primary.isIndexing(fields);
   }
 
   @override
   Future<void> dropIndex(List<String> fields) async {
     await _checkOpened();
-    await _collectionOperations.dropIndex(Fields.withNames(fields));
-
-    IndexDescriptor? indexDescriptor;
-    var journalEntry = JournalEntry(
-      changeType: ChangeType.dropIndex,
-      commit: () async {
-        var indexes = await _primary.listIndexes();
-
-        // find the index descriptor to get the index type
-        // which will be required during rollback
-        for (var entry in indexes) {
-          if (entry.fields == Fields.withNames(fields)) {
-            indexDescriptor = entry;
-            break;
-          }
-        }
-
-        await _primary.dropIndex(fields);
-      },
-      rollback: () async {
-        if (indexDescriptor != null) {
-          await _primary.createIndex(
-              fields, indexOptions(indexDescriptor!.indexType));
-        }
-      },
-    );
-    _context.journal.add(journalEntry);
+    await _primary.dropIndex(fields);
   }
 
   @override
   Future<void> dropAllIndices() async {
     await _checkOpened();
-    await _collectionOperations.dropAllIndices();
-
-    var indexEntries = <IndexDescriptor>[];
-    var journalEntry = JournalEntry(
-      changeType: ChangeType.dropAllIndexes,
-      commit: () async {
-        var indexes = await _primary.listIndexes();
-        indexEntries.addAll(indexes);
-        await _primary.dropAllIndices();
-      },
-      rollback: () async {
-        for (var entry in indexEntries) {
-          await _primary.createIndex(
-              entry.fields.fieldNames, indexOptions(entry.indexType));
-        }
-      },
-    );
-    _context.journal.add(journalEntry);
+    await _primary.dropAllIndices();
   }
 
   @override
   Future<void> clear() async {
     await _checkOpened();
-    await _collectionOperations.clear();
-
-    var journalEntry = JournalEntry(
-      changeType: ChangeType.clear,
-      commit: () async {
-        await _primary.clear();
-      },
-      rollback: () async {}, // can't rollback clear
-    );
-    _context.journal.add(journalEntry);
+    await _primary.clear();
   }
 
   @override
   Future<void> drop() async {
     await _checkOpened();
-    await _collectionOperations.dropCollection();
+    await _primary.drop();
+    await close();
     _isDropped = true;
-
-    var journalEntry = JournalEntry(
-      changeType: ChangeType.dropCollection,
-      commit: () async {
-        await _primary.drop();
-      },
-      rollback: () async {}, // can't rollback drop
-    );
-
-    _context.journal.add(journalEntry);
   }
 
   @override
