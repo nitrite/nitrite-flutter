@@ -174,8 +174,8 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   @override
   Future<void> initialize() async {
     var nitriteMapper = _nitriteConfig.nitriteMapper;
-    var operations = RepositoryOperations<T>(
+    _operations = RepositoryOperations<T>(
         _entityDecorator, nitriteMapper, _backingCollection);
-    await operations.createIndices();
+    await _operations.createIndices();
   }
 }
