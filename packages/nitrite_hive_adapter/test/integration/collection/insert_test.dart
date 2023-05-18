@@ -16,7 +16,7 @@ void main() {
     });
 
     test('Test Insert', () async {
-      var result = await collection.insert([doc1, doc2, doc3]);
+      var result = await collection.insertMany([doc1, doc2, doc3]);
       expect(result.getAffectedCount(), 3);
 
       var cursor = await collection.find();
@@ -34,7 +34,7 @@ void main() {
 
     test('Test Insert Hetero Docs', () async {
       var document = createDocument('test', 'Nitrite Test');
-      var result = await collection.insert([doc1, doc2, doc3, document]);
+      var result = await collection.insertMany([doc1, doc2, doc3, document]);
       expect(result.getAffectedCount(), 4);
     });
   });

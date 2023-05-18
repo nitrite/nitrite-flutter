@@ -29,13 +29,13 @@ void main() {
         ..put('creditCardNumber', '5548960345687452')
         ..put('cvv', '007')
         ..put('expiryDate', DateTime.now());
-      await collection.insert([document]);
+      await collection.insert(document);
 
       document = createDocument('name', 'Jane Doe')
         ..put('creditCardNumber', '5500960345687452')
         ..put('cvv', '008')
         ..put('expiryDate', DateTime.now());
-      await collection.insert([document]);
+      await collection.insert(document);
 
       await cvvProcessor.process(collection);
       await collection.addProcessor(cvvProcessor);
@@ -112,7 +112,7 @@ void main() {
         ..put('creditCardNumber', '5500960345687452')
         ..put('cvv', '008')
         ..put('expiryDate', DateTime.now());
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var cursor = await collection.find(filter: where("name").eq("Jane Doe"));
       var first = await cursor.first;

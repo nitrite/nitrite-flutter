@@ -144,10 +144,10 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<WriteResult> insert(List<T> elements) {
+  Future<WriteResult> insertMany(List<T> elements) {
     elements.notNullOrEmpty('Element list is empty');
     elements.notContainsNull('A null object cannot be inserted');
-    return _nitriteCollection.insert(_operations.toDocuments(elements));
+    return _nitriteCollection.insertMany(_operations.toDocuments(elements));
   }
 
   @override

@@ -15,13 +15,13 @@ void main() {
     });
 
     test('Test Multiple Insert', () async {
-      var result = await collection.insert([doc1, doc2, doc3]);
+      var result = await collection.insertMany([doc1, doc2, doc3]);
       expect(result.getAffectedCount(), 3);
 
       var cursor = await collection.find();
       var document = await cursor.first;
 
-      expect(() async => await collection.insert([document]),
+      expect(() async => await collection.insert(document),
           throwsUniqueConstraintException);
     });
   });

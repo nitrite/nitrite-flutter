@@ -129,7 +129,7 @@ void main() {
         ])
         ..put('body', 'a quick brown fox jump over the lazy dog');
 
-      await collection.insert([document]);
+      await collection.insert(document);
     });
 
     test('Test Drop All and Create Index', () async {
@@ -155,7 +155,7 @@ void main() {
       var doc4 = createDocument('field', 4);
       var doc5 = createDocument('field', 5.0);
 
-      await collection.insert([doc1, doc2, doc3, doc4, doc5]);
+      await collection.insertMany([doc1, doc2, doc3, doc4, doc5]);
       var cursor = await collection.find(filter: where('field').eq(5));
       expect(await cursor.length, 1);
 
@@ -174,7 +174,7 @@ void main() {
       for (var i = 0; i < 10000; i++) {
         var document = createDocument("first", random.nextInt(100))
             .put("second", random.nextDouble());
-        await collection.insert([document]);
+        await collection.insert(document);
       }
 
       var failed = false;
@@ -209,21 +209,21 @@ void main() {
 
     test('Test Index and Search on Null Values', () async {
       var collection = await db.getCollection('index-on-null');
-      await collection.insert([
+      await collection.insert(
         createDocument('first', null)
           ..put('second', 123)
           ..put('third', [1, 2, null])
-      ]);
-      await collection.insert([
+      );
+      await collection.insert(
         createDocument('first', 'abcd')
           ..put('second', 456)
           ..put('third', [3, 1])
-      ]);
-      await collection.insert([
+      );
+      await collection.insert(
         createDocument('first', 'xyz')
           ..put('second', 789)
           ..put('third', null)
-      ]);
+      );
 
       await collection.createIndex(['first']);
       var cursor = await collection.find(filter: where('first').eq(null));

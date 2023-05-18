@@ -47,7 +47,7 @@ void main() {
       emp1.blob = [];
       emp1.address = 'Dummy Address';
 
-      await repository.insert([emp1]);
+      await repository.insert(emp1);
 
       var cursor1 = await repository.find(
           filter: where('employeeNote.text').eq('Dummy Note'));

@@ -27,7 +27,7 @@ void main() {
       book.publisher = 'My Publisher House';
       book.tags = ['database', 'nosql'];
 
-      await bookRepository.insert([book]);
+      await bookRepository.insert(book);
 
       var bookById = await bookRepository.getById(bookId);
       expect(bookById?.bookId, isNotNull);

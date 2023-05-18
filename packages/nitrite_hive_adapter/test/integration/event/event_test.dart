@@ -31,7 +31,7 @@ void main() {
       var employee = generateEmployee(null);
       employee.empId = 100;
 
-      await employeeRepository.insert([employee]);
+      await employeeRepository.insert(employee);
       await Future.delayed(Duration(milliseconds: 100));
       expect(action, EventType.insert);
       expect(item, isNotNull);
@@ -41,7 +41,7 @@ void main() {
       var employee = generateEmployee(null);
       employee.empId = 100;
 
-      await employeeRepository.insert([employee]);
+      await employeeRepository.insert(employee);
       await Future.delayed(Duration(milliseconds: 100));
       expect(action, EventType.insert);
       expect(item, isNotNull);
@@ -73,7 +73,7 @@ void main() {
       employee.empId = 100;
       employee.address = 'abcd';
 
-      await employeeRepository.insert([employee]);
+      await employeeRepository.insert(employee);
       await Future.delayed(Duration(milliseconds: 100));
       expect(action, EventType.insert);
 
@@ -90,7 +90,7 @@ void main() {
       var employee = generateEmployee(null);
       employee.empId = 100;
       employee.address = 'abcd';
-      await repository.insert([employee]);
+      await repository.insert(employee);
 
       await repository.drop();
       await Future.delayed(Duration(milliseconds: 100));
@@ -114,7 +114,7 @@ void main() {
       var employee = generateEmployee(null);
       employee.empId = 100;
       employee.address = 'abcd';
-      await employeeRepository.insert([employee]);
+      await employeeRepository.insert(employee);
 
       await Future.delayed(Duration(milliseconds: 100));
       expect(item, isNull);
@@ -128,7 +128,7 @@ void main() {
       var employee = generateEmployee(null);
       employee.empId = 100;
       employee.address = 'abcd';
-      await employeeRepository.insert([employee]);
+      await employeeRepository.insert(employee);
 
       await Future.delayed(Duration(milliseconds: 100));
       expect(count, 2);
@@ -141,7 +141,7 @@ void main() {
       var employee = generateEmployee(null);
       employee.empId = 100;
       employee.address = 'abcd';
-      await employeeRepository.insert([employee]);
+      await employeeRepository.insert(employee);
 
       await Future.delayed(Duration(milliseconds: 100));
       expect(count, 1);

@@ -155,7 +155,7 @@ void main() {
         ..put("body", 'a quick brown fox jump over the lazy dog');
 
       await insert();
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var cursor = await collection.find(filter: where('firstName').eq(null));
       expectLater(cursor.first, completion(containsPair('lastName', 'ln1')));
@@ -168,7 +168,7 @@ void main() {
         ..put("data", [1, 2, 3])
         ..put("list", ['one', 'two', 'three'])
         ..put("body", 'a quick brown fox jump over the lazy dog');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       cursor = await collection.find(filter: where('lastName').eq(null));
       expectLater(cursor.first, completion(containsPair('firstName', 'fn4')));
@@ -218,7 +218,7 @@ void main() {
       var doc4 = emptyDocument().put('field1', 4).put('field2', 4.5);
       var doc5 = emptyDocument().put('field1', 5.0).put('field2', 5.0);
 
-      await collection.insert([doc1, doc2, doc3, doc4, doc5]);
+      await collection.insertMany([doc1, doc2, doc3, doc4, doc5]);
 
       var cursor = await collection.find(
           filter: and([where('field1').eq(0.03), where('field2').eq(5)]));
@@ -257,7 +257,7 @@ void main() {
         var doc = emptyDocument()
           ..put("first", random.nextInt(1000))
           ..put("second", random.nextDouble());
-        await collection.insert([doc]);
+        await collection.insert(doc);
       }
 
       var failed = false;
@@ -286,7 +286,7 @@ void main() {
 
     test('Test Index and Search on Null Values', () async {
       var collection = await db.getCollection('index-on-null');
-      await collection.insert([
+      await collection.insertMany([
         createDocument("first", null)
             .put("second", 123)
             .put("third", [1, 2, null]),

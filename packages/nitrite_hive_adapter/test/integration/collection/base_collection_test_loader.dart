@@ -77,7 +77,7 @@ Future<void> cleanUp() async {
 }
 
 Future<WriteResult> insert() async {
-  var result = await collection.insert([doc1, doc2, doc3]);
+  var result = await collection.insertMany([doc1, doc2, doc3]);
 
   expect(await collection.size, 3);
   return result;

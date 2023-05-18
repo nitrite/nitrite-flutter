@@ -25,7 +25,7 @@ void main() {
         ..id = 1;
 
       var txRepo = await tx.getRepository<TxData>();
-      await txRepo.insert([data]);
+      await txRepo.insert(data);
 
       var txCursor = await txRepo.find(filter: where('name').eq('John'));
       expect(await txCursor.length, 1);
@@ -37,6 +37,30 @@ void main() {
 
       cursor = await repository.find(filter: where('name').eq('John'));
       expect(await cursor.length, 1);
+    });
+
+    test("Test Rollback Insert", () async {
+      var repository = await db.getRepository<TxData>();
+      await repository.createIndex(['name']);
+
+      var session = db.createSession();
+      var tx = await session.beginTransaction();
+
+      var data1 = TxData()
+        ..name = 'John'
+        ..id = 1;
+
+      var data2 = TxData()
+        ..name = 'Jane'
+        ..id = 2;
+
+      var txRepo = await tx.getRepository<TxData>();
+      await txRepo.insertMany([data1, data2]);
+
+      data1.name = 'Molly';
+      await repository.insert(data2);
+
+
     });
   });
 }

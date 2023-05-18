@@ -66,7 +66,7 @@ void main() {
 
       bool errorThrown = false;
       try {
-        await collection.insert([doc1]);
+        await collection.insert(doc1);
       } catch (e) {
         errorThrown = true;
         expect(e is UniqueConstraintException, isTrue);
@@ -80,7 +80,7 @@ void main() {
       expectLater(cursor.length, completion(0));
       expectLater(collection.hasIndex(['firstName']), completion(isTrue));
 
-      await collection.insert([doc1]);
+      await collection.insert(doc1);
       cursor = await collection.find();
       expectLater(cursor.length, completion(1));
       expectLater(collection.hasIndex(['firstName']), completion(isTrue));

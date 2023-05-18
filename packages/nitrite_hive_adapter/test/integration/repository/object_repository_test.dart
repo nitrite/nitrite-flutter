@@ -46,7 +46,7 @@ void main() {
 
       var object = WithOutId(name: 'test', number: 2);
 
-      await repo.insert([object]);
+      await repo.insert(object);
       var cursor = await repo.find();
       var instance = await cursor.first;
       expect(object, instance);
@@ -58,7 +58,7 @@ void main() {
       expect(await repo.hasIndex(['number']), true);
 
       var object = WithTransientField(name: 'test', number: 2);
-      await repo.insert([object]);
+      await repo.insert(object);
 
       var instance = await repo.getById(2);
       expect(object, isNot(instance));
@@ -81,7 +81,7 @@ void main() {
         record.lastName = faker.person.lastName();
         record.processed = false;
 
-        await repo.insert([record]);
+        await repo.insert(record);
       }
 
       var cursor = await repo.find(filter: where('failed').eq(false));
@@ -106,7 +106,7 @@ void main() {
       var object2 = WithDateId(
           id: DateTime.fromMillisecondsSinceEpoch(1482773720000),
           name: 'second date');
-      await repo.insert([object1, object2]);
+      await repo.insertMany([object1, object2]);
 
       var cursor = await repo.find(
           filter: where('id')
@@ -132,21 +132,21 @@ void main() {
       childClass.date = DateTime.fromMillisecondsSinceEpoch(10000000);
       childClass.id = 1;
       childClass.text = 'I am first class';
-      await repository.insert([childClass]);
+      await repository.insert(childClass);
 
       childClass = ChildClass();
       childClass.name = 'second';
       childClass.date = DateTime.fromMillisecondsSinceEpoch(10000001);
       childClass.id = 2;
       childClass.text = 'I am second class';
-      await repository.insert([childClass]);
+      await repository.insert(childClass);
 
       childClass = ChildClass();
       childClass.name = 'third';
       childClass.date = DateTime.fromMillisecondsSinceEpoch(10000002);
       childClass.id = 3;
       childClass.text = 'I am third class';
-      await repository.insert([childClass]);
+      await repository.insert(childClass);
 
       var cursor = await repository.find(filter: where('text').text('class'));
       expect(await cursor.length, 3);
@@ -189,9 +189,9 @@ void main() {
       developer.address = 'xyz';
       developer.joinDate = DateTime.now();
 
-      await managerRepo.insert([manager]);
-      await employeeRepo.insert([manager, developer]);
-      await developerRepo.insert([developer]);
+      await managerRepo.insert(manager);
+      await employeeRepo.insertMany([manager, developer]);
+      await developerRepo.insert(developer);
 
       expect(await db.hasRepository<Employee>(), true);
       expect(await db.hasRepository<Employee>(key: 'managers'), true);
@@ -227,11 +227,11 @@ void main() {
           await db.getRepository<EmployeeEntity>(key: 'developers');
 
       await managerRepo
-          .insert([EmployeeEntity(), EmployeeEntity(), EmployeeEntity()]);
+          .insertMany([EmployeeEntity(), EmployeeEntity(), EmployeeEntity()]);
       await employeeRepo
-          .insert([EmployeeEntity(), EmployeeEntity(), EmployeeEntity()]);
+          .insertMany([EmployeeEntity(), EmployeeEntity(), EmployeeEntity()]);
       await developerRepo
-          .insert([EmployeeEntity(), EmployeeEntity(), EmployeeEntity()]);
+          .insertMany([EmployeeEntity(), EmployeeEntity(), EmployeeEntity()]);
 
       bool errored = false;
       try {
@@ -263,7 +263,7 @@ void main() {
       });
 
       var employeeRepo2 = await db.getRepository<EmployeeEntity>();
-      await employeeRepo2.insert([EmployeeEntity()]);
+      await employeeRepo2.insert(EmployeeEntity());
 
       // wait for 1 sec for the event to be fired
       await Future.delayed(Duration(seconds: 1));
@@ -465,13 +465,13 @@ void main() {
       var companyRepository = await db.getRepository<Company>();
       var company1 = Company(
           companyId: 1, companyName: 'ABCD', dateCreated: DateTime.now());
-      await companyRepository.insert([company1]);
+      await companyRepository.insert(company1);
 
       var company2 = Company(companyId: 2, companyName: 'ABCD');
 
       bool uniqueError = false;
       try {
-        await companyRepository.insert([company2]);
+        await companyRepository.insert(company2);
       } on UniqueConstraintException {
         uniqueError = true;
       } finally {

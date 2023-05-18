@@ -273,7 +273,7 @@ void main() {
                   "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
                   "non lorem.");
 
-      await collection.insert([doc, doc3, doc1, doc2]);
+      await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = await collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
@@ -316,7 +316,7 @@ void main() {
                   "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
                   "non lorem.");
 
-      await collection.insert([doc, doc3, doc1, doc2]);
+      await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = await collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
@@ -369,7 +369,7 @@ void main() {
                   "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
                   "non lorem.");
 
-      await collection.insert([doc, doc3, doc1, doc2]);
+      await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = await collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
@@ -421,7 +421,7 @@ void main() {
                   "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
                   "non lorem.");
 
-      await collection.insert([doc, doc3, doc1, doc2]);
+      await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = await collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
@@ -463,7 +463,7 @@ void main() {
                   "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
                   "non lorem.");
 
-      await collection.insert([doc, doc3, doc1, doc2]);
+      await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = await collection.find(
           filter: and([
             where("lastName").notEq("ln1"),

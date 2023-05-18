@@ -24,7 +24,7 @@ void main() {
         var txCol = await tx.getCollection('test');
 
         var document = createDocument('firstName', 'John');
-        await txCol.insert([document]);
+        await txCol.insert(document);
 
         var cursor = await txCol.find(filter: where('firstName').eq('John'));
         expect(await cursor.length, 1);
@@ -48,7 +48,7 @@ void main() {
           var txCol = await tx.getCollection('test');
 
           var document = createDocument('firstName', 'John');
-          await txCol.insert([document]);
+          await txCol.insert(document);
 
           var cursor = await txCol.find(filter: where('firstName').eq('John'));
           expect(await cursor.length, 1);
@@ -79,7 +79,7 @@ void main() {
           var txCol = await tx.getCollection('test');
 
           var document = createDocument('firstName', 'John');
-          await txCol.insert([document]);
+          await txCol.insert(document);
 
           var cursor = await txCol.find(filter: where('firstName').eq('John'));
           expect(await cursor.length, 1);
@@ -110,7 +110,7 @@ void main() {
           var txCol = await tx.getCollection('test');
 
           var document = createDocument('firstName', 'John');
-          await txCol.insert([document]);
+          await txCol.insert(document);
 
           var cursor = await txCol.find(filter: where('firstName').eq('John'));
           expect(await cursor.length, 1);
@@ -139,7 +139,7 @@ void main() {
       var txCol = await tx.getCollection('test');
 
       var document = createDocument('firstName', 'John');
-      await txCol.insert([document]);
+      await txCol.insert(document);
 
       var cursor = await txCol.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 1);
@@ -165,11 +165,11 @@ void main() {
       var document = createDocument('firstName', 'John');
       var document2 =
           createDocument('firstName', 'Jane').put('lastName', 'Doe');
-      await txCol.insert([document, document2]);
+      await txCol.insertMany([document, document2]);
 
       try {
         // just to create UniqueConstraintViolation for rollback
-        await collection.insert([createDocument('firstName', 'Jane')]);
+        await collection.insertMany([createDocument('firstName', 'Jane')]);
 
         var cursor = await txCol.find(filter: where('firstName').eq('John'));
         expect(await cursor.length, 1);
@@ -199,7 +199,7 @@ void main() {
 
     test('Test Commit Update', () async {
       var document = createDocument('firstName', 'John');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var session = db.createSession();
       var tx = await session.beginTransaction();
@@ -225,7 +225,7 @@ void main() {
 
     test('Test Rollback Update', () async {
       await collection.createIndex(['firstName']);
-      await collection.insert([createDocument('firstName', 'Jane')]);
+      await collection.insertMany([createDocument('firstName', 'Jane')]);
 
       var session = db.createSession();
       var tx = await session.beginTransaction();
@@ -238,10 +238,10 @@ void main() {
           createDocument('firstName', 'Jane').put('lastName', 'Doe');
 
       await txCol.update(where('firstName').eq('Jane'), document2);
-      await txCol.insert([document]);
+      await txCol.insert(document);
 
       // just to create UniqueConstraintViolation for rollback
-      await collection.insert([createDocument('firstName', 'John')]);
+      await collection.insertMany([createDocument('firstName', 'John')]);
 
       var cursor = await txCol.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 1);
@@ -273,7 +273,7 @@ void main() {
 
     test('Test Commit Remove', () async {
       var document = createDocument('firstName', 'John');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var session = db.createSession();
       var tx = await session.beginTransaction();
@@ -298,7 +298,7 @@ void main() {
     test('Test Rollback Remove', () async {
       await collection.createIndex(['firstName']);
       var document = createDocument('firstName', 'John');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var session = db.createSession();
       var tx = await session.beginTransaction();
@@ -314,8 +314,8 @@ void main() {
           await collection.find(filter: where('firstName').eq('John'));
       expect(await colCursor.length, 1);
 
-      await txCol.insert([createDocument('firstName', 'Jane')]);
-      await collection.insert([createDocument('firstName', 'Jane')]);
+      await txCol.insert(createDocument('firstName', 'Jane'));
+      await collection.insert(createDocument('firstName', 'Jane'));
 
       try {
         // a TransactionException should occur here due to UniqueConstraintViolation
@@ -336,7 +336,7 @@ void main() {
 
     test('Test Create Index', () async {
       var document = createDocument('firstName', 'John');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var session = db.createSession();
       var tx = await session.beginTransaction();
@@ -355,7 +355,7 @@ void main() {
     test('Test Rollback Create Index', () async {
       var document = createDocument('firstName', 'John');
       var document2 = createDocument('firstName', 'Jane');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var session = db.createSession();
       var tx = await session.beginTransaction();
@@ -368,8 +368,8 @@ void main() {
       expect(await txCol.hasIndex(['firstName']), true);
       expect(await collection.hasIndex(['firstName']), true);
 
-      await txCol.insert([document2]);
-      await collection.insert([document2]);
+      await txCol.insert(document2);
+      await collection.insert(document2);
 
       try {
         // a TransactionException should occur here due to UniqueConstraintViolation
@@ -386,7 +386,7 @@ void main() {
 
     test('Test Commit Clear', () async {
       var document = createDocument('firstName', 'John');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var session = db.createSession();
       var tx = await session.beginTransaction();
@@ -407,7 +407,7 @@ void main() {
       await collection.createIndex(['firstName']);
       var document = createDocument('firstName', 'John');
       var document2 = createDocument('firstName', 'Jane');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var session = db.createSession();
       bool exceptionThrown = false;
@@ -420,8 +420,8 @@ void main() {
         expect(await txCol.size, 0);
         expect(await collection.size, 0);
 
-        await txCol.insert([document2]);
-        await collection.insert([document2]);
+        await txCol.insert(document2);
+        await collection.insert(document2);
 
         await tx.commit();
       } catch (e) {
@@ -436,7 +436,7 @@ void main() {
 
     test('Test Commit Drop Index', () async {
       var document = createDocument('firstName', 'John');
-      await collection.insert([document]);
+      await collection.insert(document);
       await collection.createIndex(['firstName']);
 
       var session = db.createSession();
@@ -458,7 +458,7 @@ void main() {
     test('Test Rollback Drop Index', () async {
       var document = createDocument('firstName', 'John');
       var document2 = createDocument('firstName', 'Jane');
-      await collection.insert([document]);
+      await collection.insert(document);
       await collection.createIndex(['firstName']);
       await collection
           .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
@@ -476,8 +476,8 @@ void main() {
         expect(await txCol.hasIndex(['lastName']), false);
         expect(await collection.hasIndex(['lastName']), false);
 
-        await txCol.insert([document2]);
-        await collection.insert([document2]);
+        await txCol.insert(document2);
+        await collection.insert(document2);
 
         await tx.commit();
       } catch (e) {
@@ -492,7 +492,7 @@ void main() {
 
     test('Test Commit Drop All Indices', () async {
       var document = createDocument('firstName', 'John');
-      await collection.insert([document]);
+      await collection.insert(document);
       await collection.createIndex(['firstName']);
       await collection.createIndex(['lastName']);
 
@@ -518,7 +518,7 @@ void main() {
 
     test('Test Rollback Drop All Indices', () async {
       var document = createDocument('firstName', 'John').put('lastName', 'Doe');
-      await collection.insert([document]);
+      await collection.insert(document);
       await collection.createIndex(['firstName']);
       await collection
           .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
@@ -540,9 +540,9 @@ void main() {
         expect(await collection.hasIndex(['lastName']), false);
 
         await txCol.insert(
-            [createDocument('firstName', 'Jane').put('lastName', 'Doe')]);
+            createDocument('firstName', 'Jane').put('lastName', 'Doe'));
         await collection.insert(
-            [createDocument('firstName', 'Jane').put('lastName', 'Doe')]);
+            createDocument('firstName', 'Jane').put('lastName', 'Doe'));
 
         throw Exception('Test Rollback Drop All Indices');
       } catch (e) {
@@ -557,7 +557,7 @@ void main() {
 
     test('Test Commit Drop Collection', () async {
       var document = createDocument('firstName', 'John');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var session = db.createSession();
       var tx = await session.beginTransaction();
@@ -571,7 +571,7 @@ void main() {
 
     test('Test Rollback Drop Collection', () async {
       var document = createDocument('firstName', 'John');
-      await collection.insert([document]);
+      await collection.insert(document);
 
       var session = db.createSession();
       var tx = await session.beginTransaction();
@@ -622,14 +622,14 @@ void main() {
         attributes.set('key', 'value');
         await txCol.setAttributes(attributes);
 
-        await txCol.insert([createDocument('firstName', 'John')]);
-        await txCol.insert([createDocument('firstName', 'Jane')]);
+        await txCol.insert(createDocument('firstName', 'John'));
+        await txCol.insert(createDocument('firstName', 'Jane'));
 
         var attr = await collection.getAttributes();
         expect(attr.hasKey('key'), false);
 
         // just to create UniqueConstraintViolation for rollback
-        await collection.insert([createDocument('firstName', 'Jane')]);
+        await collection.insert(createDocument('firstName', 'Jane'));
 
         await tx.commit();
       } catch (e) {
@@ -670,7 +670,7 @@ void main() {
                   .put('lastName', fk.person.lastName())
                   .put('id', j + (i * 10));
 
-              await txCol.insert([document]);
+              await txCol.insert(document);
             }
 
             await txCol.remove(where('id').eq(2 + (i * 10)));
@@ -713,15 +713,15 @@ void main() {
       for (var i = 0; i < 10; i++) {
         var document =
             createDocument('firstName', faker.person.firstName()).put('id', i);
-        await txCol1.insert([document]);
+        await txCol1.insert(document);
 
         document = createDocument('firstName', faker.person.firstName())
             .put('id', i + 10);
-        await txCol2.insert([document]);
+        await txCol2.insert(document);
 
         document = createDocument('firstName', faker.person.firstName())
             .put('id', i + 20);
-        await txCol3.insert([document]);
+        await txCol3.insert(document);
       }
 
       await tx.commit();
@@ -740,15 +740,15 @@ void main() {
       for (var i = 0; i < 10; i++) {
         var document = createDocument('firstName', faker.person.firstName())
             .put('id', i + 30);
-        await txCol1.insert([document]);
+        await txCol1.insert(document);
 
         document = createDocument('firstName', faker.person.firstName())
             .put('id', i + 40);
-        await txCol2.insert([document]);
+        await txCol2.insert(document);
 
         document = createDocument('firstName', faker.person.firstName())
             .put('id', i + 50);
-        await txCol3.insert([document]);
+        await txCol3.insert(document);
       }
 
       expect(await txCol1.size, 20);
@@ -761,7 +761,7 @@ void main() {
 
       var document =
           createDocument('firstName', faker.person.firstName()).put('id', 52);
-      await col3.insert([document]);
+      await col3.insert(document);
 
       try {
         await tx.commit();
@@ -779,11 +779,11 @@ void main() {
       var tx = await session.beginTransaction();
 
       var col = await tx.getCollection('test');
-      await col.insert([createDocument('firstName', 'John')]);
+      await col.insert(createDocument('firstName', 'John'));
       await tx.commit();
 
       expect(
-          () async => await col.insert([createDocument('firstName', 'Jane')]),
+          () async => await col.insert(createDocument('firstName', 'Jane')),
           throwsTransactionException);
     });
   });

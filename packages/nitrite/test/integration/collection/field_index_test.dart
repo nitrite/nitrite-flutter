@@ -42,7 +42,7 @@ void main() {
       await collection
           .createIndex(['books.name'], indexOptions(IndexType.fullText));
 
-      var writeResult = await collection.insert([doc1, doc2, doc3]);
+      var writeResult = await collection.insertMany([doc1, doc2, doc3]);
       expect(writeResult.getAffectedCount(), 3);
 
       var cursor = await collection.find(filter: where('color').eq('red'));

@@ -35,7 +35,7 @@ void main() {
       person.creditCardNumber = '5548960345687452';
       person.cvv = '007';
       person.expiryDate = DateTime.now();
-      await persons.insert([person]);
+      await persons.insert(person);
 
       await creditCardProcessor.process(persons);
       await persons.addProcessor(creditCardProcessor);
@@ -46,7 +46,7 @@ void main() {
       person.cvv = '008';
       person.expiryDate = DateTime.now();
 
-      await persons.insert([person]);
+      await persons.insert(person);
     });
 
     tearDown(() async {
@@ -122,7 +122,7 @@ void main() {
       person.creditCardNumber = '5548960345687452';
       person.cvv = '007';
       person.expiryDate = DateTime.now();
-      await testPersons.insert([person]);
+      await testPersons.insert(person);
 
       person = EncryptedPerson();
       person.name = 'Jane Doe';
@@ -130,7 +130,7 @@ void main() {
       person.cvv = '008';
       person.expiryDate = DateTime.now();
 
-      await testPersons.insert([person]);
+      await testPersons.insert(person);
 
       var cursor = await testPersons.find(filter: where("name").eq("Jane Doe"));
       var first = await cursor.first;

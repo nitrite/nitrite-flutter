@@ -17,19 +17,35 @@ import 'package:nitrite/src/common/persistent_collection.dart';
 /// var collection = db.getCollection("products");
 /// ```
 abstract class NitriteCollection extends PersistentCollection<Document> {
+  /// Insert a document into a collection. If the document contains a `_id` value,
+  /// then the value will be used as a unique key to identify the document in
+  /// the collection.
+  /// If the document does not contain any `_id` value, then nitrite will
+  /// generate a new [NitriteId] and will add it to the document.
+  ///
+  /// If any of the field is already indexed in the collection, then after
+  /// insertion the index will also be updated.
+  ///
+  /// **NOTE**: These operations will notify all [CollectionEventListener]
+  /// instances registered to this collection with change type
+  /// [EventType.insert].
+  Future<WriteResult> insert(Document documents) {
+    return insertMany([documents]);
+  }
+
   /// Insert documents into a collection. If the document contains a `_id` value,
   /// then the value will be used as a unique key to identify the document in
   /// the collection.
   /// If the document does not contain any `_id` value, then nitrite will
   /// generate a new [NitriteId] and will add it to the document.
   ///
-  /// If any of the value is already indexed in the collection, then after
+  /// If any of the field is already indexed in the collection, then after
   /// insertion the index will also be updated.
   ///
   /// **NOTE**: These operations will notify all [CollectionEventListener]
   /// instances registered to this collection with change type
   /// [EventType.insert].
-  Future<WriteResult> insert(List<Document> documents);
+  Future<WriteResult> insertMany(List<Document> documents);
 
   /// Update a single document in the collection. If [insertIfAbsent] is true,
   /// then this operation will insert the document if it does not exist in the

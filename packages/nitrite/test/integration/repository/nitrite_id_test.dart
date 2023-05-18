@@ -32,7 +32,7 @@ void main() {
       var item2 = WithNitriteId();
       item2.name = 'second';
 
-      await repo.insert([item1, item2]);
+      await repo.insertMany([item1, item2]);
 
       var cursor = await repo.find();
       await for (var withNitriteId in cursor) {
@@ -55,13 +55,13 @@ void main() {
       item.name = 'first';
       item.idField = NitriteId.newId();
 
-      expect(() async => await repo.insert([item]), throwsInvalidIdException);
+      expect(() async => await repo.insert(item), throwsInvalidIdException);
     });
 
     test('Test Change Id During Update', () async {
       var item = WithNitriteId();
       item.name = 'second';
-      var result = await repo.insert([item]);
+      var result = await repo.insert(item);
       var nitriteId = result.first;
       var byId = await repo.getById(nitriteId);
       byId?.idField = NitriteId.newId();

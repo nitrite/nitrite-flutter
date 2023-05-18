@@ -27,20 +27,20 @@ void main() {
         person.id = i.toString();
         person.name = 'Person $i';
 
-        await personRepository.insert([person]);
+        await personRepository.insert(person);
 
         var address = Address();
         address.personId = i.toString();
         address.street = 'Street Address $i';
 
-        await addressRepository.insert([address]);
+        await addressRepository.insert(address);
 
         if (i == 5) {
           var address2 = Address();
           address2.personId = i.toString();
           address2.street = 'Street Address 2nd $i';
 
-          await addressRepository.insert([address2]);
+          await addressRepository.insert(address2);
         }
       }
     });

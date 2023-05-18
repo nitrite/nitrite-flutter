@@ -92,13 +92,13 @@ void main() {
       var company = generateCompanyRecord();
       expect(await cursor.length, 10);
 
-      await companyRepository.insert([company]);
+      await companyRepository.insert(company);
       cursor = await companyRepository.find();
       expect(await cursor.length, 11);
 
       var company1 = generateCompanyRecord();
       var company2 = generateCompanyRecord();
-      await companyRepository.insert([company1, company2]);
+      await companyRepository.insertMany([company1, company2]);
       cursor = await companyRepository.find();
       expect(await cursor.length, 13);
     });
@@ -114,7 +114,7 @@ void main() {
       employee.joinDate = DateTime.now();
       employee.employeeNote = Note(noteId: 23, text: 'sample text note');
 
-      await employeeRepository.insert([employee]);
+      await employeeRepository.insert(employee);
       var result = await employeeRepository.find();
       expect(await result.length, 1);
 
@@ -421,7 +421,7 @@ void main() {
           employeeNote: Note(noteId: 23, text: 'sample text note'));
 
       var size = await employeeRepository.size;
-      var result = await employeeRepository.insert([employee]);
+      var result = await employeeRepository.insert(employee);
       expect(result.getAffectedCount(), 1);
       expect(await employeeRepository.size, size + 1);
 
@@ -446,7 +446,7 @@ void main() {
       var one = Note(noteId: 1, text: 'Jane');
       var two = Note(noteId: 2, text: 'Jill');
 
-      await notes.insert([one, two]);
+      await notes.insertMany([one, two]);
       var result = await notes.remove(where('text').eq('Pete'));
       expect(result.getAffectedCount(), 0);
     });
@@ -455,7 +455,7 @@ void main() {
       var repo = await db.getRepository<WithNitriteId>();
       var one = WithNitriteId();
       one.name = 'Jane';
-      await repo.insert([one]);
+      await repo.insert(one);
 
       var cursor = await repo.find();
       var item = await cursor.first;
@@ -469,7 +469,7 @@ void main() {
       var repo = await db.getRepository<WithNitriteId>();
       var a = WithNitriteId();
       a.name = 'first';
-      await repo.insert([a]);
+      await repo.insert(a);
 
       a = WithNitriteId();
       a.name = 'second';
@@ -483,7 +483,7 @@ void main() {
       var repo = await db.getRepository<WithNitriteId>();
       var a = WithNitriteId();
       a.name = 'first';
-      await repo.insert([a]);
+      await repo.insert(a);
 
       a = WithNitriteId();
       a.name = 'second';
@@ -500,7 +500,7 @@ void main() {
       var a = WithNullId();
       a.name = 'first';
       a.number = 1;
-      await repo.insert([a]);
+      await repo.insert(a);
 
       a = WithNullId();
       a.name = 'first';
@@ -518,7 +518,7 @@ void main() {
       var a = WithNullId();
       a.name = 'first';
       a.number = 1;
-      await repo.insert([a]);
+      await repo.insert(a);
 
       a = WithNullId();
       a.name = 'first';
@@ -574,7 +574,7 @@ _prepareUpdateWithOptions(DateTime joiningDate) async {
   employee2.joinDate = joiningDate;
   employee2.employeeNote = Note(noteId: 2, text: 'some random note');
 
-  await employeeRepository.insert([employee1, employee2]);
+  await employeeRepository.insertMany([employee1, employee2]);
   var result = await employeeRepository.find();
   expect(await result.length, 2);
 

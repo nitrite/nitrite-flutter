@@ -27,7 +27,7 @@ void main() {
         ..put('address', 'Some other Street')
         ..put('telephone', '7893141321');
 
-      await foreignCollection.insert([fdoc1, fdoc2, fdoc3]);
+      await foreignCollection.insertMany([fdoc1, fdoc2, fdoc3]);
     });
 
     tearDown(() async {

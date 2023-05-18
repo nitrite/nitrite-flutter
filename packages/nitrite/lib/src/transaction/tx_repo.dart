@@ -66,9 +66,9 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<WriteResult> insert(List<T> elements) {
+  Future<WriteResult> insertMany(List<T> elements) {
     elements.notNullOrEmpty("Elements cannot be empty");
-    return _backingCollection.insert(_operations.toDocuments(elements));
+    return _backingCollection.insertMany(_operations.toDocuments(elements));
   }
 
   @override

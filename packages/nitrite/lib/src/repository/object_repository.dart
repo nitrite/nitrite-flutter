@@ -22,17 +22,31 @@ import 'package:nitrite/src/common/persistent_collection.dart';
 /// repository.insert(employee);
 /// ```
 abstract class ObjectRepository<T> extends PersistentCollection<T> {
-  /// Inserts object into this repository. If the object contains a value
+  /// Inserts an object into this repository. If the object contains a value
   /// with an id, then the value will be used as a unique key to identify
   /// the object in the repository.
   ///
-  /// If any of the value is already indexed in the repository, then after
+  /// If any of the fields is already indexed in the repository, then after
   /// insertion the index will also be updated.
   ///
   /// **NOTE**: This operations will notify all [CollectionEventListener]
   /// instances registered to this repository with change type
   /// [EventType.insert].
-  Future<WriteResult> insert(List<T> elements);
+  Future<WriteResult> insert(T element) {
+    return insertMany([element]);
+  }
+
+  /// Inserts objects into this repository. If the objects contains a value
+  /// with an id, then the value will be used as a unique key to identify
+  /// the object in the repository.
+  ///
+  /// If any of the fields is already indexed in the repository, then after
+  /// insertion the index will also be updated.
+  ///
+  /// **NOTE**: This operations will notify all [CollectionEventListener]
+  /// instances registered to this repository with change type
+  /// [EventType.insert].
+  Future<WriteResult> insertMany(List<T> elements);
 
   /// Update a single object in the repository. If [insertIfAbsent] is true,
   /// then this operation will insert the object if it does not exist in the

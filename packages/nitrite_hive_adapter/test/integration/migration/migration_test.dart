@@ -32,7 +32,7 @@ void main() {
         literature.text = faker.lorem.sentence();
         oldClass.literature = literature;
 
-        await oldRepo.insert([oldClass]);
+        await oldRepo.insert(oldClass);
       }
 
       var keyedRepos = (await db.listKeyedRepositories).length;
@@ -98,7 +98,7 @@ void main() {
           ..put('bloodGroup', faker.randomGenerator.fromCharSet('ABO', 1))
           ..put('age', faker.randomGenerator.integer(100));
 
-        await collection.insert([document]);
+        await collection.insert(document);
       }
 
       await collection
@@ -186,7 +186,7 @@ void main() {
           ..put('firstName', faker.person.firstName())
           ..put('lastName', faker.person.lastName());
 
-        await collection.insert([document]);
+        await collection.insert(document);
       }
 
       await db.close();
@@ -234,7 +234,7 @@ void main() {
           ..put('firstName', faker.person.firstName())
           ..put('lastName', faker.person.lastName());
 
-        await collection.insert([document]);
+        await collection.insert(document);
       }
 
       await db.close();
@@ -294,7 +294,7 @@ void main() {
           ..put('firstName', faker.person.firstName())
           ..put('lastName', faker.person.lastName());
 
-        await collection.insert([document]);
+        await collection.insert(document);
       }
 
       await db.close();
@@ -335,7 +335,7 @@ void main() {
           ..put('firstName', faker.person.firstName())
           ..put('lastName', faker.person.lastName());
 
-        await collection.insert([document]);
+        await collection.insert(document);
       }
 
       await db.close();
@@ -402,7 +402,7 @@ void main() {
           ..put('firstName', faker.person.firstName())
           ..put('lastName', faker.person.lastName());
 
-        await collection.insert([document]);
+        await collection.insert(document);
       }
 
       await db.close();
@@ -468,7 +468,7 @@ void main() {
           ..put('firstName', faker.person.firstName())
           ..put('lastName', faker.person.lastName());
 
-        await collection.insert([document]);
+        await collection.insert(document);
       }
 
       await db.close();

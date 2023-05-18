@@ -46,7 +46,7 @@ void main() {
     test('Test Operation After Drop', () async {
       await collection.drop();
       expect(
-          () async => await collection.insert([createDocument('test', 'test')]),
+          () async => await collection.insert(createDocument('test', 'test')),
           throwsNitriteIOException);
     });
   });

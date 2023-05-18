@@ -197,7 +197,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<WriteResult> insert(List<Document> documents) async {
+  Future<WriteResult> insertMany(List<Document> documents) async {
     documents.notNullOrEmpty('Documents cannot be empty');
     documents.notContainsNull('A null document cannot be inserted');
     _checkOpened();

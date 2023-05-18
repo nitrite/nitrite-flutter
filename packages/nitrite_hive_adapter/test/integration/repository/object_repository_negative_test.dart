@@ -43,7 +43,7 @@ void main() {
       // circular reference
       parent.parent = child;
 
-      expect(() async => await repository.insert([child]),
+      expect(() async => await repository.insert(child),
           throwsObjectMappingException);
     });
 
@@ -52,7 +52,7 @@ void main() {
           entityDecorator: WithEmptyStringIdEntityDecorator());
       var object = WithEmptyStringId(name: '');
 
-      expect(() async => await repository.insert([object]),
+      expect(() async => await repository.insert(object),
           throwsInvalidIdException);
     });
 
@@ -60,7 +60,7 @@ void main() {
       var repository = await db.getRepository<WithNullId>();
       var object = WithNullId();
 
-      expect(() async => await repository.insert([object]),
+      expect(() async => await repository.insert(object),
           throwsInvalidIdException);
     });
 
@@ -122,7 +122,7 @@ void main() {
           entityDecorator: WithOutIdEntityDecorator());
 
       var object = WithOutId(name: 'name', number: 1);
-      await repository.insert([object]);
+      await repository.insert(object);
 
       var cursor = await repository.find();
       expect(() async => await cursor.project<NitriteId>().toList(),
@@ -133,7 +133,7 @@ void main() {
       var repository = await db.getRepository<WithOutId?>(
           entityDecorator: WithOutIdEntityDecorator());
 
-      expect(() async => await repository.insert([null]),
+      expect(() async => await repository.insert(null),
           throwsValidationException);
     });
 
@@ -142,7 +142,7 @@ void main() {
       var object = WithNitriteId();
       object.name = 'test';
 
-      await repository.insert([object]);
+      await repository.insert(object);
       expect(
           () async => await repository.getById(null), throwsInvalidIdException);
     });
@@ -168,7 +168,7 @@ void main() {
       var object = WithNitriteId();
       object.name = 'test';
 
-      var result = await repository.insert([object]);
+      var result = await repository.insert(object);
       
       expect(result.getAffectedCount(), 1);
       expect(

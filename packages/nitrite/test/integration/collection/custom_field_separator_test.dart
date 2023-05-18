@@ -39,7 +39,7 @@ void main() {
                 ..put('noteId', faker.guid.toString())
                 ..put('text', faker.lorem.sentence()));
 
-        await collection.insert([doc]);
+        await collection.insert(doc);
       }
 
       var cursor =

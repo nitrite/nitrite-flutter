@@ -358,7 +358,7 @@ void main() {
       await collection
           .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
 
-      await collection.insert([doc1, doc2, doc3, doc4]);
+      await collection.insertMany([doc1, doc2, doc3, doc4]);
       var cursor = await collection.find(
           filter:
               where('firstName').eq('John').or(where('lastName').eq('Day')));
@@ -385,7 +385,7 @@ void main() {
       var doc4 = createDocument('firstName', 'Johan').put('notes', list4);
 
       await collection.createIndex(['notes'], indexOptions(IndexType.fullText));
-      await collection.insert([doc1, doc2, doc3, doc4]);
+      await collection.insertMany([doc1, doc2, doc3, doc4]);
 
       var cursor = await collection.find(filter: where('notes').text('fox'));
       expect(await cursor.length, 4);

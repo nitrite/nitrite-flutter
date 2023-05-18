@@ -51,7 +51,7 @@ void main() {
               "tale constituto interesset in.";
         }
 
-        await textRepository.insert([data]);
+        await textRepository.insert(data);
       }
     });
 

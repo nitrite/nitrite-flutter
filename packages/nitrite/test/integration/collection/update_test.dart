@@ -184,7 +184,7 @@ void main() {
       await col.remove(all);
 
       var doc = createDocument("id", "test-1").put("group", "groupA");
-      var result = await col.insert([doc]);
+      var result = await col.insert(doc);
       expect(result.getAffectedCount(), 1);
 
       var savedDoc1 = await (await col.find()).first;
@@ -236,7 +236,7 @@ void main() {
       var doc2 = createDocument("id", "test-2").put("fruit", "Ôrange");
 
       var collection = await db.getCollection('test');
-      await collection.insert([doc1, doc2]);
+      await collection.insertMany([doc1, doc2]);
 
       await collection.createIndex(['fruit']);
       var cursor = await collection.find(filter: where('fruit').eq('Apple'));

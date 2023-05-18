@@ -306,7 +306,7 @@ void main() {
     });
 
     test("Test Get by Id", () async {
-      await collection.insert([doc1]);
+      await collection.insert(doc1);
       var id = NitriteId.createId('1');
       var doc = await collection.getById(id);
       expect(doc, isNull);
@@ -430,7 +430,7 @@ void main() {
               ..put('zip', '70001'));
 
       var collection = await db.getCollection('person');
-      await collection.insert([doc1, doc2]);
+      await collection.insertMany([doc1, doc2]);
 
       var processor = StringFieldEncryptionProcessor();
       processor.addFields(['name']);
@@ -533,7 +533,7 @@ void main() {
         ..put('strArray', ["a", "f"]);
 
       var prodCollection = await db.getCollection('prodScore');
-      await prodCollection.insert([doc1, doc2, doc3]);
+      await prodCollection.insertMany([doc1, doc2, doc3]);
 
       var cursor = await prodCollection.find(
           filter: where('productScores').elemMatch(
@@ -624,7 +624,7 @@ void main() {
         ..put('abc', '123')
         ..put('xyz', null);
 
-      await collection.insert([doc]);
+      await collection.insert(doc);
       var cursor = await collection.find(filter: where("abc").eq("123"));
       expect(await cursor.length, 1);
 
@@ -648,7 +648,7 @@ void main() {
         ..put('field', 'two')
         ..put('revision', 1482225343161);
 
-      await collection.insert([doc]);
+      await collection.insert(doc);
       cursor = await collection.find(
           filter: where('revision').gte(1482225343160).and(where('revision')
               .lte(1482225343162)
@@ -683,14 +683,14 @@ void main() {
       var doc = emptyDocument()
         ..put('id', 'test-1')
         ..put('group', 'groupA');
-      var result = await col.insert([doc]);
+      var result = await col.insert(doc);
       expect(result.length, 1);
 
       doc = emptyDocument()
         ..put('id', 'test-2')
         ..put('group', 'groupA')
         ..put('startTime', DateTime.now());
-      result = await col.insert([doc]);
+      result = await col.insert(doc);
       expect(result.length, 1);
 
       var cursor = await col.find(
@@ -732,7 +732,7 @@ void main() {
         ..put('startTime', DateTime.parse('2018-10-19T02:45:15'))
         ..put('group', 'groupA');
 
-      var result = await col.insert([doc1, doc2, doc3]);
+      var result = await col.insertMany([doc1, doc2, doc3]);
       expect(result.length, 3);
 
       var cursor = await col.find(
@@ -790,7 +790,7 @@ void main() {
         ..put('fruit', 'Orange');
 
       var col = await db.getCollection('test');
-      await col.insert([doc1, doc2, doc3, doc4]);
+      await col.insertMany([doc1, doc2, doc3, doc4]);
 
       var cursor = await col.find(findOptions: orderBy('fruit'));
       expect(await cursor.length, 4);
@@ -846,7 +846,7 @@ void main() {
         ]);
 
       var col = await db.getCollection('test');
-      await col.insert([doc1, doc2]);
+      await col.insertMany([doc1, doc2]);
 
       var cursor = await col.find(
           filter: where('tags').elemMatch(where('type').eq('example')));
@@ -879,7 +879,7 @@ void main() {
         ..put('tag', 'five');
 
       var col = await db.getCollection('test');
-      await col.insert([doc1, doc2, doc3, doc4, doc5]);
+      await col.insertMany([doc1, doc2, doc3, doc4, doc5]);
 
       var cursor = await col.find(filter: where('age').between(31, 35));
       expect(await cursor.length, 5);
@@ -944,7 +944,7 @@ void main() {
         ..put('tag', 'five');
 
       var col = await db.getCollection('test');
-      await col.insert([doc1, doc2, doc3, doc4, doc5]);
+      await col.insertMany([doc1, doc2, doc3, doc4, doc5]);
 
       var documentList = await (await col.find()).toList();
       var doc = documentList[0];

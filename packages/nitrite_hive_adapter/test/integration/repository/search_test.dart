@@ -71,7 +71,7 @@ void main() {
       e3.empId = 30000;
       e4.empId = 40000;
 
-      await empRepo.insert([e1, e2, e3, e4]);
+      await empRepo.insertMany([e1, e2, e3, e4]);
 
       var byId = await empRepo.getById(10000);
       expect(byId, e1);
@@ -93,7 +93,7 @@ void main() {
         text: faker.lorem.sentences(random.nextInt(10)).join('. '),
       );
 
-      await repository.insert([n1, n2, n3]);
+      await repository.insertMany([n1, n2, n3]);
       expect(() async => await repository.getById(20000),
           throwsInvalidIdException);
     });
@@ -110,7 +110,7 @@ void main() {
       e3.empId = 30000;
       e4.empId = 40000;
 
-      await empRepo.insert([e1, e2, e3, e4]);
+      await empRepo.insertMany([e1, e2, e3, e4]);
       expect(() async => await empRepo.getById(null), throwsInvalidIdException);
     });
 
@@ -126,7 +126,7 @@ void main() {
       e3.empId = 30000;
       e4.empId = 40000;
 
-      await empRepo.insert([e1, e2, e3, e4]);
+      await empRepo.insertMany([e1, e2, e3, e4]);
       expect(() async => await empRepo.getById('employee'),
           throwsInvalidIdException);
     });
@@ -156,17 +156,17 @@ void main() {
       var object = ProductScore();
       object.product = 'test';
       object.score = 1;
-      await repository.insert([object]);
+      await repository.insert(object);
 
       object = ProductScore();
       object.product = 'test';
       object.score = 2;
-      await repository.insert([object]);
+      await repository.insert(object);
 
       object = ProductScore();
       object.product = 'another-test';
       object.score = 3;
-      await repository.insert([object]);
+      await repository.insert(object);
 
       var cursor = await repository.find(filter: where('product').eq('test'));
       expect(await cursor.length, 2);
@@ -364,7 +364,7 @@ void main() {
         ..strArray = ['a', 'f']
         ..productScores = [score3, score6];
 
-      await repository.insert([e1, e2, e3]);
+      await repository.insertMany([e1, e2, e3]);
 
       var cursor = await repository.find(
           filter: where('productScores').elemMatch(
@@ -455,7 +455,7 @@ void main() {
       var cursor = await repository.find(filter: all);
       expect(await cursor.length, 0);
 
-      await repository.insert([ElemMatch()]);
+      await repository.insert(ElemMatch());
       cursor = await repository.find(filter: all);
       expect(await cursor.length, 1);
     });
@@ -475,7 +475,7 @@ void main() {
         ..uuid = Uuid().v4();
 
       var repository = await db.getRepository<PersonEntity>();
-      await repository.insert([p1, p2, p3]);
+      await repository.insertMany([p1, p2, p3]);
 
       var cursor = await repository.find(filter: where('name').eq('jhonny'));
       expect(() async => await cursor.length, throwsFilterException);
@@ -501,7 +501,7 @@ void main() {
         ..uuid = Uuid().v4();
 
       var repository = await db.getRepository<PersonEntity>();
-      await repository.insert([p1, p2, p3]);
+      await repository.insertMany([p1, p2, p3]);
 
       var marriedFilter = where('status').eq('Married');
 
@@ -532,7 +532,7 @@ void main() {
         ..age = 12
         ..firstName = 'fName'
         ..lastName = 'lName';
-      await repo.insert([first]);
+      await repo.insert(first);
 
       expect(await repo.hasIndex(['firstName']), true);
       expect(await repo.hasIndex(['age']), true);
@@ -560,7 +560,7 @@ void main() {
       var data6 = _TestData(DateTime.parse('2025-06-16'));
 
       var repository = await db.getRepository<_TestData>();
-      await repository.insert([data1, data2, data3, data4, data5, data6]);
+      await repository.insertMany([data1, data2, data3, data4, data5, data6]);
 
       var cursor = await repository.find(
           filter: where('age').between(

@@ -35,7 +35,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
   Future<int> get size async => (await (await find()).toList()).length;
 
   @override
-  Future<WriteResult> insert(List<Document> documents) async {
+  Future<WriteResult> insertMany(List<Document> documents) async {
     documents.notNullOrEmpty('Empty documents cannot be inserted');
 
     for (var document in documents) {
@@ -49,7 +49,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
     var journalEntry = JournalEntry(
       changeType: ChangeType.insert,
       commit: () async {
-        await _primary.insert(documents);
+        await _primary.insertMany(documents);
       },
       rollback: () async {
         for (var value in documents) {
@@ -97,7 +97,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       rollback: () async {
         for (var value in documentList) {
           await _primary.removeOne(value);
-          await _primary.insert([value]);
+          await _primary.insert(value);
         }
       },
     );
@@ -142,7 +142,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       },
       rollback: () async {
         if (toRemove != null) {
-          await _primary.insert([toRemove!]);
+          await _primary.insert(toRemove!);
         }
       },
     );
@@ -179,9 +179,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
         await _primary.remove(filter, justOne: justOne);
       },
       rollback: () async {
-        for (var value in documentList) {
-          await _primary.insert([value]);
-        }
+        await _primary.insertMany(documentList);
       },
     );
     _context.journal.add(journalEntry);

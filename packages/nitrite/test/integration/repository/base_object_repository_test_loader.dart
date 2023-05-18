@@ -42,23 +42,23 @@ Future<void> setUpNitriteTest() async {
 
   for (var i = 0; i < 10; i++) {
     var company = generateCompanyRecord();
-    await companyRepository.insert([company]);
+    await companyRepository.insert(company);
 
     var employee = generateEmployee(company);
     employee.empId = i + 1;
-    await employeeRepository.insert([employee]);
+    await employeeRepository.insert(employee);
 
-    await aObjectRepository.insert([randomClassA(i + 50)]);
-    await cObjectRepository.insert([randomClassC(i + 50)]);
+    await aObjectRepository.insert(randomClassA(i + 50));
+    await cObjectRepository.insert(randomClassC(i + 50));
 
     var book = randomBook();
-    await bookRepository.insert([book]);
+    await bookRepository.insert(book);
 
     var product = randomProduct();
-    await productRepository.insert([product]);
+    await productRepository.insert(product);
 
     product = randomProduct();
-    await upcomingProductRepository.insert([product]);
+    await upcomingProductRepository.insert(product);
   }
 
   expect(await companyRepository.size, 10);
