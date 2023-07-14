@@ -54,11 +54,6 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
   }
 
   @override
-  Future<void> removeRTree(String rTreeName) {
-    return removeMap(rTreeName);
-  }
-
-  @override
   void subscribe(StoreEventListener listener) {
     var subscription = _eventBus.on<EventInfo>().listen(listener);
     var hashCode = listener.hashCode;

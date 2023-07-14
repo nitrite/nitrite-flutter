@@ -23,7 +23,7 @@ void main() {
 
   group('Demo test', () {
     test('First Test', () async {
-      var dbPath = '${Directory.current.path}/db';
+      // var dbPath = '${Directory.current.path}/db';
       //
       // var storeModule =
       //     HiveModule.withConfig().crashRecovery(true).path(dbPath).build();

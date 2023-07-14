@@ -25,7 +25,10 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
   String get name => _mapName;
 
   @override
-  bool get isClosed => _closedFlag;
+  bool get isClosed {
+    if (_primaryMap.isClosed || _primaryMap.isDropped) return true;
+    return _closedFlag;
+  }
 
   @override
   bool get isDropped => _droppedFlag;
@@ -241,6 +244,7 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     if (!_droppedFlag) {
       await _backingMap.clear();
       _tombstones.clear();
+      _primaryMap.drop();
       _cleared = true;
       _droppedFlag = true;
       await _store.removeMap(_mapName);

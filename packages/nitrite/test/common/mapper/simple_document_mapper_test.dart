@@ -28,7 +28,7 @@ void main() {
       }
 
       {
-        var value = mapper.convert<Null, Null>(null);
+        var value = mapper.convert<void, void>(null);
         expect(value, null);
       }
 

@@ -1,5 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 
+import 'test_objects.dart';
+
 part 'test_objects_decorators.no2.dart';
 
 @GenerateConverter()
@@ -126,4 +128,12 @@ class ProductDecorator extends EntityDecorator<Product> {
 
   @override
   String get entityName => 'product';
+}
+
+class TxDataDecorator extends EntityDecorator<TxData> {
+  @override
+  EntityId? get idField => EntityId('id');
+
+  @override
+  List<EntityIndex> get indexFields => [];
 }

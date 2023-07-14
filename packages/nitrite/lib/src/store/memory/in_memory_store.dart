@@ -37,8 +37,8 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
     _closed = true;
 
     // to avoid concurrent modification exception
-    var tempMap = Map<String, NitriteMap<dynamic, dynamic>>.from(
-        _nitriteMapRegistry);
+    var tempMap =
+        Map<String, NitriteMap<dynamic, dynamic>>.from(_nitriteMapRegistry);
     tempMap.entries.forEach(close);
 
     tempMap = Map<String, NitriteMap<dynamic, dynamic>>.from(
@@ -56,7 +56,7 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   }
 
   @override
-  Future<bool> hasMap(String mapName) async {
+  Future<bool> hasMap(String mapName) async {   
     return _nitriteMapRegistry.containsKey(mapName) ||
         _nitriteRTreeMapRegistry.containsKey(mapName);
   }
@@ -75,6 +75,18 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
     var nitriteMap = InMemoryMap<Key, Value>(mapName, this);
     _nitriteMapRegistry[mapName] = nitriteMap;
     return nitriteMap;
+  }
+
+  @override
+  Future<NitriteRTree<Key, Value>> openRTree<Key extends BoundingBox, Value>(
+      String rTreeName) async {
+    if (_nitriteRTreeMapRegistry.containsKey(rTreeName)) {
+      return _nitriteRTreeMapRegistry[rTreeName]! as InMemoryRTree<Key, Value>;
+    }
+
+    var nitriteRTree = InMemoryRTree<Key, Value>(rTreeName, this);
+    _nitriteRTreeMapRegistry[rTreeName] = nitriteRTree;
+    return nitriteRTree;
   }
 
   @override
@@ -103,15 +115,14 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   }
 
   @override
-  Future<NitriteRTree<Key, Value>> openRTree<Key extends BoundingBox, Value>(
-      String rTreeName) async {
+  Future<void> removeRTree(String rTreeName) async {
     if (_nitriteRTreeMapRegistry.containsKey(rTreeName)) {
-      return _nitriteRTreeMapRegistry[rTreeName]! as InMemoryRTree<Key, Value>;
+      var rTree = _nitriteRTreeMapRegistry[rTreeName]!;
+      await rTree.close();
+      _nitriteRTreeMapRegistry.remove(rTreeName);
+      var catalog = await getCatalog();
+      await catalog.remove(rTreeName);
     }
-
-    var nitriteRTree = InMemoryRTree<Key, Value>(rTreeName, this);
-    _nitriteRTreeMapRegistry[rTreeName] = nitriteRTree;
-    return nitriteRTree;
   }
 
   void _initEventBus() {

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:faker/faker.dart';
-import 'package:uuid/uuid.dart';
 import 'test_objects.dart' as obj;
 import 'test_objects_decorators.dart';
 

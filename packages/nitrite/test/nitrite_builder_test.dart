@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/nitrite_config.dart';
 import 'package:test/test.dart';
 
 void main() {

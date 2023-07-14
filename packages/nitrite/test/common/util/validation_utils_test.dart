@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/util/spatial_key.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:test/test.dart';
 

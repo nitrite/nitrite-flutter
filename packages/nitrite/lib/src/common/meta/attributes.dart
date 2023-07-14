@@ -82,4 +82,9 @@ class Attributes {
 
   @override
   int get hashCode => MapEquality<String, String>().hash(_attributes);
+
+  @override
+  String toString() {
+    return 'Attributes{_attributes: $_attributes}';
+  }
 }

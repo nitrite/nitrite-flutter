@@ -89,7 +89,7 @@ void main() {
       expect(() async => await db.getRepository<Symbol>(),
           throwsValidationException);
 
-      expect(() async => await db.getRepository<Null>(),
+      expect(() async => await db.getRepository<void>(),
           throwsValidationException);
 
       expect(() async => await db.getRepository<Void>(),

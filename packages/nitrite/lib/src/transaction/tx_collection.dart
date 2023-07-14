@@ -246,6 +246,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
   Future<void> dropAllIndices() async {
     await _checkOpened();
     await _primary.dropAllIndices();
+    await _collectionOperations.initialize();
   }
 
   @override

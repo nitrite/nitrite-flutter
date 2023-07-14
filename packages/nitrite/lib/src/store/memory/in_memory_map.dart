@@ -44,7 +44,9 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   @override
   Future<Value?> remove(Key key) async {
     _checkOpened();
-    return _backingMap.remove(key);
+    var val = _backingMap.remove(key);
+    await updateLastModifiedTime();
+    return val;
   }
 
   @override
@@ -69,7 +71,13 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   @override
   Future<Value?> putIfAbsent(Key key, Value value) async {
     _checkOpened();
-    return _backingMap.putIfAbsent(key, () => value);
+    if (await containsKey(key)) {
+      return _backingMap[key];
+    } else {
+      _backingMap[key] = value;
+      await updateLastModifiedTime();
+      return null;
+    }
   }
 
   @override
@@ -126,6 +134,7 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
       _backingMap.clear();
       await getStore().removeMap(_mapName);
       _droppedFlag = true;
+      _closedFlag = true;
     }
   }
 
@@ -158,10 +167,10 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
 
   void _checkOpened() {
     if (_closedFlag) {
-      throw NitriteException('Map $_mapName is closed');
+      throw InvalidOperationException('Map $_mapName is closed');
     }
     if (_droppedFlag) {
-      throw NitriteException('Map $_mapName is dropped');
+      throw InvalidOperationException('Map $_mapName is dropped');
     }
   }
 
