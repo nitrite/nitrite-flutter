@@ -1,6 +1,6 @@
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:test/expect.dart';
+import 'package:test/test.dart';
 
 late Nitrite db;
 late NitriteCollection collection;

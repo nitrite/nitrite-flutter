@@ -68,11 +68,4 @@ class TypeValidator extends TypeVisitor {
         'Void type is not supported for automatic '
         'converter code generation.');
   }
-  
-  @override
-  visitInvalidType(InvalidType type) {
-    throw InvalidGenerationSourceError(
-        'Invalid type is not supported for automatic '
-        'converter code generation.');
-  }
 }

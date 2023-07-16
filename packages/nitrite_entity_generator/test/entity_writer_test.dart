@@ -50,6 +50,7 @@ void main() {
         @override
         EntityId get entityId => EntityId(
               "book_id",
+              false,
               ["isbn", "book_name"],
             ) ;
       }
