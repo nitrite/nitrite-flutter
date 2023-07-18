@@ -31,10 +31,6 @@ dev_dependencies:
   uuid: ^3.0.7
   collection: ^1.16.0
 
-dependency_overrides:
-  nitrite:
-    path: ../nitrite
-
 flutter:
   uses-material-design: true
   assets:

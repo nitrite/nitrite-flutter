@@ -1,0 +1,8 @@
+# melos_managed_dependency_overrides: nitrite,nitrite_entity_generator
+dependency_overrides:
+  nitrite:
+    path: ../../packages/nitrite
+  nitrite_entity_generator:
+    path: ../../packages/nitrite_entity_generator
+  nitrite_hive_adapter:
+    path: ../../packages/nitrite_hive_adapter
