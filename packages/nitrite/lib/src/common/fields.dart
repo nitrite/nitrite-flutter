@@ -97,6 +97,14 @@ class SortableFields extends Fields {
     return sortableFields;
   }
 
+  factory SortableFields.from(List<(String, SortOrder)> specs) {
+    var sortableFields = SortableFields();
+    for (var spec in specs) {
+      sortableFields.addSortedField(spec.$1, spec.$2);
+    }
+    return sortableFields;
+  }
+
   /// Adds the sort order for a field.
   SortableFields addSortedField(String fieldName, SortOrder sortOrder) {
     super._fieldNames.add(fieldName);

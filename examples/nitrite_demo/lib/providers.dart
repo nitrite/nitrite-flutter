@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_demo/models.dart';
 import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
@@ -25,15 +25,82 @@ Future<Nitrite> db(DbRef ref) async {
 }
 
 @riverpod
-Future<ObjectRepository<Todo>> todoRepository(
-    TodoRepositoryRef ref) async {
+Future<ObjectRepository<Todo>> todoRepository(TodoRepositoryRef ref) async {
   var db = await ref.watch(dbProvider.future);
   return await db.getRepository<Todo>();
 }
 
 @riverpod
-Stream<Todo> filteredTodos(FilteredTodosRef ref, Filter filter) async* {
+Stream<Todo> filteredTodos(FilteredTodosRef ref) async* {
   var repository = await ref.watch(todoRepositoryProvider.future);
-  yield* await repository.find(filter: filter);
+  var filter = ref.watch(filterProvider);
+  var findOptions = ref.watch(findOptionStateProvider);
+  yield* await repository.find(filter: filter, findOptions: findOptions);
 }
 
+@riverpod
+class Todos extends _$Todos {
+  Stream<Todo> _fetchTodo() async* {
+    var repository = await ref.read(todoRepositoryProvider.future);
+    var filter = ref.watch(filterProvider);
+    var findOptions = ref.watch(findOptionStateProvider);
+    yield* await repository.find(filter: filter, findOptions: findOptions);
+  }
+
+  @override
+  Future<Stream<Todo>> build() async {
+    return _fetchTodo();
+  }
+
+  Future<void> addTodo(Todo todo) async {
+    state = const AsyncValue.loading();
+
+    try {
+      var repository = await ref.read(todoRepositoryProvider.future);
+      await repository.insert(todo);
+      state = AsyncData(_fetchTodo());
+    } catch (e, s) {
+      state = AsyncValue.error(e, s);
+    }
+  }
+
+  Future<void> removeTodo(String todoId) async {
+    state = const AsyncValue.loading();
+    try {
+      var repository = await ref.read(todoRepositoryProvider.future);
+      await repository.remove(where('id').eq(todoId));
+      state = AsyncData(_fetchTodo());
+    } catch (e, s) {
+      state = AsyncValue.error(e, s);
+    }
+  }
+
+  Future<void> toggle(String todoId) async {
+    state = const AsyncValue.loading();
+    try {
+      var repository = await ref.read(todoRepositoryProvider.future);
+      var byId = await repository.getById(todoId);
+      if (byId != null) {
+        byId.completed = !byId.completed;
+        await repository.updateOne(byId);
+      }
+      state = AsyncData(_fetchTodo());
+    } catch (e, s) {
+      state = AsyncValue.error(e, s);
+    }
+  }
+}
+
+@riverpod
+class FindOptionState extends _$FindOptionState {
+  @override
+  FindOptions build() {
+    return FindOptions(
+      orderBy: SortableFields.from([('title', SortOrder.ascending)]),
+      skip: 0,
+      limit: 10,
+    );
+  }
+}
+
+final filterProvider = StateProvider<Filter>((ref) => all);

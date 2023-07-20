@@ -37,107 +37,50 @@ final todoRepositoryProvider =
 
 typedef TodoRepositoryRef
     = AutoDisposeFutureProviderRef<ObjectRepository<Todo>>;
-String _$filteredTodosHash() => r'e64cb5ae487b6862076189b2facef826e714fbce';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-typedef FilteredTodosRef = AutoDisposeStreamProviderRef<Todo>;
+String _$filteredTodosHash() => r'fba20c3487e964073410009fe7dfc46f31ce0e34';
 
 /// See also [filteredTodos].
 @ProviderFor(filteredTodos)
-const filteredTodosProvider = FilteredTodosFamily();
+final filteredTodosProvider = AutoDisposeStreamProvider<Todo>.internal(
+  filteredTodos,
+  name: r'filteredTodosProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$filteredTodosHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-/// See also [filteredTodos].
-class FilteredTodosFamily extends Family<AsyncValue<Todo>> {
-  /// See also [filteredTodos].
-  const FilteredTodosFamily();
+typedef FilteredTodosRef = AutoDisposeStreamProviderRef<Todo>;
+String _$todosHash() => r'8d6ce5ae23b805d5c1a9b1acdb0ba2528f802999';
 
-  /// See also [filteredTodos].
-  FilteredTodosProvider call(
-    Filter filter,
-  ) {
-    return FilteredTodosProvider(
-      filter,
-    );
-  }
+/// See also [Todos].
+@ProviderFor(Todos)
+final todosProvider =
+    AutoDisposeAsyncNotifierProvider<Todos, Stream<Todo>>.internal(
+  Todos.new,
+  name: r'todosProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$todosHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-  @override
-  FilteredTodosProvider getProviderOverride(
-    covariant FilteredTodosProvider provider,
-  ) {
-    return call(
-      provider.filter,
-    );
-  }
+typedef _$Todos = AutoDisposeAsyncNotifier<Stream<Todo>>;
+String _$findOptionStateHash() => r'58d1f116a6b55818f948b3929e0e4f0e171e3486';
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
+/// See also [FindOptionState].
+@ProviderFor(FindOptionState)
+final findOptionStateProvider =
+    AutoDisposeNotifierProvider<FindOptionState, FindOptions>.internal(
+  FindOptionState.new,
+  name: r'findOptionStateProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$findOptionStateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'filteredTodosProvider';
-}
-
-/// See also [filteredTodos].
-class FilteredTodosProvider extends AutoDisposeStreamProvider<Todo> {
-  /// See also [filteredTodos].
-  FilteredTodosProvider(
-    this.filter,
-  ) : super.internal(
-          (ref) => filteredTodos(
-            ref,
-            filter,
-          ),
-          from: filteredTodosProvider,
-          name: r'filteredTodosProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$filteredTodosHash,
-          dependencies: FilteredTodosFamily._dependencies,
-          allTransitiveDependencies:
-              FilteredTodosFamily._allTransitiveDependencies,
-        );
-
-  final Filter filter;
-
-  @override
-  bool operator ==(Object other) {
-    return other is FilteredTodosProvider && other.filter == filter;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, filter.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
+typedef _$FindOptionState = AutoDisposeNotifier<FindOptions>;
 // ignore_for_file: unnecessary_raw_strings, subtype_of_sealed_class, invalid_use_of_internal_member, do_not_use_environment, prefer_const_constructors, public_member_api_docs, avoid_private_typedef_functions

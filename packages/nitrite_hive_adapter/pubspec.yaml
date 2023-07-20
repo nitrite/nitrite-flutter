@@ -4,7 +4,7 @@ version: 1.0.0
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=2.19.0 <3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -29,8 +29,6 @@ dev_dependencies:
   yaml: ^3.1.1
   uuid: ^3.0.7
   collection: ^1.16.0
-  freezed_annotation: ^2.4.1
-  freezed: ^2.4.1
 
 flutter:
   uses-material-design: true

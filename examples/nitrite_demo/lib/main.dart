@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nitrite_demo/providers.dart';
 
 void main() {
   runApp(const ProviderScope(
@@ -13,9 +14,29 @@ class TodoList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Get the todos from the provider.
+    var todos = ref.watch(todosProvider);
+
+    return todos.when(
+      data: (todos) => ListView(
+        children: [
+          await for (final todo in todos)
+            CheckboxListTile(
+              value: todo.completed,
+              // When tapping on the todo, change its completed status
+              onChanged: (value) =>
+                  ref.read(asyncTodosProvider.notifier).toggle(todo.id),
+              title: Text(todo.description),
+            ),
+        ],
+      ),
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      error: (err, stack) => Text('Error: $err'),
+    );
 
     return ListView.builder(
-      itemCount: todos.length,
+      itemCount: todos..length,
       itemBuilder: (context, index) {
         TodoModel todo = todos[index];
 

@@ -16,68 +16,61 @@ FindOptions orderBy(String fieldName,
   sortableFields.addSortedField(fieldName, sortOrder);
 
   var findOptions = FindOptions();
-  findOptions._orderBy = sortableFields;
+  findOptions.orderBy = sortableFields;
   return findOptions;
 }
 
 FindOptions skipBy(int skip) {
   var findOptions = FindOptions();
-  findOptions._skip = skip;
+  findOptions.skip = skip;
   return findOptions;
 }
 
 FindOptions limitBy(int limit) {
   var findOptions = FindOptions();
-  findOptions._limit = limit;
+  findOptions.limit = limit;
   return findOptions;
 }
 
 FindOptions distinct() {
   var findOptions = FindOptions();
-  findOptions._distinct = true;
+  findOptions.distinct = true;
   return findOptions;
 }
 
 /// The options for find operation.
 class FindOptions {
-  SortableFields? _orderBy;
-  int? _skip;
-  int? _limit;
-  bool _distinct = false;
+  SortableFields? orderBy;
+  int? skip;
+  int? limit;
+  bool distinct = false;
 
-  FindOptions([this._orderBy, this._skip, this._limit]);
-
-  /// Order by find options.
-
-  SortableFields? get orderBy => _orderBy;
-  int? get skip => _skip;
-  int? get limit => _limit;
-  bool get distinct => _distinct;
+  FindOptions({this.orderBy, this.skip, this.limit});
 
   FindOptions setSkip(int skip) {
-    _skip = skip;
+    skip = skip;
     return this;
   }
 
   FindOptions setLimit(int limit) {
-    _limit = limit;
+    limit = limit;
     return this;
   }
 
   FindOptions thenOrderBy(String fieldName, SortOrder sortOrder) {
-    if (_orderBy != null) {
-      _orderBy!.addSortedField(fieldName, sortOrder);
+    if (orderBy != null) {
+      orderBy!.addSortedField(fieldName, sortOrder);
     } else {
       var sortableFields = SortableFields();
       sortableFields.addSortedField(fieldName, sortOrder);
-      _orderBy = sortableFields;
+      orderBy = sortableFields;
     }
 
     return this;
   }
 
   FindOptions withDistinct(bool distinct) {
-    _distinct = distinct;
+    distinct = distinct;
     return this;
   }
 }

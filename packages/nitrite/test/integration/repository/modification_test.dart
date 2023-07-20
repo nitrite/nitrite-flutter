@@ -360,7 +360,6 @@ void main() {
       var cursor = await employeeRepository.find();
       var employee = await cursor.first;
       var oldId = employee.empId;
-      var count = await employeeRepository.size;
 
       var newEmployee = Employee.clone(employee);
       newEmployee.empId = 5;
