@@ -75,12 +75,13 @@ void main() {
       stopWatch.start();
       var repo = await db.getRepository<StressRecord>();
       for (var i = 0; i < count; i++) {
-        var record = StressRecord();
-        record.firstName = faker.person.firstName();
-        record.failed = false;
-        record.lastName = faker.person.lastName();
-        record.processed = false;
-
+        var record = StressRecord(
+          firstName: faker.person.firstName(),
+          lastName: faker.person.lastName(),
+          failed: false,
+          processed: false,
+          notes: '',
+        );
         await repo.insert(record);
       }
 

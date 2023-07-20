@@ -25,8 +25,15 @@ Future<Nitrite> db(DbRef ref) async {
 }
 
 @riverpod
-Future<ObjectRepository<Todo>> todoRepositoryProvider(
-    TodoRepositoryProviderRef ref) async {
-  var db = ref.watch(dbProvider);
-  return db.whenData((d) async => await d.getRepository<Todo>()).asData!.value;
+Future<ObjectRepository<Todo>> todoRepository(
+    TodoRepositoryRef ref) async {
+  var db = await ref.watch(dbProvider.future);
+  return await db.getRepository<Todo>();
 }
+
+@riverpod
+Stream<Todo> filteredTodos(FilteredTodosRef ref, Filter filter) async* {
+  var repository = await ref.watch(todoRepositoryProvider.future);
+  yield* await repository.find(filter: filter);
+}
+

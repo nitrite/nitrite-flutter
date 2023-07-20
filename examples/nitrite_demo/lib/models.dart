@@ -32,9 +32,15 @@ part 'models.no2.dart';
 @GenerateConverter()
 class Todo with _$TodoEntityMixin {
   @Id(fieldName: 'id')
-  String? id;
-  String? title;
+  final String id;
+  final String title;
   bool completed = false;
+
+  Todo({
+    required this.id,
+    required this.title,
+    required this.completed,
+  });
 
   @override
   bool operator ==(Object other) =>

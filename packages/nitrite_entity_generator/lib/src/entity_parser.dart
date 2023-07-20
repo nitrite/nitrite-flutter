@@ -50,20 +50,6 @@ class EntityParser extends Parser<EntityInfo> {
         element: _classElement,
       );
     }
-
-    // check for default constructor
-    // var constructors = _classElement.constructors;
-    // for (var ctor in constructors) {
-    //   var parameters = ctor.parameters;
-    //   for (var param in parameters) {
-    //     if (!param.isOptional) {
-    //       throw InvalidGenerationSourceError(
-    //         '`@Entity` can only be used on classes with a default constructor.',
-    //         element: _classElement,
-    //       );
-    //     }
-    //   }
-    // }
   }
 
   EntityId? _getEntityId() {

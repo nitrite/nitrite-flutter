@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/number_utils.dart';
 
@@ -519,11 +520,19 @@ class RepeatableIndexTest with _$RepeatableIndexTestEntityMixin {
 @Entity()
 @GenerateConverter()
 class StressRecord with _$StressRecordEntityMixin {
-  String? firstName;
-  String? lastName;
-  bool? processed;
-  bool? failed;
-  String? notes;
+  final String firstName;
+  final String lastName;
+  bool processed = false;
+  final bool failed;
+  final String notes;
+
+  StressRecord({
+    required this.firstName,
+    required this.lastName,
+    required this.processed,
+    required this.failed,
+    required this.notes,
+  });
 
   @override
   bool operator ==(Object other) =>

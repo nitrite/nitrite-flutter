@@ -59,9 +59,6 @@ void main() {
     expect(entity.entityId, isNotNull);
     expect(entity.entityId!.fieldName, 'person_id');
     expect(entity.entityId!.embeddedFieldNames, isEmpty);
-
-    // expect(() => EntityParser(classElement).parse(),
-    //     throwsA(TypeMatcher<InvalidGenerationSourceError>()));
   });
 
   test('Parse entity without entity name', () async {
