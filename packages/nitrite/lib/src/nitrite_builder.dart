@@ -18,8 +18,8 @@ class NitriteBuilder {
   }
 
   /// Loads [NitriteModule] instance.
-  Future<NitriteBuilder> loadModule(NitriteModule module) async {
-    await nitriteConfig.loadModule(module);
+  NitriteBuilder loadModule(NitriteModule module) {
+    nitriteConfig.loadModule(module);
     return this;
   }
 

@@ -12,10 +12,8 @@ Future<Nitrite> createDb([String? user, String? password]) async {
     .path('${Directory.current.path}/db')
     .build();
 
-  var builder = await Nitrite.builder()
-      .loadModule(storeModule);
-
-  return builder
+  return Nitrite.builder()
+      .loadModule(storeModule)
       .fieldSeparator('.')
       .openOrCreate(username: user, password: password);
 }

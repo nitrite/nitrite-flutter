@@ -69,12 +69,10 @@ void main() {
 
       var storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      var builder = await Nitrite.builder()
-          .loadModule(NitriteModule.module([nitriteMapper]));
 
-      await builder.loadModule(storeModule);
-
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(NitriteModule.module([nitriteMapper]))
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)
           .addMigrations([migration]).openOrCreate(
@@ -124,9 +122,9 @@ void main() {
 
       var storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      var builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)
           .addMigrations([migration]).openOrCreate(
@@ -159,9 +157,9 @@ void main() {
 
       storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(3)
           .addMigrations([migration]).openOrCreate(
@@ -204,9 +202,9 @@ void main() {
 
       var storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      var builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)
           .addMigrations([migration]).openOrCreate();
@@ -218,10 +216,10 @@ void main() {
 
       storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      builder = await Nitrite.builder().loadModule(storeModule);
 
       expect(
-          () async => await builder
+          () async => await Nitrite.builder()
+              .loadModule(storeModule)
               .fieldSeparator('.')
               .addMigrations([migration]).openOrCreate(),
           throwsMigrationException);
@@ -252,9 +250,9 @@ void main() {
 
       var storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      var builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)
           .addMigrations([migration]).openOrCreate();
@@ -274,9 +272,9 @@ void main() {
 
       storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(1)
           .addMigrations([migration]).openOrCreate();
@@ -312,9 +310,9 @@ void main() {
 
       var storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      var builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .addMigrations([migration]).openOrCreate();
 
@@ -353,9 +351,9 @@ void main() {
 
       var storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      var builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)
           .addMigrations([migration]).openOrCreate();
@@ -379,9 +377,9 @@ void main() {
 
       storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)
           .addMigrations([migration]).openOrCreate();
@@ -420,9 +418,9 @@ void main() {
 
       var storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      var builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)
           .addMigrations([migration]).openOrCreate();
@@ -436,9 +434,9 @@ void main() {
 
       storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)
           .addMigrations([migration]).openOrCreate();
@@ -451,8 +449,11 @@ void main() {
 
       await db.close();
 
-      builder = await Nitrite.builder().loadModule(storeModule);
-      db = await builder.fieldSeparator('.').schemaVersion(2).openOrCreate();
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
+          .fieldSeparator('.')
+          .schemaVersion(2)
+          .openOrCreate();
 
       collection = await db.getCollection('testReOpenAfterMigration');
       expect(await collection.size, 0);
@@ -493,9 +494,9 @@ void main() {
 
       var storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      var builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)
           .addMigrations([migration1, migration2]).openOrCreate();
@@ -520,9 +521,9 @@ void main() {
 
       storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(4)
           .addMigrations([migration1, migration2, migration3]).openOrCreate();
@@ -530,7 +531,8 @@ void main() {
       collection = await db.getCollection('test');
       expect(await collection.size, 10);
 
-      cursor = await collection.find(filter: where('fullName').eq('Dummy Name'));
+      cursor =
+          await collection.find(filter: where('fullName').eq('Dummy Name'));
       expect(await cursor.length, 10);
 
       cursor = await collection.find(filter: where('age').eq(10));

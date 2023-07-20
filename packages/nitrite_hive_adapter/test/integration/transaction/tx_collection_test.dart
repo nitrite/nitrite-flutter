@@ -539,10 +539,10 @@ void main() {
         expect(await collection.hasIndex(['firstName']), false);
         expect(await collection.hasIndex(['lastName']), false);
 
-        await txCol.insert(
-            createDocument('firstName', 'Jane').put('lastName', 'Doe'));
-        await collection.insert(
-            createDocument('firstName', 'Jane').put('lastName', 'Doe'));
+        await txCol
+            .insert(createDocument('firstName', 'Jane').put('lastName', 'Doe'));
+        await collection
+            .insert(createDocument('firstName', 'Jane').put('lastName', 'Doe'));
 
         throw Exception('Test Rollback Drop All Indices');
       } catch (e) {
@@ -654,9 +654,8 @@ void main() {
           var storeModule =
               HiveModule.withConfig().crashRecovery(true).path(path).build();
 
-          var builder = await Nitrite.builder().loadModule(storeModule);
-
-          db = await builder
+          db = await Nitrite.builder()
+              .loadModule(storeModule)
               .fieldSeparator('.')
               .openOrCreate(username: 'test', password: 'test');
 
@@ -782,8 +781,7 @@ void main() {
       await col.insert(createDocument('firstName', 'John'));
       await tx.commit();
 
-      expect(
-          () async => await col.insert(createDocument('firstName', 'Jane')),
+      expect(() async => await col.insert(createDocument('firstName', 'Jane')),
           throwsTransactionException);
     });
   });

@@ -12,12 +12,13 @@ void main() {
     setUp(() async {
       setUpLog();
 
-      var nitriteBuilder = Nitrite.builder().fieldSeparator(".");
       var tokenizer = UniversalTextTokenizer(
           [Languages.bengali, Languages.chinese, Languages.english]);
-      nitriteBuilder
-          .loadModule(NitriteModule.module([NitriteTextIndexer(tokenizer)]));
-      db = await nitriteBuilder.openOrCreate();
+
+      db = await Nitrite.builder()
+          .fieldSeparator(".")
+          .loadModule(NitriteModule.module([NitriteTextIndexer(tokenizer)]))
+          .openOrCreate();
 
       var documentMapper = db.config.nitriteMapper as SimpleDocumentMapper;
       documentMapper.registerEntityConverter(TextDataConverter());

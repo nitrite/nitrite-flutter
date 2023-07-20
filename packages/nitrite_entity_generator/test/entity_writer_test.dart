@@ -41,7 +41,7 @@ void main() {
         String get entityName => "books";
         
         @override
-        List<EntityIndex> get entityIndexes => [
+        List<EntityIndex> get entityIndexes => const [
               EntityIndex(["tags"], IndexType.nonUnique),
               EntityIndex(["description"], IndexType.fullText),
               EntityIndex(["price", "publisher"], IndexType.unique),

@@ -40,7 +40,7 @@ class EntityWriter {
         ..lambda = true;
 
       if (_entityInfo.entityIndices.isEmpty) {
-        builder.body = Code('[]');
+        builder.body = Code('const []');
       } else {
         StringBuffer buffer = StringBuffer();
         _entityInfo.entityIndices.forEach((index) {
@@ -66,7 +66,7 @@ class EntityWriter {
         });
 
         builder.body = Code('''
-          [
+          const [
             ${buffer.toString()}
           ]
         ''');

@@ -1,6 +1,50 @@
-class Todo {
-  final String title;
-  bool completed;
+import 'package:nitrite/nitrite.dart';
 
-  Todo({required this.title, this.completed = false});
+part 'models.no2.dart';
+
+// Either use EntityDecorator or @Entity
+// @GenerateConverter()
+// class Todo {
+//   @Id(fieldName: 'id')
+//   final String id;
+//   final String title;
+//   bool completed;
+//
+//   Todo({required this.id, required this.title, this.completed = false});
+// }
+//
+// class TodoDecorator extends EntityDecorator<Todo> {
+//   @override
+//   EntityId? get idField => EntityId('id');
+//
+//   @override
+//   List<EntityIndex> get indexFields => [
+//         const EntityIndex(['title'], IndexType.fullText),
+//       ];
+//
+//   @override
+//   String get entityName => 'todo';
+// }
+
+@Entity(name: 'todo', indices: [
+  Index(fields: ['title'], type: IndexType.fullText),
+])
+@GenerateConverter()
+class Todo with _$TodoEntityMixin {
+  @Id(fieldName: 'id')
+  String? id;
+  String? title;
+  bool completed = false;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Todo &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          title == other.title &&
+          completed == other.completed;
+
+  @override
+  int get hashCode => id.hashCode ^ title.hashCode ^ completed.hashCode;
 }

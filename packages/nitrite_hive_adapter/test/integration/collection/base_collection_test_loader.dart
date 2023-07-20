@@ -30,9 +30,8 @@ Future<void> setUpNitriteTest() async {
   var storeModule =
       HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
 
-  var builder = await Nitrite.builder().loadModule(storeModule);
-
-  db = await builder
+  db = await Nitrite.builder()
+      .loadModule(storeModule)
       .fieldSeparator('.')
       .openOrCreate(username: 'test', password: 'test');
 

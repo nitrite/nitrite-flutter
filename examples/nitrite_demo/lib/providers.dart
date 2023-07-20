@@ -16,9 +16,9 @@ Future<Nitrite> db(DbRef ref) async {
   var path = await getApplicationDocumentsDirectory();
   var storeModule =
       HiveModule.withConfig().crashRecovery(true).path('$path/db').build();
-  var builder = await Nitrite.builder().loadModule(storeModule);
 
-  var db = await builder
+  var db = await Nitrite.builder()
+      .loadModule(storeModule)
       .fieldSeparator('.')
       .openOrCreate(username: 'demo', password: 'demo123');
   return db;

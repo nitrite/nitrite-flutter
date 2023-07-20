@@ -8,9 +8,11 @@ class NitriteConfig {
   static String fieldSeparator = ".";
 
   int _schemaVersion = initialSchemaVersion;
-  late PluginManager _pluginManager;
-  late Map<int, SplayTreeMap<int, Migration>> _migrations;
+  final Map<int, SplayTreeMap<int, Migration>> _migrations =
+      <int, SplayTreeMap<int, Migration>>{};
   bool _configured = false;
+  final List<NitriteModule> _modules = <NitriteModule>[];
+  late PluginManager _pluginManager;
 
   /// Gets the [Migration] steps.
   Map<int, SplayTreeMap<int, Migration>> get migrations => _migrations;
@@ -24,7 +26,6 @@ class NitriteConfig {
   /// Instantiates a new [NitriteConfig].
   NitriteConfig() {
     _pluginManager = PluginManager(this);
-    _migrations = <int, SplayTreeMap<int, Migration>>{};
   }
 
   /// Sets the embedded field separator character. Default value
@@ -38,12 +39,12 @@ class NitriteConfig {
   }
 
   /// Loads [NitriteModule] instance.
-  Future<NitriteConfig> loadModule(NitriteModule module) async {
+  NitriteConfig loadModule(NitriteModule module) {
     if (_configured) {
       throw InvalidOperationException("Cannot load module after database "
           "initialization");
     }
-    await _pluginManager.loadModule(module);
+    _modules.add(module);
     return this;
   }
 
@@ -83,7 +84,15 @@ class NitriteConfig {
       throw InvalidOperationException("Cannot auto configure after database "
           "initialization");
     }
+    await _loadModules();
     return _pluginManager.findAndLoadPlugins();
+  }
+
+  /// Loads the modules.
+  Future<void> _loadModules() async {
+    for (NitriteModule module in _modules) {
+      await _pluginManager.loadModule(module);
+    }
   }
 
   /// Finds a [NitriteIndexer] by indexType.
@@ -111,7 +120,7 @@ class NitriteConfig {
   }
 
   /// Initializes this [NitriteConfig] instance.
-  Future<void> initialize() {
+  Future<void> initialize() async {
     _configured = true;
     return _pluginManager.initializePlugins();
   }

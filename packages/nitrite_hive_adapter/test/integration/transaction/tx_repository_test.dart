@@ -633,8 +633,8 @@ void main() {
           var storeModule =
               HiveModule.withConfig().crashRecovery(true).path(path).build();
 
-          var builder = await Nitrite.builder().loadModule(storeModule);
-          db = await builder
+          db = await Nitrite.builder()
+              .loadModule(storeModule)
               .fieldSeparator('.')
               .openOrCreate(username: 'test', password: 'test');
           var mapper = db.config.nitriteMapper as SimpleDocumentMapper;
@@ -663,9 +663,9 @@ void main() {
 
       var storeModule =
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
-      var builder = await Nitrite.builder().loadModule(storeModule);
 
-      db = await builder
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
           .fieldSeparator('.')
           .openOrCreate(username: 'test', password: 'test');
 
@@ -758,7 +758,7 @@ void main() {
       var repo =
           await db.getRepository<TxData>(entityDecorator: TxDataDecorator());
       await repo.close();
-      
+
       var session = db.createSession();
       var tx = await session.beginTransaction();
 

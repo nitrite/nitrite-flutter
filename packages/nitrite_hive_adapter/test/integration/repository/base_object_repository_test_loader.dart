@@ -129,9 +129,10 @@ Future<void> _openDb() async {
   var storeModule =
       HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
 
-  var builder = await Nitrite.builder().loadModule(storeModule);
-
-  db = await builder.fieldSeparator('.').openOrCreate();
+  db = await Nitrite.builder()
+      .loadModule(storeModule)
+      .fieldSeparator('.')
+      .openOrCreate();
 
   var mapper = db.config.nitriteMapper as SimpleDocumentMapper;
   mapper.registerEntityConverter(CompanyConverter());

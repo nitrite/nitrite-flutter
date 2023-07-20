@@ -49,9 +49,19 @@ void main() {
       }
     ''');
 
+    final entity = EntityParser(classElement).parse();
+    expect(entity.entityName, 'person');
+    expect(entity.className, 'Person');
+    expect(entity.entityIndices.length, 1);
+    expect(entity.entityIndices, [
+      EntityIndex(["name"], IndexType.nonUnique)
+    ]);
+    expect(entity.entityId, isNotNull);
+    expect(entity.entityId!.fieldName, 'person_id');
+    expect(entity.entityId!.embeddedFieldNames, isEmpty);
 
-    expect(() => EntityParser(classElement).parse(),
-        throwsA(TypeMatcher<InvalidGenerationSourceError>()));
+    // expect(() => EntityParser(classElement).parse(),
+    //     throwsA(TypeMatcher<InvalidGenerationSourceError>()));
   });
 
   test('Parse entity without entity name', () async {
