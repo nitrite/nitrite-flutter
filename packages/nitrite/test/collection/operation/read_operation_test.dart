@@ -30,7 +30,7 @@ main() {
         nitriteConfig, nitriteMap, ProcessorChain());
 
     var filter = MockFilter();
-    var cursor = await readOperation.find(filter, FindOptions());
+    var cursor = readOperation.find(filter, FindOptions());
     var list = await cursor.toList();
     expect(list, isEmpty);
     verify(indexOperations.listIndexes()).called(1);
@@ -51,7 +51,7 @@ main() {
         nitriteConfig, nitriteMap, ProcessorChain());
 
     var filter = MockFilter();
-    var cursor = await readOperation.find(filter, FindOptions());
+    var cursor = readOperation.find(filter, FindOptions());
     var list = await cursor.toList();
     expect(list, isEmpty);
     verify(indexOperations.listIndexes()).called(1);

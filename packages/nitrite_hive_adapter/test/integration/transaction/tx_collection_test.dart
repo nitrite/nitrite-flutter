@@ -26,16 +26,16 @@ void main() {
         var document = createDocument('firstName', 'John');
         await txCol.insert(document);
 
-        var cursor = await txCol.find(filter: where('firstName').eq('John'));
+        var cursor = txCol.find(filter: where('firstName').eq('John'));
         expect(await cursor.length, 1);
 
         var colCursor =
-            await collection.find(filter: where('firstName').eq('John'));
+            collection.find(filter: where('firstName').eq('John'));
         expect(await colCursor.length, 0);
       });
 
       // auto commit
-      var cursor = await collection.find(filter: where('firstName').eq('John'));
+      var cursor = collection.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 1);
     });
 
@@ -50,11 +50,11 @@ void main() {
           var document = createDocument('firstName', 'John');
           await txCol.insert(document);
 
-          var cursor = await txCol.find(filter: where('firstName').eq('John'));
+          var cursor = txCol.find(filter: where('firstName').eq('John'));
           expect(await cursor.length, 1);
 
           var colCursor =
-              await collection.find(filter: where('firstName').eq('John'));
+              collection.find(filter: where('firstName').eq('John'));
           expect(await colCursor.length, 0);
 
           throw NitriteException('rollback');
@@ -66,7 +66,7 @@ void main() {
       expect(exceptionThrown, true);
 
       // auto rollback
-      var cursor = await collection.find(filter: where('firstName').eq('John'));
+      var cursor = collection.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 0);
     });
 
@@ -81,11 +81,11 @@ void main() {
           var document = createDocument('firstName', 'John');
           await txCol.insert(document);
 
-          var cursor = await txCol.find(filter: where('firstName').eq('John'));
+          var cursor = txCol.find(filter: where('firstName').eq('John'));
           expect(await cursor.length, 1);
 
           var colCursor =
-              await collection.find(filter: where('firstName').eq('John'));
+              collection.find(filter: where('firstName').eq('John'));
           expect(await colCursor.length, 0);
 
           throw NitriteException('rollback');
@@ -97,7 +97,7 @@ void main() {
       expect(exceptionThrown, true);
 
       // auto rollback
-      var cursor = await collection.find(filter: where('firstName').eq('John'));
+      var cursor = collection.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 0);
     });
 
@@ -112,11 +112,11 @@ void main() {
           var document = createDocument('firstName', 'John');
           await txCol.insert(document);
 
-          var cursor = await txCol.find(filter: where('firstName').eq('John'));
+          var cursor = txCol.find(filter: where('firstName').eq('John'));
           expect(await cursor.length, 1);
 
           var colCursor =
-              await collection.find(filter: where('firstName').eq('John'));
+              collection.find(filter: where('firstName').eq('John'));
           expect(await colCursor.length, 0);
 
           throw NitriteIOException('rollback');
@@ -128,7 +128,7 @@ void main() {
       expect(exceptionThrown, true);
 
       // no auto rollback with subtype exception
-      var cursor = await collection.find(filter: where('firstName').eq('John'));
+      var cursor = collection.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 1);
     });
 
@@ -141,15 +141,15 @@ void main() {
       var document = createDocument('firstName', 'John');
       await txCol.insert(document);
 
-      var cursor = await txCol.find(filter: where('firstName').eq('John'));
+      var cursor = txCol.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 1);
 
       var colCursor =
-          await collection.find(filter: where('firstName').eq('John'));
+          collection.find(filter: where('firstName').eq('John'));
       expect(await colCursor.length, 0);
       await tx.commit();
 
-      cursor = await collection.find(filter: where('firstName').eq('John'));
+      cursor = collection.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 1);
     });
 
@@ -171,14 +171,14 @@ void main() {
         // just to create UniqueConstraintViolation for rollback
         await collection.insertMany([createDocument('firstName', 'Jane')]);
 
-        var cursor = await txCol.find(filter: where('firstName').eq('John'));
+        var cursor = txCol.find(filter: where('firstName').eq('John'));
         expect(await cursor.length, 1);
 
-        cursor = await txCol.find(filter: where('firstName').eq('Jane'));
+        cursor = txCol.find(filter: where('firstName').eq('Jane'));
         expect(await cursor.length, 1);
 
         var colCursor =
-            await collection.find(filter: where('lastName').eq('Doe'));
+            collection.find(filter: where('lastName').eq('Doe'));
         expect(await colCursor.length, 0);
 
         // a TransactionException should occur here due to UniqueConstraintViolation
@@ -190,10 +190,10 @@ void main() {
 
       expect(exceptionThrown, true);
 
-      var cursor = await collection.find(filter: where('firstName').eq('John'));
+      var cursor = collection.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('lastName').eq('Doe'));
+      cursor = collection.find(filter: where('lastName').eq('Doe'));
       expect(await cursor.length, 0);
     });
 
@@ -210,16 +210,16 @@ void main() {
       await txCol.update(where('firstName').eq('John'), document,
           UpdateOptions(insertIfAbsent: true));
 
-      var cursor = await txCol.find(filter: where('lastName').eq('Doe'));
+      var cursor = txCol.find(filter: where('lastName').eq('Doe'));
       expect(await cursor.length, 1);
 
       var colCursor =
-          await collection.find(filter: where('lastName').eq('Doe'));
+          collection.find(filter: where('lastName').eq('Doe'));
       expect(await colCursor.length, 0);
 
       await tx.commit();
 
-      cursor = await collection.find(filter: where('lastName').eq('Doe'));
+      cursor = collection.find(filter: where('lastName').eq('Doe'));
       expect(await cursor.length, 1);
     });
 
@@ -243,14 +243,14 @@ void main() {
       // just to create UniqueConstraintViolation for rollback
       await collection.insertMany([createDocument('firstName', 'John')]);
 
-      var cursor = await txCol.find(filter: where('firstName').eq('John'));
+      var cursor = txCol.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 1);
 
-      cursor = await txCol.find(filter: where('lastName').eq('Doe'));
+      cursor = txCol.find(filter: where('lastName').eq('Doe'));
       expect(await cursor.length, 1);
 
       var colCursor =
-          await collection.find(filter: where('lastName').eq('Doe'));
+          collection.find(filter: where('lastName').eq('Doe'));
       expect(await colCursor.length, 0);
 
       try {
@@ -264,10 +264,10 @@ void main() {
       // it is failing here without throwing unique constraint violation
       expect(exceptionThrown, true);
 
-      cursor = await collection.find(filter: where('firstName').eq('Jane'));
+      cursor = collection.find(filter: where('firstName').eq('Jane'));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(filter: where('lastName').eq('Doe'));
+      cursor = collection.find(filter: where('lastName').eq('Doe'));
       expect(await cursor.length, 0);
     });
 
@@ -282,16 +282,16 @@ void main() {
 
       await txCol.remove(where('firstName').eq('John'));
 
-      var cursor = await txCol.find(filter: where('firstName').eq('John'));
+      var cursor = txCol.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 0);
 
       var colCursor =
-          await collection.find(filter: where('firstName').eq('John'));
+          collection.find(filter: where('firstName').eq('John'));
       expect(await colCursor.length, 1);
 
       await tx.commit();
 
-      cursor = await collection.find(filter: where('firstName').eq('John'));
+      cursor = collection.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 0);
     });
 
@@ -307,11 +307,11 @@ void main() {
       var txCol = await tx.getCollection('test');
 
       await txCol.remove(where('firstName').eq('John'));
-      var cursor = await txCol.find(filter: where('firstName').eq('John'));
+      var cursor = txCol.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 0);
 
       var colCursor =
-          await collection.find(filter: where('firstName').eq('John'));
+          collection.find(filter: where('firstName').eq('John'));
       expect(await colCursor.length, 1);
 
       await txCol.insert(createDocument('firstName', 'Jane'));
@@ -327,10 +327,10 @@ void main() {
 
       expect(exceptionThrown, true);
 
-      cursor = await collection.find(filter: where('firstName').eq('Jane'));
+      cursor = collection.find(filter: where('firstName').eq('Jane'));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(filter: where('firstName').eq('John'));
+      cursor = collection.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 1);
     });
 

@@ -16,6 +16,7 @@ dependencies:
   crypt: ^4.2.1
   collection: ^1.16.0
   uuid: ^3.0.7
+  meta: ^1.9.1
 
 
 dev_dependencies:

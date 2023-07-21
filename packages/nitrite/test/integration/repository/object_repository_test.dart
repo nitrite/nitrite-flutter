@@ -47,7 +47,7 @@ void main() {
       var object = WithOutId(name: 'test', number: 2);
 
       await repo.insert(object);
-      var cursor = await repo.find();
+      var cursor = repo.find();
       var instance = await cursor.first;
       expect(object, instance);
     });
@@ -84,7 +84,7 @@ void main() {
         await repo.insert(record);
       }
 
-      var cursor = await repo.find(filter: where('failed').eq(false));
+      var cursor = repo.find(filter: where('failed').eq(false));
       await for (var record in cursor) {
         record.processed = true;
         await repo.update(where('firstName').eq(record.firstName), record);
@@ -108,13 +108,13 @@ void main() {
           name: 'second date');
       await repo.insertMany([object1, object2]);
 
-      var cursor = await repo.find(
+      var cursor = repo.find(
           filter: where('id')
               .eq(DateTime.fromMillisecondsSinceEpoch(1482773634000)));
       var item = await cursor.first;
       expect(item, object1);
 
-      cursor = await repo.find(
+      cursor = repo.find(
           filter: where('id')
               .eq(DateTime.fromMillisecondsSinceEpoch(1482773720000)));
       item = await cursor.first;
@@ -148,19 +148,19 @@ void main() {
       childClass.text = 'I am third class';
       await repository.insert(childClass);
 
-      var cursor = await repository.find(filter: where('text').text('class'));
+      var cursor = repository.find(filter: where('text').text('class'));
       expect(await cursor.length, 3);
 
       // stop word second discarded
-      cursor = await repository.find(filter: where('text').text('second'));
+      cursor = repository.find(filter: where('text').text('second'));
       expect(await cursor.length, 0);
 
-      cursor = await repository.find(
+      cursor = repository.find(
           filter:
               where('date').eq(DateTime.fromMillisecondsSinceEpoch(10000000)));
       expect(await cursor.length, 1);
 
-      cursor = await repository.find(filter: where('id').eq(1));
+      cursor = repository.find(filter: where('id').eq(1));
       expect(await cursor.length, 1);
     });
 
@@ -201,22 +201,22 @@ void main() {
       expect(await db.listKeyedRepositories, hasLength(2));
 
       var cursor =
-          await employeeRepo.find(filter: where('address').text('abcd'));
+          employeeRepo.find(filter: where('address').text('abcd'));
       expect(await cursor.length, 1);
 
-      cursor = await employeeRepo.find(filter: where('address').text('xyz'));
+      cursor = employeeRepo.find(filter: where('address').text('xyz'));
       expect(await cursor.length, 1);
 
-      cursor = await managerRepo.find(filter: where('address').text('xyz'));
+      cursor = managerRepo.find(filter: where('address').text('xyz'));
       expect(await cursor.length, 0);
 
-      cursor = await employeeRepo.find(filter: where('address').text('abcd'));
+      cursor = employeeRepo.find(filter: where('address').text('abcd'));
       expect(await cursor.length, 1);
 
-      cursor = await developerRepo.find(filter: where('address').text('xyz'));
+      cursor = developerRepo.find(filter: where('address').text('xyz'));
       expect(await cursor.length, 1);
 
-      cursor = await developerRepo.find(filter: where('address').text('abcd'));
+      cursor = developerRepo.find(filter: where('address').text('abcd'));
       expect(await cursor.length, 0);
     });
 
@@ -236,7 +236,7 @@ void main() {
       bool errored = false;
       try {
         var collection = await db.getCollection('entity.employee');
-        await collection.find();
+        collection.find();
       } on ValidationException {
         errored = true;
       }
@@ -478,7 +478,7 @@ void main() {
         expect(uniqueError, true);
       }
 
-      expect(await (await companyRepository.find()).length, 1);
+      expect(await (companyRepository.find()).length, 1);
     });
   });
 }

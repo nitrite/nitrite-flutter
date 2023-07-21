@@ -34,7 +34,7 @@ void main() {
 
       await repo.insertMany([item1, item2]);
 
-      var cursor = await repo.find();
+      var cursor = repo.find();
       await for (var withNitriteId in cursor) {
         expect(withNitriteId.idField, isNotNull);
       }

@@ -17,11 +17,11 @@ void main() {
     });
 
     test('Test Find', () async {
-      var cursor = await aObjectRepository.find();
+      var cursor = aObjectRepository.find();
       expect(await cursor.length, 10);
 
       await aObjectRepository.createIndex(['b.number']);
-      cursor = await aObjectRepository.find(
+      cursor = aObjectRepository.find(
           filter: where('b.number').eq(160).not(),
           findOptions:
               orderBy('b.number', SortOrder.ascending).setSkip(0).setLimit(10));
@@ -36,7 +36,7 @@ void main() {
         expect(element.uid, isNotNull);
       });
 
-      cursor = await aObjectRepository.find(
+      cursor = aObjectRepository.find(
           filter: where('b.number').eq(160).not(),
           findOptions:
               orderBy('b.number', SortOrder.descending).setSkip(2).setLimit(7));
@@ -50,7 +50,7 @@ void main() {
         expect(element.uid, isNotNull);
       });
 
-      var cursorC = await cObjectRepository.find(
+      var cursorC = cObjectRepository.find(
           filter: where('id').gt(900),
           findOptions:
               orderBy('id', SortOrder.descending).setSkip(2).setLimit(7));
@@ -65,7 +65,7 @@ void main() {
     });
 
     test('Test Decorated Entity Find', () async {
-      var cursor = await productRepository.find();
+      var cursor = productRepository.find();
       expect(await cursor.length, 10);
       expect(await cursor.isEmpty, false);
 
@@ -79,7 +79,7 @@ void main() {
               .hasIndex(["productName", "manufacturer.uniqueId"]),
           isTrue);
 
-      cursor = await productRepository.find(
+      cursor = productRepository.find(
           filter: where('productId.uniqueId')
               .notEq(null)
               .and(where('price').gt(0.0)));
@@ -90,7 +90,7 @@ void main() {
       var miniProducts = cursor.project<MiniProduct>();
       expect(await miniProducts.length, 10);
       miniProducts.forEach((miniProduct) async {
-        var products = await productRepository.find(
+        var products = productRepository.find(
             filter: where('productId.uniqueId').eq(miniProduct.uniqueId));
 
         var first = await products.first;
@@ -101,7 +101,7 @@ void main() {
     });
 
     test('Test Decorated Entity Find With Tag', () async {
-      var cursor = await upcomingProductRepository.find();
+      var cursor = upcomingProductRepository.find();
       expect(await cursor.length, 10);
       expect(await cursor.isEmpty, false);
 
@@ -116,7 +116,7 @@ void main() {
               .hasIndex(["productName", "manufacturer.uniqueId"]),
           isTrue);
 
-      cursor = await upcomingProductRepository.find(
+      cursor = upcomingProductRepository.find(
           filter: where('productId.uniqueId')
               .notEq(null)
               .and(where('price').gt(0.0)));
@@ -127,7 +127,7 @@ void main() {
       var miniProducts = cursor.project<MiniProduct>();
       expect(await miniProducts.length, 10);
       miniProducts.forEach((miniProduct) async {
-        var products = await upcomingProductRepository.find(
+        var products = upcomingProductRepository.find(
             filter: where('productId.uniqueId').eq(miniProduct.uniqueId));
 
         var first = await products.first;

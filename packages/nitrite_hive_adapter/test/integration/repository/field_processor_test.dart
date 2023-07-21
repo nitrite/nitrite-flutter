@@ -80,14 +80,14 @@ void main() {
     });
 
     test('Test Successful Decryption', () async {
-      var cursor = await persons.find(filter: where('name').eq('Jane Doe'));
+      var cursor = persons.find(filter: where('name').eq('Jane Doe'));
       var person = await cursor.first;
 
       expect(person, isNotNull);
       expect(person.creditCardNumber, '5500960345687452');
       expect(person.cvv, '008');
 
-      cursor = await persons.find(filter: where('name').eq('John Doe'));
+      cursor = persons.find(filter: where('name').eq('John Doe'));
       person = await cursor.first;
 
       expect(person, isNotNull);
@@ -132,13 +132,13 @@ void main() {
 
       await testPersons.insert(person);
 
-      var cursor = await testPersons.find(filter: where("name").eq("Jane Doe"));
+      var cursor = testPersons.find(filter: where("name").eq("Jane Doe"));
       var first = await cursor.first;
       expect(first.creditCardNumber, isNot(person.creditCardNumber));
     });
 
     test('Test Search on Encrypted Field', () async {
-      var cursor = await persons.find(filter: where('cvv').eq('008'));
+      var cursor = persons.find(filter: where('cvv').eq('008'));
       expect(await cursor.isEmpty, true);
     });
 
@@ -153,7 +153,7 @@ void main() {
           await persons.update(where('name').eq('John Doe'), person);
       expect(writeResult.getAffectedCount(), 1);
 
-      var cursor = await persons.find(filter: where('name').eq('John Doe'));
+      var cursor = persons.find(filter: where('name').eq('John Doe'));
       person = await cursor.first;
       expect(person, isNotNull);
 
@@ -163,7 +163,7 @@ void main() {
 
     test('Test Index on Encrypted Field', () async {
       await persons.createIndex(['cvv']);
-      var cursor = await persons.find(filter: where('cvv').eq('008'));
+      var cursor = persons.find(filter: where('cvv').eq('008'));
       expect(await cursor.isEmpty, true);
     });
   });

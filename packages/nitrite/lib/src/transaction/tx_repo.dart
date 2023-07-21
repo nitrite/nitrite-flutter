@@ -125,7 +125,7 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
     var item = await _primary.getById(id);
     if (item == null) {
       var idFilter = _operations.createIdFilter(id);
-      var cursor = await find(filter: idFilter);
+      var cursor = find(filter: idFilter);
       return cursor.first;
     }
     return item;

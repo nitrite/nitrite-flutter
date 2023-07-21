@@ -21,7 +21,7 @@ void main() {
       await collection.createIndex(['body'], indexOptions(IndexType.fullText));
 
       var cursor =
-          await collection.find(filter: where("body").text("*ipsum dolor*"));
+          collection.find(filter: where("body").text("*ipsum dolor*"));
       expect(() async => await cursor.length, throwsFilterException);
     });
 
@@ -29,7 +29,7 @@ void main() {
       await insert();
       await collection.createIndex(['body'], indexOptions(IndexType.fullText));
 
-      var cursor = await collection.find(filter: where("body").text("*"));
+      var cursor = collection.find(filter: where("body").text("*"));
       expect(() async => await cursor.length, throwsFilterException);
     });
   });

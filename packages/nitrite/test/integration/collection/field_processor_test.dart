@@ -71,14 +71,14 @@ void main() {
     });
 
     test('Test Successful Decryption', () async {
-      var cursor = await collection.find(filter: where('name').eq('Jane Doe'));
+      var cursor = collection.find(filter: where('name').eq('Jane Doe'));
       var document = await cursor.first;
       expect(document, isNotNull);
 
       expect(document['creditCardNumber'], '5500960345687452');
       expect(document['cvv'], '008');
 
-      cursor = await collection.find(filter: where('name').eq('John Doe'));
+      cursor = collection.find(filter: where('name').eq('John Doe'));
       document = await cursor.first;
       expect(document, isNotNull);
 
@@ -114,14 +114,14 @@ void main() {
         ..put('expiryDate', DateTime.now());
       await collection.insert(document);
 
-      var cursor = await collection.find(filter: where("name").eq("Jane Doe"));
+      var cursor = collection.find(filter: where("name").eq("Jane Doe"));
       var first = await cursor.first;
 
       expect(first['creditCardNumber'], isNot(document['creditCardNumber']));
     });
 
     test('Test Search on Encrypted Field', () async {
-      var cursor = await collection.find(filter: where("cvv").eq("008"));
+      var cursor = collection.find(filter: where("cvv").eq("008"));
       expect(await cursor.isEmpty, true);
     });
 
@@ -135,7 +135,7 @@ void main() {
           await collection.update(where('name').eq('John Doe'), document);
       expect(writeResult.getAffectedCount(), 1);
 
-      var cursor = await collection.find(filter: where('name').eq('John Doe'));
+      var cursor = collection.find(filter: where('name').eq('John Doe'));
       document = await cursor.first;
 
       expect(document['creditCardNumber'], '00000000000000');
@@ -144,7 +144,7 @@ void main() {
 
     test('Test Index on Encrypted Field', () async {
       await collection.createIndex(['cvv']);
-      var cursor = await collection.find(filter: where('cvv').eq('008'));
+      var cursor = collection.find(filter: where('cvv').eq('008'));
       expect(await cursor.isEmpty, true);
     });
   });

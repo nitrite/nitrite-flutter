@@ -19,7 +19,7 @@ void main() {
       var result = await collection.insertMany([doc1, doc2, doc3]);
       expect(result.getAffectedCount(), 3);
 
-      var cursor = await collection.find();
+      var cursor = collection.find();
       expect(await cursor.length, 3);
 
       await for (var doc in cursor) {

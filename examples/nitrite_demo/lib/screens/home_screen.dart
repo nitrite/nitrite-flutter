@@ -1,9 +1,14 @@
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nitrite_demo/main.dart';
+import 'package:nitrite_demo/models/models.dart';
 import 'package:nitrite_demo/providers/providers.dart';
+import 'package:nitrite_demo/screens/widgets/new_todo_dialog.dart';
 import 'package:nitrite_demo/screens/widgets/stats_card.dart';
+import 'package:nitrite_demo/screens/widgets/todo_list.dart';
+import 'package:uuid/uuid.dart';
+
+var _uuid = const Uuid();
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -44,7 +49,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
 
-            // TODOS TITLE FILTER
+            // Title Filter
             const Padding(
               padding: EdgeInsets.only(left: 20, bottom: 10, top: 10),
               child: Text(
@@ -57,13 +62,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
 
-            //  TODOS LISTVIEW
             const Expanded(
               child: TodoList(),
             ),
           ],
         ),
-      )
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) {
+              return NewTodoDialog(
+                onPressed: () {
+                  final todoText = ref.read(todoTextProvider);
+                  if (todoText.isNotEmpty) {
+                    var todo = Todo(
+                      id: _uuid.v4(),
+                      title: todoText,
+                      completed: false,
+                    );
+                    ref.read(todosProvider.notifier).addTodo(todo);
+                  }
+                  Navigator.of(context).pop();
+                },
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

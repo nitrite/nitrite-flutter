@@ -20,7 +20,7 @@ void main() {
       await insert();
       expect(
           () async =>
-              (await collection.find(filter: where('data.9').eq(4))).toList(),
+              (collection.find(filter: where('data.9').eq(4))).toList(),
           throwsValidationException);
     });
 
@@ -28,7 +28,7 @@ void main() {
       await insert();
       expect(
           () async =>
-              (await collection.find(findOptions: skipBy(-1).setLimit(1)))
+              (collection.find(findOptions: skipBy(-1).setLimit(1)))
                   .toList(),
           throwsValidationException);
     });
@@ -37,7 +37,7 @@ void main() {
       await insert();
       expect(
           () async =>
-              (await collection.find(findOptions: skipBy(0).setLimit(-1)))
+              (collection.find(findOptions: skipBy(0).setLimit(-1)))
                   .toList(),
           throwsValidationException);
     });
@@ -45,7 +45,7 @@ void main() {
     test('Test Find Invalid Sort', () async {
       await insert();
       expect(
-          () async => (await collection.find(
+          () async => (collection.find(
                   findOptions: orderBy('data', SortOrder.descending)))
               .toList(),
           throwsInvalidOperationException);
@@ -55,7 +55,7 @@ void main() {
       await insert();
       expect(
           () async =>
-              (await collection.find(filter: where('body').text('Lorem')))
+              (collection.find(filter: where('body').text('Lorem')))
                   .toList(),
           throwsFilterException);
     });
@@ -64,14 +64,14 @@ void main() {
       await insert();
       expect(
           () async =>
-              (await collection.find(filter: where('birthDay').regex('hello')))
+              (collection.find(filter: where('birthDay').regex('hello')))
                   .toList(),
           throwsFilterException);
     });
 
     test('Test Invalid Projection', () async {
       await insert();
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: where('birthDay').lte(DateTime.now()),
           findOptions: orderBy('firstName').setSkip(0).setLimit(3));
 

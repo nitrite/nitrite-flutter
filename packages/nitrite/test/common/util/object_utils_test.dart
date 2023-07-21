@@ -164,9 +164,6 @@ void main() {
       var boolean = newInstance<bool>(nitriteMapper);
       expect(boolean, false);
 
-      var n = newInstance<Null>(nitriteMapper);
-      expect(n, isNull);
-
       var date = newInstance<DateTime>(nitriteMapper);
       expect(date, isNull);
 
@@ -217,7 +214,7 @@ void main() {
       expect(isBuiltInValueType<Runes?>(), isTrue);
       expect(isBuiltInValueType<bool>(), isTrue);
       expect(isBuiltInValueType<bool?>(), isTrue);
-      expect(isBuiltInValueType<Null>(), isTrue);
+      expect(isBuiltInValueType<void>(), isTrue);
       expect(isBuiltInValueType<DateTime>(), isTrue);
       expect(isBuiltInValueType<DateTime?>(), isTrue);
       expect(isBuiltInValueType<Duration>(), isTrue);

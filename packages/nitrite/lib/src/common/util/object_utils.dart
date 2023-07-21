@@ -131,6 +131,7 @@ List<Type> builtInTypes() {
 }
 
 bool isBuiltInValueType<T>() {
+  if (T.toString() == 'void') return true;
   if (isSubtype<T, num>()) return true;
   if (isSubtype<T, num?>()) return true;
   if (isSubtype<T, int>()) return true;
@@ -143,7 +144,6 @@ bool isBuiltInValueType<T>() {
   if (isSubtype<T, Runes?>()) return true;
   if (isSubtype<T, bool>()) return true;
   if (isSubtype<T, bool?>()) return true;
-  if (isSubtype<T, Null>()) return true;
   if (isSubtype<T, DateTime>()) return true;
   if (isSubtype<T, DateTime?>()) return true;
   if (isSubtype<T, Duration>()) return true;

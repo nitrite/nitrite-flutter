@@ -100,6 +100,7 @@ class FindOptionState extends _$FindOptionState {
 }
 
 final filterProvider = StateProvider<Filter>((ref) => all);
+final todoTextProvider = StateProvider<String>((ref) => '');
 
 @riverpod
 int pendingCounter(PendingCounterRef ref) {

@@ -19,7 +19,7 @@ void main() {
       await insert();
 
       await collection.createIndex(['list', 'lastName', 'firstName']);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
         where('lastName').eq('ln2'),
         where("firstName").notEq("fn1"),
@@ -47,7 +47,7 @@ void main() {
       await insert();
       await collection.createIndex(['lastName', 'firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: or([
         and([
           where("lastName").eq("ln2"),
@@ -81,7 +81,7 @@ void main() {
           2);
 
       // distinct test
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: or([
             and([
               where("lastName").eq("ln2"),
@@ -122,7 +122,7 @@ void main() {
       await insert();
       await collection.createIndex(['lastName', 'firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
         or([
           where("lastName").eq("ln2"),
@@ -157,7 +157,7 @@ void main() {
       await insert();
       await collection.createIndex(['lastName', 'firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
         and([
           where("lastName").eq("ln2"),
@@ -193,7 +193,7 @@ void main() {
       await collection.createIndex(['firstName']);
       await collection.createIndex(['birthDay']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: or([
         or([
           where("lastName").eq("ln2"),
@@ -208,7 +208,7 @@ void main() {
       expect(await cursor.length, 5);
 
       // with distinct
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: or([
             or([
               where("lastName").eq("ln2"),
@@ -229,7 +229,7 @@ void main() {
       await collection.createIndex(['lastName', 'firstName']);
       await collection.createIndex(['firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: or([
         or([
           where("lastName").eq("ln2"),
@@ -248,7 +248,7 @@ void main() {
       await insert();
       await collection.createIndex(['lastName', 'firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
         where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
         where("firstName").notEq("fn1")
@@ -274,7 +274,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
@@ -317,7 +317,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
@@ -370,7 +370,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
@@ -422,7 +422,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
@@ -464,7 +464,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))

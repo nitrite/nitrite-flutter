@@ -34,15 +34,15 @@ void main() {
           await tx.getRepository<TxData>(entityDecorator: TxDataDecorator());
       await txRepo.insert(data);
 
-      var txCursor = await txRepo.find(filter: where('name').eq('John'));
+      var txCursor = txRepo.find(filter: where('name').eq('John'));
       expect(await txCursor.length, 1);
 
-      var cursor = await repository.find(filter: where('name').eq('John'));
+      var cursor = repository.find(filter: where('name').eq('John'));
       expect(await cursor.length, 0);
 
       await tx.commit();
 
-      cursor = await repository.find(filter: where('name').eq('John'));
+      cursor = repository.find(filter: where('name').eq('John'));
       expect(await cursor.length, 1);
     });
 
@@ -69,10 +69,10 @@ void main() {
       data2.name = 'Molly';
       await repository.insert(data2);
 
-      var txCursor = await txRepo.find(filter: where('name').eq('John'));
+      var txCursor = txRepo.find(filter: where('name').eq('John'));
       expect(await txCursor.length, 1);
 
-      var cursor = await repository.find(filter: where('name').eq('John'));
+      var cursor = repository.find(filter: where('name').eq('John'));
       expect(await cursor.length, 0);
 
       bool exceptionThrown = false;
@@ -85,10 +85,10 @@ void main() {
 
       expect(exceptionThrown, isTrue);
 
-      cursor = await repository.find(filter: where('name').eq('John'));
+      cursor = repository.find(filter: where('name').eq('John'));
       expect(await cursor.length, 0);
 
-      cursor = await repository.find(filter: where('name').eq('Molly'));
+      cursor = repository.find(filter: where('name').eq('Molly'));
       expect(await cursor.length, 1);
     });
 
@@ -113,15 +113,15 @@ void main() {
 
       await txRepo.updateOne(txData1, insertIfAbsent: true);
 
-      var txCursor = await txRepo.find(filter: where('name').eq('Jane'));
+      var txCursor = txRepo.find(filter: where('name').eq('Jane'));
       expect(await txCursor.length, 1);
 
-      var cursor = await repository.find(filter: where('name').eq('Jane'));
+      var cursor = repository.find(filter: where('name').eq('Jane'));
       expect(await cursor.length, 0);
 
       await tx.commit();
 
-      cursor = await repository.find(filter: where('name').eq('Jane'));
+      cursor = repository.find(filter: where('name').eq('Jane'));
       expect(await cursor.length, 1);
     });
 
@@ -156,13 +156,13 @@ void main() {
       // just to create UniqueConstraintViolation for rollback
       await repository.insert(txData1);
 
-      var txCursor = await txRepo.find(filter: where('name').eq('John'));
+      var txCursor = txRepo.find(filter: where('name').eq('John'));
       expect(await txCursor.length, 1);
 
-      txCursor = await txRepo.find(filter: where('name').eq('Jane Doe'));
+      txCursor = txRepo.find(filter: where('name').eq('Jane Doe'));
       expect(await txCursor.length, 1);
 
-      var cursor = await repository.find(filter: where('name').eq('Jane Doe'));
+      var cursor = repository.find(filter: where('name').eq('Jane Doe'));
       expect(await cursor.length, 0);
 
       bool exceptionThrown = false;
@@ -174,10 +174,10 @@ void main() {
       }
 
       expect(exceptionThrown, isTrue);
-      cursor = await repository.find(filter: where('name').eq('Jane'));
+      cursor = repository.find(filter: where('name').eq('Jane'));
       expect(await cursor.length, 1);
 
-      cursor = await repository.find(filter: where('name').eq('Jane Doe'));
+      cursor = repository.find(filter: where('name').eq('Jane Doe'));
       expect(await cursor.length, 0);
     });
 
@@ -197,15 +197,15 @@ void main() {
           await tx.getRepository<TxData>(entityDecorator: TxDataDecorator());
       await txRepo.remove(where('name').eq('John'));
 
-      var txCursor = await txRepo.find(filter: where('name').eq('John'));
+      var txCursor = txRepo.find(filter: where('name').eq('John'));
       expect(await txCursor.length, 0);
 
-      var cursor = await repository.find(filter: where('name').eq('John'));
+      var cursor = repository.find(filter: where('name').eq('John'));
       expect(await cursor.length, 1);
 
       await tx.commit();
 
-      cursor = await repository.find(filter: where('name').eq('John'));
+      cursor = repository.find(filter: where('name').eq('John'));
       expect(await cursor.length, 0);
     });
 
@@ -226,10 +226,10 @@ void main() {
           await tx.getRepository<TxData>(entityDecorator: TxDataDecorator());
       await txRepo.remove(where('name').eq('John'));
 
-      var txCursor = await txRepo.find(filter: where('name').eq('John'));
+      var txCursor = txRepo.find(filter: where('name').eq('John'));
       expect(await txCursor.length, 0);
 
-      var cursor = await repository.find(filter: where('name').eq('John'));
+      var cursor = repository.find(filter: where('name').eq('John'));
       expect(await cursor.length, 1);
 
       var txData2 = TxData()
@@ -248,10 +248,10 @@ void main() {
 
       expect(exceptionThrown, isTrue);
 
-      cursor = await repository.find(filter: where('name').eq('John'));
+      cursor = repository.find(filter: where('name').eq('John'));
       expect(await cursor.length, 1);
 
-      cursor = await repository.find(filter: where('name').eq('Jane'));
+      cursor = repository.find(filter: where('name').eq('Jane'));
       expect(await cursor.length, 1);
     });
 

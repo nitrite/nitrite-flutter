@@ -53,4 +53,9 @@ class Todo with _$TodoEntityMixin {
 
   @override
   int get hashCode => id.hashCode ^ title.hashCode ^ completed.hashCode;
+
+  @override
+  String toString() {
+    return 'Todo{id: $id, title: $title, completed: $completed}';
+  }
 }

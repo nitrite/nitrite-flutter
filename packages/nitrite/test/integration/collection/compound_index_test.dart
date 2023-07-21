@@ -117,7 +117,7 @@ void main() {
       await collection.createIndex(['firstName', 'lastName']);
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter:
               and([where('firstName').eq('fn1'), where('lastName').eq('ln1')]));
       cursor.listen(print);
@@ -157,7 +157,7 @@ void main() {
       await insert();
       await collection.insert(document);
 
-      var cursor = await collection.find(filter: where('firstName').eq(null));
+      var cursor = collection.find(filter: where('firstName').eq(null));
       expectLater(cursor.first, completion(containsPair('lastName', 'ln1')));
       expectLater(cursor.first, completion(containsPair('firstName', isNull)));
 
@@ -170,11 +170,11 @@ void main() {
         ..put("body", 'a quick brown fox jump over the lazy dog');
       await collection.insert(document);
 
-      cursor = await collection.find(filter: where('lastName').eq(null));
+      cursor = collection.find(filter: where('lastName').eq(null));
       expectLater(cursor.first, completion(containsPair('firstName', 'fn4')));
       expectLater(cursor.first, completion(containsPair('lastName', isNull)));
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter:
               and([where('birthDay').eq(null), where("lastName").eq(null)]));
       expectLater(cursor.first, completion(containsPair('lastName', isNull)));
@@ -184,7 +184,7 @@ void main() {
       await collection.createIndex(['firstName', 'lastName']);
       expectLater(collection.hasIndex(['firstName']), completion(isTrue));
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter:
               and([where('firstName').eq('fn1'), where('lastName').eq('ln1')]));
       var findPlan = await cursor.findPlan;
@@ -192,7 +192,7 @@ void main() {
       expect(findPlan.collectionScanFilter, isNull);
 
       await collection.dropAllIndices();
-      cursor = await collection.find(
+      cursor = collection.find(
           filter:
               and([where('firstName').eq('fn1'), where('lastName').eq('ln1')]));
       findPlan = await cursor.findPlan;
@@ -200,7 +200,7 @@ void main() {
       expect(findPlan.collectionScanFilter, isNotNull);
 
       await collection.createIndex(['firstName', 'lastName']);
-      cursor = await collection.find(
+      cursor = collection.find(
           filter:
               and([where('firstName').eq('fn1'), where('lastName').eq('ln1')]));
       findPlan = await cursor.findPlan;
@@ -220,33 +220,33 @@ void main() {
 
       await collection.insertMany([doc1, doc2, doc3, doc4, doc5]);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([where('field1').eq(0.03), where('field2').eq(5)]));
       expectLater(cursor.length, completion(1));
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: and([where('field1').eq(5), where('field2').eq(null)]));
       expectLater(cursor.length, completion(1));
 
-      cursor = await collection.find(filter: where('field1').eq(5));
+      cursor = collection.find(filter: where('field1').eq(5));
       expectLater(cursor.length, completion(1));
 
-      cursor = await collection.find(filter: where('field1').eq(5.0));
+      cursor = collection.find(filter: where('field1').eq(5.0));
       expectLater(cursor.length, completion(1));
 
       await collection.createIndex(['field1', 'field2']);
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: and([where('field1').eq(0.03), where('field2').eq(5)]));
       expectLater(cursor.length, completion(1));
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: and([where('field1').eq(5), where('field2').eq(null)]));
       expectLater(cursor.length, completion(1));
 
-      cursor = await collection.find(filter: where('field1').eq(5));
+      cursor = collection.find(filter: where('field1').eq(5));
       expectLater(cursor.length, completion(1));
 
-      cursor = await collection.find(filter: where('field1').eq(5.0));
+      cursor = collection.find(filter: where('field1').eq(5.0));
       expectLater(cursor.length, completion(1));
     });
 
@@ -278,7 +278,7 @@ void main() {
 
       await collection
           .createIndex(['first', 'second'], indexOptions(IndexType.nonUnique));
-      var cursor = await collection.find();
+      var cursor = collection.find();
       expectLater(cursor.length, completion(10000));
       expect(failed, isFalse);
       expect(completed, isTrue);
@@ -295,10 +295,10 @@ void main() {
       ]);
 
       await collection.createIndex(['third', 'first']);
-      var cursor = await collection.find(filter: where('first').eq(null));
+      var cursor = collection.find(filter: where('first').eq(null));
       expectLater(cursor.length, completion(1));
 
-      cursor = await collection.find(filter: where('third').eq(null));
+      cursor = collection.find(filter: where('third').eq(null));
       expectLater(cursor.length, completion(2));
     });
   });

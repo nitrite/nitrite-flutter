@@ -173,7 +173,7 @@ void main() {
       expect(await db.listCollectionNames, hasLength(1));
       expect((await db.databaseMetaData).schemaVersion, 3);
 
-      var cursor = await collection.find(filter: where('age').notEq(null));
+      var cursor = collection.find(filter: where('age').notEq(null));
       expect(await cursor.length, 0);
     });
 
@@ -505,7 +505,7 @@ void main() {
       expect(await collection.size, 10);
 
       var cursor =
-          await collection.find(filter: where('fullName').eq('Dummy Name'));
+          collection.find(filter: where('fullName').eq('Dummy Name'));
       expect(await cursor.length, 0);
       await db.close();
 
@@ -532,10 +532,10 @@ void main() {
       expect(await collection.size, 10);
 
       cursor =
-          await collection.find(filter: where('fullName').eq('Dummy Name'));
+          collection.find(filter: where('fullName').eq('Dummy Name'));
       expect(await cursor.length, 10);
 
-      cursor = await collection.find(filter: where('age').eq(10));
+      cursor = collection.find(filter: where('age').eq(10));
       expect(await cursor.length, 10);
     });
   });

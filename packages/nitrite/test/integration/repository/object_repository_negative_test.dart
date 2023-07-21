@@ -124,7 +124,7 @@ void main() {
       var object = WithOutId(name: 'name', number: 1);
       await repository.insert(object);
 
-      var cursor = await repository.find();
+      var cursor = repository.find();
       expect(() async => await cursor.project<NitriteId>().toList(),
           throwsValidationException);
     });

@@ -41,6 +41,7 @@ dependencies:
   nitrite_hive_adapter: ^0.0.1
   path_provider: ^2.0.15
   anim_search_bar: ^2.0.3
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:

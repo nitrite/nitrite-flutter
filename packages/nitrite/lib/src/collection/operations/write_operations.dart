@@ -106,7 +106,7 @@ class WriteOperations {
   }
 
   Stream<NitriteId> removeByFilter(Filter filter, bool once) async* {
-    var cursor = await _readOperations.find(filter, null);
+    var cursor = _readOperations.find(filter, null);
 
     var count = 0;
     var nitriteIds = <NitriteId, String>{};
@@ -161,7 +161,7 @@ class WriteOperations {
 
   Stream<NitriteId> update(
       Filter filter, Document update, UpdateOptions updateOptions) async* {
-    var cursor = await _readOperations.find(filter, null);
+    var cursor = _readOperations.find(filter, null);
     var document = update.clone();
     document.remove(docId);
     var source = document.source;

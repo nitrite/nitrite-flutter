@@ -20,7 +20,7 @@ abstract class Processor {
     }
 
     if (nitriteCollection != null) {
-      var documentCursor = await nitriteCollection.find();
+      var documentCursor = nitriteCollection.find();
 
       await for (var document in documentCursor) {
         // process all documents in parallel

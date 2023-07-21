@@ -82,24 +82,24 @@ void main() {
     });
 
     test('Test Length', () async {
-      var cursor = await companyRepository.find();
+      var cursor = companyRepository.find();
       expect(await cursor.length, 10);
       expect(await cursor.length, await companyRepository.size);
     });
 
     test('Test Insert', () async {
-      var cursor = await companyRepository.find();
+      var cursor = companyRepository.find();
       var company = generateCompanyRecord();
       expect(await cursor.length, 10);
 
       await companyRepository.insert(company);
-      cursor = await companyRepository.find();
+      cursor = companyRepository.find();
       expect(await cursor.length, 11);
 
       var company1 = generateCompanyRecord();
       var company2 = generateCompanyRecord();
       await companyRepository.insertMany([company1, company2]);
-      cursor = await companyRepository.find();
+      cursor = companyRepository.find();
       expect(await cursor.length, 13);
     });
 
@@ -115,7 +115,7 @@ void main() {
       employee.employeeNote = Note(noteId: 23, text: 'sample text note');
 
       await employeeRepository.insert(employee);
-      var result = await employeeRepository.find();
+      var result = employeeRepository.find();
       expect(await result.length, 1);
 
       await for (var employee in result) {
@@ -135,7 +135,7 @@ void main() {
       var writeResult =
           await employeeRepository.update(where('empId').eq(12), updated);
       expect(writeResult.getAffectedCount(), 1);
-      result = await employeeRepository.find();
+      result = employeeRepository.find();
       expect(await result.length, 1);
 
       await for (var employee in result) {
@@ -154,16 +154,16 @@ void main() {
           .updateDocument(where('empId').eq(12), updated1, justOnce: false);
       expect(writeResult.getAffectedCount(), 1);
 
-      var result = await employeeRepository.find(
+      var result = employeeRepository.find(
           filter: where('joinDate').eq(joiningDate));
       expect(await result.length, 1);
-      result = await employeeRepository.find(
+      result = employeeRepository.find(
           filter: where('joinDate').eq(newJoiningDate));
       expect(await result.length, 1);
 
       await employeeRepository.remove(all);
       await _prepareUpdateWithOptions(joiningDate);
-      result = await employeeRepository.find();
+      result = employeeRepository.find();
       expect(await result.length, 2);
 
       var update = createDocument('joinDate', newJoiningDate);
@@ -172,18 +172,18 @@ void main() {
           justOnce: false);
       expect(writeResult.getAffectedCount(), 2);
 
-      result = await employeeRepository.find(
+      result = employeeRepository.find(
           filter: where('joinDate').eq(joiningDate));
       expect(await result.length, 0);
 
-      result = await employeeRepository.find(
+      result = employeeRepository.find(
           filter: where('joinDate').eq(newJoiningDate));
       expect(await result.length, 2);
     });
 
     test('Test Upsert True', () async {
       var joiningDate = DateTime.now();
-      var result = await employeeRepository.find(
+      var result = employeeRepository.find(
           filter: where('joinDate').eq(joiningDate));
       expect(await result.length, 0);
 
@@ -199,14 +199,14 @@ void main() {
           where('empId').eq(12), employee, UpdateOptions(insertIfAbsent: true));
       expect(writeResult.getAffectedCount(), 1);
 
-      result = await employeeRepository.find(
+      result = employeeRepository.find(
           filter: where('joinDate').eq(joiningDate));
       expect(await result.length, 1);
     });
 
     test('Test Upsert False', () async {
       var joiningDate = DateTime.now();
-      var result = await employeeRepository.find(
+      var result = employeeRepository.find(
           filter: where('joinDate').eq(joiningDate));
       expect(await result.length, 0);
 
@@ -222,7 +222,7 @@ void main() {
           employee, UpdateOptions(insertIfAbsent: false));
       expect(writeResult.getAffectedCount(), 0);
 
-      result = await employeeRepository.find(
+      result = employeeRepository.find(
           filter: where('joinDate').eq(joiningDate));
       expect(await result.length, 0);
     });
@@ -231,7 +231,7 @@ void main() {
       var joiningDate = DateTime.now();
       await _prepareUpdateWithOptions(joiningDate);
 
-      var result = await employeeRepository.find(
+      var result = employeeRepository.find(
           filter: where('joinDate').eq(joiningDate));
       expect(await result.length, 2);
 
@@ -239,13 +239,13 @@ void main() {
           .remove(where('joinDate').eq(joiningDate), justOne: true);
       expect(writeResult.getAffectedCount(), 1);
 
-      result = await employeeRepository.find(
+      result = employeeRepository.find(
           filter: where('joinDate').eq(joiningDate));
       expect(await result.length, 1);
     });
 
     test('Test Update with Options', () async {
-      var cursor = await employeeRepository.find();
+      var cursor = employeeRepository.find();
       var employee = await cursor.first;
 
       var update = createDocument('address', 'new address');
@@ -294,13 +294,13 @@ void main() {
     });
 
     test('Test Update Null', () async {
-      var cursor = await employeeRepository.find();
+      var cursor = employeeRepository.find();
       var employee = await cursor.first;
 
       var newEmployee = Employee.clone(employee);
       newEmployee.joinDate = null;
 
-      cursor = await employeeRepository.find(
+      cursor = employeeRepository.find(
           filter: where('empId').eq(employee.empId));
       var result = await cursor.first;
       expect(result.joinDate, isNotNull);
@@ -308,14 +308,14 @@ void main() {
       var writeResult = await employeeRepository.updateOne(newEmployee);
       expect(writeResult.getAffectedCount(), 1);
 
-      cursor = await employeeRepository.find(
+      cursor = employeeRepository.find(
           filter: where('empId').eq(employee.empId));
       result = await cursor.first;
       expect(result.joinDate, isNull);
     });
 
     test('Test Updated with Changed Id', () async {
-      var cursor = await employeeRepository.find();
+      var cursor = employeeRepository.find();
       var employee = await cursor.first;
       var oldId = employee.empId;
       var count = await employeeRepository.size;
@@ -323,7 +323,7 @@ void main() {
       var newEmployee = Employee.clone(employee);
       newEmployee.empId = 50;
 
-      cursor = await employeeRepository.find(filter: where('empId').eq(oldId));
+      cursor = employeeRepository.find(filter: where('empId').eq(oldId));
       employee = await cursor.first;
       expect(employee.joinDate, isNotNull);
 
@@ -334,19 +334,19 @@ void main() {
       expect(writeResult.getAffectedCount(), 1);
 
       expect(await employeeRepository.size, count);
-      cursor = await employeeRepository.find(filter: where('empId').eq(oldId));
+      cursor = employeeRepository.find(filter: where('empId').eq(oldId));
       expect(await cursor.length, 0);
     });
 
     test('Test Update with Null Id', () async {
-      var cursor = await employeeRepository.find();
+      var cursor = employeeRepository.find();
       var employee = await cursor.first;
       var oldId = employee.empId;
 
       var newEmployee = Employee.clone(employee);
       newEmployee.empId = null;
 
-      cursor = await employeeRepository.find(filter: where('empId').eq(oldId));
+      cursor = employeeRepository.find(filter: where('empId').eq(oldId));
       employee = await cursor.first;
       expect(employee.joinDate, isNotNull);
 
@@ -357,14 +357,14 @@ void main() {
     });
 
     test('Test Update with Duplicate Id', () async {
-      var cursor = await employeeRepository.find();
+      var cursor = employeeRepository.find();
       var employee = await cursor.first;
       var oldId = employee.empId;
 
       var newEmployee = Employee.clone(employee);
       newEmployee.empId = 5;
 
-      cursor = await employeeRepository.find(filter: where('empId').eq(oldId));
+      cursor = employeeRepository.find(filter: where('empId').eq(oldId));
       employee = await cursor.first;
       expect(employee.joinDate, isNotNull);
 
@@ -375,7 +375,7 @@ void main() {
     });
 
     test('Test Update with Object', () async {
-      var cursor = await employeeRepository.find();
+      var cursor = employeeRepository.find();
       var employee = await cursor.first;
       var newEmployee = Employee.clone(employee);
 
@@ -386,7 +386,7 @@ void main() {
       var writeResult = await employeeRepository.updateOne(newEmployee);
       expect(writeResult.getAffectedCount(), 1);
 
-      cursor = await employeeRepository.find(filter: where('empId').eq(id));
+      cursor = employeeRepository.find(filter: where('empId').eq(id));
       employee = await cursor.first;
       expect(employee.address, isNot(address));
       expect(employee.empId, id);
@@ -406,7 +406,7 @@ void main() {
           await employeeRepository.updateOne(employee, insertIfAbsent: true);
       expect(writeResult.getAffectedCount(), 1);
 
-      var cursor = await employeeRepository.find(filter: where('empId').eq(12));
+      var cursor = employeeRepository.find(filter: where('empId').eq(12));
       var emp = await cursor.first;
       expect(emp, employee);
     });
@@ -427,7 +427,7 @@ void main() {
       await employeeRepository.removeOne(employee);
       expect(await employeeRepository.size, size);
 
-      var cursor = await employeeRepository.find(filter: where('empId').eq(12));
+      var cursor = employeeRepository.find(filter: where('empId').eq(12));
       expect(await cursor.isEmpty, true);
     });
 
@@ -456,7 +456,7 @@ void main() {
       one.name = 'Jane';
       await repo.insert(one);
 
-      var cursor = await repo.find();
+      var cursor = repo.find();
       var item = await cursor.first;
       await repo.removeOne(item);
 
@@ -490,7 +490,7 @@ void main() {
       // no changes will happen to repository
       await repo.updateOne(a, insertIfAbsent: false);
       expect(await repo.size, 1);
-      var cursor = await repo.find();
+      var cursor = repo.find();
       expect((await cursor.first).name, 'first');
     });
 
@@ -508,7 +508,7 @@ void main() {
       // update existing object, keep id same
       await repo.updateOne(a, insertIfAbsent: true);
       expect(await repo.size, 1);
-      var cursor = await repo.find();
+      var cursor = repo.find();
       expect((await cursor.first).number, 2);
     });
 
@@ -526,7 +526,7 @@ void main() {
       // update existing object, keep id same
       await repo.updateOne(a, insertIfAbsent: false);
       expect(await repo.size, 1);
-      var cursor = await repo.find();
+      var cursor = repo.find();
       expect((await cursor.first).number, 2);
     });
 
@@ -574,7 +574,7 @@ _prepareUpdateWithOptions(DateTime joiningDate) async {
   employee2.employeeNote = Note(noteId: 2, text: 'some random note');
 
   await employeeRepository.insertMany([employee1, employee2]);
-  var result = await employeeRepository.find();
+  var result = employeeRepository.find();
   expect(await result.length, 2);
 
   await for (var e in result.project<Employee>()) {

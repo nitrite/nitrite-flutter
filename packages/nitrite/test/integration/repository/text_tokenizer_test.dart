@@ -64,7 +64,7 @@ void main() {
 
     test('Test Universal Full Text Indexing', () async {
       var cursor =
-          await textRepository.find(filter: where('text').text('Lorem'));
+          textRepository.find(filter: where('text').text('Lorem'));
       expect(await cursor.length, 2);
 
       await for (var data in cursor) {
@@ -73,7 +73,7 @@ void main() {
         }
       }
 
-      cursor = await textRepository.find(filter: where('text').text('শহর'));
+      cursor = textRepository.find(filter: where('text').text('শহর'));
       expect(await cursor.length, 5);
       await for (var data in cursor) {
         if (data.id! % 2 != 0) {
@@ -81,9 +81,9 @@ void main() {
         }
       }
 
-      cursor = await textRepository.find(filter: where('text').text('転閉'));
+      cursor = textRepository.find(filter: where('text').text('転閉'));
       expect(await cursor.length, 0);
-      cursor = await textRepository.find(filter: where('text').text('*転閉*'));
+      cursor = textRepository.find(filter: where('text').text('*転閉*'));
       expect(await cursor.length, 2);
       await for (var data in cursor) {
         if (data.id! % 3 != 0) {
@@ -91,7 +91,7 @@ void main() {
         }
       }
 
-      cursor = await textRepository.find(filter: where('text').text("أقبل"));
+      cursor = textRepository.find(filter: where('text').text("أقبل"));
       expect(await cursor.length, 1);
     });
   });
