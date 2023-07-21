@@ -116,7 +116,7 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   }
 
   @override
-  Future<Cursor<T>> find({Filter? filter, FindOptions? findOptions}) {
+  Cursor<T> find({Filter? filter, FindOptions? findOptions}) {
     return _operations.find(filter, findOptions);
   }
 

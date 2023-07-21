@@ -164,8 +164,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<DocumentCursor> find(
-      {Filter? filter, FindOptions? findOptions}) async {
+  DocumentCursor find({Filter? filter, FindOptions? findOptions}) {
     _checkOpened();
     return _collectionOperations.find(filter, findOptions);
   }

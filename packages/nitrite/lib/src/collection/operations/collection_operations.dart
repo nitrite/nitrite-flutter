@@ -53,7 +53,7 @@ class CollectionOperations {
     await _indexOperations.dropIndex(indexFields);
   }
 
-  Future<DocumentCursor> find([Filter? filter, FindOptions? findOptions]) {
+  DocumentCursor find([Filter? filter, FindOptions? findOptions]) {
     return _readOperations.find(filter, findOptions);
   }
 

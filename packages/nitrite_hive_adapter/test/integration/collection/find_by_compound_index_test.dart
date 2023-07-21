@@ -19,14 +19,14 @@ void main() {
       await insert();
 
       await collection.createIndex(['list', 'lastName', 'firstName']);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
         where('lastName').eq('ln2'),
         where("firstName").notEq("fn1"),
         where("list").eq("four")
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNotNull);
       expect(findPlan.indexDescriptor, (await collection.listIndexes()).first);
@@ -47,7 +47,7 @@ void main() {
       await insert();
       await collection.createIndex(['lastName', 'firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: or([
         and([
           where("lastName").eq("ln2"),
@@ -59,7 +59,7 @@ void main() {
         ])
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexScanFilter, isNull);
       expect(findPlan.subPlans, isNotNull);
@@ -81,7 +81,7 @@ void main() {
           2);
 
       // distinct test
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: or([
             and([
               where("lastName").eq("ln2"),
@@ -96,7 +96,7 @@ void main() {
 
       expect(await cursor.length, 2);
 
-      findPlan = cursor.findPlan;
+      findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexScanFilter, isNull);
       expect(findPlan.subPlans, isNotNull);
@@ -122,7 +122,7 @@ void main() {
       await insert();
       await collection.createIndex(['lastName', 'firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
         or([
           where("lastName").eq("ln2"),
@@ -136,7 +136,7 @@ void main() {
 
       expect(await cursor.length, 2);
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNull);
       expect(findPlan.collectionScanFilter, isNotNull);
       expect(findPlan.subPlans, isEmpty);
@@ -157,7 +157,7 @@ void main() {
       await insert();
       await collection.createIndex(['lastName', 'firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
         and([
           where("lastName").eq("ln2"),
@@ -170,7 +170,7 @@ void main() {
       ]));
 
       expect(await cursor.length, 1);
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNotNull);
       expect(findPlan.collectionScanFilter, isNotNull);
       expect(findPlan.subPlans, isEmpty);
@@ -193,7 +193,7 @@ void main() {
       await collection.createIndex(['firstName']);
       await collection.createIndex(['birthDay']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: or([
         or([
           where("lastName").eq("ln2"),
@@ -203,12 +203,12 @@ void main() {
         where("firstName").notEq("fn1")
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 3);
       expect(await cursor.length, 5);
 
       // with distinct
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: or([
             or([
               where("lastName").eq("ln2"),
@@ -219,7 +219,7 @@ void main() {
           ]),
           findOptions: distinct());
 
-      findPlan = cursor.findPlan;
+      findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 3);
       expect(await cursor.length, 3);
     });
@@ -229,7 +229,7 @@ void main() {
       await collection.createIndex(['lastName', 'firstName']);
       await collection.createIndex(['firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: or([
         or([
           where("lastName").eq("ln2"),
@@ -239,7 +239,7 @@ void main() {
         where("firstName").notEq("fn1")
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 0);
       expect(await cursor.length, 3);
     });
@@ -248,13 +248,13 @@ void main() {
       await insert();
       await collection.createIndex(['lastName', 'firstName']);
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
         where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
         where("firstName").notEq("fn1")
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNull);
       expect(findPlan.collectionScanFilter, isNotNull);
@@ -274,7 +274,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
@@ -296,7 +296,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.blockingSortOrder, isEmpty);
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNotNull);
@@ -317,7 +317,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
@@ -339,7 +339,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNotNull);
       expect(findPlan.indexDescriptor, isNull);
       expect(findPlan.indexScanOrder, isEmpty);
@@ -370,7 +370,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
@@ -392,7 +392,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNotNull);
       expect(findPlan.indexDescriptor, isNotNull);
       expect(findPlan.indexScanOrder, isEmpty);
@@ -422,7 +422,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
@@ -444,7 +444,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNotNull);
       expect(findPlan.indexScanOrder['lastName'], isFalse);
@@ -464,7 +464,7 @@ void main() {
                   "non lorem.");
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: and([
             where("lastName").notEq("ln1"),
             where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
@@ -480,7 +480,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.blockingSortOrder, isEmpty);
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNotNull);

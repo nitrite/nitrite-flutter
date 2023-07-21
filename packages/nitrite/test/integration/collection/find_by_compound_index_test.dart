@@ -26,7 +26,7 @@ void main() {
         where("list").eq("four")
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNotNull);
       expect(findPlan.indexDescriptor, (await collection.listIndexes()).first);
@@ -59,7 +59,7 @@ void main() {
         ])
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexScanFilter, isNull);
       expect(findPlan.subPlans, isNotNull);
@@ -96,7 +96,7 @@ void main() {
 
       expect(await cursor.length, 2);
 
-      findPlan = cursor.findPlan;
+      findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexScanFilter, isNull);
       expect(findPlan.subPlans, isNotNull);
@@ -136,7 +136,7 @@ void main() {
 
       expect(await cursor.length, 2);
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNull);
       expect(findPlan.collectionScanFilter, isNotNull);
       expect(findPlan.subPlans, isEmpty);
@@ -170,7 +170,7 @@ void main() {
       ]));
 
       expect(await cursor.length, 1);
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNotNull);
       expect(findPlan.collectionScanFilter, isNotNull);
       expect(findPlan.subPlans, isEmpty);
@@ -203,7 +203,7 @@ void main() {
         where("firstName").notEq("fn1")
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 3);
       expect(await cursor.length, 5);
 
@@ -219,7 +219,7 @@ void main() {
           ]),
           findOptions: distinct());
 
-      findPlan = cursor.findPlan;
+      findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 3);
       expect(await cursor.length, 3);
     });
@@ -239,7 +239,7 @@ void main() {
         where("firstName").notEq("fn1")
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 0);
       expect(await cursor.length, 3);
     });
@@ -254,7 +254,7 @@ void main() {
         where("firstName").notEq("fn1")
       ]));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNull);
       expect(findPlan.collectionScanFilter, isNotNull);
@@ -296,7 +296,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.blockingSortOrder, isEmpty);
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNotNull);
@@ -339,7 +339,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNotNull);
       expect(findPlan.indexDescriptor, isNull);
       expect(findPlan.indexScanOrder, isEmpty);
@@ -392,7 +392,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNotNull);
       expect(findPlan.indexDescriptor, isNotNull);
       expect(findPlan.indexScanOrder, isEmpty);
@@ -444,7 +444,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNotNull);
       expect(findPlan.indexScanOrder['lastName'], isFalse);
@@ -480,7 +480,7 @@ void main() {
       expect(document['lastName'], "ln3");
       expect(document['birthDay'], DateTime.parse("2016-04-17T16:02:48.440Z"));
 
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.blockingSortOrder, isEmpty);
       expect(findPlan.collectionScanFilter, isNull);
       expect(findPlan.indexDescriptor, isNotNull);

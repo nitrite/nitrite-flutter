@@ -32,7 +32,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
   bool get isOpen => !_nitriteStore.isClosed && !_isDropped;
 
   @override
-  Future<int> get size async => (await (await find()).toList()).length;
+  Future<int> get size async => (await (find()).toList()).length;
 
   @override
   Future<WriteResult> insertMany(List<Document> documents) async {
@@ -43,7 +43,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       document.id;
     }
 
-    await _checkOpened();
+    _checkOpened();
     var result = await _collectionOperations.insert(documents);
 
     var journalEntry = JournalEntry(
@@ -71,7 +71,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       updateOptions.justOnce = false;
     }
 
-    await _checkOpened();
+    _checkOpened();
     var result =
         await _collectionOperations.update(filter, update, updateOptions);
 
@@ -81,7 +81,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       changeType: ChangeType.update,
       commit: () async {
         // get the documents which are going to be updated in case of rollback
-        var cursor = await _primary.find(filter: filter);
+        var cursor = _primary.find(filter: filter);
         await for (var document in cursor) {
           if (updateOptions!.justOnce) {
             documentList.add(document);
@@ -130,7 +130,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
           ' found for the document');
     }
 
-    await _checkOpened();
+    _checkOpened();
     var result = await _collectionOperations.removeDocument(document);
 
     Document? toRemove;
@@ -157,7 +157,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
           'Remove all cannot be combined with just once');
     }
 
-    await _checkOpened();
+    _checkOpened();
     var result = await _collectionOperations.removeByFilter(filter, justOne);
 
     var documentList = <Document>[];
@@ -165,7 +165,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
       changeType: ChangeType.remove,
       commit: () async {
         // get the documents which are going to be removed in case of rollback
-        var cursor = await _primary.find(filter: filter);
+        var cursor = _primary.find(filter: filter);
         await for (var document in cursor) {
           if (justOne) {
             documentList.add(document);
@@ -187,77 +187,76 @@ class DefaultTransactionalCollection extends NitriteCollection {
   }
 
   @override
-  Future<DocumentCursor> find(
-      {Filter? filter, FindOptions? findOptions}) async {
-    await _checkOpened();
+  DocumentCursor find({Filter? filter, FindOptions? findOptions}) {
+    _checkOpened();
     return _collectionOperations.find(filter, findOptions);
   }
 
   @override
   Future<Document?> getById(NitriteId id) async {
-    await _checkOpened();
+    _checkOpened();
     return _collectionOperations.getById(id);
   }
 
   @override
   Future<void> addProcessor(Processor processor) async {
-    await _checkOpened();
+    _checkOpened();
     return _collectionOperations.addProcessor(processor);
   }
 
   @override
   Future<void> createIndex(List<String> fields,
       [IndexOptions? indexOptions]) async {
-    await _checkOpened();
+    _checkOpened();
     await _primary.createIndex(fields, indexOptions);
   }
 
   @override
   Future<void> rebuildIndex(List<String> fields) async {
-    await _checkOpened();
+    _checkOpened();
     await _primary.rebuildIndex(fields);
   }
 
   @override
   Future<Iterable<IndexDescriptor>> listIndexes() async {
-    await _checkOpened();
+    _checkOpened();
     return _primary.listIndexes();
   }
 
   @override
   Future<bool> hasIndex(List<String> fields) async {
-    await _checkOpened();
+    _checkOpened();
     return _primary.hasIndex(fields);
   }
 
   @override
   Future<bool> isIndexing(List<String> fields) async {
-    await _checkOpened();
+    _checkOpened();
     return _primary.isIndexing(fields);
   }
 
   @override
   Future<void> dropIndex(List<String> fields) async {
-    await _checkOpened();
+    _checkOpened();
     await _primary.dropIndex(fields);
   }
 
   @override
   Future<void> dropAllIndices() async {
-    await _checkOpened();
+    _checkOpened();
     await _primary.dropAllIndices();
     await _collectionOperations.initialize();
   }
 
   @override
   Future<void> clear() async {
-    await _checkOpened();
+    _checkOpened();
     await _primary.clear();
   }
 
   @override
   Future<void> drop() async {
-    await _checkOpened();
+    _checkOpened();
     await _primary.drop();
     await close();
     _isDropped = true;
@@ -295,13 +294,13 @@ class DefaultTransactionalCollection extends NitriteCollection {
 
   @override
   Future<Attributes> getAttributes() async {
-    await _checkOpened();
+    _checkOpened();
     return _collectionOperations.getAttributes();
   }
 
   @override
   Future<void> setAttributes(Attributes attributes) async {
-    await _checkOpened();
+    _checkOpened();
     await _collectionOperations.setAttributes(attributes);
 
     Attributes? original;
@@ -336,7 +335,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
     await _collectionOperations.initialize();
   }
 
-  Future<void> _checkOpened() async {
+  void _checkOpened() {
     if (_isClosed) {
       throw TransactionException('Collection is closed');
     }

@@ -43,11 +43,11 @@ void main() {
       }
 
       var cursor =
-          await collection.find(filter: where('employeeNote.text').notEq(null));
+          collection.find(filter: where('employeeNote.text').notEq(null));
       expect(await cursor.toList(), isEmpty);
 
       cursor =
-          await collection.find(filter: where('employeeNote:text').notEq(null));
+          collection.find(filter: where('employeeNote:text').notEq(null));
       expect(await cursor.toList(), isNotEmpty);
     });
   });

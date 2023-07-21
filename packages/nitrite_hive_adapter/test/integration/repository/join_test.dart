@@ -61,8 +61,8 @@ void main() {
 
     test('Test Join', () async {
       var lookup = LookUp('id', 'personId', 'addresses');
-      var personCursor = await personRepository.find();
-      var addressCursor = await addressRepository.find();
+      var personCursor = personRepository.find();
+      var addressCursor = addressRepository.find();
 
       var result =
           personCursor.leftJoin<Address, PersonDetails>(addressCursor, lookup);
@@ -78,8 +78,9 @@ void main() {
         }
       }
 
-      personCursor =
-          await personRepository.find(findOptions: skipBy(0).setLimit(5));
+      personCursor = personRepository.find(findOptions: skipBy(0).setLimit(5));
+      expect(await personCursor.length, 5);
+
       result =
           personCursor.leftJoin<Address, PersonDetails>(addressCursor, lookup);
 

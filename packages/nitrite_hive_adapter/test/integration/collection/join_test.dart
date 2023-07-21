@@ -38,8 +38,8 @@ void main() {
       await insert();
 
       var lookUp = LookUp('firstName', 'fName', 'personalDetails');
-      var findResult = await collection.find();
-      var result = findResult.leftJoin(await foreignCollection.find(), lookUp);
+      var findResult = collection.find();
+      var result = findResult.leftJoin(foreignCollection.find(), lookUp);
       expect(await result.length, 3);
 
       await for (var doc in result) {

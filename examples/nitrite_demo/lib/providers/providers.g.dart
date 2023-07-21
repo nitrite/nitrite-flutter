@@ -6,7 +6,7 @@ part of 'providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$dbHash() => r'20067d9741d908cbb3721d0485fe990e95029e15';
+String _$dbHash() => r'97229d1bc5ba80b114cb6c4b84f54d8b2a664bc2';
 
 /// See also [db].
 @ProviderFor(db)
@@ -37,21 +37,36 @@ final todoRepositoryProvider =
 
 typedef TodoRepositoryRef
     = AutoDisposeFutureProviderRef<ObjectRepository<Todo>>;
-String _$filteredTodosHash() => r'fba20c3487e964073410009fe7dfc46f31ce0e34';
+String _$pendingCounterHash() => r'8a0d1f9acf3521f7e9c3f425e80ed2e6c37158d1';
 
-/// See also [filteredTodos].
-@ProviderFor(filteredTodos)
-final filteredTodosProvider = AutoDisposeStreamProvider<Todo>.internal(
-  filteredTodos,
-  name: r'filteredTodosProvider',
+/// See also [pendingCounter].
+@ProviderFor(pendingCounter)
+final pendingCounterProvider = AutoDisposeFutureProvider<int>.internal(
+  pendingCounter,
+  name: r'pendingCounterProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$filteredTodosHash,
+      : _$pendingCounterHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef FilteredTodosRef = AutoDisposeStreamProviderRef<Todo>;
+typedef PendingCounterRef = AutoDisposeFutureProviderRef<int>;
+String _$completedCounterHash() => r'c39abd09987554b0ba7fda7e13b4b99dbcc628e5';
+
+/// See also [completedCounter].
+@ProviderFor(completedCounter)
+final completedCounterProvider = AutoDisposeFutureProvider<int>.internal(
+  completedCounter,
+  name: r'completedCounterProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$completedCounterHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef CompletedCounterRef = AutoDisposeFutureProviderRef<int>;
 String _$todosHash() => r'8d6ce5ae23b805d5c1a9b1acdb0ba2528f802999';
 
 /// See also [Todos].

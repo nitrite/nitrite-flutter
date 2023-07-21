@@ -6,6 +6,7 @@ import 'package:nitrite/src/collection/operations/index_operations.dart';
 import 'package:nitrite/src/common/processors/processor.dart';
 import 'package:nitrite/src/common/stream/filtered_stream.dart';
 import 'package:nitrite/src/common/stream/indexed_stream.dart';
+import 'package:nitrite/src/common/stream/processed_document_stream.dart';
 import 'package:nitrite/src/common/stream/sorted_document_stream.dart';
 import 'package:nitrite/src/filters/filter.dart';
 import 'package:rxdart/rxdart.dart';
@@ -24,16 +25,18 @@ class ReadOperations {
     _findOptimizer = FindOptimizer();
   }
 
-  Future<DocumentCursor> find(Filter? filter, FindOptions? findOptions) async {
+  DocumentCursor find(Filter? filter, FindOptions? findOptions) {
     filter ??= all;
     _prepareFilter(filter);
 
-    Iterable<IndexDescriptor> indexDescriptors =
-        await _indexOperations.listIndexes();
+    return _createCursor(() async {
+      Iterable<IndexDescriptor> indexDescriptors =
+          await _indexOperations.listIndexes();
 
-    var findPlan =
-        _findOptimizer.optimize(filter, findOptions, indexDescriptors);
-    return _createCursor(findPlan);
+      var findPlan =
+          _findOptimizer.optimize(filter!, findOptions, indexDescriptors);
+      return findPlan;
+    });
   }
 
   Future<Document?> getById(NitriteId nitriteId) async {
@@ -69,21 +72,23 @@ class ReadOperations {
     }
   }
 
-  DocumentCursor _createCursor(FindPlan findPlan) {
+  DocumentCursor _createCursor(FutureFactory<FindPlan> findPlanFunction) {
     // a defer stream is used so that we can defer the
     // calculation till the subscription.
-    return DocumentStream(
-        () => _findSuitableStream(findPlan), _processorChain, findPlan);
+    return DocumentStream(() => _findSuitableStream(findPlanFunction),
+        _processorChain, findPlanFunction);
   }
 
-  Stream<Document> _findSuitableStream(FindPlan findPlan) async* {
+  Stream<Document> _findSuitableStream(
+      FutureFactory<FindPlan> findPlanFunction) async* {
     Stream<Document> rawStream;
+    var findPlan = await findPlanFunction();
 
     if (findPlan.subPlans.isNotEmpty) {
       // or filters get all sub stream by finding suitable stream of all sub plans
       var subStreams = <Stream<Document>>[];
       for (var subPlan in findPlan.subPlans) {
-        subStreams.add(_findSuitableStream(subPlan));
+        subStreams.add(_findSuitableStream(() async => subPlan));
       }
 
       // concat all suitable stream of all sub plans

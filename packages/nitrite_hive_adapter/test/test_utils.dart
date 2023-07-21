@@ -8,9 +8,9 @@ import 'package:test/test.dart';
 
 Future<Nitrite> createDb([String? user, String? password]) async {
   var storeModule = HiveModule.withConfig()
-    .crashRecovery(true)
-    .path('${Directory.current.path}/db')
-    .build();
+      .crashRecovery(true)
+      .path('${Directory.current.path}/db')
+      .build();
 
   return Nitrite.builder()
       .loadModule(storeModule)

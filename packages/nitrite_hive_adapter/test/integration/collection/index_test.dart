@@ -92,13 +92,13 @@ void main() {
       var result = await collection.remove(where('firstName').eq('fn1'));
       expect(result.getAffectedCount(), 1);
 
-      var cursor = await collection.find();
+      var cursor = collection.find();
       expect(await cursor.length, 2);
 
       result = await collection.remove(where('body').text('Lorem'));
       expect(result.getAffectedCount(), 1);
 
-      cursor = await collection.find();
+      cursor = collection.find();
       expect(await cursor.length, 1);
     });
 
@@ -150,13 +150,13 @@ void main() {
       var doc5 = createDocument('field', 5.0);
 
       await collection.insertMany([doc1, doc2, doc3, doc4, doc5]);
-      var cursor = await collection.find(filter: where('field').eq(5));
+      var cursor = collection.find(filter: where('field').eq(5));
       expect(await cursor.length, 1);
 
       await collection
           .createIndex(['field'], indexOptions(IndexType.nonUnique));
 
-      cursor = await collection.find(filter: where('field').eq(5));
+      cursor = collection.find(filter: where('field').eq(5));
       expect(await cursor.length, 1);
     });
 
@@ -186,12 +186,12 @@ void main() {
 
       await collection
           .createIndex(['first'], indexOptions(IndexType.nonUnique));
-      var cursor = await collection.find();
+      var cursor = collection.find();
       expect(await cursor.length, 1000);
 
       await collection
           .createIndex(['second'], indexOptions(IndexType.nonUnique));
-      cursor = await collection.find();
+      cursor = collection.find();
       expect(await cursor.length, 1000);
 
       await collection.close();
@@ -199,31 +199,25 @@ void main() {
 
     test('Test Index and Search on null Values', () async {
       var collection = await db.getCollection('index-on-null');
-      await collection.insert(
-        createDocument('first', null)
-          ..put('second', 123)
-          ..put('third', [1, 2, null])
-      );
+      await collection.insert(createDocument('first', null)
+        ..put('second', 123)
+        ..put('third', [1, 2, null]));
 
-      await collection.insert(
-        createDocument('first', 'abcd')
-          ..put('second', 456)
-          ..put('third', [3, 1])
-      );
+      await collection.insert(createDocument('first', 'abcd')
+        ..put('second', 456)
+        ..put('third', [3, 1]));
 
-      await collection.insert(
-        createDocument('first', 'xyz')
-          ..put('second', 789)
-          ..put('third', null)
-      );
+      await collection.insert(createDocument('first', 'xyz')
+        ..put('second', 789)
+        ..put('third', null));
 
       await collection.createIndex(['first']);
-      var cursor = await collection.find(filter: where('first').eq(null));
+      var cursor = collection.find(filter: where('first').eq(null));
       expect(await cursor.length, 1);
 
       await collection
           .createIndex(['third'], indexOptions(IndexType.nonUnique));
-      cursor = await collection.find(filter: where('third').eq(null));
+      cursor = collection.find(filter: where('third').eq(null));
       expect(await cursor.length, 2);
     });
   });

@@ -45,19 +45,19 @@ void main() {
       var writeResult = await collection.insertMany([doc1, doc2, doc3]);
       expect(writeResult.getAffectedCount(), 3);
 
-      var cursor = await collection.find(filter: where('color').eq('red'));
+      var cursor = collection.find(filter: where('color').eq('red'));
       expectLater(cursor.first, completion(containsPair('name', 'Anindya')));
 
-      cursor = await collection.find(filter: where('books.name').text('abcd'));
+      cursor = collection.find(filter: where('books.name').text('abcd'));
       expectLater(cursor.length, completion(2));
 
-      cursor = await collection.find(filter: where('books.tag').eq('tag2'));
+      cursor = collection.find(filter: where('books.tag').eq('tag2'));
       expectLater(cursor.length, completion(2));
 
-      cursor = await collection.find(filter: where('books.tag').eq('tag5'));
+      cursor = collection.find(filter: where('books.tag').eq('tag5'));
       expectLater(cursor.length, completion(1));
 
-      cursor = await collection.find(filter: where('books.tag').eq('tag10'));
+      cursor = collection.find(filter: where('books.tag').eq('tag10'));
       expectLater(cursor.length, completion(0));
     });
   });

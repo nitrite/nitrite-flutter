@@ -5,9 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
- TestWidgetsFlutterBinding.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
- group('Meta Writer', () {
+  group('Meta Writer', () {
     test('Write Meta', () async {
       final fileContent = await rootBundle.loadString(
         "pubspec.yaml",

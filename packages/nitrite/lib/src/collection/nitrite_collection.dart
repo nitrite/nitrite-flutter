@@ -91,7 +91,7 @@ abstract class NitriteCollection extends PersistentCollection<Document> {
   ///
   /// **NOTE**: If there is an index on the value specified in the filter,
   /// this operation will take advantage of the index.
-  Future<DocumentCursor> find({Filter? filter, FindOptions? findOptions});
+  DocumentCursor find({Filter? filter, FindOptions? findOptions});
 
   /// Gets a single element from the collection by its id. If no element
   /// is found, it will return `Future<null>`.

@@ -12,7 +12,7 @@ void main() {
 
     setUp(() async {
       setUpLog();
-      
+
       db = await Nitrite.builder().fieldSeparator('.').openOrCreate();
       var mapper = db.config.nitriteMapper as SimpleDocumentMapper;
       mapper.registerEntityConverter(WithNitriteIdConverter());

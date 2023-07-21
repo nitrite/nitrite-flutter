@@ -33,7 +33,7 @@ void main() {
                 Document.createDocument("key", 2),
               ]),
           processorChain,
-          FindPlan());
+          () async => FindPlan());
 
       var lookUp = LookUp("key", "key", "target");
       var joinedDocumentStream = JoinedDocumentStream(
@@ -59,7 +59,7 @@ void main() {
                 Document.createDocument("key1", 2),
               ]),
           processorChain,
-          FindPlan());
+          () async => FindPlan());
 
       var lookUp = LookUp("key", "key", "target");
       var joinedDocumentStream = JoinedDocumentStream(
@@ -85,7 +85,7 @@ void main() {
                 Document.createDocument("key", 2),
               ]),
           processorChain,
-          FindPlan());
+          () async => FindPlan());
 
       var lookUp = LookUp("key", "key", "key");
       var joinedDocumentStream = JoinedDocumentStream(
@@ -109,7 +109,7 @@ void main() {
                 Document.createDocument("key", 2),
               ]),
           processorChain,
-          FindPlan());
+          () async => FindPlan());
 
       var lookUp = LookUp("key", "key", "");
       var joinedDocumentStream = JoinedDocumentStream(

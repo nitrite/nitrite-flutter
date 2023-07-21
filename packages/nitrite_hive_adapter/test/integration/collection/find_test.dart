@@ -19,14 +19,14 @@ void main() {
     test("Test Find All", () async {
       await insert();
 
-      var cursor = await collection.find();
+      var cursor = collection.find();
       expect(await cursor.length, 3);
     });
 
     test("Test Find with Filter", () async {
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter:
               where('birthDay').gt(DateTime.parse('2012-07-01T16:02:48.440Z')));
       expect(await cursor.length, 1);
@@ -35,50 +35,50 @@ void main() {
       expect(doc.get('firstName'), 'fn3');
       expect(doc.get('lastName'), 'ln2');
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where('birthDay')
               .gte(DateTime.parse('2012-07-01T16:02:48.440Z')));
       expect(await cursor.length, 2);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter:
               where('birthDay').lt(DateTime.parse('2012-07-01T16:02:48.440Z')));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where('birthDay')
               .lte(DateTime.parse('2012-07-01T16:02:48.440Z')));
       expect(await cursor.length, 2);
 
       cursor =
-          await collection.find(filter: where('birthDay').lte(DateTime.now()));
+          collection.find(filter: where('birthDay').lte(DateTime.now()));
       expect(await cursor.length, 3);
 
       cursor =
-          await collection.find(filter: where('birthDay').lt(DateTime.now()));
+          collection.find(filter: where('birthDay').lt(DateTime.now()));
       expect(await cursor.length, 3);
 
       cursor =
-          await collection.find(filter: where('birthDay').gt(DateTime.now()));
+          collection.find(filter: where('birthDay').gt(DateTime.now()));
       expect(await cursor.length, 0);
 
       cursor =
-          await collection.find(filter: where('birthDay').gte(DateTime.now()));
+          collection.find(filter: where('birthDay').gte(DateTime.now()));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where('birthDay')
               .lte(DateTime.now())
               .and(where('firstName').eq('fn1')));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where('birthDay')
               .lte(DateTime.now())
               .or(where('firstName').eq('fn12')));
       expect(await cursor.length, 3);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: and([
         or([
           where('birthDay').lte(DateTime.now()),
@@ -88,7 +88,7 @@ void main() {
       ]));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: and([
         or([
           where('birthDay').lte(DateTime.now()),
@@ -98,7 +98,7 @@ void main() {
       ]).not());
       expect(await cursor.length, 2);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: ~and([
         or([
           where('birthDay').lte(DateTime.now()),
@@ -108,82 +108,82 @@ void main() {
       ]));
       expect(await cursor.length, 2);
 
-      cursor = await collection.find(filter: where('data.1').eq(4));
+      cursor = collection.find(filter: where('data.1').eq(4));
       expect(await cursor.length, 2);
 
-      cursor = await collection.find(filter: where('data.1').lt(4));
+      cursor = collection.find(filter: where('data.1').lt(4));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where('lastName').within(["ln1", "ln2", "ln10"]));
       expect(await cursor.length, 3);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where('firstName').notIn(["fn1", "fn2"]));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(filter: ~all);
+      cursor = collection.find(filter: ~all);
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: all.not());
+      cursor = collection.find(filter: all.not());
       expect(await cursor.length, 0);
     });
 
     test("Test Find with Skip Limit", () async {
       await insert();
 
-      var cursor = await collection.find(findOptions: skipBy(0).setLimit(1));
+      var cursor = collection.find(findOptions: skipBy(0).setLimit(1));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(findOptions: skipBy(1).setLimit(3));
+      cursor = collection.find(findOptions: skipBy(1).setLimit(3));
       expect(await cursor.length, 2);
 
-      cursor = await collection.find(findOptions: skipBy(0).setLimit(30));
+      cursor = collection.find(findOptions: skipBy(0).setLimit(30));
       expect(await cursor.length, 3);
 
-      cursor = await collection.find(findOptions: skipBy(2).setLimit(3));
+      cursor = collection.find(findOptions: skipBy(2).setLimit(3));
       expect(await cursor.length, 1);
     });
 
     test("Test Find with Skip", () async {
       await insert();
 
-      var cursor = await collection.find(findOptions: skipBy(0));
+      var cursor = collection.find(findOptions: skipBy(0));
       expect(await cursor.length, 3);
 
-      cursor = await collection.find(findOptions: skipBy(1));
+      cursor = collection.find(findOptions: skipBy(1));
       expect(await cursor.length, 2);
 
-      cursor = await collection.find(findOptions: skipBy(30));
+      cursor = collection.find(findOptions: skipBy(30));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(findOptions: skipBy(2));
+      cursor = collection.find(findOptions: skipBy(2));
       expect(await cursor.length, 1);
 
-      expect(() async => await collection.find(findOptions: skipBy(-2)),
+      expect(() async => await collection.find(findOptions: skipBy(-2)).first,
           throwsValidationException);
     });
 
     test("Test Find with Limit", () async {
       await insert();
 
-      var cursor = await collection.find(findOptions: limitBy(0));
+      var cursor = collection.find(findOptions: limitBy(0));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(findOptions: limitBy(1));
+      cursor = collection.find(findOptions: limitBy(1));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(findOptions: limitBy(30));
+      cursor = collection.find(findOptions: limitBy(30));
       expect(await cursor.length, 3);
 
-      expect(() async => await collection.find(findOptions: limitBy(-1)),
+      expect(() async => await collection.find(findOptions: limitBy(-1)).first,
           throwsValidationException);
     });
 
     test("Test Find with Sort Ascending", () async {
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           findOptions: orderBy('birthDay', SortOrder.ascending));
       expect(await cursor.length, 3);
       var dateList = <DateTime>[];
@@ -197,7 +197,7 @@ void main() {
     test("Test Find with Sort Descending", () async {
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           findOptions: orderBy('birthDay', SortOrder.descending));
       expect(await cursor.length, 3);
       var dateList = <DateTime>[];
@@ -211,7 +211,7 @@ void main() {
     test("Test Find with Limit & Sort", () async {
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           findOptions:
               orderBy('birthDay', SortOrder.descending).setSkip(1).setLimit(2));
       expect(await cursor.length, 2);
@@ -221,7 +221,7 @@ void main() {
       }
       expect(isSorted<DateTime>(dateList, false), isTrue);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           findOptions: orderBy('birthDay').setSkip(1).setLimit(2));
       expect(await cursor.length, 2);
       dateList = <DateTime>[];
@@ -230,7 +230,7 @@ void main() {
       }
       expect(isSorted<DateTime>(dateList, true), isTrue);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           findOptions: orderBy('firstName').setSkip(0).setLimit(30));
       expect(await cursor.length, 3);
       var nameList = <String>[];
@@ -243,7 +243,7 @@ void main() {
     test("Test Find with Sort on NonExisting Field", () async {
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           findOptions: orderBy('my-value', SortOrder.descending));
       expect(await cursor.length, 3);
 
@@ -257,13 +257,13 @@ void main() {
     test("Test Find with Invalid Field", () async {
       await insert();
 
-      var cursor = await collection.find(filter: where('myField').eq('myData'));
+      var cursor = collection.find(filter: where('myField').eq('myData'));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('myField').notEq(null));
+      cursor = collection.find(filter: where('myField').notEq(null));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('myField').eq(null));
+      cursor = collection.find(filter: where('myField').eq(null));
       expect(await cursor.length, 3);
     });
 
@@ -271,13 +271,13 @@ void main() {
       await insert();
 
       var cursor =
-          await collection.find(filter: where('myField.0').eq('myData'));
+          collection.find(filter: where('myField.0').eq('myData'));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('myField.0').notEq(null));
+      cursor = collection.find(filter: where('myField.0').notEq(null));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('myField.0').eq(null));
+      cursor = collection.find(filter: where('myField.0').eq(null));
       expect(await cursor.length, 3);
     });
 
@@ -285,20 +285,20 @@ void main() {
       await insert();
 
       var cursor =
-          await collection.find(filter: where('myField.0').eq('myData'));
+          collection.find(filter: where('myField.0').eq('myData'));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('myField.0').notEq(null));
+      cursor = collection.find(filter: where('myField.0').notEq(null));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('myField.0').eq(null));
+      cursor = collection.find(filter: where('myField.0').eq(null));
       expect(await cursor.length, 3);
     });
 
     test("Test Find with Limit And Sort on Invalid Field", () async {
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           findOptions: orderBy('birthDay2', SortOrder.descending)
               .setSkip(1)
               .setLimit(2));
@@ -311,7 +311,7 @@ void main() {
       var doc = await collection.getById(id);
       expect(doc, isNull);
 
-      doc = await (await collection.find()).first;
+      doc = await (collection.find()).first;
       id = doc.id;
 
       doc = await collection.getById(id);
@@ -328,7 +328,7 @@ void main() {
     test("Test Find with Filter and FindOptions", () async {
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: where('birthDay').lte(DateTime.now()),
           findOptions: orderBy('firstName').setSkip(1).setLimit(2));
       expect(await cursor.length, 2);
@@ -339,26 +339,26 @@ void main() {
     test("Test Find Text with Regex", () async {
       await insert();
 
-      var cursor = await collection.find(filter: where('body').regex(r'hello'));
+      var cursor = collection.find(filter: where('body').regex(r'hello'));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(filter: where('body').regex(r'[0-9]+'));
+      cursor = collection.find(filter: where('body').regex(r'[0-9]+'));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('body').regex('test'));
+      cursor = collection.find(filter: where('body').regex('test'));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('body').regex(r'^hello$'));
+      cursor = collection.find(filter: where('body').regex(r'^hello$'));
       expect(await cursor.length, 0);
 
-      cursor = await collection.find(filter: where('body').regex(r'.*'));
+      cursor = collection.find(filter: where('body').regex(r'.*'));
       expect(await cursor.length, 3);
     });
 
     test("Test Find Result", () async {
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: where('birthDay').lte(DateTime.now()),
           findOptions: orderBy('firstName').setSkip(0).setLimit(3));
 
@@ -442,7 +442,7 @@ void main() {
         ..put('address.city', null)
         ..put('address.state', null);
 
-      var cursor = await collection.find();
+      var cursor = collection.find();
       var stream = cursor.project(projection);
 
       expect(await stream.length, 2);
@@ -469,7 +469,7 @@ void main() {
     test('Test Find with List Equal', () async {
       await insert();
 
-      var data = await collection.find(filter: where('data').eq([3, 4, 3]));
+      var data = collection.find(filter: where('data').eq([3, 4, 3]));
       expect(data, isNotNull);
       expect(await data.length, 1);
     });
@@ -477,7 +477,7 @@ void main() {
     test('Test Find with List with Wrong Order', () async {
       await insert();
 
-      var data = await collection.find(filter: where('data').eq([4, 3, 3]));
+      var data = collection.find(filter: where('data').eq([4, 3, 3]));
       expect(data, isNotNull);
       expect(await data.length, 0);
     });
@@ -485,15 +485,15 @@ void main() {
     test("Test Find in List", () async {
       await insert();
 
-      var cursor = await collection.find(
+      var cursor = collection.find(
           filter: where('data').elemMatch($.gte(2).and($.lt(5))));
       expect(await cursor.length, 3);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where('data').elemMatch($.gt(2).or($.lte(5))));
       expect(await cursor.length, 3);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where('data').elemMatch($.gt(1).and($.lt(4))));
       expect(await cursor.length, 2);
     });
@@ -535,86 +535,86 @@ void main() {
       var prodCollection = await db.getCollection('prodScore');
       await prodCollection.insertMany([doc1, doc2, doc3]);
 
-      var cursor = await prodCollection.find(
+      var cursor = prodCollection.find(
           filter: where('productScores').elemMatch(
               where('product').eq('xyz').and(where('score').gte(8))));
       expect(await cursor.length, 1);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter:
               where("productScores").elemMatch(where("score").lte(8).not()));
       expect(await cursor.length, 1);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("productScores")
               .elemMatch(where("product").eq("xyz").or(where("score").gte(8))));
       expect(await cursor.length, 3);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("productScores").elemMatch(where("product").eq("xyz")));
       expect(await cursor.length, 3);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("productScores").elemMatch(where("score").gte(10)));
       expect(await cursor.length, 1);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("productScores").elemMatch(where("score").gt(8)));
       expect(await cursor.length, 1);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("productScores").elemMatch(where("score").lt(7)));
       expect(await cursor.length, 1);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("productScores").elemMatch(where("score").lte(7)));
       expect(await cursor.length, 3);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter:
               where("productScores").elemMatch(where("score").within([7, 8])));
       expect(await cursor.length, 2);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter:
               where("productScores").elemMatch(where("score").notIn([7, 8])));
       expect(await cursor.length, 1);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter:
               where("productScores").elemMatch(where("product").regex("xyz")));
       expect(await cursor.length, 3);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("strArray").elemMatch($.eq("a")));
       expect(await cursor.length, 2);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("strArray")
               .elemMatch($.eq("a").or($.eq("f").or($.eq("b"))).not()));
       expect(await cursor.length, 1);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("strArray").elemMatch($.gt("e")));
       expect(await cursor.length, 1);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("strArray").elemMatch($.gte("e")));
       expect(await cursor.length, 2);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("strArray").elemMatch($.lte("b")));
       expect(await cursor.length, 2);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("strArray").elemMatch($.lt("a")));
       expect(await cursor.length, 0);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("strArray").elemMatch($.within(["a", "f"])));
       expect(await cursor.length, 2);
 
-      cursor = await prodCollection.find(
+      cursor = prodCollection.find(
           filter: where("strArray").elemMatch($.regex("a")));
       expect(await cursor.length, 2);
     });
@@ -625,20 +625,20 @@ void main() {
         ..put('xyz', null);
 
       await collection.insert(doc);
-      var cursor = await collection.find(filter: where("abc").eq("123"));
+      var cursor = collection.find(filter: where("abc").eq("123"));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(filter: where("xyz").eq(null));
+      cursor = collection.find(filter: where("xyz").eq(null));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(filter: where("abc").notEq(null));
+      cursor = collection.find(filter: where("abc").notEq(null));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where("abc").notEq(null).and(where("xyz").eq(null)));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where("abc").eq(null).and(where("xyz").notEq(null)));
       expect(await cursor.length, 0);
 
@@ -649,7 +649,7 @@ void main() {
         ..put('revision', 1482225343161);
 
       await collection.insert(doc);
-      cursor = await collection.find(
+      cursor = collection.find(
           filter: where('revision').gte(1482225343160).and(where('revision')
               .lte(1482225343162)
               .and(where('revision').notEq(null))));
@@ -658,17 +658,17 @@ void main() {
     });
 
     test("Test Filter All", () async {
-      var cursor = await collection.find(filter: all);
+      var cursor = collection.find(filter: all);
       expect(cursor, isNotNull);
       expect(await cursor.length, 0);
 
       await insert();
 
-      cursor = await collection.find(filter: all);
+      cursor = collection.find(filter: all);
       expect(cursor, isNotNull);
       expect(await cursor.length, 3);
 
-      cursor = await collection.find();
+      cursor = collection.find();
       expect(cursor, isNotNull);
       expect(await cursor.length, 3);
     });
@@ -693,7 +693,7 @@ void main() {
       result = await col.insert(doc);
       expect(result.length, 1);
 
-      var cursor = await col.find(
+      var cursor = col.find(
           filter: where('group').eq('groupA'),
           findOptions: orderBy('startTime', SortOrder.descending));
       expect(await cursor.length, 2);
@@ -707,7 +707,7 @@ void main() {
           ]));
 
       // sort with invalid field
-      cursor = await col.find(
+      cursor = col.find(
           filter: where('group').eq('groupA'),
           findOptions: orderBy('startTime2', SortOrder.descending));
       expect(await cursor.length, 2);
@@ -735,7 +735,7 @@ void main() {
       var result = await col.insertMany([doc1, doc2, doc3]);
       expect(result.length, 3);
 
-      var cursor = await col.find(
+      var cursor = col.find(
           filter: where('group').eq('groupA'),
           findOptions: orderBy('startTime', SortOrder.descending));
       expect(await cursor.length, 3);
@@ -749,7 +749,7 @@ void main() {
             emitsDone
           ]));
 
-      cursor = await col.find(
+      cursor = col.find(
           filter: where('group').eq('groupA'),
           findOptions: orderBy('startTime', SortOrder.ascending));
       expect(await cursor.length, 3);
@@ -768,7 +768,7 @@ void main() {
       await insert();
 
       var cursor =
-          await collection.find(filter: where("lastName.name").eq("ln2"));
+          collection.find(filter: where("lastName.name").eq("ln2"));
       expect(await cursor.length, 0);
     });
 
@@ -792,7 +792,7 @@ void main() {
       var col = await db.getCollection('test');
       await col.insertMany([doc1, doc2, doc3, doc4]);
 
-      var cursor = await col.find(findOptions: orderBy('fruit'));
+      var cursor = col.find(findOptions: orderBy('fruit'));
       expect(await cursor.length, 4);
 
       // there is no locale supported string sort in dart/flutter
@@ -808,7 +808,7 @@ void main() {
           ]));
 
       cursor =
-          await col.find(findOptions: orderBy('fruit', SortOrder.descending));
+          col.find(findOptions: orderBy('fruit', SortOrder.descending));
       expect(await cursor.length, 4);
 
       expect(
@@ -848,7 +848,7 @@ void main() {
       var col = await db.getCollection('test');
       await col.insertMany([doc1, doc2]);
 
-      var cursor = await col.find(
+      var cursor = col.find(
           filter: where('tags').elemMatch(where('type').eq('example')));
 
       expect(
@@ -881,20 +881,20 @@ void main() {
       var col = await db.getCollection('test');
       await col.insertMany([doc1, doc2, doc3, doc4, doc5]);
 
-      var cursor = await col.find(filter: where('age').between(31, 35));
+      var cursor = col.find(filter: where('age').between(31, 35));
       expect(await cursor.length, 5);
 
-      cursor = await col.find(
+      cursor = col.find(
           filter: where('age')
               .between(31, 35, lowerInclusive: false, upperInclusive: false));
       expect(await cursor.length, 3);
 
-      cursor = await col.find(
+      cursor = col.find(
           filter: where('age')
               .between(31, 35, lowerInclusive: false, upperInclusive: true));
       expect(await cursor.length, 4);
 
-      cursor = await col.find(
+      cursor = col.find(
           filter: where('age')
               .between(31, 35, lowerInclusive: false, upperInclusive: false)
               .not());
@@ -902,20 +902,20 @@ void main() {
 
       // create index and same search with same result
       await col.createIndex(['age']);
-      cursor = await col.find(filter: where('age').between(31, 35));
+      cursor = col.find(filter: where('age').between(31, 35));
       expect(await cursor.length, 5);
 
-      cursor = await col.find(
+      cursor = col.find(
           filter: where('age')
               .between(31, 35, lowerInclusive: false, upperInclusive: false));
       expect(await cursor.length, 3);
 
-      cursor = await col.find(
+      cursor = col.find(
           filter: where('age')
               .between(31, 35, lowerInclusive: false, upperInclusive: true));
       expect(await cursor.length, 4);
 
-      cursor = await col.find(
+      cursor = col.find(
           filter: where('age')
               .between(31, 35, lowerInclusive: false, upperInclusive: false)
               .not());
@@ -946,19 +946,19 @@ void main() {
       var col = await db.getCollection('test');
       await col.insertMany([doc1, doc2, doc3, doc4, doc5]);
 
-      var documentList = await (await col.find()).toList();
+      var documentList = await (col.find()).toList();
       var doc = documentList[0];
       var nitriteId = doc.id;
 
-      var result = await (await col.find(filter: byId(nitriteId))).first;
+      var result = await (col.find(filter: byId(nitriteId))).first;
       expect(result, equals(doc));
 
-      result = await (await col.find(
+      result = await (col.find(
               filter: and([byId(nitriteId), where("age").notEq(null)])))
           .first;
       expect(result, equals(doc));
 
-      result = await (await col.find(
+      result = await (col.find(
               filter: and([byId(nitriteId), where("tag").eq(doc['tag'])])))
           .first;
       expect(result, equals(doc));

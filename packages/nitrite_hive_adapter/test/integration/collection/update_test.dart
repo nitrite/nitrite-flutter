@@ -19,7 +19,7 @@ void main() {
     test('Test Update', () async {
       await insert();
 
-      var cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      var cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 1);
       await for (var document in cursor) {
         expect(document['lastName'], 'ln1');
@@ -29,7 +29,7 @@ void main() {
           createDocument('lastName', 'new-last-name'));
       expect(updateResult.getAffectedCount(), 1);
 
-      cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 1);
       await for (var document in cursor) {
         expect(document['lastName'], 'new-last-name');
@@ -55,20 +55,20 @@ void main() {
       expect(writeResult.getAffectedCount(), 1);
       expect(await collection.size, 4);
 
-      var cursor = await collection.find(filter: where('lastName').eq('ln4'));
+      var cursor = collection.find(filter: where('lastName').eq('ln4'));
       var document = await cursor.first;
       expect(isSimilarDocument(document, update, ['lastName']), true);
     });
 
     test('Test Upsert with Options', () async {
-      var cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      var cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 0);
 
       var updateResult = await collection.update(where('firstName').eq('fn1'),
           doc1, updateOptions(insertIfAbsent: true));
       expect(updateResult.getAffectedCount(), 1);
 
-      cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 1);
       await for (var document in cursor) {
         expect(
@@ -79,7 +79,7 @@ void main() {
     });
 
     test('Test Update Multiple', () async {
-      var cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      var cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 0);
 
       await insert();
@@ -90,12 +90,12 @@ void main() {
       expect(updateResult.getAffectedCount(), 2);
 
       cursor =
-          await collection.find(filter: where('lastName').eq('newLastName1'));
+          collection.find(filter: where('lastName').eq('newLastName1'));
       expect(await cursor.length, 2);
     });
 
     test('Test Update with Options Upsert False', () async {
-      var cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      var cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 0);
 
       var options = updateOptions(insertIfAbsent: false);
@@ -103,12 +103,12 @@ void main() {
           await collection.update(where('firstName').eq('fn1'), doc1, options);
       expect(updateResult.getAffectedCount(), 0);
 
-      cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 0);
     });
 
     test('Test Update Multiple with Just Once False', () async {
-      var cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      var cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 0);
 
       await insert();
@@ -121,12 +121,12 @@ void main() {
       expect(updateResult.getAffectedCount(), 2);
 
       cursor =
-          await collection.find(filter: where('lastName').eq('newLastName1'));
+          collection.find(filter: where('lastName').eq('newLastName1'));
       expect(await cursor.length, 2);
     });
 
     test('Test Update Multiple with Just Once True', () async {
-      var cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      var cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 0);
 
       await insert();
@@ -139,14 +139,14 @@ void main() {
       expect(updateResult.getAffectedCount(), 1);
 
       cursor =
-          await collection.find(filter: where('lastName').eq('newLastName1'));
+          collection.find(filter: where('lastName').eq('newLastName1'));
       expect(await cursor.length, 1);
     });
 
     test('Test Update with New Field', () async {
       await insert();
 
-      var cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      var cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 1);
       await for (var document in cursor) {
         expect(document['lastName'], 'ln1');
@@ -156,7 +156,7 @@ void main() {
           createDocument('new-value', 'new-value-value'));
       expect(updateResult.getAffectedCount(), 1);
 
-      cursor = await collection.find(filter: where('firstName').eq('fn1'));
+      cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 1);
       await for (var document in cursor) {
         expect(document['new-value'], 'new-value-value');
@@ -166,7 +166,7 @@ void main() {
     test('Test Update Invalid Filter', () async {
       await insert();
 
-      var cursor = await collection.find(filter: where('lastName').eq('ln1'));
+      var cursor = collection.find(filter: where('lastName').eq('ln1'));
       expect(await cursor.length, 1);
 
       await for (var document in cursor) {
@@ -187,7 +187,7 @@ void main() {
       var result = await col.insert(doc);
       expect(result.getAffectedCount(), 1);
 
-      var savedDoc1 = await (await col.find()).first;
+      var savedDoc1 = await (col.find()).first;
       expect(savedDoc1, isNotNull);
 
       var clonedDoc1 = savedDoc1.clone();
@@ -197,7 +197,7 @@ void main() {
       result = await col.updateOne(clonedDoc1);
       expect(result.getAffectedCount(), 1);
 
-      var cursor = await col.find();
+      var cursor = col.find();
       var savedDoc2 = await cursor.first;
       expect(savedDoc2, isNotNull);
       expect(savedDoc2['group'], isNull);
@@ -239,10 +239,10 @@ void main() {
       await collection.insertMany([doc1, doc2]);
 
       await collection.createIndex(['fruit']);
-      var cursor = await collection.find(filter: where('fruit').eq('Apple'));
+      var cursor = collection.find(filter: where('fruit').eq('Apple'));
       expect(await cursor.length, 1);
 
-      cursor = await collection.find(filter: where('id').eq('test-2'));
+      cursor = collection.find(filter: where('id').eq('test-2'));
       var doc3 = await cursor.first;
 
       doc3['fruit'] = 'Apple';

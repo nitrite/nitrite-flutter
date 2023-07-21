@@ -187,7 +187,7 @@ void main() {
       var cursor = await collection.find(
           filter:
               and([where('firstName').eq('fn1'), where('lastName').eq('ln1')]));
-      var findPlan = cursor.findPlan;
+      var findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNotNull);
       expect(findPlan.collectionScanFilter, isNull);
 
@@ -195,7 +195,7 @@ void main() {
       cursor = await collection.find(
           filter:
               and([where('firstName').eq('fn1'), where('lastName').eq('ln1')]));
-      findPlan = cursor.findPlan;
+      findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNull);
       expect(findPlan.collectionScanFilter, isNotNull);
 
@@ -203,7 +203,7 @@ void main() {
       cursor = await collection.find(
           filter:
               and([where('firstName').eq('fn1'), where('lastName').eq('ln1')]));
-      findPlan = cursor.findPlan;
+      findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNotNull);
       expect(findPlan.collectionScanFilter, isNull);
     });

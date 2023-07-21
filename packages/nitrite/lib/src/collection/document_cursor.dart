@@ -28,7 +28,7 @@ import 'package:rxdart/streams.dart';
 /// ```
 abstract class DocumentCursor extends Stream<Document> {
   /// Gets a filter plan for the query.
-  FindPlan get findPlan;
+  Future<FindPlan> get findPlan;
 
   /// Gets a stream of all the selected keys of the result documents.
   Stream<Document> project(Document projection);
@@ -45,14 +45,14 @@ abstract class DocumentCursor extends Stream<Document> {
 
 class DocumentStream extends DocumentCursor {
   final Stream<Document> _stream;
-  final FindPlan _findPlan;
+  final FutureFactory<FindPlan> _findPlanFactory;
 
   DocumentStream(StreamFactory<Document> streamFactory,
-      ProcessorChain processorChain, this._findPlan)
+      ProcessorChain processorChain, this._findPlanFactory)
       : _stream = ProcessedDocumentStream(streamFactory, processorChain);
 
   @override
-  FindPlan get findPlan => _findPlan;
+  Future<FindPlan> get findPlan async => await _findPlanFactory();
 
   @override
   Stream<Document> project(Document projection) {

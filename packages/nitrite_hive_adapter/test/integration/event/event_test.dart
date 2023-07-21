@@ -122,8 +122,12 @@ void main() {
 
     test('Test Multiple Listeners', () async {
       var count = 0;
-      employeeRepository.subscribe((event) { count++; });
-      employeeRepository.subscribe((event) { count++; });
+      employeeRepository.subscribe((event) {
+        count++;
+      });
+      employeeRepository.subscribe((event) {
+        count++;
+      });
 
       var employee = generateEmployee(null);
       employee.empId = 100;
@@ -136,7 +140,9 @@ void main() {
 
     test('Test Single Event Listener', () async {
       var count = 0;
-      employeeRepository.subscribe((event) { count++; });
+      employeeRepository.subscribe((event) {
+        count++;
+      });
 
       var employee = generateEmployee(null);
       employee.empId = 100;

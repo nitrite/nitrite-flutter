@@ -101,7 +101,7 @@ abstract class ObjectRepository<T> extends PersistentCollection<T> {
   ///
   /// **NOTE**: If there is an index on the value specified in the filter,
   /// this operation will take advantage of the index.
-  Future<Cursor<T>> find({Filter? filter, FindOptions? findOptions});
+  Cursor<T> find({Filter? filter, FindOptions? findOptions});
 
   /// Gets a single element from the repository by its id. If no element
   /// is found, it will return `Future<null>`.

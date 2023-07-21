@@ -71,11 +71,11 @@ void main() {
                 Document.createDocument("key", 2),
               ]),
           ProcessorChain([spyProcessor]),
-          FindPlan());
+          () async => FindPlan());
 
-      when(collection.find()).thenAnswer((_) => Future.value(documentCursor));
-      when(collection.update(any, any, any)).thenAnswer((_) =>
-          Future.value(WriteResult([NitriteId.newId()])));
+      when(collection.find()).thenAnswer((_) => documentCursor);
+      when(collection.update(any, any, any))
+          .thenAnswer((_) => Future.value(WriteResult([NitriteId.newId()])));
 
       when(mockProcessor.processBeforeWrite(any)).thenAnswer(
           (_) => Future.value(Document.createDocument("processed", true)));

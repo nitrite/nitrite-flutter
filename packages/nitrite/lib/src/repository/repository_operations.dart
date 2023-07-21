@@ -165,9 +165,9 @@ class RepositoryOperations<T> {
     return filter;
   }
 
-  Future<Cursor<T>> find(Filter? filter, FindOptions? findOptions) async {
+  Cursor<T> find(Filter? filter, FindOptions? findOptions) {
     filter ??= all;
-    var documentCursor = await _nitriteCollection.find(
+    var documentCursor = _nitriteCollection.find(
         filter: asObjectFilter(filter), findOptions: findOptions);
     return ObjectCursor<T>(documentCursor, _nitriteMapper);
   }

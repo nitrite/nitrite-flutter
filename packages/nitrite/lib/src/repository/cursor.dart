@@ -28,7 +28,7 @@ abstract class Cursor<T> extends StreamView<T> {
   Cursor(super.stream);
 
   /// Gets a filter plan for the query.
-  FindPlan get findPlan;
+  Future<FindPlan> get findPlan;
 
   /// Projects the result of one type into an [Stream] of another type.
   Stream<Projection> project<Projection>();
@@ -52,7 +52,7 @@ class ObjectCursor<T> extends Cursor<T> {
       : super(MutatedObjectStream(_documentCursor, _nitriteMapper, false));
 
   @override
-  FindPlan get findPlan => _documentCursor.findPlan;
+  Future<FindPlan> get findPlan => _documentCursor.findPlan;
 
   @override
   Stream<Projection> project<Projection>() {

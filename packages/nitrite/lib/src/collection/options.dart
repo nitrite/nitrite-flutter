@@ -47,13 +47,13 @@ class FindOptions {
 
   FindOptions({this.orderBy, this.skip, this.limit});
 
-  FindOptions setSkip(int skip) {
-    skip = skip;
+  FindOptions setSkip(int value) {
+    skip = value;
     return this;
   }
 
-  FindOptions setLimit(int limit) {
-    limit = limit;
+  FindOptions setLimit(int value) {
+    limit = value;
     return this;
   }
 
@@ -69,8 +69,8 @@ class FindOptions {
     return this;
   }
 
-  FindOptions withDistinct(bool distinct) {
-    distinct = distinct;
+  FindOptions withDistinct(bool value) {
+    distinct = value;
     return this;
   }
 }

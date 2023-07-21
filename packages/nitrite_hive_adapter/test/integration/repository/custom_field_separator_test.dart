@@ -12,7 +12,7 @@ void main() {
   group("Custom Field Separator Test Suite", () {
     setUp(() async {
       setUpLog();
-      
+
       db = await Nitrite.builder().fieldSeparator(':').openOrCreate();
 
       var mapper = db.config.nitriteMapper as SimpleDocumentMapper;
