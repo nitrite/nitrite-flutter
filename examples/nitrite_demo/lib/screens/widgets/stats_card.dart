@@ -13,47 +13,38 @@ class StatsCard extends ConsumerStatefulWidget {
 class _StatsCardState extends ConsumerState<StatsCard> {
   @override
   Widget build(BuildContext context) {
-    final completedCounter = ref.watch(completedCounterProvider.future);
-    final pendingCounter = ref.watch(pendingCounterProvider.future);
+    final completedCounter = ref.watch(completedCounterProvider);
+    final pendingCounter = ref.watch(pendingCounterProvider);
 
     return Center(
       child: Card(
         color: Theme.of(context).colorScheme.primaryContainer,
         child: SizedBox(
           width: 300,
-          height: 350,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FutureBuilder(
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        'Completed Task - ${snapshot.data}',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      );
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
-                  },
-                  future: completedCounter,
+          height: 100,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 30),
+                child: Text(
+                  'Completed Task: $completedCounter',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
-                FutureBuilder(
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        'Pending Task - ${snapshot.data}',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      );
-                    } else {
-                      return const CircularProgressIndicator();
-                    }
-                  },
-                  future: pendingCounter,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 30),
+                child: Text(
+                  'Pending Task: $pendingCounter',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

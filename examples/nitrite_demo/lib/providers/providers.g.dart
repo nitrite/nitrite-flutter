@@ -20,7 +20,7 @@ final dbProvider = AutoDisposeFutureProvider<Nitrite>.internal(
 );
 
 typedef DbRef = AutoDisposeFutureProviderRef<Nitrite>;
-String _$todoRepositoryHash() => r'37d4cef7429727e605b6d1384dd4476407e09046';
+String _$todoRepositoryHash() => r'245700cd989fea0b96a5b1a4c17479242318d1f1';
 
 /// See also [todoRepository].
 @ProviderFor(todoRepository)
@@ -37,11 +37,11 @@ final todoRepositoryProvider =
 
 typedef TodoRepositoryRef
     = AutoDisposeFutureProviderRef<ObjectRepository<Todo>>;
-String _$pendingCounterHash() => r'8a0d1f9acf3521f7e9c3f425e80ed2e6c37158d1';
+String _$pendingCounterHash() => r'b7050ba83c927afc6dd22f86e3b200603730fe68';
 
 /// See also [pendingCounter].
 @ProviderFor(pendingCounter)
-final pendingCounterProvider = AutoDisposeFutureProvider<int>.internal(
+final pendingCounterProvider = AutoDisposeProvider<int>.internal(
   pendingCounter,
   name: r'pendingCounterProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -51,12 +51,12 @@ final pendingCounterProvider = AutoDisposeFutureProvider<int>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef PendingCounterRef = AutoDisposeFutureProviderRef<int>;
-String _$completedCounterHash() => r'c39abd09987554b0ba7fda7e13b4b99dbcc628e5';
+typedef PendingCounterRef = AutoDisposeProviderRef<int>;
+String _$completedCounterHash() => r'f8c20c82412294eed15d94647623dbcdd1d061f0';
 
 /// See also [completedCounter].
 @ProviderFor(completedCounter)
-final completedCounterProvider = AutoDisposeFutureProvider<int>.internal(
+final completedCounterProvider = AutoDisposeProvider<int>.internal(
   completedCounter,
   name: r'completedCounterProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -66,13 +66,13 @@ final completedCounterProvider = AutoDisposeFutureProvider<int>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef CompletedCounterRef = AutoDisposeFutureProviderRef<int>;
-String _$todosHash() => r'8d6ce5ae23b805d5c1a9b1acdb0ba2528f802999';
+typedef CompletedCounterRef = AutoDisposeProviderRef<int>;
+String _$todosHash() => r'f1bf03830d15a37c43a1e02aa6a011d8819268ab';
 
 /// See also [Todos].
 @ProviderFor(Todos)
 final todosProvider =
-    AutoDisposeAsyncNotifierProvider<Todos, Stream<Todo>>.internal(
+    AutoDisposeAsyncNotifierProvider<Todos, List<Todo>>.internal(
   Todos.new,
   name: r'todosProvider',
   debugGetCreateSourceHash:
@@ -81,7 +81,7 @@ final todosProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$Todos = AutoDisposeAsyncNotifier<Stream<Todo>>;
+typedef _$Todos = AutoDisposeAsyncNotifier<List<Todo>>;
 String _$findOptionStateHash() => r'58d1f116a6b55818f948b3929e0e4f0e171e3486';
 
 /// See also [FindOptionState].

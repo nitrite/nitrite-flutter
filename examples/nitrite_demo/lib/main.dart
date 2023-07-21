@@ -20,44 +20,25 @@ class TodoList extends ConsumerWidget {
     var todos = ref.watch(todosProvider);
 
     return todos.when(
-      data: (todoStream) => StreamBuilder(
-          stream: todoStream,
-          initialData: const <Todo>[],
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
+      data: (todoList) => ListView.builder(
+        itemCount: todoList.length,
+        itemBuilder: (context, index) {
+          Todo todo = todoList[index];
 
-            if (!snapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            var todoList = snapshot.data as List<Todo>;
-
-            return ListView.builder(
-              itemCount: todoList.length,
-              itemBuilder: (context, index) {
-                Todo todo = todoList[index];
-
-                return ListTile(
-                  title: Text(todo.title),
-                  trailing: IconButton(
-                    icon: Icon(todo.completed
-                        ? Icons.check_box
-                        : Icons.check_box_outlined),
-                    onPressed: () =>
-                        ref.read(todosProvider.notifier).toggle(todo.id),
-                  ),
-                );
-              },
-            );
-          }),
+          return ListTile(
+            title: Text(todo.title),
+            trailing: IconButton(
+              icon: Icon(
+                  todo.completed ? Icons.check_box : Icons.check_box_outlined),
+              onPressed: () => ref.read(todosProvider.notifier).toggle(todo.id),
+            ),
+          );
+        },
+      ),
+      error: (err, stack) => Text('Error: $err'),
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),
-      error: (err, stack) => Text('Error: $err'),
     );
   }
 }

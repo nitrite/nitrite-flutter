@@ -30,22 +30,21 @@ Future<Nitrite> db(DbRef ref) async {
 
 @riverpod
 Future<ObjectRepository<Todo>> todoRepository(TodoRepositoryRef ref) async {
-  var db = await ref.watch(dbProvider.future);
+  var db = await ref.read(dbProvider.future);
   return await db.getRepository<Todo>();
 }
 
 @riverpod
 class Todos extends _$Todos {
-  Stream<Todo> _fetchTodo() async* {
+  Future<List<Todo>> _fetchTodo() async {
     var repository = await ref.read(todoRepositoryProvider.future);
     var filter = ref.watch(filterProvider);
     var findOptions = ref.watch(findOptionStateProvider);
-    var cursor = repository.find(filter: filter, findOptions: findOptions);
-    yield* cursor;
+    return repository.find(filter: filter, findOptions: findOptions).toList();
   }
 
   @override
-  Future<Stream<Todo>> build() async {
+  Future<List<Todo>> build() async {
     return _fetchTodo();
   }
 
@@ -55,7 +54,7 @@ class Todos extends _$Todos {
     try {
       var repository = await ref.read(todoRepositoryProvider.future);
       await repository.insert(todo);
-      state = AsyncData(_fetchTodo());
+      state = AsyncValue.data(await _fetchTodo());
     } catch (e, s) {
       state = AsyncValue.error(e, s);
     }
@@ -66,7 +65,7 @@ class Todos extends _$Todos {
     try {
       var repository = await ref.read(todoRepositoryProvider.future);
       await repository.remove(where('id').eq(todoId));
-      state = AsyncData(_fetchTodo());
+      state = AsyncValue.data(await _fetchTodo());
     } catch (e, s) {
       state = AsyncValue.error(e, s);
     }
@@ -81,7 +80,7 @@ class Todos extends _$Todos {
         byId.completed = !byId.completed;
         await repository.updateOne(byId);
       }
-      state = AsyncData(_fetchTodo());
+      state = AsyncValue.data(await _fetchTodo());
     } catch (e, s) {
       state = AsyncValue.error(e, s);
     }
@@ -103,21 +102,21 @@ class FindOptionState extends _$FindOptionState {
 final filterProvider = StateProvider<Filter>((ref) => all);
 
 @riverpod
-Future<int> pendingCounter(PendingCounterRef ref) {
+int pendingCounter(PendingCounterRef ref) {
   var todos = ref.watch(todosProvider);
   return todos.when(
-    data: (todoStream) => todoStream.where((todo) => !todo.completed).length,
-    loading: () async => 0,
-    error: (err, stack) async => 0,
+    data: (todoList) => todoList.where((todo) => !todo.completed).length,
+    loading: () => 0,
+    error: (err, stack) => 0,
   );
 }
 
 @riverpod
-Future<int> completedCounter(CompletedCounterRef ref) {
+int completedCounter(CompletedCounterRef ref) {
   var todos = ref.watch(todosProvider);
   return todos.when(
-    data: (todoStream) => todoStream.where((todo) => todo.completed).length,
-    loading: () async => 0,
-    error: (err, stack) async => 0,
+    data: (todoList) => todoList.where((todo) => todo.completed).length,
+    loading: () => 0,
+    error: (err, stack) => 0,
   );
 }
