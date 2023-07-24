@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_demo/models/models.dart';
@@ -13,9 +16,11 @@ part 'providers.g.dart';
 
 @riverpod
 Future<Nitrite> db(DbRef ref) async {
-  var path = await getApplicationDocumentsDirectory();
+  var docPath = await getApplicationDocumentsDirectory();
+  var dbDir = await Directory('${docPath.path}${Platform.pathSeparator}db')
+      .create(recursive: true);
   var storeModule =
-      HiveModule.withConfig().crashRecovery(true).path('$path/db').build();
+      HiveModule.withConfig().crashRecovery(true).path(dbDir.path).build();
 
   var db = await Nitrite.builder()
       .loadModule(storeModule)

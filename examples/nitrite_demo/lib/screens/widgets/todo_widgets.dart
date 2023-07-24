@@ -53,15 +53,15 @@ class TodoWidget extends ConsumerWidget {
         key: ValueKey(todo.id),
         startActionPane: ActionPane(
           motion: const ScrollMotion(),
-          dismissible: DismissiblePane(onDismissed: () {}),
           children: [
             SlidableAction(
+              borderRadius: BorderRadius.circular(5),
+              spacing: 10,
               onPressed: (context) =>
                   ref.read(todosProvider.notifier).toggle(todo.id),
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,
               icon: todo.completed ? Icons.task_alt : Icons.check_box_outlined,
-              label: 'Complete',
             ),
           ],
         ),
@@ -69,23 +69,25 @@ class TodoWidget extends ConsumerWidget {
           motion: const ScrollMotion(),
           children: [
             SlidableAction(
+              borderRadius: BorderRadius.circular(5),
+              spacing: 10,
               onPressed: (context) =>
                   ref.read(todosProvider.notifier).removeTodo(todo.id),
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               icon: Icons.delete,
-              label: 'Delete',
             ),
           ],
         ),
-        child: Card(
-          color: Theme.of(context).colorScheme.surface,
-          child: ListTile(
-            title: Text(
-              todo.title,
-              style: TextStyle(
-                decoration: todo.completed ? TextDecoration.lineThrough : null,
-              ),
+        child: ListTile(
+          leading: const Icon(Icons.adjust, color: Colors.black26),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          title: Text(
+            todo.title,
+            style: TextStyle(
+              decoration: todo.completed ? TextDecoration.lineThrough : null,
             ),
           ),
         ),

@@ -1,10 +1,12 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
+import 'package:nitrite/src/filters/filter.dart';
 import 'package:nitrite/src/repository/cursor.dart';
 import 'package:nitrite/src/repository/entity_decorator.dart';
 import 'package:nitrite/src/repository/nitrite_entity_reader.dart';
 
 class RepositoryOperations<T> {
+  final NitriteConfig _nitriteConfig;
   final NitriteMapper _nitriteMapper;
   final NitriteCollection _nitriteCollection;
   final EntityDecorator<T>? _entityDecorator;
@@ -14,7 +16,8 @@ class RepositoryOperations<T> {
   NitriteEntityReader<T>? _nitriteEntityReader;
 
   RepositoryOperations(
-      this._entityDecorator, this._nitriteMapper, this._nitriteCollection) {
+      this._entityDecorator, this._nitriteCollection, this._nitriteConfig)
+      : _nitriteMapper = _nitriteConfig.nitriteMapper {
     if (_entityDecorator != null) {
       _entityDecoratorReader =
           EntityDecoratorReader<T>(_entityDecorator!, _nitriteCollection);
@@ -161,6 +164,15 @@ class RepositoryOperations<T> {
   Filter asObjectFilter(Filter filter) {
     if (filter is NitriteFilter) {
       filter.objectFilter = true;
+      filter.nitriteConfig = _nitriteConfig;
+
+      if (filter is FieldBasedFilter) {
+        var field = filter.field;
+        if (_objectIdField != null && _objectIdField!.fieldName == field) {
+          return _objectIdField!
+              .createUniqueFilter(filter.value, _nitriteMapper);
+        }
+      }
     }
     return filter;
   }

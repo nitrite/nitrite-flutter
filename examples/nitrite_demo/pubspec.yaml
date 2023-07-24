@@ -40,7 +40,6 @@ dependencies:
   nitrite: ^0.0.1
   nitrite_hive_adapter: ^0.0.1
   path_provider: ^2.0.15
-  anim_search_bar: ^2.0.3
   uuid: ^3.0.7
 
 dev_dependencies:
@@ -58,6 +57,7 @@ dev_dependencies:
   custom_lint: ^0.4.0
   riverpod_lint: ^1.3.2
   nitrite_entity_generator: ^0.0.1
+  icons_launcher: ^2.1.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -71,8 +71,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+   - assets/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

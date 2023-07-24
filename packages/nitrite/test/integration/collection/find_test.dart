@@ -160,7 +160,7 @@ void main() {
       cursor = collection.find(findOptions: skipBy(2));
       expect(await cursor.length, 1);
 
-      expect(() async => collection.find(findOptions: skipBy(-2)),
+      expect(() async => await collection.find(findOptions: skipBy(-2)).first,
           throwsValidationException);
     });
 
@@ -176,7 +176,7 @@ void main() {
       cursor = collection.find(findOptions: limitBy(30));
       expect(await cursor.length, 3);
 
-      expect(() async => collection.find(findOptions: limitBy(-1)),
+      expect(() async => await collection.find(findOptions: limitBy(-1)).first,
           throwsValidationException);
     });
 

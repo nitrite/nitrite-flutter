@@ -577,6 +577,18 @@ void main() {
               lowerInclusive: false, upperInclusive: true));
       expect(await cursor.length, 5);
     });
+
+    test('Test Find by Entity Id', () async {
+      var bookRepo = await db.getRepository<Book>();
+      var book = randomBook();
+      await bookRepo.insert(book);
+
+      var result = await bookRepo.updateDocument(where('book_id').eq(book.bookId), createDocument('price', 100.0));
+      expect(result.getAffectedCount(), 1);
+
+      var cursor = bookRepo.find(filter: where('price').eq(100.0));
+      expect(await cursor.length, 1);
+    });
   });
 }
 

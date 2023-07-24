@@ -35,38 +35,31 @@ class NewTodoDialog extends ConsumerWidget {
                 ],
                 color: Colors.white,
               ),
-              child: const Icon(
-                Icons.note_alt_outlined,
-                color: Color.fromARGB(255, 143, 128, 128),
+              child: Icon(
+                Icons.task_alt_outlined,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: Text(
-                'New task',
+                'New Task',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
           ],
         ),
         content: SizedBox(
-          height: 80,
+          width: MediaQuery.of(context).size.width * 0.8,
           child: TextField(
             focusNode: focusNode,
             maxLines: null,
-            expands: true,
-            style: Theme.of(context).textTheme.bodyMedium,
+            // expands: true,
             keyboardType: TextInputType.multiline,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              filled: false,
-              hintText: 'What are you planning?',
-              hintStyle: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: const Color(0xff9C9A9A)),
+            decoration: const InputDecoration(
+              labelText: 'Whats on your mind?',
+              hintText: 'Make Dr appointment',
+              border: OutlineInputBorder(),
             ),
             onChanged: (value) {
               ref.read(todoTextProvider.notifier).update((state) => value);
@@ -78,22 +71,20 @@ class NewTodoDialog extends ConsumerWidget {
         ),
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
-          TextButton(
-            child: Text(
-              "Cancel",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.red,
-                  ),
-            ),
+          ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
+            child: const Text('Cancel'),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: onPressed,
-            child: Text(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+            child: const Text(
               "Create",
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: TextStyle(color: Colors.white),
             ),
           ),
         ],

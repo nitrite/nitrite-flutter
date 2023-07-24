@@ -252,9 +252,8 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
 
   @override
   Future<void> initialize() {
-    var nitriteMapper = _nitriteConfig.nitriteMapper;
     _operations = RepositoryOperations<T>(
-        _entityDecorator, nitriteMapper, _nitriteCollection);
+        _entityDecorator, _nitriteCollection, _nitriteConfig);
     return _operations.createIndices();
   }
 }
