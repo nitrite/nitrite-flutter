@@ -1,20 +1,9 @@
 # Nitrite Database
 
-![Build](https://github.com/nitrite/nitrite-java/workflows/Gradle%20Build/badge.svg?branch=develop)
-![CodeQL](https://github.com/nitrite/nitrite-java/workflows/CodeQL/badge.svg?branch=develop)
-[![Codacy](https://app.codacy.com/project/badge/Grade/3ee6a6f3f0044b0c9e75d48e47e5d012)](https://www.codacy.com/gh/nitrite/nitrite-java/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nitrite/nitrite-java&amp;utm_campaign=Badge_Grade)
-[![codecov](https://codecov.io/gh/nitrite/nitrite-java/branch/develop/graph/badge.svg)](https://codecov.io/gh/nitrite/nitrite-java)
-![Javadocs](https://javadoc.io/badge/org.dizitart/nitrite.svg)
-[![Discussion](https://img.shields.io/badge/chat-Discussion-blueviolet)](https://github.com/nitrite/nitrite-java/discussions)
-![Backers on Open Collective](https://opencollective.com/nitrite-database/backers/badge.svg)
-![Backers on Open Collective](https://opencollective.com/nitrite-database/sponsors/badge.svg)
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/nitrite/nitrite-java)
-
 <img src="http://www.dizitart.org/nitrite-database/logo/nitrite-logo.svg" alt="Logo" width="200"/>
 
 **NO**sql **O**bject (**NO<sub>2</sub>** a.k.a Nitrite) database is an open source nosql embedded
-document store written in Java. It has MongoDB like API. It supports both
-in-memory and file based persistent store.
+document store. It supports both in-memory and file based persistent store.
 
 Nitrite is an embedded database ideal for desktop, mobile or small web applications.
 
@@ -22,127 +11,126 @@ Nitrite is an embedded database ideal for desktop, mobile or small web applicati
 
 -   Schemaless document collection and object repository
 -   In-memory / file-based store
--   Pluggable storage engines - mvstore, mapdb, rocksdb
--   ACID transaction
+-   Pluggable storage engines - hive
+-   Transaction support
 -   Schema migration
 -   Indexing
 -   Full text search
--   Both way replication via Nitrite DataGate server
 -   Very fast, lightweight and fluent API 
--   Android compatibility (API Level 19)
 
-## Kotlin Extension
+## Java Version
 
-Nitrite has a kotlin extension called **Potassium Nitrite** for kotlin developers.
-Visit [here](https://github.com/nitrite/nitrite-java/tree/develop/potassium-nitrite) for more details.
+If you are looking for Nitrite for java, head over to [nitrite-java](https://github.com/nitrite/nitrite-java).
 
 ## Getting Started with Nitrite
 
-**NOTE:** There are breaking api changes in version 4.x.x. So please exercise caution when upgrading from 3.x.x  
-especially for **package name changes**.
-
 ### How To Install
 
-To use Nitrite in any Java application, first add the nitrite bill of materials, 
-then add required dependencies:
+To use Nitrite in any Flutter application, add the below in your `pubspec.yaml` file:
 
-**Maven**
+```yaml
+dependencies:
+  nitrite: ^[version]
+  nitrite_hive_adapter: ^[version]
 
-```xml
-<dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.dizitart</groupId>
-            <artifactId>nitrite-bom</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
-</dependencyManagement>
 
-<dependencies>
-    <dependency>
-        <groupId>org.dizitart</groupId>
-        <artifactId>nitrite</artifactId>
-    </dependency>
-
-    <dependency>
-        <groupId>org.dizitart</groupId>
-        <artifactId>nitrite-mvstore-adapter</artifactId>
-    </dependency>
-</dependencies>
-```
-    
-    
-**Gradle**
-
-```groovy
-
-implementation(platform("org.dizitart:nitrite-bom:4.0.0-SNAPSHOT"))
-    
-implementation 'org.dizitart:nitrite'
-implementation 'org.dizitart:nitrite-mvstore-adapter'
+dev_dependencies:
+  build_runner: ^2.4.6
+  nitrite_entity_generator: ^[version]
 
 ```
-    
+
+## Examples
+
+A Todo flutter application is available [here](https://github.com/nitrite/nitrite-flutter/tree/main/examples/nitrite_demo). It demonstrates the use of nitrite database in a flutter application. It uses nitrite as a file based storage engine. It also uses riverpod for state management.
 
 ### Quick Examples
 
 **Initialize Database**
 
-```java
-// create a mvstore backed storage module
-MVStoreModule storeModule = MVStoreModule.withConfig()
-    .filePath("/tmp/test.db")  // for android - .filePath(getFilesDir().getPath() + "/test.db")
-    .compress(true)
-    .build();
-
-// or a rocksdb based storage module
-RocksDBModule storeModule = RocksDBModule.withConfig()
-    .filePath("/tmp/test.db")
+```dart
+// create a hive backed storage module
+var storeModule = HiveModule.withConfig()
+    .crashRecovery(true)
+    .path('$dbDir/db')
     .build();
 
 
 // initialization using builder
-Nitrite db = Nitrite.builder()
-        .loadModule(storeModule)
-        .loadModule(new JacksonMapperModule())  // optional
-        .openOrCreate("user", "password");
+var db = await Nitrite.builder()
+    .loadModule(storeModule)
+    .openOrCreate(username: 'user', password: 'pass123');
 
 ```
 
-**Create a Collection**
+**Create a Collection/ObjectRepository**
 
-```java
+```dart
 // Create a Nitrite Collection
-NitriteCollection collection = db.getCollection("test");
+var collection = await db.getCollection("test");
 
 // Create an Object Repository
-ObjectRepository<Employee> repository = db.getRepository(Employee.class);
+var repository = await db.getRepository<Book>();
 
 ```
 
-**Annotations for POJO**
+**Code generators for Entity classes**
 
-```java
+The nitrite entity generator package can automatically generate entity classes from dart classes. It uses [source_gen](https://pub.dev/packages/source_gen) package to generate code. To use the generator, add the following to your `pubspec.yaml` file:
 
-@Entity(value = "retired-employee",     // entity name (optional), 
-    indices = {
-        @Index(value = "firstName", type = IndexType.NonUnique),
-        @Index(value = "lastName", type = IndexType.NonUnique),
-        @Index(value = "note", type = IndexType.Fulltext),
-})
-public class Employee implements Serializable {
-    // provides id field to uniquely identify an object inside an ObjectRepository
-    @Id
-    private long empId;
-    private Date joinDate;
-    private String firstName;
-    private String lastName;
-    private String note;
+```yaml
 
-    // ... public getters and setters
+dev_dependencies:
+  nitrite_entity_generator: ^[version]
+
+```
+
+And use below annotations in your dart classes:
+
+```dart
+import 'package:nitrite/nitrite.dart';
+
+part 'book.no2.dart';
+
+@GenerateConverter(className: 'MyBookConverter')
+@Entity(name: 'books', indices: [
+  Index(fields: ['tags'], type: IndexType.nonUnique),
+  Index(fields: ['description'], type: IndexType.fullText),
+  Index(fields: ['price', 'publisher']),
+])
+class Book with _$BookEntityMixin {
+  // id field
+  @Id(fieldName: 'book_id', embeddedFields: ['isbn', 'book_name'])
+  @DocumentKey(alias: 'book_id')
+  BookId? bookId;
+
+  String? publisher;
+  double? price;
+  List<String> tags = [];
+  String? description;
+
+  Book([
+    this.bookId,
+    this.publisher,
+    this.price,
+    this.tags = const [],
+    this.description,
+  ]);
+  
+}
+
+// composite id class
+@GenerateConverter()
+class BookId {
+  String? isbn;
+
+  // set a different field name in the document
+  @DocumentKey(alias: "book_name")
+  String? name;
+
+  // ignore the field in the document
+  @IgnoredKey()
+  String? author;
 }
 
 ```
@@ -150,195 +138,159 @@ public class Employee implements Serializable {
 
 **CRUD Operations**
 
-```java
+```dart
 
 // create a document to populate data
-Document doc = createDocument("firstName", "John")
-     .put("lastName", "Doe")
-     .put("birthDay", new Date())
-     .put("data", new byte[] {1, 2, 3})
-     .put("fruits", new ArrayList<String>() {{ add("apple"); add("orange"); add("banana"); }})
-     .put("note", "a quick brown fox jump over the lazy dog");
+var doc = createDocument("firstName", "fn1")
+    .put("lastName", "ln1")
+    .put("birthDay", DateTime.parse("2012-07-01T16:02:48.440Z"))
+    .put("data", [1, 2, 3])
+    .put("list", ["one", "two", "three"])
+    .put("body", "a quick brown fox jump over the lazy dog")
+    .put("books", [
+      createDocument("name", "Book ABCD").put("tag", ["tag1", "tag2"]),
+      createDocument("name", "Book EFGH").put("tag", ["tag3", "tag1"]),
+      createDocument("name", "No Tag")
+    ]);
 
 // insert the document
-collection.insert(doc);
+await collection.insert(doc);
 
-// find a document
-collection.find(where("firstName").eq("John").and(where("lastName").eq("Doe"));
+// find documents from the collection
+var cursor = collection.find(filter: and([
+      where('lastName').eq('ln1'),
+      where("firstName").notEq("fn1"),
+      where("list").eq("four"),
+    ]),
+);
 
 // update the document
-collection.update(where("firstName").eq("John"), createDocument("lastName", "Wick"));
+await collection.update(
+  where('firstName').eq('fn1'),
+  createDocument('firstName', 'fn1-updated'),
+  updateOptions(insertIfAbsent: true),
+);
 
 // remove the document
-collection.remove(doc);
+await coll.remove(where('firstName').eq('fn1-updated'));
 
 // insert an object in repository
-Employee emp = new Employee();
-emp.setEmpId(124589);
-emp.setFirstName("John");
-emp.setLastName("Doe");
+var bookId = BookId();
+bookId.isbn = 'abc123';
+bookId.author = 'xyz';
+bookId.name = 'Book 1';
 
-repository.insert(emp);
+var book = Book();
+book.bookId = bookId;
+book.tags = ['tag1', 'tag2'];
+book.description = 'A book about nitrite database';
+book.publisher = 'rando publisher';
+book.price = 150.5;
+
+await repository.insert(book);
 
 ```
 
 **Create Indices**
 
-```java
+```dart
 
 // create document index
-collection.createIndex("firstName", indexOptions(IndexType.NonUnique));
-collection.createIndex("note", indexOptions(IndexType.Fulltext));
+await collection.createIndex(['firstName', 'lastName']); // unique index
+await collection.createIndex(['firstName'], indexOptions(IndexType.nonUnique))
 
 // create object index. It can also be provided via annotation
-repository.createIndex("firstName", indexOptions(IndexType.NonUnique));
+await repository.createIndex("publisher", indexOptions(IndexType.NonUnique));
 
 ```
 
 **Query a Collection**
 
-```java
+```dart
 
-DocumentCursor cursor = collection.find(
-    where("firstName").eq("John")               // firstName == John
-    .and(
-        where("data").elemMatch("$".lt(4))      // AND elements of data array is less than 4
-            .and(
-                where("note").text("quick")     // AND note field contains string 'quick' using full-text index
-        )       
-    )
+var cursor = collection.find(
+  filter: and([
+    where('lastName').eq('ln2'),
+    where("firstName").notEq("fn1"),
+    where("list").eq("four")
+  ]),
 );
 
-for (Document document : cursor) {
-    // process the document
+await for (var d in cursor) {
+  print(d);
 }
 
-// get document by id
-Document document = collection.getById(nitriteId);
+// get document by a nitrite id
+var document = await collection.getById(nitriteId);
 
 // query an object repository and create the first result
-Cursor<Employee> cursor = repository.find(where("firstName").eq("John"));
-Employee employee = cursor.firstOrNull();
+var cursor = repository.find(
+    filter: where('book_id.isbn').eq('abc123'),
+);
+var book = await cursor.first();
 
 ```
 
+
 **Transaction**
 
-```java
-try (Session session = db.createSession()) {
-    Transaction transaction = session.beginTransaction();
-    try {
-        NitriteCollection txCol = transaction.getCollection("test");
+Nitrite has support for transaction. Transaction is supported only for file based storage.
 
-        Document document = createDocument("firstName", "John");
-        txCol.insert(document);
+```dart
+var session = db.createSession();
+var tx = await session.beginTransaction();
 
-        transaction.commit();
-    } catch (TransactionException e) {
-        transaction.rollback();
-    }
-}
+var txRepo = await tx.getRepository<Book>();
+await txRepo.insert(book);
+await tx.commit();
 
+```
+or, another way to do the same thing:
+
+```dart
+var session = db.createSession();
+await session.executeTransaction((tx) async {
+  var txRepo = await tx.getRepository<Book>();
+  await txRepo.insertMany([book1, book2, book3]);
+});
 
 ```
 
 **Schema Migration**
 
-```java
+Nitrite supports schema migration. It can be used to migrate data from one schema version to another. It is useful when you want to change the schema of your application without losing the existing data.
 
-Migration migration1 = new Migration(Constants.INITIAL_SCHEMA_VERSION, 2) {
-    @Override
-    public void migrate(Instruction instructions) {
-        instructions.forDatabase()
-            // make a non-secure db to secure db
-            .addPassword("test-user", "test-password");
+```dart
 
-        // create instructions for existing repository
-        instructions.forRepository(OldClass.class, null)
+var migration = Migration(
+  3,
+  4,
+  (instructionSet) {
+    instructionSet
+        .forCollection('test')
+        .addField('age', defaultValue: 10);
+  },
+);
 
-            // rename the repository (in case of entity name changes)
-            .renameRepository("migrated", null)
-
-            // change datatype of field empId from String to Long and convert the values
-            .changeDataType("empId", (TypeConverter<String, Long>) Long::parseLong)
-
-            // change id field from uuid to empId
-            .changeIdField("uuid", "empId")
-
-            // delete uuid field
-            .deleteField("uuid")
-    
-            // rename field from lastName to familyName
-            .renameField("lastName", "familyName")
-
-            // add new field fullName and add default value as - firstName + " " + lastName
-            .addField("fullName", document -> document.get("firstName", String.class) + " "
-                + document.get("familyName", String.class))
-
-            // drop index on firstName
-            .dropIndex("firstName")
-
-            // drop index on embedded field literature.text
-            .dropIndex("literature.text")
-
-            // change data type of embedded field from float to integer and convert the values 
-            .changeDataType("literature.ratings", (TypeConverter<Float, Integer>) Math::round);
-    }
-};
-
-Migration migration2 = new Migration(2, 3) {
-    @Override
-    public void migrate(Instruction instructions) {
-        instructions.forCollection("test")
-            .addField("fullName", "Dummy Name");
-    }
-};
-
-MVStoreModule storeModule = MVStoreModule.withConfig()
-    .filePath("/temp/employee.db")
-    .compressHigh(true)
-    .build();
-
-db = Nitrite.builder()
-    .loadModule(storeModule)
-    
-    // schema versioning is must for migration
-    .schemaVersion(2)
-
-    // add defined migration paths
-    .addMigrations(migration1, migration2)
-    .openOrCreate();
+db = await Nitrite.builder()
+      .loadModule(storeModule)
+      .schemaVersion(4)
+      .addMigrations([migration])
+      .openOrCreate();
 
 ```
 
-**Automatic Replication**
-
-```java
-
-NitriteCollection collection = db.getCollection("products");
-
-Replica replica = Replica.builder()
-    .of(collection)
-    // replication via websocket (ws/wss)
-    .remote("ws://127.0.0.1:9090/datagate/john/products")
-    // user authentication via JWT token
-    .jwtAuth("john", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
-    .create();
-
-replica.connect();
-
-```
 
 **Import/Export Data**
 
-```java
+```dart
 // Export data to a file
-Exporter exporter = Exporter.of(db);
-exporter.exportTo(schemaFile);
+var exporter = Exporter.of(db);
+await exporter.exportTo(schemaFile);
 
 //Import data from the file
-Importer importer = Importer.of(db);
-importer.importFrom(schemaFile);
+var importer = Importer.of(db);
+await importer.importFrom(schemaFile);
 
 ```
 
@@ -346,7 +298,7 @@ More details are available in the reference document.
 
 ## Release Notes
 
-Release notes are available [here](https://github.com/nitrite/nitrite-java/releases).
+Release notes are available [here](https://github.com/nitrite/nitrite-flutter/releases).
 
 ## Documentation
 
@@ -364,72 +316,38 @@ Release notes are available [here](https://github.com/nitrite/nitrite-java/relea
 <tbody>
 <tr class="odd">
 <td><p><a href="http://www.dizitart.org/nitrite-database">Document</a></p></td>
-<td><p><a href="https://javadoc.io/doc/org.dizitart/nitrite">JavaDoc</a></p></td>
+<td><p><a href="https://pub.dev/documentation/nitrite/latest">API Reference</a></p></td>
 </tr>
 </tbody>
 </table>
 
 ## Build
 
-To build and test Nitrite
+To build and test Nitrite, you need to install melos. Melos is a CLI tool to manage Dart projects with multiple packages. It is similar to Lerna for JavaScript/TypeScript projects. Visit [melos](https://melos.invertase.dev/) for more details to setup your system.
+
 
 ```shell script
 
-git clone https://github.com/nitrite/nitrite-java.git
-cd nitrite-java
-./gradlew build
+melos bs
+melos test
 
 ```
 
-## Support / Feedback
-
-For issues with, questions about, or feedback talk to us at [Gitter](https://gitter.im/nitrite-db/nitrite-java).
-
 ## Bugs / Feature Requests
 
-Think you’ve found a bug? Want to see a new feature in the Nitrite? Please open an issue [here](https://github.com/nitrite/nitrite-java/issues). But
+Think you’ve found a bug? Want to see a new feature in the Nitrite? Please open an issue [here](https://github.com/nitrite/nitrite-flutter/issues). But
 before you file an issue please check if it is already existing or not.
 
 ## Maintainers
 
 -   Anindya Chatterjee
 
-## Contributors
+## Contributing
 
-This project exists thanks to all the people who contribute. [Contribute](https://github.com/dizitart/nitrite-database/blob/master/CONTRIBUTING.md).
-![Contributors](https://opencollective.com/nitrite-database/contributors.svg?width=890)
-
-## Backers
-
-Thank you to all our backers! 🙏 [Become a backer](https://opencollective.com/nitrite-database#backer)
-
-![Backers](https://opencollective.com/nitrite-database/backers.svg?width=890)
-
-## Sponsors
-
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [Become a sponsor](https://opencollective.com/nitrite-database#sponsor)
-
-![Sponsor](https://opencollective.com/nitrite-database/sponsor/0/avatar.svg)
-![Sponsor](https://opencollective.com/nitrite-database/sponsor/1/avatar.svg)
-![Sponsor](https://opencollective.com/nitrite-database/sponsor/2/avatar.svg)
-![Sponsor](https://opencollective.com/nitrite-database/sponsor/3/avatar.svg)
-![Sponsor](https://opencollective.com/nitrite-database/sponsor/4/avatar.svg)
-
-## Presentation & Talks
-
-[Idan Sheinberg](https://github.com/sheinbergon) has given a talk on Nitrite at [**Kotlin Everywhere - TLV Edition**](https://www.meetup.com/KotlinTLV/events/265145254/) meetup on October 27, 2019. Please find his presentation [here](https://www.slideshare.net/IdanShinberg/nitrite-choosing-the-rite-embedded-database).
+Do you want to contribute with a PR? PRs are always welcome, just make sure to create a [discussion](https://github.com/nitrite/nitrite-flutter/discussions) first to avoid any unnecessary work.
 
 ## Special Thanks
-
-<div>
-<a href="https://www.ej-technologies.com/products/jprofiler/overview.html" style="margin-right: 20px;">
-    <img src="https://www.ej-technologies.com/images/product_banners/jprofiler_medium.png" alt="JProfiler"/>
-</a>
-
-<a href="https://www.yourkit.com/" style="margin-right: 20px;">
-    <img src="https://www.yourkit.com/images/yklogo.png" alt="YourKit"/>
-</a>
-   
+  
 <a href="https://www.macstadium.com/" style="margin-right: 30px;">
     <img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" height="32" alt="MacStadium"/>
 </a>

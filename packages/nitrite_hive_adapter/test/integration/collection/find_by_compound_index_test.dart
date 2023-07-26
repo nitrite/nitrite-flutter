@@ -20,11 +20,12 @@ void main() {
 
       await collection.createIndex(['list', 'lastName', 'firstName']);
       var cursor = collection.find(
-          filter: and([
-        where('lastName').eq('ln2'),
-        where("firstName").notEq("fn1"),
-        where("list").eq("four")
-      ]));
+        filter: and([
+          where('lastName').eq('ln2'),
+          where("firstName").notEq("fn1"),
+          where("list").eq("four")
+        ]),
+      );
 
       var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);

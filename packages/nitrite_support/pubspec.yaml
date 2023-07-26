@@ -1,15 +1,15 @@
 name: nitrite_support
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# homepage: https://www.example.com
+description: Support library for Nitrite database.
+version: 0.0.1
 
 environment:
-  sdk: '>=2.19.0 <3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   path: ^1.8.0
+  nitrite: ^0.0.1
 
 dev_dependencies:
   flutter_test:

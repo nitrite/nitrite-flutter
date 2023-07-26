@@ -9,3 +9,4 @@ export 'processors/index.dart';
 export 'tuples/tuples.dart';
 export 'util/spatial_key.dart';
 export 'write_result.dart';
+export 'persistent_collection.dart';

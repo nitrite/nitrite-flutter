@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nitrite/nitrite.dart';
@@ -10,9 +9,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'providers.g.dart';
 
-// https://github.com/ivansaul/flutter_todo_app/tree/hive
-// https://github.com/MuhammedAmjadK/flutter_todo_app/tree/master
-// https://www.youtube.com/watch?v=koVAJis-qIE
 
 @riverpod
 Future<Nitrite> db(DbRef ref) async {

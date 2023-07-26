@@ -109,12 +109,25 @@ Future<void> collectionExample(Nitrite db) async {
       where("list").eq("four"),
     ]),
   );
-  print('Documents where lastName is ln2, firstName is not fn1 and list contains'
+  print(
+      'Documents where lastName is ln2, firstName is not fn1 and list contains'
       ' four: ${await cursor.toList()}');
 
-  // get the find plan
-  var findPlan = await cursor.findPlan;
-  print(findPlan);
+  // Update a collection
+  await coll.update(
+    where('firstName').eq('fn1'),
+    createDocument('firstName', 'fn1-updated'),
+    updateOptions(insertIfAbsent: true),
+  );
+
+  // Find all documents with updated firstName
+  cursor = coll.find(filter: where('firstName').eq('fn1-updated'));
+  print('Documents where firstName is fn1-updated: ${await cursor.toList()}');
+
+  // remove
+  await coll.remove(where('firstName').eq('fn1-updated'));
+  cursor = coll.find(filter: where('firstName').eq('fn1-updated'));
+  print('Documents where firstName is fn1-updated: ${await cursor.toList()}');
 
   // clear the collection
   await coll.clear();
@@ -154,12 +167,37 @@ Future<void> objectRepositoryExample(Nitrite db) async {
   print('Books where description contains lorem: ${await cursor.toList()}');
 
   // Find books by price and publisher
-  cursor = repo.find(filter: and([
-    where('price').gt(100),
-    where('publisher').eq('publisher1'),
-  ]));
+  cursor = repo.find(
+    filter: and([
+      where('price').gt(100),
+      where('publisher').eq('publisher1'),
+    ]),
+  );
   print('Books where price is greater than 100 and publisher is publisher1: '
       '${await cursor.toList()}');
+
+  // Find books by price and publisher
+  cursor = repo.find(
+    filter: where('book_id.isbn').eq(book.bookId!.isbn),
+  );
+  print('Books where bookId is ${book.bookId}: '
+      '${await cursor.toList()}');
+
+  // Update a book
+  await repo.updateDocument(
+    where('book_id').eq(book.bookId!),
+    createDocument('price', 100.0),
+    justOnce: false,
+  );
+
+  // Find all books with updated price
+  cursor = repo.find(filter: where('price').eq(100.0));
+  print('Books where price is 100: ${await cursor.toList()}');
+
+  // remove
+  await repo.remove(where('price').eq(100.0));
+  cursor = repo.find(filter: where('price').eq(100.0));
+  print('Books where price is 100: ${await cursor.toList()}');
 
   // clear the repository
   await repo.clear();
@@ -169,7 +207,41 @@ Future<void> objectRepositoryExample(Nitrite db) async {
 }
 
 Future<void> transactionExample(Nitrite db) async {
+  // Get a repository
+  var repo = await db.getRepository<Book>();
 
+  // Create a book
+  var book = randomBook();
+
+  var session = db.createSession();
+  var tx = await session.beginTransaction();
+
+  var txRepo = await tx.getRepository<Book>();
+  await txRepo.insert(book);
+
+  var txCursor = txRepo.find();
+  print('Books inserted in transaction: ${await txCursor.toList()}');
+
+  var cursor = repo.find();
+  print('Books in the original repository: ${await cursor.toList()}');
+
+  await tx.commit();
+
+  // Insert multiple books in a transaction
+  await session.executeTransaction((tx) async {
+    var txRepo = await tx.getRepository<Book>();
+    await txRepo.insertMany([randomBook(), randomBook(), randomBook()]);
+
+    var cursor = repo.find();
+    print('Books before committing 2nd transaction: ${await cursor.toList()}');
+  });
+
+  // Find all books
+  cursor = repo.find();
+  print('All books after transaction: ${await cursor.toList()}');
+
+  // drop the repository
+  await repo.drop();
 }
 
 // ==============================================================

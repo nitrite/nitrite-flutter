@@ -1,39 +1,36 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Nitrite Hive Adapter
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Nitrite Hive adapter uses [Hive](https://pub.dev/packages/hive) as a file based storage engine for Nitrite database.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+To use Hive as a storage engine for Nitrite, add the following dependency in your `pubspec.yaml` file:
+
+```yaml
+
+dependencies:
+  nitrite_hive_adapter: ^[version]
+
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+To use Hive as a storage engine, you need to create a `HiveModule` and pass it to Nitrite builder. 
 
 ```dart
-const like = 'sample';
+// create a hive backed storage module
+var storeModule = HiveModule.withConfig()
+    .crashRecovery(true)
+    .path('$dbDir/db')
+    .build();
+
+// initialization using builder
+var db = await Nitrite.builder()
+    .loadModule(storeModule)
+    .openOrCreate(username: 'user', password: 'pass123');
+
 ```
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+For additional information visit the reference documentation: [https://www.dizitart.org/nitrite-database](https://www.dizitart.org/nitrite-database)

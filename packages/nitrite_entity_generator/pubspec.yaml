@@ -1,5 +1,5 @@
 name: nitrite_entity_generator
-description: Nitrite entity generator
+description: Nitrite entity generator. Automatically generates Nitrite entities from Dart classes.
 version: 0.0.1
 
 environment:
