@@ -1,6 +1,8 @@
 # Nitrite Database
 
-<img src="http://www.dizitart.org/nitrite-database/logo/nitrite-logo.svg" alt="Logo" width="200"/>
+<p align="center">
+    <img src="assets/nitrite-logo.svg" width="256" alt="nitrite logo">
+</p>
 
 **NO**sql **O**bject (**NO<sub>2</sub>** a.k.a Nitrite) database is an open source nosql embedded
 document store. It supports both in-memory and file based persistent store.
@@ -14,7 +16,8 @@ Nitrite is an embedded database ideal for desktop, mobile or small web applicati
 -   Pluggable storage engines - hive
 -   Transaction support
 -   Schema migration
--   Indexing
+-   Simple Index
+-   Compound Index
 -   Full text search
 -   Very fast, lightweight and fluent API 
 
