@@ -140,7 +140,7 @@ class PluginManager {
 
     if (_nitriteMapper == null) {
       _log.fine("Loading nitrite mapper");
-      var plugin = SimpleDocumentMapper();
+      var plugin = EntityConverterMapper();
       await _loadPlugin(plugin);
     }
 

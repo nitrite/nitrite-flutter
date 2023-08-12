@@ -29,8 +29,8 @@ void main() {
     test("Test Join", () async {
       var documentCursor = DocumentStream(
           () => Stream.fromIterable([
-                Document.createDocument("key", 1),
-                Document.createDocument("key", 2),
+                createDocument("key", 1),
+                createDocument("key", 2),
               ]),
           processorChain,
           () async => FindPlan());
@@ -38,25 +38,25 @@ void main() {
       var lookUp = LookUp("key", "key", "target");
       var joinedDocumentStream = JoinedDocumentStream(
           Stream.fromIterable([
-            Document.createDocument("key", 1),
-            Document.createDocument("key", 2),
+            createDocument("key", 1),
+            createDocument("key", 2),
           ]),
           documentCursor,
           lookUp);
 
       expect(await joinedDocumentStream.toList(), [
-        Document.createDocument("key", 1)
-          ..put("target", {Document.createDocument("key", 1)}),
-        Document.createDocument("key", 2)
-          ..put("target", {Document.createDocument("key", 2)}),
+        createDocument("key", 1)
+          ..put("target", {createDocument("key", 1)}),
+        createDocument("key", 2)
+          ..put("target", {createDocument("key", 2)}),
       ]);
     });
 
     test("Test Join with No Match", () async {
       var documentCursor = DocumentStream(
           () => Stream.fromIterable([
-                Document.createDocument("key1", 1),
-                Document.createDocument("key1", 2),
+                createDocument("key1", 1),
+                createDocument("key1", 2),
               ]),
           processorChain,
           () async => FindPlan());
@@ -64,25 +64,25 @@ void main() {
       var lookUp = LookUp("key", "key", "target");
       var joinedDocumentStream = JoinedDocumentStream(
           Stream.fromIterable([
-            Document.createDocument("key", 1),
-            Document.createDocument("key", 2),
+            createDocument("key", 1),
+            createDocument("key", 2),
           ]),
           documentCursor,
           lookUp);
 
       expect(await joinedDocumentStream.toList(), [
-        Document.createDocument("key", 1),
-        Document.createDocument("key", 2),
+        createDocument("key", 1),
+        createDocument("key", 2),
       ]);
     });
 
     test("Test Join with Same Target", () async {
       var documentCursor = DocumentStream(
           () => Stream.fromIterable([
-                Document.createDocument("key", 1),
-                Document.createDocument("key", 1),
-                Document.createDocument("key", 2),
-                Document.createDocument("key", 2),
+                createDocument("key", 1),
+                createDocument("key", 1),
+                createDocument("key", 2),
+                createDocument("key", 2),
               ]),
           processorChain,
           () async => FindPlan());
@@ -90,23 +90,23 @@ void main() {
       var lookUp = LookUp("key", "key", "key");
       var joinedDocumentStream = JoinedDocumentStream(
           Stream.fromIterable([
-            Document.createDocument("key", 1),
-            Document.createDocument("key", 2),
+            createDocument("key", 1),
+            createDocument("key", 2),
           ]),
           documentCursor,
           lookUp);
 
       expect(await joinedDocumentStream.toList(), [
-        Document.createDocument("key", {Document.createDocument("key", 1)}),
-        Document.createDocument("key", {Document.createDocument("key", 2)}),
+        createDocument("key", {createDocument("key", 1)}),
+        createDocument("key", {createDocument("key", 2)}),
       ]);
     });
 
     test("Test Join with Wrong Lookup", () async {
       var documentCursor = DocumentStream(
           () => Stream.fromIterable([
-                Document.createDocument("key", 1),
-                Document.createDocument("key", 2),
+                createDocument("key", 1),
+                createDocument("key", 2),
               ]),
           processorChain,
           () async => FindPlan());
@@ -114,8 +114,8 @@ void main() {
       var lookUp = LookUp("key", "key", "");
       var joinedDocumentStream = JoinedDocumentStream(
           Stream.fromIterable([
-            Document.createDocument("key", 1),
-            Document.createDocument("key", 2),
+            createDocument("key", 1),
+            createDocument("key", 2),
           ]),
           documentCursor,
           lookUp);

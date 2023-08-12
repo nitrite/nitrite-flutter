@@ -17,7 +17,7 @@ void main() {
       setUpLog();
       db = await Nitrite.builder().openOrCreate();
 
-      var mapper = db.config.nitriteMapper as SimpleDocumentMapper;
+      var mapper = db.config.nitriteMapper as EntityConverterMapper;
       mapper.registerEntityConverter(StressRecordConverter());
       mapper.registerEntityConverter(WithDateIdConverter());
       mapper.registerEntityConverter(WithTransientFieldConverter());

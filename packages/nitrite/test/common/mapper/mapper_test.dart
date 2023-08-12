@@ -18,16 +18,16 @@ void main() {
       emp.joiningDate = DateTime.now();
       emp.boss = boss;
 
-      var mapper = SimpleDocumentMapper();
+      var mapper = EntityConverterMapper();
       mapper.registerEntityConverter(_EmployeeConverter());
       var stopWatch = Stopwatch();
       stopWatch.start();
-      var doc = mapper.convert<Document, _Employee>(emp);
+      var doc = mapper.tryConvert<Document, _Employee>(emp);
       stopWatch.stop();
       expect(doc, isNotNull);
-      
+
       stopWatch.start();
-      var emp2 = mapper.convert<_Employee, Document>(doc);
+      var emp2 = mapper.tryConvert<_Employee, Document>(doc);
       stopWatch.stop();
       expect(emp2, emp);
     });
@@ -49,18 +49,18 @@ void main() {
       dept.employees.add(emp);
       dept.employees.add(boss);
 
-      var mapper = SimpleDocumentMapper();
+      var mapper = EntityConverterMapper();
       mapper.registerEntityConverter(_EmployeeConverter());
       mapper.registerEntityConverter(_DepartmentConverter());
 
       var stopWatch = Stopwatch();
       stopWatch.start();
-      var doc = mapper.convert<Document, _Department>(dept);
+      var doc = mapper.tryConvert<Document, _Department>(dept);
       stopWatch.stop();
       expect(doc, isNotNull);
-      
+
       stopWatch.start();
-      var dept2 = mapper.convert<_Department, Document>(doc);
+      var dept2 = mapper.tryConvert<_Department, Document>(doc);
       stopWatch.stop();
       expect(dept2, dept);
     });
@@ -105,5 +105,3 @@ class _Department {
   @override
   int get hashCode => name.hashCode ^ ListEquality().hash(employees);
 }
-
-

@@ -3,16 +3,17 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// A [NitriteMapper] based on [EntityConverter] implementation.
-class SimpleDocumentMapper extends NitriteMapper {
+class EntityConverterMapper extends NitriteMapper {
   final Set<String> _valueTypes = {};
   final Map<String, EntityConverter> _converterRegistry = {};
 
-  SimpleDocumentMapper([List<Type> valueTypes = const []]) {
+  /// Creates a new [EntityConverterMapper].
+  EntityConverterMapper([List<Type> valueTypes = const []]) {
     _registerValueTypes(valueTypes);
   }
 
   @override
-  dynamic convert<Target, Source>(Source? source) {
+  dynamic tryConvert<Target, Source>(Source? source) {
     if (source == null) {
       return null;
     }

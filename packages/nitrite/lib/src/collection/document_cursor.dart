@@ -7,8 +7,9 @@ import 'package:nitrite/src/common/stream/processed_document_stream.dart';
 import 'package:nitrite/src/common/stream/projected_document_stream.dart';
 import 'package:rxdart/streams.dart';
 
-/// An interface to iterate over [NitriteCollection.find] results. It provides a
-/// mechanism to iterate over all [NitriteId]s of the result.
+/// The [DocumentCursor] represents a cursor as a stream of `Document` 
+/// to iterate over [NitriteCollection.find] results. It also provides methods
+/// for projection and perform left outer joins with other [DocumentCursor]s.
 ///
 /// ```dart
 /// // create/open a database

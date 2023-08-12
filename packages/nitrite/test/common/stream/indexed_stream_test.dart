@@ -19,12 +19,12 @@ void main() {
 
       var stream = IndexedStream(indexMap, nitriteMap);
       when(nitriteMap[any])
-          .thenAnswer((_) async => Document.fromMap({"id": 1, "name": "John"}));
+          .thenAnswer((_) async => documentFromMap({"id": 1, "name": "John"}));
 
       expect(await stream.toList(), [
-        Document.fromMap({"id": 1, "name": "John"}),
-        Document.fromMap({"id": 1, "name": "John"}),
-        Document.fromMap({"id": 1, "name": "John"}),
+        documentFromMap({"id": 1, "name": "John"}),
+        documentFromMap({"id": 1, "name": "John"}),
+        documentFromMap({"id": 1, "name": "John"}),
       ]);
     });
 
@@ -34,7 +34,7 @@ void main() {
 
       var stream = IndexedStream(indexMap, nitriteMap);
       when(nitriteMap[any])
-          .thenAnswer((_) async => Document.fromMap({"id": 1, "name": "John"}));
+          .thenAnswer((_) async => documentFromMap({"id": 1, "name": "John"}));
 
       expect(await stream.toList(), []);
     });

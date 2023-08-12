@@ -21,7 +21,7 @@ class StoreMetaData implements MetaData {
   /// Gets the database info in a document.
   @override
   Document getInfo() {
-    return Document.emptyDocument()
+    return emptyDocument()
       ..put('createTime', createTime)
       ..put('storeVersion', storeVersion)
       ..put('nitriteVersion', nitriteVersion)

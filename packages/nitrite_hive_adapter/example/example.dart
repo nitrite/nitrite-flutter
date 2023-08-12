@@ -152,7 +152,7 @@ Future<void> collectionExample(Nitrite db) async {
 
 Future<void> objectRepositoryExample(Nitrite db) async {
   // Register converters
-  var nitriteMapper = db.config.nitriteMapper as SimpleDocumentMapper;
+  var nitriteMapper = db.config.nitriteMapper as EntityConverterMapper;
   nitriteMapper.registerEntityConverter(MyBookConverter());
   nitriteMapper.registerEntityConverter(BookIdConverter());
 

@@ -31,12 +31,14 @@ abstract class Processor {
   }
 }
 
-class ProcessorChain extends Processor {
-  final List<Processor> processors = [];
 
-  ProcessorChain([List<Processor> processors = const []]) {
-    this.processors.addAll(processors);
-  }
+/// Represents a chain of document processors. The processors are executed
+/// in the order they are added to the chain.
+class ProcessorChain extends Processor {
+  final List<Processor> processors;
+
+  /// Creates a new [ProcessorChain] instance.
+  ProcessorChain([this.processors = const []]);
 
   @override
   Future<Document> processBeforeWrite(Document document) async {
@@ -56,10 +58,12 @@ class ProcessorChain extends Processor {
     return document;
   }
 
+  /// Adds a [Processor] to the chain.
   void add(Processor processor) {
     processors.add(processor);
   }
 
+  /// Removes a [Processor] from the chain.
   void remove(Processor processor) {
     processors.remove(processor);
   }

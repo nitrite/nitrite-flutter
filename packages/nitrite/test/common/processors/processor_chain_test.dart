@@ -29,10 +29,10 @@ void main() {
       var processorChain = ProcessorChain();
       var processor = MockProcessor();
       when(processor.processBeforeWrite(any)).thenAnswer(
-          (_) => Future.value(Document.createDocument("processed", true)));
+          (_) => Future.value(createDocument("processed", true)));
       processorChain.add(processor);
 
-      var document = Document.emptyDocument();
+      var document = emptyDocument();
       expect(document.containsKey("processed"), isFalse);
       expect(processorChain.processors.isNotEmpty, isTrue);
 
@@ -48,10 +48,10 @@ void main() {
       var processorChain = ProcessorChain();
       var processor = MockProcessor();
       when(processor.processAfterRead(any))
-          .thenAnswer((_) => Future.value(Document.emptyDocument()));
+          .thenAnswer((_) => Future.value(emptyDocument()));
       processorChain.add(processor);
 
-      var document = Document.createDocument("processed", true);
+      var document = createDocument("processed", true);
       expect(document.isEmpty, isFalse);
       expect(processorChain.processors.isNotEmpty, isTrue);
 
@@ -67,8 +67,8 @@ void main() {
       var collection = MockNitriteCollection();
       var documentCursor = DocumentStream(
           () => Stream.fromIterable([
-                Document.createDocument("key", 1),
-                Document.createDocument("key", 2),
+                createDocument("key", 1),
+                createDocument("key", 2),
               ]),
           ProcessorChain([spyProcessor]),
           () async => FindPlan());
@@ -78,7 +78,7 @@ void main() {
           .thenAnswer((_) => Future.value(WriteResult([NitriteId.newId()])));
 
       when(mockProcessor.processBeforeWrite(any)).thenAnswer(
-          (_) => Future.value(Document.createDocument("processed", true)));
+          (_) => Future.value(createDocument("processed", true)));
 
       when(mockProcessor.processAfterRead(any)).thenAnswer((invocation) {
         var doc = invocation.positionalArguments.first as Document;

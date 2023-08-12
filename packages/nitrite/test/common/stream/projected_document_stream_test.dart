@@ -7,32 +7,32 @@ void main() {
     test("Test Stream with Projection", () async {
       var stream = ProjectedDocumentStream(
           Stream.fromIterable([
-            Document.fromMap({"id": 1, "name": "John"}),
-            Document.fromMap({"id": 2, "name": "Jane"}),
-            Document.fromMap({"id": 3, "name": "Joe"}),
+            documentFromMap({"id": 1, "name": "John"}),
+            documentFromMap({"id": 2, "name": "Jane"}),
+            documentFromMap({"id": 3, "name": "Joe"}),
           ]),
-          Document.fromMap({"name": ""})
+          documentFromMap({"name": ""})
       );
       expect(await stream.toList(), [
-        Document.fromMap({"name": "John"}),
-        Document.fromMap({"name": "Jane"}),
-        Document.fromMap({"name": "Joe"}),
+        documentFromMap({"name": "John"}),
+        documentFromMap({"name": "Jane"}),
+        documentFromMap({"name": "Joe"}),
       ]);
     });
 
     test("Test Stream with no Projection", () async {
       var stream = ProjectedDocumentStream(
           Stream.fromIterable([
-            Document.fromMap({"id": 1, "name": "John"}),
-            Document.fromMap({"id": 2, "name": "Jane"}),
-            Document.fromMap({"id": 3, "name": "Joe"}),
+            documentFromMap({"id": 1, "name": "John"}),
+            documentFromMap({"id": 2, "name": "Jane"}),
+            documentFromMap({"id": 3, "name": "Joe"}),
           ]),
-          Document.emptyDocument()
+          emptyDocument()
       );
       expect(await stream.toList(), [
-        Document.emptyDocument(),
-        Document.emptyDocument(),
-        Document.emptyDocument(),
+        emptyDocument(),
+        emptyDocument(),
+        emptyDocument(),
       ]);
     });
   });

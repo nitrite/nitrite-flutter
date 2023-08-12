@@ -16,7 +16,7 @@ class MutatedObjectStream<T> extends StreamView<T> {
         record.remove(docId);
       }
 
-      return nitriteMapper.convert<M, Document>(record)!;
+      return nitriteMapper.tryConvert<M, Document>(record)!;
     });
   }
 }

@@ -7,20 +7,20 @@ import '../../test_utils.dart';
 void main() {
   group("Document Utils Test Suite", () {
     test('Test GetDocumentValues', () {
-      var document = Document.emptyDocument();
+      var document = emptyDocument();
       document.put('_id', '1');
       document.put('name', 'John');
       document.put('age', '30');
       document.put(
           'address',
-          Document.emptyDocument()
+          emptyDocument()
             ..put('street', '1st Street')
             ..put('city', 'New York')
             ..put('state', 'NY')
             ..put('zip', '10001'));
       document.put(
           'phone',
-          Document.emptyDocument()
+          emptyDocument()
             ..put('home', '212-555-1212')
             ..put('cell', '212-555-1213'));
 
@@ -42,7 +42,7 @@ void main() {
     });
 
     test('Test SkeletonDocument', () {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_PersonConverter());
       nitriteMapper.registerEntityConverter(_AddressConverter());
       nitriteMapper.registerEntityConverter(_PhoneConverter());
@@ -57,7 +57,7 @@ void main() {
     });
 
     test('Test SkeletonDocument with value type', () {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       expect(() => skeletonDocument<int>(nitriteMapper),
           throwsObjectMappingException);
     });
@@ -78,21 +78,21 @@ class _PersonConverter extends EntityConverter<_Person> {
     entity.name = document.get('name');
     entity.age = document.get('age');
     entity.address =
-        nitriteMapper.convert<_Address, Document>(document.get('address'));
+        nitriteMapper.tryConvert<_Address, Document>(document.get('address'));
     entity.phone =
-        nitriteMapper.convert<_Phone, Document>(document.get('phone'));
+        nitriteMapper.tryConvert<_Phone, Document>(document.get('phone'));
     return entity;
   }
 
   @override
   Document toDocument(_Person entity, NitriteMapper nitriteMapper) {
-    var document = Document.emptyDocument();
+    var document = emptyDocument();
     document.put('name', entity.name);
     document.put('age', entity.age);
+    document.put('address',
+        nitriteMapper.tryConvert<Document, _Address>(entity.address));
     document.put(
-        'address', nitriteMapper.convert<Document, _Address>(entity.address));
-    document.put(
-        'phone', nitriteMapper.convert<Document, _Phone>(entity.phone));
+        'phone', nitriteMapper.tryConvert<Document, _Phone>(entity.phone));
     return document;
   }
 }
@@ -117,7 +117,7 @@ class _AddressConverter extends EntityConverter<_Address> {
 
   @override
   Document toDocument(_Address entity, NitriteMapper nitriteMapper) {
-    var document = Document.emptyDocument();
+    var document = emptyDocument();
     document.put('street', entity.street);
     document.put('city', entity.city);
     document.put('state', entity.state);
@@ -142,7 +142,7 @@ class _PhoneConverter extends EntityConverter<_Phone> {
 
   @override
   Document toDocument(_Phone entity, NitriteMapper nitriteMapper) {
-    var document = Document.emptyDocument();
+    var document = emptyDocument();
     document.put('home', entity.home);
     document.put('cell', entity.cell);
     return document;

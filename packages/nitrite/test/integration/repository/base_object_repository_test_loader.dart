@@ -118,7 +118,7 @@ Future<void> _openDb() async {
   db = await nitriteBuilder.openOrCreate(
       username: 'test-user', password: 'test-password');
 
-  var mapper = db.config.nitriteMapper as SimpleDocumentMapper;
+  var mapper = db.config.nitriteMapper as EntityConverterMapper;
   mapper.registerEntityConverter(CompanyConverter());
   mapper.registerEntityConverter(EmployeeConverter());
   mapper.registerEntityConverter(NoteConverter());

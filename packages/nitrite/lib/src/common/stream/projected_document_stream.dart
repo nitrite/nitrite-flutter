@@ -9,7 +9,7 @@ class ProjectedDocumentStream extends StreamView<Document> {
   static Stream<Document> _project(
       Stream<Document> stream, Document projection) {
     return stream.map((doc) {
-      var newDoc = Document.emptyDocument();
+      var newDoc = emptyDocument();
       for (var field in projection.fields) {
         if (doc.containsField(field)) {
           newDoc.put(field, doc[field]);

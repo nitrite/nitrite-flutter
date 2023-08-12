@@ -261,14 +261,14 @@ void main() {
       var config = MockNitriteConfig();
       var nitriteMapper = MockNitriteMapper();
       when(config.nitriteMapper).thenReturn(nitriteMapper);
-      when(nitriteMapper.convert<dynamic, Comparable>(any))
+      when(nitriteMapper.tryConvert<dynamic, Comparable>(any))
           .thenAnswer((invocation) => invocation.positionalArguments.first);
 
       regex.objectFilter = true;
       regex.nitriteConfig = config;
 
       expect((regex as FieldBasedFilter).value, r'[0-9]+');
-      verify(nitriteMapper.convert<dynamic, Comparable>(any)).called(1);
+      verify(nitriteMapper.tryConvert<dynamic, Comparable>(any)).called(1);
 
       var filter = where('').eq('') as FieldBasedFilter;
       filter.objectFilter = true;
@@ -280,7 +280,7 @@ void main() {
       var config = MockNitriteConfig();
       var nitriteMapper = MockNitriteMapper();
       when(config.nitriteMapper).thenReturn(nitriteMapper);
-      when(nitriteMapper.convert<dynamic, Comparable>(any))
+      when(nitriteMapper.tryConvert<dynamic, Comparable>(any))
           .thenAnswer((invocation) => invocation.positionalArguments.first);
 
       var filter = where('').eq('') as FieldBasedFilter;
@@ -288,7 +288,7 @@ void main() {
       filter.nitriteConfig = config;
       expect(() => filter.value, throwsValidationException);
 
-      verifyNever(nitriteMapper.convert<dynamic, Comparable>(any)).called(0);
+      verifyNever(nitriteMapper.tryConvert<dynamic, Comparable>(any)).called(0);
     });
   });
 
@@ -331,14 +331,14 @@ void main() {
       var config = MockNitriteConfig();
       var nitriteMapper = MockNitriteMapper();
       when(config.nitriteMapper).thenReturn(nitriteMapper);
-      when(nitriteMapper.convert<dynamic, Comparable>(any))
+      when(nitriteMapper.tryConvert<dynamic, Comparable>(any))
           .thenAnswer((invocation) => invocation.positionalArguments.first);
 
       filter.objectFilter = true;
       filter.nitriteConfig = config;
 
       expect(filter.value, [1, 2, 3]);
-      verifyNever(nitriteMapper.convert<dynamic, Comparable>(any)).called(0);
+      verifyNever(nitriteMapper.tryConvert<dynamic, Comparable>(any)).called(0);
 
       filter = where('').within([1, 2, 3]) as ComparableArrayFilter;
       filter.objectFilter = true;
@@ -427,7 +427,7 @@ void main() {
       doc.put('a', 1);
 
       var f1 = 'a'.between(0, 2);
-      
+
       expect(f1.apply(doc), isTrue);
     });
 
@@ -436,7 +436,7 @@ void main() {
       doc.put('a', 1);
 
       var f1 = 'a'.within([0, 1, 2]);
-      
+
       expect(f1.apply(doc), isTrue);
     });
 
@@ -445,7 +445,7 @@ void main() {
       doc.put('a', 4);
 
       var f1 = 'a'.notIn([0, 1, 2]);
-      
+
       expect(f1.apply(doc), isTrue);
     });
 
@@ -454,7 +454,7 @@ void main() {
       doc.put('a', [1, 3, 4]);
 
       var f1 = 'a'.elemMatch($.between(0, 5));
-      
+
       expect(f1.apply(doc), isTrue);
     });
 

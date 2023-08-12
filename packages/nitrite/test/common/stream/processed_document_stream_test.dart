@@ -25,28 +25,28 @@ void main() {
 
       var stream = ProcessedDocumentStream(
           () => Stream.fromIterable([
-                Document.createDocument("key", 1),
-                Document.createDocument("key", 2),
+                createDocument("key", 1),
+                createDocument("key", 2),
               ]),
           processorChain);
 
       expect(await stream.toList(), [
-        Document.fromMap({
+        documentFromMap({
           "key": 1,
           "processed": true
         }),
-        Document.fromMap({
+        documentFromMap({
           "key": 2,
           "processed": true
         }),
       ]);
 
       expect(await stream.toList(), [
-        Document.fromMap({
+        documentFromMap({
           "key": 1,
           "processed": true
         }),
-        Document.fromMap({
+        documentFromMap({
           "key": 2,
           "processed": true
         }),
@@ -68,18 +68,18 @@ void main() {
       var stream = ProcessedDocumentStream(
               () =>
               Stream.fromIterable([
-                Document.createDocument("key", 1),
-                Document.createDocument("key", 2),
+                createDocument("key", 1),
+                createDocument("key", 2),
               ]),
           processorChain,
           reusable: false);
 
       expect(await stream.toList(), [
-        Document.fromMap({
+        documentFromMap({
           "key": 1,
           "processed": true
         }),
-        Document.fromMap({
+        documentFromMap({
           "key": 2,
           "processed": true
         }),

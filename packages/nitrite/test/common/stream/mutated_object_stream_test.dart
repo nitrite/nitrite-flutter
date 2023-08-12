@@ -5,14 +5,14 @@ import 'package:test/test.dart';
 void main() {
   group("MutatedObjectStream Test Suite", () {
     test("Test Mutate with Id Strip", () async {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
 
       var stream = MutatedObjectStream<_A>(
           Stream.fromIterable([
-            Document.fromMap({"_id": 1, "name": "John", "age": 20}),
-            Document.fromMap({"_id": 2, "name": "Jane", "age": 21}),
-            Document.fromMap({"_id": 3, "name": "Joe", "age": 22}),
+            documentFromMap({"_id": 1, "name": "John", "age": 20}),
+            documentFromMap({"_id": 2, "name": "Jane", "age": 21}),
+            documentFromMap({"_id": 3, "name": "Joe", "age": 22}),
           ]),
           nitriteMapper);
 
@@ -27,14 +27,14 @@ void main() {
     });
 
     test("Test Mutate without Id Strip", () async {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
 
       var stream = MutatedObjectStream<_A>(
           Stream.fromIterable([
-            Document.fromMap({"_id": 1, "name": "John", "age": 20}),
-            Document.fromMap({"_id": 2, "name": "Jane", "age": 21}),
-            Document.fromMap({"_id": 3, "name": "Joe", "age": 22}),
+            documentFromMap({"_id": 1, "name": "John", "age": 20}),
+            documentFromMap({"_id": 2, "name": "Jane", "age": 21}),
+            documentFromMap({"_id": 3, "name": "Joe", "age": 22}),
           ]),
           nitriteMapper,
           false);
@@ -85,7 +85,7 @@ class _AConverter extends EntityConverter<_A> {
 
   @override
   Document toDocument(_A entity, NitriteMapper nitriteMapper) {
-    return Document.fromMap({
+    return documentFromMap({
       "_id": entity.id,
       "name": entity.name,
       "age": entity.age,

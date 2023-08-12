@@ -52,7 +52,7 @@ void validateProjectionType<T>(NitriteMapper nitriteMapper) {
 
   Document? document;
   try {
-    document = nitriteMapper.convert<Document, T>(value);
+    document = nitriteMapper.tryConvert<Document, T>(value);
   } catch (e, s) {
     throw ValidationException("Invalid projection type",
         cause: e, stackTrace: s);
@@ -72,7 +72,7 @@ void validateRepositoryType<T>(NitriteMapper nitriteMapper) {
           "Cannot create new instance of type ${T.toString()}");
     }
 
-    var document = nitriteMapper.convert<Document, T>(value);
+    var document = nitriteMapper.tryConvert<Document, T>(value);
     if (document == null || document.size == 0) {
       throw ValidationException(
           "Cannot convert to document from type ${T.toString()}");

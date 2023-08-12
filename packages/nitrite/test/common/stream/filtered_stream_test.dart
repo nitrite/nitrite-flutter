@@ -14,17 +14,17 @@ void main() {
 
       Stream<Document> stream = FilteredStream(
           Stream.fromIterable([
-            Document.fromMap({"id": 1, "name": "John"}),
-            Document.fromMap({"id": 2, "name": "Jane"}),
-            Document.fromMap({"id": 3, "name": "Joe"}),
+            documentFromMap({"id": 1, "name": "John"}),
+            documentFromMap({"id": 2, "name": "Jane"}),
+            documentFromMap({"id": 3, "name": "Joe"}),
           ]),
           filter);
 
       when(filter.apply(any)).thenReturn(true);
       expect(await stream.toList(), [
-        Document.fromMap({"id": 1, "name": "John"}),
-        Document.fromMap({"id": 2, "name": "Jane"}),
-        Document.fromMap({"id": 3, "name": "Joe"}),
+        documentFromMap({"id": 1, "name": "John"}),
+        documentFromMap({"id": 2, "name": "Jane"}),
+        documentFromMap({"id": 3, "name": "Joe"}),
       ]);
       verify(filter.apply(any)).called(3);
     });
@@ -34,9 +34,9 @@ void main() {
 
       Stream<Document> stream = FilteredStream(
           Stream.fromIterable([
-            Document.fromMap({"id": 1, "name": "John"}),
-            Document.fromMap({"id": 2, "name": "Jane"}),
-            Document.fromMap({"id": 3, "name": "Joe"}),
+            documentFromMap({"id": 1, "name": "John"}),
+            documentFromMap({"id": 2, "name": "Jane"}),
+            documentFromMap({"id": 3, "name": "Joe"}),
           ]),
           filter);
 
@@ -48,16 +48,16 @@ void main() {
     test("Test Stream with ALL Filter", () async {
       Stream<Document> stream = FilteredStream(
           Stream.fromIterable([
-            Document.fromMap({"id": 1, "name": "John"}),
-            Document.fromMap({"id": 2, "name": "Jane"}),
-            Document.fromMap({"id": 3, "name": "Joe"}),
+            documentFromMap({"id": 1, "name": "John"}),
+            documentFromMap({"id": 2, "name": "Jane"}),
+            documentFromMap({"id": 3, "name": "Joe"}),
           ]),
           all);
 
       expect(await stream.toList(), [
-        Document.fromMap({"id": 1, "name": "John"}),
-        Document.fromMap({"id": 2, "name": "Jane"}),
-        Document.fromMap({"id": 3, "name": "Joe"}),
+        documentFromMap({"id": 1, "name": "John"}),
+        documentFromMap({"id": 2, "name": "Jane"}),
+        documentFromMap({"id": 3, "name": "Joe"}),
       ]);
     });
   });

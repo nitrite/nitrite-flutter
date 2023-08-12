@@ -111,7 +111,7 @@ void main() {
     });
 
     test("Test ValidateProjectionType", () {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
       nitriteMapper.registerEntityConverter(_CConverter());
 
@@ -128,7 +128,7 @@ void main() {
     });
 
     test("Test ValidateRepositoryType", () {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
       nitriteMapper.registerEntityConverter(_CConverter());
 
@@ -162,7 +162,7 @@ class _AConverter extends EntityConverter<_A> {
 
   @override
   Document toDocument(_A entity, NitriteMapper nitriteMapper) {
-    return Document.emptyDocument()
+    return emptyDocument()
         .put("s", entity.s)
         .put("i", entity.i)
         .put("d", entity.d);
@@ -180,6 +180,6 @@ class _CConverter extends EntityConverter<_C> {
 
   @override
   Document toDocument(_C entity, NitriteMapper nitriteMapper) {
-    return Document.emptyDocument();
+    return emptyDocument();
   }
 }

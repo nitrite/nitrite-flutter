@@ -32,7 +32,7 @@ class Attributes {
 
   Map<String, String> _attributes = {};
 
-  /// Instantiates a new Attributes.
+  /// Instantiates a new [Attributes].
   Attributes([String? collection]) {
     _attributes = HashMap<String, String>();
     if (collection != null) {
@@ -71,7 +71,7 @@ class Attributes {
     return _attributes.containsKey(key);
   }
 
-  Document toDocument() => Document.fromMap(_attributes);
+  Document toDocument() => documentFromMap(_attributes);
 
   @override
   bool operator ==(Object other) =>

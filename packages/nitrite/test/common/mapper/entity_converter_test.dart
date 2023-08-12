@@ -7,7 +7,7 @@ part 'entity_converter_test.no2.dart';
 void main() {
   group("EntityConverter Test Suite", () {
     test("Test Helper Methods", () {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
       nitriteMapper.registerEntityConverter(_BConverter());
       nitriteMapper.registerEntityConverter(_CConverter());
@@ -25,9 +25,9 @@ void main() {
       var l = [_B(s: "aaa"), _B(s: "bbb"), _B(s: "ccc")];
       var a = _A(l: l, s: s, m: m, ms: ms, ls: ls);
 
-      var doc = nitriteMapper.convert<Document, _A>(a);
+      var doc = nitriteMapper.tryConvert<Document, _A>(a);
 
-      var a1 = nitriteMapper.convert<_A, Document>(doc);
+      var a1 = nitriteMapper.tryConvert<_A, Document>(doc);
       expect(a1, a);
     });
   });

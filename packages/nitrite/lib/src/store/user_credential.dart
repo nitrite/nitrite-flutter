@@ -13,6 +13,6 @@ class UserCredential {
   String get passwordHash => _passwordHash;
 
   Document toDocument() {
-    return Document.emptyDocument()..put('passwordHash', _passwordHash);
+    return emptyDocument()..put('passwordHash', _passwordHash);
   }
 }

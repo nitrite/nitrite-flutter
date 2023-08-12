@@ -19,6 +19,6 @@ class MapMetaData implements MetaData {
 
   @override
   Document getInfo() {
-    return Document.createDocument(tagMapMetaData, _mapNames);
+    return createDocument(tagMapMetaData, _mapNames);
   }
 }

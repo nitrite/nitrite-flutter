@@ -16,7 +16,7 @@ FieldValues getDocumentValues(Document document, Fields fields) {
 
 Document skeletonDocument<T>(NitriteMapper nitriteMapper) {
   var dummy = newInstance<T>(nitriteMapper);
-  var document = nitriteMapper.convert<Document, T>(dummy);
+  var document = nitriteMapper.tryConvert<Document, T>(dummy);
   if (document != null) {
     if (document is! Document) {
       throw ObjectMappingException(
@@ -26,12 +26,12 @@ Document skeletonDocument<T>(NitriteMapper nitriteMapper) {
     return _removeValues(document);
   }
 
-  return Document.emptyDocument();
+  return emptyDocument();
 }
 
 Document _removeValues(Document document) {
   if (document.isEmpty) return document;
-  var newDoc = Document.emptyDocument();
+  var newDoc = emptyDocument();
   for (var entry in document) {
     if (entry.second is Document) {
       newDoc.put(entry.first, _removeValues(entry.second as Document));

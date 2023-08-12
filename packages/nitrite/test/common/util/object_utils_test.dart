@@ -99,7 +99,7 @@ void main() {
     });
 
     test('Test FindRepositoryNameByType', () {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_FConverter());
       nitriteMapper.registerEntityConverter(_GConverter());
 
@@ -118,7 +118,7 @@ void main() {
     });
 
     test('Test GetEntityName', () {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_FConverter());
       nitriteMapper.registerEntityConverter(_GConverter());
 
@@ -136,7 +136,7 @@ void main() {
     });
 
     test('Test NewInstance', () {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.addValueType<_B>();
       nitriteMapper.registerEntityConverter(_FConverter());
 
@@ -198,7 +198,7 @@ void main() {
     });
 
     test('Test IsBuiltInValueType', () {
-      var nitriteMapper = SimpleDocumentMapper();
+      var nitriteMapper = EntityConverterMapper();
       nitriteMapper.addValueType<_B>();
       nitriteMapper.registerEntityConverter(_FConverter());
 

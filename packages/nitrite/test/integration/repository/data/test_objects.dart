@@ -250,7 +250,7 @@ class CompanyConverter extends EntityConverter<Company> {
         : document['employeeRecord'] as Map;
 
     for (var entry in employeeRecords.entries) {
-      var key = nitriteMapper.convert<String, dynamic>(entry.key);
+      var key = nitriteMapper.tryConvert<String, dynamic>(entry.key);
       var value = EntityConverter.toList<Employee>(entry.value, nitriteMapper);
       map[key] = value;
     }

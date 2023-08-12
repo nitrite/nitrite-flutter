@@ -108,7 +108,7 @@ T? newInstance<T>(NitriteMapper nitriteMapper) {
       return defaultValue<T>();
     }
 
-    return nitriteMapper.convert<T, Document>(Document.emptyDocument());
+    return nitriteMapper.tryConvert<T, Document>(emptyDocument());
   } catch (e, s) {
     throw ObjectMappingException("Failed to instantiate type ${T.toString()}",
         cause: e, stackTrace: s);

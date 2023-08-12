@@ -15,7 +15,7 @@ class StoreCatalog {
 
   Future<void> writeCollectionEntry(String name) async {
     var document = await _catalog[tagCollections];
-    document ??= Document.emptyDocument();
+    document ??= emptyDocument();
 
     // parse the document to create collection metadata object
     var mapMetaData = MapMetaData(document);
@@ -27,7 +27,7 @@ class StoreCatalog {
 
   Future<void> writeRepositoryEntry(String name) async {
     var document = await _catalog[tagRepositories];
-    document ??= Document.emptyDocument();
+    document ??= emptyDocument();
 
     // parse the document to create repository metadata object
     var mapMetaData = MapMetaData(document);
@@ -39,7 +39,7 @@ class StoreCatalog {
 
   Future<void> writeKeyedRepositoryEntry(String name) async {
     var document = await _catalog[tagKeyedRepositories];
-    document ??= Document.emptyDocument();
+    document ??= emptyDocument();
 
     // parse the document to create repository metadata object
     var mapMetaData = MapMetaData(document);

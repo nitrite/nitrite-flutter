@@ -2,37 +2,47 @@ import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
-Document emptyDocument() => Document.emptyDocument();
+/// Creates an empty [Document].
+Document emptyDocument() => _NitriteDocument();
 
-Document documentFromMap(Map<String, dynamic> map) => Document.fromMap(map);
-
-Document createDocument(String key, dynamic value) =>
-    Document.createDocument(key, value);
-
-/// A representation of a nitrite document.
-abstract class Document extends Iterable<Pair<String, dynamic>> {
-  /// Creates a new empty document.
-  static Document emptyDocument() => _NitriteDocument();
-
-  /// Creates a new document initialized with the given key/value pair.
-  static Document createDocument(String key, dynamic value) {
-    var document = emptyDocument();
-    document.put(key, value);
-    return document;
-  }
-
-  /// Creates a new document initialized with the given map.
-  static Document fromMap(Map<String, dynamic> map) {
-    var doc = emptyDocument();
+/// Creates a [Document] from a `Map<String, dynamic>`.
+Document documentFromMap(Map<String, dynamic> map) {
+  var doc = emptyDocument();
     for (var entry in map.entries) {
       if (entry.value is Map<String, dynamic>) {
-        doc.put(entry.key, fromMap(entry.value));
+        doc.put(entry.key, documentFromMap(entry.value));
       } else {
         doc.put(entry.key, entry.value);
       }
     }
     return doc;
-  }
+}
+
+/// Creates a [Document] from the given [key] and [value].
+Document createDocument(String key, dynamic value) =>
+    emptyDocument()..put(key, value);
+
+/// Represents a document in Nitrite database.
+/// 
+/// Nitrite document are composed of key-value pairs. The key is always a
+/// [String] and value can be any type including null. 
+/// 
+/// Nitrite document supports nested documents as well. The key of a nested 
+/// document is a [String] separated by [NitriteConfig.fieldSeparator]. 
+/// By default, Nitrite uses `.` as field separator. This can be changed by
+/// setting [NitriteConfig.fieldSeparator].
+/// 
+/// For example, if a document has a nested document `{"a": {"b": 1}}`, then the
+/// value inside the nested document can be retrieved by calling `document["a.b"]`.
+/// 
+/// Below fields are reserved and cannot be used as key in a document.
+/// 
+/// * `_id` - The unique identifier of the document. If not provided, Nitrite
+/// will generate a unique [NitriteId] for the document during insertion.
+/// * `_revision` - The revision number of the document. 
+/// * `_source` - The source of the document.
+/// * `_modified` - The last modified time of the document.
+abstract class Document extends Iterable<Pair<String, dynamic>> {
 
   /// Associates the specified value with the specified key in this document.
   ///
@@ -107,6 +117,7 @@ abstract class Document extends Iterable<Pair<String, dynamic>> {
     return get<int>(docModified)!;
   }
 
+  /// Converts this document to a [Map<String, dynamic>].
   Map<String, dynamic> toMap();
 }
 

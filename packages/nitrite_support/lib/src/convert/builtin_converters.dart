@@ -38,7 +38,7 @@ class DocumentConverter extends Converter<Document> {
   Document decode(BinaryReader reader) {
     var map = reader.readMap();
     var documentMap = Map<String, dynamic>.from(map);
-    return Document.fromMap(documentMap);
+    return documentFromMap(documentMap);
   }
 
   @override

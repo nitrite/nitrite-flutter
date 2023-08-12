@@ -23,7 +23,7 @@ Future<Nitrite> db(DbRef ref) async {
       .fieldSeparator('.')
       .openOrCreate(username: 'demo', password: 'demo123');
 
-  var mapper = db.config.nitriteMapper as SimpleDocumentMapper;
+  var mapper = db.config.nitriteMapper as EntityConverterMapper;
   mapper.registerEntityConverter(TodoConverter());
 
   return db;

@@ -1,11 +1,12 @@
 import 'package:nitrite/nitrite.dart';
 
-/// Represents a named document collection stored in nitrite database.
+/// Represents a named document collection stored in Nitrite database.
 /// It persists documents into the database. Each document is associated
 /// with a unique [NitriteId] in a collection.
 ///
 /// A nitrite collection supports indexing. Every nitrite collection is also
-/// observable.
+/// observable. It's possible to register a [CollectionEventListener] to a
+/// collection and listen to the changes happening to the collection.
 ///
 /// **Create a collection**
 ///
@@ -32,10 +33,10 @@ abstract class NitriteCollection extends PersistentCollection<Document> {
     return insertMany([documents]);
   }
 
-  /// Insert documents into a collection. If the document contains a `_id` value,
-  /// then the value will be used as a unique key to identify the document in
+  /// Insert documents into a collection. If the documents contains a `_id` value,
+  /// then the value will be used as a unique key to identify each document in
   /// the collection.
-  /// If the document does not contain any `_id` value, then nitrite will
+  /// If any document does not contain any `_id` value, then nitrite will
   /// generate a new [NitriteId] and will add it to the document.
   ///
   /// If any of the field is already indexed in the collection, then after

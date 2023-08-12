@@ -58,7 +58,7 @@ class RepositoryOperations<T> {
     } else if (value is Map) {
       serializedValue = serializeMap(value);
     } else {
-      serializedValue = _nitriteMapper.convert<Document, dynamic>(value);
+      serializedValue = _nitriteMapper.tryConvert<Document, dynamic>(value);
     }
     return serializedValue;
   }
@@ -98,7 +98,7 @@ class RepositoryOperations<T> {
   }
 
   Document toDocument(T element, bool update) {
-    var document = _nitriteMapper.convert<Document, T>(element);
+    var document = _nitriteMapper.tryConvert<Document, T>(element);
     if (document == null) {
       throw ObjectMappingException('Failed to map object to document');
     }

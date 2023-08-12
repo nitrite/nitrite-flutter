@@ -1,7 +1,7 @@
 name: nitrite_entity_generator
 description: Nitrite entity generator. Automatically generates Nitrite entities from Dart classes.
 version: 1.0.0
-homepage: https://nitrite.dizitart.org/
+homepage: https://nitrite.dizitart.com/
 repository: https://github.com/nitrite/nitrite-flutter
 
 environment:
