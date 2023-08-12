@@ -123,7 +123,7 @@ class ConverterWriter {
           buffer.writeln("EntityConverter."
               "toMap(document['$keyName'], nitriteMapper);");
         } else {
-          buffer.write('nitriteMapper.convert<');
+          buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
               '${fieldInfo.fieldType.getDisplayString(withNullability: true)}');
           buffer.write(', Document>(');
@@ -181,7 +181,7 @@ class ConverterWriter {
           buffer.writeln("EntityConverter."
               "toMap(document['$keyName'], nitriteMapper),");
         } else {
-          buffer.write('nitriteMapper.convert<');
+          buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
               '${fieldInfo.fieldType.getDisplayString(withNullability: true)}');
           buffer.write(', Document>(');
@@ -229,7 +229,7 @@ class ConverterWriter {
           buffer.writeln("EntityConverter."
               "toMap(document['$keyName'], nitriteMapper);");
         } else {
-          buffer.write('nitriteMapper.convert<');
+          buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
               '${propInfo.fieldType.getDisplayString(withNullability: true)}');
           buffer.write(', Document>(');
@@ -283,7 +283,7 @@ class ConverterWriter {
               "fromMap(entity.${fieldInfo.fieldName}, nitriteMapper));");
         } else {
           buffer.write("document.put('$keyName', ");
-          buffer.write('nitriteMapper.convert<Document, ');
+          buffer.write('nitriteMapper.tryConvert<Document, ');
           buffer.write(
               '${fieldInfo.fieldType.getDisplayString(withNullability: true)}');
           buffer.writeln('>(entity.${fieldInfo.fieldName}));');
@@ -324,7 +324,7 @@ class ConverterWriter {
               "fromMap(entity.${propInfo.getterFieldName}, nitriteMapper));");
         } else {
           buffer.write("document.put('$keyName', ");
-          buffer.write('nitriteMapper.convert<Document, ');
+          buffer.write('nitriteMapper.tryConvert<Document, ');
           buffer.write(
               '${propInfo.fieldType.getDisplayString(withNullability: true)}');
           buffer.writeln('>(entity.${propInfo.getterFieldName}));');
