@@ -2,3 +2,7 @@
 dependency_overrides:
   nitrite:
     path: ../nitrite
+  nitrite_hive_adapter:
+    path: ../nitrite_hive_adapter
+  nitrite_entity_generator:
+    path: ../nitrite_entity_generator

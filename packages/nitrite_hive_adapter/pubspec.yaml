@@ -1,6 +1,8 @@
 name: nitrite_hive_adapter
 description: Hive storage adapter for Nitrite database.
-version: 0.0.1
+version: 1.0.0
+homepage: https://nitrite.dizitart.org/
+repository: https://github.com/nitrite/nitrite-flutter
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -8,7 +10,7 @@ environment:
 dependencies:
   hive: ^2.2.3
   path: ^1.8.2
-  nitrite: ^0.0.1
+  nitrite: ^1.0.0
   path_provider: ^2.0.13
   logging: ^1.0.2
 
@@ -20,7 +22,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   build_runner: ^2.3.3
   hive_generator: ^2.0.0
-  nitrite_entity_generator: ^0.0.1
+  nitrite_entity_generator: ^1.0.0
   test: ^1.16.0
   encrypt: ^5.0.1
   faker: ^2.0.0
@@ -31,3 +33,6 @@ dev_dependencies:
 flutter:
   assets:
     - pubspec.yaml
+
+funding:
+  - https://github.com/sponsors/anidotnet

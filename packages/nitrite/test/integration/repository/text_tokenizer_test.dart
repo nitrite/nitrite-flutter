@@ -17,7 +17,7 @@ void main() {
 
       db = await Nitrite.builder()
           .fieldSeparator(".")
-          .loadModule(NitriteModule.module([NitriteTextIndexer(tokenizer)]))
+          .loadModule(module([NitriteTextIndexer(tokenizer)]))
           .openOrCreate();
 
       var documentMapper = db.config.nitriteMapper as SimpleDocumentMapper;

@@ -79,6 +79,11 @@ class IndexManager {
     return false;
   }
 
+  Future<void> markIndexDirty(IndexDescriptor indexDescriptor) async {
+    var fields = indexDescriptor.fields;
+    await _markDirty(fields, true);
+  }
+
   Future<Iterable<IndexDescriptor>> listIndexDescriptors() async {
     var list = <IndexDescriptor>[];
     var iterable = _indexMetaMap.values();

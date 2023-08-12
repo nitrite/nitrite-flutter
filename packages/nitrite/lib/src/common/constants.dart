@@ -50,6 +50,10 @@ const String tagIndices = "indices";
 
 const String tagIndex = "index";
 
+const String tagIndexType = "indexType";
+
+const String tagIndexFields = "indexFields";
+
 const String tagData = "data";
 
 const String tagName = "name";

@@ -71,7 +71,7 @@ void main() {
           HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
 
       db = await Nitrite.builder()
-          .loadModule(NitriteModule.module([nitriteMapper]))
+          .loadModule(module([nitriteMapper]))
           .loadModule(storeModule)
           .fieldSeparator('.')
           .schemaVersion(2)

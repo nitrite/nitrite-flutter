@@ -1,13 +1,17 @@
 name: nitrite_support
 description: Support library for Nitrite database.
-version: 0.0.1
+version: 1.0.0
+homepage: https://nitrite.dizitart.org/
+repository: https://github.com/nitrite/nitrite-flutter
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   path: ^1.8.0
-  nitrite: ^0.0.1
+  nitrite: ^1.0.0
+  compute: ^1.0.2
+  convert: ^3.1.1
 
 dev_dependencies:
   flutter:
@@ -16,7 +20,11 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.0
   test: ^1.16.0
+  faker: ^2.0.0
+  nitrite_hive_adapter: ^1.0.0
+  collection: ^1.16.0
+  build_runner: ^2.3.3
+  nitrite_entity_generator: ^1.0.0
 
-flutter:
-  uses-material-design: true
-
+funding:
+  - https://github.com/sponsors/anidotnet

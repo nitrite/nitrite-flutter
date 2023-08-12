@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/persistent_collection.dart';
 
 /// Represents a document processor.
 abstract class Processor {

@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/persistent_collection.dart';
 
 /// Represents a type-safe persistent dart object collection. An object
 /// repository is backed by a [NitriteCollection], where all objects are

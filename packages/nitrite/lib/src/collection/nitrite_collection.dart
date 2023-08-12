@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/persistent_collection.dart';
 
 /// Represents a named document collection stored in nitrite database.
 /// It persists documents into the database. Each document is associated

@@ -106,6 +106,8 @@ abstract class Document extends Iterable<Pair<String, dynamic>> {
     }
     return get<int>(docModified)!;
   }
+
+  Map<String, dynamic> toMap();
 }
 
 class _NitriteDocument extends Document {
@@ -237,6 +239,9 @@ class _NitriteDocument extends Document {
   }
 
   @override
+  Map<String, dynamic> toMap() => _documentMap;
+
+  @override
   operator ==(Object other) {
     if (identical(this, other) ||
         other is _NitriteDocument &&
@@ -261,6 +266,8 @@ class _NitriteDocument extends Document {
 
   @override
   Iterator<Pair<String, dynamic>> get iterator => _PairIterator(_documentMap);
+
+  Map<String, dynamic> toJson() => _documentMap;
 
   bool _isEmbedded(String field) {
     return field.contains(NitriteConfig.fieldSeparator);

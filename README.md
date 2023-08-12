@@ -1,7 +1,7 @@
 # Nitrite Database
 
-<p align="center">
-    <img src="assets/nitrite-logo.svg" width="256" alt="nitrite logo">
+<p>
+    <img src="assets/nitrite-logo.svg" width="256" alt="nitrite logo" style="display: block; margin: auto;">
 </p>
 
 **NO**sql **O**bject (**NO<sub>2</sub>** a.k.a Nitrite) database is an open source nosql embedded
@@ -45,7 +45,7 @@ dev_dependencies:
 
 ## Examples
 
-A Todo flutter application is available [here](https://github.com/nitrite/nitrite-flutter/tree/main/examples/nitrite_demo). It demonstrates the use of nitrite database in a flutter application. It uses nitrite as a file based storage engine. It also uses riverpod for state management.
+A Todo flutter application is available [here](https://github.com/nitrite/nitrite-flutter/tree/main/examples/nitrite_demo). It demonstrates the use of nitrite database in a flutter application. It uses nitrite as a database and riverpod for state management.
 
 ### Quick Examples
 
@@ -88,7 +88,7 @@ dev_dependencies:
 
 ```
 
-And use below annotations in your dart classes:
+Use below annotations in your dart classes:
 
 ```dart
 import 'package:nitrite/nitrite.dart';
@@ -138,6 +138,12 @@ class BookId {
 
 ```
 
+And run the following command to generate necessary *.no2.dart files:
+
+```bash
+flutter pub run build_runner build
+
+```
 
 **CRUD Operations**
 
@@ -288,12 +294,34 @@ db = await Nitrite.builder()
 
 ```dart
 // Export data to a file
-var exporter = Exporter.of(db);
-await exporter.exportTo(schemaFile);
+var exporter = Exporter.withOptions(
+  dbFactory: () async {
+    var storeModule = HiveModule.withConfig()
+    .crashRecovery(true)
+    .path('$dbDir/old-db')
+    .build();
+
+    return Nitrite.builder()
+    .loadModule(storeModule)
+    .openOrCreate(username: 'user', password: 'pass123');
+  },
+);
+await exporter.exportTo(exportedPath);
 
 //Import data from the file
-var importer = Importer.of(db);
-await importer.importFrom(schemaFile);
+var importer = Importer.withConfig(
+  dbFactory: () async {
+    var storeModule = HiveModule.withConfig()
+    .crashRecovery(true)
+    .path('$dbDir/new-db')
+    .build();
+
+    return Nitrite.builder()
+    .loadModule(storeModule)
+    .openOrCreate();
+  },
+);
+await importer.importFrom(exportedPath);
 
 ```
 

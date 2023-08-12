@@ -1,12 +1,10 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:faker/faker.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
 
-part 'nitrite_hive_adapter_example.no2.dart';
+part 'example.no2.dart';
 
 void main() async {
   // Create a Nitrite database
@@ -26,20 +24,8 @@ void main() async {
 }
 
 Future<Nitrite> createDatabase() async {
-  // define the database path
-  var dbPath = '${Directory.current.path}${Platform.pathSeparator}db'
-      '${Platform.pathSeparator}${faker.guid.guid()}';
-
-  // create directory if not exists
-  var dbDir = await Directory(dbPath).create(recursive: true);
-
-  var storeModule =
-      HiveModule.withConfig().crashRecovery(true).path(dbDir.path).build();
-
-  var db = await Nitrite.builder()
-      .loadModule(storeModule)
-      .openOrCreate(username: 'user', password: 'password');
-
+  // Creates an in-memory database with default options
+  var db = await Nitrite.builder().openOrCreate();
   return db;
 }
 
