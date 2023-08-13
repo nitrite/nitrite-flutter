@@ -1,16 +1,20 @@
-name: Validate Nitrite
+name: Build Nitrite
 
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - "README.md"
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - "README.md"
 
 jobs:
   test_linux:
-    name: Validate Nitrite on Ubuntu
+    name: Build Nitrite on Ubuntu
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,13 +27,13 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Setup Melos
-        uses: bluefireteam/melos-action@v1
-
       - name: Install lcov
         run: sudo apt-get update -qq -y && sudo apt-get install lcov
 
-      - name: Validate Nitrite
+      - name: Setup Build System
+        run: .\.github\workflows\scripts\install-tools.sh
+
+      - name: Build Nitrite
         run: melos run test
 
       - name: Upload coverage
@@ -42,7 +46,7 @@ jobs:
           files: ./coverage/filtered.lcov.info
 
   test_macos:
-    name: Validate Nitrite on MacOS
+    name: Build Nitrite on MacOS
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -55,17 +59,17 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Setup Melos
-        uses: bluefireteam/melos-action@v1
-
       - name: Install lcov
         run: brew install lcov
 
-      - name: Validate Nitrite
+      - name: Setup Build System
+        run: .\.github\workflows\scripts\install-tools.sh
+
+      - name: Build Nitrite
         run: melos run test
 
   test_windows:
-    name: Validate Nitrite on Windows
+    name: Build Nitrite on Windows
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -78,14 +82,14 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Setup Melos
-        uses: bluefireteam/melos-action@v1
-
       - name: Install lcov
         uses: crazy-max/ghaction-chocolatey@v2
         with:
           name: install lcov
 
-      - name: Validate Nitrite
+      - name: Setup Build System
+        run: .\.github\workflows\scripts\install-tools.bat
+
+      - name: Build Nitrite
         shell: cmd
         run: melos run test

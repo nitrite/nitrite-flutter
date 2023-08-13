@@ -20,13 +20,6 @@ command:
     workspaceChangelog: true
 
 scripts:
-  prepare:
-    run: |
-      dart pub global activate coverage &&
-      dart pub global activate coverde &&
-      dart pub global activate dartdoc
-    description: Prepare build system.
-
   generate:
     run: |
       melos exec -- dart run build_runner build --delete-conflicting-outputs
