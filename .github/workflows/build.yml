@@ -30,7 +30,7 @@ jobs:
         run: sudo apt-get update -qq -y && sudo apt-get install lcov
 
       - name: Validate Nitrite
-        run: melos run test:all
+        run: melos run test
 
       - name: Upload coverage
         if: github.ref == 'refs/heads/main'
@@ -62,7 +62,7 @@ jobs:
         run: brew install lcov
 
       - name: Validate Nitrite
-        run: melos run test:all
+        run: melos run test
 
   test_windows:
     name: Validate Nitrite on Windows
@@ -88,4 +88,4 @@ jobs:
 
       - name: Validate Nitrite
         shell: cmd
-        run: melos run test:all
+        run: melos run test
