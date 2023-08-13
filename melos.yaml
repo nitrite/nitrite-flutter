@@ -23,6 +23,7 @@ scripts:
   prepare:
     run: |
       dart pub global activate coverage &&
+      dart pub global activate coverde &&
       dart pub global activate dartdoc
     description: Prepare build system.
 
@@ -48,27 +49,21 @@ scripts:
     run: melos exec dart doc .
     description: Run dartdoc checks for all packages.
 
-  test:all:
+  test:
     run: |
-      melos run test --no-select
+      melos run test-with-coverage --no-select
     description: |
       Run all tests available.
 
-  test:
+  test-with-coverage:
     run: |
       melos run generate &&
       melos exec -c 6 --fail-fast --ignore="*generator*" --ignore="*demo*" -- flutter test --coverage --no-pub &&
       melos exec -c 6 --fail-fast --scope="*generator*" -- dart pub global run coverage:test_with_coverage &&
-      melos exec --ignore="*demo*" -- genhtml coverage/lcov.info --output-directory=coverage/
+      melos exec --ignore="*demo*" -- genhtml coverage/lcov.info --output-directory=coverage/ &&
+      melos exec -c 1 --file-exists=coverage/lcov.info -- coverde filter --input ./coverage/lcov.info --output MELOS_ROOT_PATH/coverage/filtered.lcov.info --filters \.g\.dart
+      coverde value -i coverage/filtered.lcov.info > MELOS_ROOT_PATH/coverage/result.txt
     description: Run `flutter test` for a specific package.
-
-  coverage:
-    run: |
-      melos exec -- flutter test --coverage &&
-      melos exec -- genhtml coverage/lcov.info --output-directory=coverage/
-    select-package:
-      dir-exists: test
-    description: Generate coverage for a specific package.
 
   clean:deep:
       run: git clean -x -d -f -q
