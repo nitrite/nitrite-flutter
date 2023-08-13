@@ -32,6 +32,15 @@ jobs:
       - name: Validate Nitrite
         run: melos run test:all
 
+      - name: Upload coverage
+        if: github.ref == 'refs/heads/main'
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          name: codecov-umbrella
+          files: ./coverage/filtered.lcov.info
+
   test_macos:
     name: Validate Nitrite on MacOS
     runs-on: macos-latest
