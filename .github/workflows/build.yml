@@ -31,7 +31,9 @@ jobs:
         run: sudo apt-get update -qq -y && sudo apt-get install lcov
 
       - name: Setup Build System
-        run: .\.github\workflows\scripts\install-tools.sh
+        shell: bash
+        working-directory: ${GITHUB_WORKSPACE}
+        run: ${GITHUB_WORKSPACE}\.github\workflows\scripts\install-tools.sh
 
       - name: Build Nitrite
         run: melos run test
@@ -63,7 +65,9 @@ jobs:
         run: brew install lcov
 
       - name: Setup Build System
-        run: .\.github\workflows\scripts\install-tools.sh
+        shell: bash
+        working-directory: ${GITHUB_WORKSPACE}
+        run: ${GITHUB_WORKSPACE}\.github\workflows\scripts\install-tools.sh
 
       - name: Build Nitrite
         run: melos run test
@@ -85,11 +89,14 @@ jobs:
       - name: Install lcov
         uses: crazy-max/ghaction-chocolatey@v2
         with:
-          name: install lcov
+          args: install lcov
 
       - name: Setup Build System
-        run: .\.github\workflows\scripts\install-tools.bat
+        shell: cmd
+        working-directory: ${GITHUB_WORKSPACE}
+        run: ${GITHUB_WORKSPACE}\.github\workflows\scripts\install-tools.bat
 
       - name: Build Nitrite
         shell: cmd
+        working-directory: ${GITHUB_WORKSPACE}
         run: melos run test
