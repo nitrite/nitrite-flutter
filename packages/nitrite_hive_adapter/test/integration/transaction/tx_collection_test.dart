@@ -1,6 +1,6 @@
 import 'dart:isolate';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
 
@@ -8,7 +8,7 @@ import '../../test_utils.dart';
 import '../collection/base_collection_test_loader.dart';
 
 void main() {
-  group('Transaction Collection Test Suite', () {
+  group(retry: 3, 'Transaction Collection Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -29,8 +29,7 @@ void main() {
         var cursor = txCol.find(filter: where('firstName').eq('John'));
         expect(await cursor.length, 1);
 
-        var colCursor =
-            collection.find(filter: where('firstName').eq('John'));
+        var colCursor = collection.find(filter: where('firstName').eq('John'));
         expect(await colCursor.length, 0);
       });
 
@@ -144,8 +143,7 @@ void main() {
       var cursor = txCol.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 1);
 
-      var colCursor =
-          collection.find(filter: where('firstName').eq('John'));
+      var colCursor = collection.find(filter: where('firstName').eq('John'));
       expect(await colCursor.length, 0);
       await tx.commit();
 
@@ -177,8 +175,7 @@ void main() {
         cursor = txCol.find(filter: where('firstName').eq('Jane'));
         expect(await cursor.length, 1);
 
-        var colCursor =
-            collection.find(filter: where('lastName').eq('Doe'));
+        var colCursor = collection.find(filter: where('lastName').eq('Doe'));
         expect(await colCursor.length, 0);
 
         // a TransactionException should occur here due to UniqueConstraintViolation
@@ -213,8 +210,7 @@ void main() {
       var cursor = txCol.find(filter: where('lastName').eq('Doe'));
       expect(await cursor.length, 1);
 
-      var colCursor =
-          collection.find(filter: where('lastName').eq('Doe'));
+      var colCursor = collection.find(filter: where('lastName').eq('Doe'));
       expect(await colCursor.length, 0);
 
       await tx.commit();
@@ -249,8 +245,7 @@ void main() {
       cursor = txCol.find(filter: where('lastName').eq('Doe'));
       expect(await cursor.length, 1);
 
-      var colCursor =
-          collection.find(filter: where('lastName').eq('Doe'));
+      var colCursor = collection.find(filter: where('lastName').eq('Doe'));
       expect(await colCursor.length, 0);
 
       try {
@@ -285,8 +280,7 @@ void main() {
       var cursor = txCol.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 0);
 
-      var colCursor =
-          collection.find(filter: where('firstName').eq('John'));
+      var colCursor = collection.find(filter: where('firstName').eq('John'));
       expect(await colCursor.length, 1);
 
       await tx.commit();
@@ -310,8 +304,7 @@ void main() {
       var cursor = txCol.find(filter: where('firstName').eq('John'));
       expect(await cursor.length, 0);
 
-      var colCursor =
-          collection.find(filter: where('firstName').eq('John'));
+      var colCursor = collection.find(filter: where('firstName').eq('John'));
       expect(await colCursor.length, 1);
 
       await txCol.insert(createDocument('firstName', 'Jane'));

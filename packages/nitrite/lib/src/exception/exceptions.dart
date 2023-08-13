@@ -72,13 +72,11 @@ class NitriteSecurityException extends NitriteException {
 }
 
 class MigrationException extends NitriteException {
-  MigrationException(String message,
-      {StackTrace? stackTrace, dynamic cause})
+  MigrationException(String message, {StackTrace? stackTrace, dynamic cause})
       : super(message, stackTrace: stackTrace, cause: cause);
 }
 
 class TransactionException extends NitriteException {
-  TransactionException(String message,
-      {StackTrace? stackTrace, dynamic cause})
+  TransactionException(String message, {StackTrace? stackTrace, dynamic cause})
       : super(message, stackTrace: stackTrace, cause: cause);
 }

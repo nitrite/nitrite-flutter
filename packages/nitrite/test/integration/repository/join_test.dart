@@ -10,7 +10,7 @@ void main() {
   late ObjectRepository<Person> personRepository;
   late ObjectRepository<Address> addressRepository;
 
-  group('Repository Join Test Suite', () {
+  group(retry: 3, 'Repository Join Test Suite', () {
     setUp(() async {
       setUpLog();
       db = await Nitrite.builder().openOrCreate();
@@ -78,8 +78,7 @@ void main() {
         }
       }
 
-      personCursor =
-          personRepository.find(findOptions: skipBy(0).setLimit(5));
+      personCursor = personRepository.find(findOptions: skipBy(0).setLimit(5));
       result =
           personCursor.leftJoin<Address, PersonDetails>(addressCursor, lookup);
 

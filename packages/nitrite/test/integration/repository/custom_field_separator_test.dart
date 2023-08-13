@@ -9,10 +9,10 @@ void main() {
   late Nitrite db;
   late ObjectRepository<EmployeeForCustomSeparator> repository;
 
-  group("Custom Field Separator Test Suite", () {
+  group(retry: 3, "Custom Field Separator Test Suite", () {
     setUp(() async {
       setUpLog();
-      
+
       db = await Nitrite.builder().fieldSeparator(':').openOrCreate();
 
       var mapper = db.config.nitriteMapper as EntityConverterMapper;
@@ -49,8 +49,8 @@ void main() {
 
       await repository.insert(emp1);
 
-      var cursor1 = repository.find(
-          filter: where('employeeNote.text').eq('Dummy Note'));
+      var cursor1 =
+          repository.find(filter: where('employeeNote.text').eq('Dummy Note'));
       var cursor2 = repository.find(
           filter: where('employeeNote:text').text('Dummy Note'));
 

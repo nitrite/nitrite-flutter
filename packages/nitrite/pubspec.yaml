@@ -8,27 +8,25 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  logging: ^1.0.2
+  logging: ^1.2.0
   dart_numerics: ^0.0.6
-  rxdart: ^0.27.4
+  rxdart: ^0.27.7
   event_bus: ^2.0.0
   quiver: ^3.1.0
   crypt: ^4.2.1
-  collection: ^1.16.0
+  collection: ^1.17.1
   uuid: ^3.0.7
   meta: ^1.9.1
 
 dev_dependencies:
   flutter:
     sdk: flutter
-  flutter_test:
-    sdk: flutter
   flutter_lints: ^2.0.0
   build_runner: ^2.3.3
   nitrite_entity_generator: ^1.0.0
   mockito: ^5.2.0
   encrypt: ^5.0.1
-  test: ^1.16.0
+  test: ^1.24.6
   faker: ^2.0.0
   yaml: ^3.1.1
 

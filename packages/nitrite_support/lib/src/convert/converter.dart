@@ -9,4 +9,3 @@ abstract class Converter<T> {
   bool matchesRuntimeType(dynamic value) => value.runtimeType == T;
   bool matchesType(dynamic value) => value is T;
 }
-

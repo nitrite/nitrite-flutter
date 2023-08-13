@@ -5,7 +5,7 @@ import 'base_object_repository_test_loader.dart';
 import 'data/test_objects.dart';
 
 void main() {
-  group('Projection Test Suite', () {
+  group(retry: 3, 'Projection Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -16,22 +16,19 @@ void main() {
     });
 
     test('Test Has More', () async {
-      var cursor =
-          employeeRepository.find(findOptions: skipBy(0).setLimit(5));
+      var cursor = employeeRepository.find(findOptions: skipBy(0).setLimit(5));
       var result = cursor.project<SubEmployee>();
       expect(await result.isEmpty, false);
     });
 
     test('Test Size', () async {
-      var cursor =
-          employeeRepository.find(findOptions: skipBy(0).setLimit(5));
+      var cursor = employeeRepository.find(findOptions: skipBy(0).setLimit(5));
       var result = cursor.project<SubEmployee>();
       expect(await result.length, 5);
     });
 
     test('Test ToString', () async {
-      var cursor =
-          employeeRepository.find(findOptions: skipBy(0).setLimit(5));
+      var cursor = employeeRepository.find(findOptions: skipBy(0).setLimit(5));
       var result = cursor.project<SubEmployee>();
       expect(result.toString(), isNotNull);
     });

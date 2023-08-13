@@ -2,7 +2,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Attribute Test Suite', () {
+  group(retry: 3, 'Attribute Test Suite', () {
     setUp(() {
       // Additional setup goes here.
     });

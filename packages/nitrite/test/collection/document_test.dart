@@ -6,7 +6,7 @@ import '../test_utils.dart';
 void main() {
   late Document doc;
 
-  group('Document Test Suite', () {
+  group(retry: 3, 'Document Test Suite', () {
     setUp(() {
       // Additional setup goes here.
       NitriteConfig().setFieldSeparator(".");

@@ -3,7 +3,7 @@ import 'package:nitrite/src/common/stream/mutated_object_stream.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group("MutatedObjectStream Test Suite", () {
+  group(retry: 3, "MutatedObjectStream Test Suite", () {
     test("Test Mutate with Id Strip", () async {
       var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_AConverter());

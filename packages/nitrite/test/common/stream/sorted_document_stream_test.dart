@@ -5,11 +5,11 @@ import 'package:test/test.dart';
 import '../../test_utils.dart';
 
 void main() {
-  group("SortedDocumentStream Test Suite", () {
+  group(retry: 3, "SortedDocumentStream Test Suite", () {
     test("Test Stream with Descending Sort Single Field", () async {
       FindPlan findPlan = FindPlan();
       findPlan.blockingSortOrder = [
-        Pair("id", SortOrder.descending),
+        ("id", SortOrder.descending),
       ];
 
       var stream = SortedDocumentStream(
@@ -30,7 +30,7 @@ void main() {
     test("Test Stream with Ascending Sort Single Field", () async {
       FindPlan findPlan = FindPlan();
       findPlan.blockingSortOrder = [
-        Pair("id", SortOrder.ascending),
+        ("id", SortOrder.ascending),
       ];
 
       var stream = SortedDocumentStream(
@@ -51,8 +51,8 @@ void main() {
     test("Test Stream with Descending Sort Multiple Fields", () async {
       FindPlan findPlan = FindPlan();
       findPlan.blockingSortOrder = [
-        Pair("id", SortOrder.descending),
-        Pair("age", SortOrder.ascending),
+        ("id", SortOrder.descending),
+        ("age", SortOrder.ascending),
       ];
 
       var stream = SortedDocumentStream(
@@ -75,8 +75,8 @@ void main() {
     test("Test Stream with Descending Sort Multiple Fields 2", () async {
       FindPlan findPlan = FindPlan();
       findPlan.blockingSortOrder = [
-        Pair("id", SortOrder.descending),
-        Pair("age", SortOrder.descending),
+        ("id", SortOrder.descending),
+        ("age", SortOrder.descending),
       ];
 
       var stream = SortedDocumentStream(
@@ -99,8 +99,8 @@ void main() {
     test("Test Stream with Null Values", () async {
       FindPlan findPlan = FindPlan();
       findPlan.blockingSortOrder = [
-        Pair("id", SortOrder.ascending),
-        Pair("age", SortOrder.ascending),
+        ("id", SortOrder.ascending),
+        ("age", SortOrder.ascending),
       ];
 
       var stream = SortedDocumentStream(
@@ -123,15 +123,15 @@ void main() {
     test("Test Stream with Non-Comparable Values", () async {
       FindPlan findPlan = FindPlan();
       findPlan.blockingSortOrder = [
-        Pair("id", SortOrder.ascending),
-        Pair("age", SortOrder.ascending),
+        ("id", SortOrder.ascending),
+        ("age", SortOrder.ascending),
       ];
 
       var stream = SortedDocumentStream(
           findPlan,
           Stream.fromIterable([
             documentFromMap({"id": 1, "age": 20}),
-            documentFromMap({"id": 1, "age": Pair("name", "John")}),
+            documentFromMap({"id": 1, "age": ("name", "John")}),
             documentFromMap({"id": 2, "age": 40}),
             documentFromMap({"id": 3, "age": 50}),
           ]));

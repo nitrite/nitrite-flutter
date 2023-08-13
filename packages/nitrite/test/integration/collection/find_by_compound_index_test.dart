@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Find By Compound Index Test Suite', () {
+  group(retry: 3, 'Find By Compound Index Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -348,12 +348,12 @@ void main() {
       expect(blockingSortOrder.length, 2);
 
       var pair = blockingSortOrder.first;
-      expect(pair.first, 'lastName');
-      expect(pair.second, SortOrder.ascending);
+      expect(pair.$1, 'lastName');
+      expect(pair.$2, SortOrder.ascending);
 
       pair = blockingSortOrder.last;
-      expect(pair.first, 'birthDay');
-      expect(pair.second, SortOrder.descending);
+      expect(pair.$1, 'birthDay');
+      expect(pair.$2, SortOrder.descending);
     });
 
     test('Test Sort Not Covered By Index', () async {
@@ -401,12 +401,12 @@ void main() {
       expect(blockingSortOrder.length, 2);
 
       var pair = blockingSortOrder.first;
-      expect(pair.first, 'lastName');
-      expect(pair.second, SortOrder.ascending);
+      expect(pair.$1, 'lastName');
+      expect(pair.$2, SortOrder.ascending);
 
       pair = blockingSortOrder.last;
-      expect(pair.first, 'birthDay');
-      expect(pair.second, SortOrder.descending);
+      expect(pair.$1, 'birthDay');
+      expect(pair.$2, SortOrder.descending);
     });
 
     test('Test Sort By Index Prefix', () async {

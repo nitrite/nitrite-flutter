@@ -7,7 +7,7 @@ import 'package:nitrite/src/common/stream/processed_document_stream.dart';
 import 'package:nitrite/src/common/stream/projected_document_stream.dart';
 import 'package:rxdart/streams.dart';
 
-/// The [DocumentCursor] represents a cursor as a stream of `Document` 
+/// The [DocumentCursor] represents a cursor as a stream of `Document`
 /// to iterate over [NitriteCollection.find] results. It also provides methods
 /// for projection and perform left outer joins with other [DocumentCursor]s.
 ///
@@ -82,16 +82,16 @@ class DocumentStream extends DocumentCursor {
     }
   }
 
-  void _validateKeyValuePair(Pair<String, dynamic> kvp) {
+  void _validateKeyValuePair((String, dynamic) kvp) {
     validateFn(item) => item is Document
         ? _validateProjection(item)
         : _validateKeyValuePair(item);
 
-    if (kvp.second != null) {
-      if (kvp.second is! Document && kvp.second is! Pair) {
+    if (kvp.$2 != null) {
+      if (kvp.$2 is! Document && kvp.$2 is! Record) {
         throw ValidationException('Projection contains non-null values');
       } else {
-        validateFn(kvp.second);
+        validateFn(kvp.$2);
       }
     }
   }

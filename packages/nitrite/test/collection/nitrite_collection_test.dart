@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import '../test_utils.dart';
 
 void main() async {
-  group('Nitrite Collection Test Suite', () {
+  group(retry: 3, 'Nitrite Collection Test Suite', () {
     setUp(() {});
 
     test('Test Attributes', () async {

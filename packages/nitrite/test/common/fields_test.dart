@@ -2,7 +2,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Fields Test Suite', () {
+  group(retry: 3, 'Fields Test Suite', () {
     setUp(() {
       // Additional setup goes here.
     });

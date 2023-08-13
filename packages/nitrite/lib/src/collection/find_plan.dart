@@ -19,12 +19,12 @@ class FindPlan {
   Map<String, bool> indexScanOrder = {};
 
   /// Gets the blocking sort order.
-  List<Pair<String, SortOrder>> blockingSortOrder = [];
+  List<(String, SortOrder)> blockingSortOrder = [];
 
   /// Gets the skip count.
   int? skip;
 
-  /// Gest the limit count.
+  /// Gets the limit count.
   int? limit;
 
   /// Gets the distinct flag.

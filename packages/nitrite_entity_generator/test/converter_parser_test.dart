@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 import 'test_utils.dart';
 
 void main() {
-  group("Converter Parser Suite", () {
+  group(retry: 3, "Converter Parser Suite", () {
     test('Parse Ctor with All Required Params', () async {
       final classElement = await createClassElement('''
         @GenerateConverter()

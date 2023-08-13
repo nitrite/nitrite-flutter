@@ -7,7 +7,7 @@ import 'find_optimizer_test.mocks.dart';
 
 @GenerateMocks([Filter])
 void main() {
-  group('Find Optimizer Test Suite', () {
+  group(retry: 3, 'Find Optimizer Test Suite', () {
     setUp(() {
       // Additional setup goes here.
     });

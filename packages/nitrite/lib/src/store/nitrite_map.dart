@@ -68,11 +68,11 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
   String get name;
 
   /// Gets a [Stream] of the mappings contained in this map.
-  Stream<Pair<Key, Value>> entries();
+  Stream<(Key, Value)> entries();
 
   /// Gets a reversed [Stream] of the mappings
   /// contained in this map.
-  Stream<Pair<Key, Value>> reversedEntries();
+  Stream<(Key, Value)> reversedEntries();
 
   /// Deletes the map from the store.
   Future<void> drop();

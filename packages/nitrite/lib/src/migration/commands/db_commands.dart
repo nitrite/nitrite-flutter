@@ -4,7 +4,7 @@ import 'package:nitrite/src/migration/commands/commands.dart';
 import 'package:nitrite/src/store/user_auth_service.dart';
 
 class AddPasswordCommand extends Command {
-  final Pair<String, String> _arguments;
+  final (String, String) _arguments;
 
   AddPasswordCommand(this._arguments);
 
@@ -12,7 +12,7 @@ class AddPasswordCommand extends Command {
   Future<void> execute(Nitrite nitrite) {
     var authService = UserAuthenticationService(nitrite.getStore());
     return authService.addOrUpdatePassword(
-        false, _arguments.first, "", _arguments.second);
+        false, _arguments.$1, "", _arguments.$2);
   }
 }
 
@@ -43,8 +43,8 @@ class DropCollectionCommand extends BaseCommand {
 }
 
 class DropRepositoryCommand extends DropCollectionCommand {
-  DropRepositoryCommand(Pair<String, String?> arguments)
-      : super(findRepositoryNameByTypeName(arguments.first, arguments.second));
+  DropRepositoryCommand((String, String?) arguments)
+      : super(findRepositoryNameByTypeName(arguments.$1, arguments.$2));
 }
 
 class CustomCommand extends Command {

@@ -30,7 +30,8 @@ class TodoWidget extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                onPressed: () => ref.read(todosProvider.notifier).toggle(todo.id),
+                onPressed: () =>
+                    ref.read(todosProvider.notifier).toggle(todo.id),
                 icon: Icon(
                   todo.completed ? Icons.task_alt : Icons.check_box_outlined,
                   color: todo.completed ? Colors.green : Colors.grey,

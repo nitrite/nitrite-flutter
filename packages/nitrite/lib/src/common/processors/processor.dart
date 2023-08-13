@@ -23,22 +23,23 @@ abstract class Processor {
 
       await for (var document in documentCursor) {
         // process all documents in parallel
-          var processed = await processBeforeWrite(document);
-          await nitriteCollection.update(createUniqueFilter(document),
-              processed, updateOptions(insertIfAbsent: false));
+        var processed = await processBeforeWrite(document);
+        await nitriteCollection.update(createUniqueFilter(document), processed,
+            updateOptions(insertIfAbsent: false));
       }
     }
   }
 }
 
-
 /// Represents a chain of document processors. The processors are executed
 /// in the order they are added to the chain.
 class ProcessorChain extends Processor {
-  final List<Processor> processors;
+  final List<Processor> processors = [];
 
   /// Creates a new [ProcessorChain] instance.
-  ProcessorChain([this.processors = const []]);
+  ProcessorChain([List<Processor> processors = const []]) {
+    this.processors.addAll(processors);
+  }
 
   @override
   Future<Document> processBeforeWrite(Document document) async {

@@ -9,7 +9,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'providers.g.dart';
 
-
 @riverpod
 Future<Nitrite> db(DbRef ref) async {
   var docPath = await getApplicationDocumentsDirectory();

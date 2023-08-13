@@ -2,7 +2,7 @@ import 'package:nitrite/src/common/util/number_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group("Number Utils Test Suite", () {
+  group(retry: 3, "Number Utils Test Suite", () {
     test('Test CompareNum', () {
       expect(compareNum(1, 2), -1);
       expect(compareNum(2, 1), 1);

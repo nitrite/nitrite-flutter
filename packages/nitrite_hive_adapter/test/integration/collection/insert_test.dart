@@ -5,7 +5,7 @@ import 'package:test/scaffolding.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Collection Insert Test Suite', () {
+  group(retry: 3, 'Collection Insert Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

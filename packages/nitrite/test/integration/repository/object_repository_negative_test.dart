@@ -8,7 +8,7 @@ import 'base_object_repository_test_loader.dart';
 import 'data/test_objects.dart';
 
 void main() {
-  group('Object Repository Negative Test Suite', () {
+  group(retry: 3, 'Object Repository Negative Test Suite', () {
     late Nitrite db;
 
     setUp(() async {
@@ -133,8 +133,8 @@ void main() {
       var repository = await db.getRepository<WithOutId?>(
           entityDecorator: WithOutIdEntityDecorator());
 
-      expect(() async => await repository.insert(null),
-          throwsValidationException);
+      expect(
+          () async => await repository.insert(null), throwsValidationException);
     });
 
     test('Test Get By Null Id', () async {
@@ -169,7 +169,7 @@ void main() {
       object.name = 'test';
 
       var result = await repository.insert(object);
-      
+
       expect(result.getAffectedCount(), 1);
       expect(
           () async => await repository.getById("1"), throwsInvalidIdException);

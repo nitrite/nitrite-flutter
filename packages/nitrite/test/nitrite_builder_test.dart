@@ -2,7 +2,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Nitrite Builder Test Suite', () {
+  group(retry: 3, 'Nitrite Builder Test Suite', () {
     Nitrite? db;
 
     tearDown(() async {

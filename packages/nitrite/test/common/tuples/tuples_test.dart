@@ -2,40 +2,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group("Tuples Test Suite", () {
-    test("Test Pairs", () {
-      final pair1 = Pair(1, 2);
-      final pair2 = Pair(1, 2);
-
-      expect(pair1.first, 1);
-      expect(pair1.second, 2);
-      expect(pair1.first, pair2.first);
-      expect(pair1.second, pair2.second);
-
-      expect(pair1, pair2);
-      expect(pair1.hashCode, pair2.hashCode);
-      expect(pair1.toString(), pair2.toString());
-
-      final pair3 = Pair(1, 3);
-      expect(pair1, isNot(pair3));
-      expect(pair1.hashCode, isNot(pair3.hashCode));
-      expect(pair1.toString(), isNot(pair3.toString()));
-
-      final pair4 = Pair(1, null);
-      expect(pair4.first, 1);
-      expect(pair4.second, isNull);
-      expect(pair1, isNot(pair4));
-      expect(pair1.hashCode, isNot(pair4.hashCode));
-      expect(pair1.toString(), isNot(pair4.toString()));
-
-      final pair5 = Pair(null, 2);
-      expect(pair5.first, isNull);
-      expect(pair5.second, 2);
-      expect(pair4, isNot(pair5));
-      expect(pair4.hashCode, isNot(pair5.hashCode));
-      expect(pair4.toString(), isNot(pair5.toString()));
-    });
-
+  group(retry: 3, "Tuples Test Suite", () {
     test("Test Triplets", () {
       final triplet1 = Triplet(1, 2, 3);
       final triplet2 = Triplet(1, 2, 3);

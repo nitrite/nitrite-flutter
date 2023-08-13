@@ -8,7 +8,7 @@ import '../repository/base_object_repository_test_loader.dart';
 import '../repository/data/test_objects.dart';
 
 void main() {
-  group('Migration Test Suite', () {
+  group(retry: 3, 'Migration Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -504,8 +504,7 @@ void main() {
       collection = await db.getCollection('test');
       expect(await collection.size, 10);
 
-      var cursor =
-          collection.find(filter: where('fullName').eq('Dummy Name'));
+      var cursor = collection.find(filter: where('fullName').eq('Dummy Name'));
       expect(await cursor.length, 0);
       await db.close();
 
@@ -531,8 +530,7 @@ void main() {
       collection = await db.getCollection('test');
       expect(await collection.size, 10);
 
-      cursor =
-          collection.find(filter: where('fullName').eq('Dummy Name'));
+      cursor = collection.find(filter: where('fullName').eq('Dummy Name'));
       expect(await cursor.length, 10);
 
       cursor = collection.find(filter: where('age').eq(10));

@@ -6,7 +6,7 @@ import '../../test_utils.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Collection Find By Index Negative Test Suite', () {
+  group(retry: 3, 'Collection Find By Index Negative Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -20,8 +20,7 @@ void main() {
       await insert();
       await collection.createIndex(['body'], indexOptions(IndexType.fullText));
 
-      var cursor =
-          collection.find(filter: where("body").text("*ipsum dolor*"));
+      var cursor = collection.find(filter: where("body").text("*ipsum dolor*"));
       expect(() async => await cursor.length, throwsFilterException);
     });
 

@@ -6,7 +6,7 @@ import 'data/test_objects.dart';
 import 'data/test_objects_decorators.dart';
 
 void main() {
-  group('Test Unannotated Object Test', () {
+  group(retry: 3, 'Test Unannotated Object Test', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

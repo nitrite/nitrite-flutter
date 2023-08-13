@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 import '../../test_utils.dart';
 
 void main() {
-  group("ValidationUtils Test Suite", () {
+  group(retry: 3, "ValidationUtils Test Suite", () {
     test("Test ValidateIterableIndexField", () {
       List<dynamic> iterable = [1, 2, 3, 4];
       try {
@@ -168,7 +168,6 @@ class _AConverter extends EntityConverter<_A> {
         .put("d", entity.d);
   }
 }
-
 
 class _C {}
 

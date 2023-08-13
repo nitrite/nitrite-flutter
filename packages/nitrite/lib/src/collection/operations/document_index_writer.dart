@@ -27,9 +27,8 @@ class DocumentIndexWriter {
       var indexType = indexDescriptor.indexType;
       var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
-      await _removeIndexEntryInternal(
-            indexDescriptor, oldDoc, nitriteIndexer);
-        await _writeIndexEntryInternal(indexDescriptor, newDoc, nitriteIndexer);
+      await _removeIndexEntryInternal(indexDescriptor, oldDoc, nitriteIndexer);
+      await _writeIndexEntryInternal(indexDescriptor, newDoc, nitriteIndexer);
     }
   }
 
@@ -39,8 +38,8 @@ class DocumentIndexWriter {
       var indexType = indexDescriptor.indexType;
       var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
-        await _removeIndexEntryInternal(
-            indexDescriptor, document, nitriteIndexer);
+      await _removeIndexEntryInternal(
+          indexDescriptor, document, nitriteIndexer);
     }
   }
 

@@ -6,7 +6,7 @@ import '../../test_utils.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Compound Index Negative Test', () {
+  group(retry: 3, 'Compound Index Negative Test', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

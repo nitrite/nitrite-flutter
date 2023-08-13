@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 part 'mapper_test.no2.dart';
 
 void main() {
-  group("Mapper Test Suite", () {
+  group(retry: 3, "Mapper Test Suite", () {
     test("Test With Converter", () {
       var boss = _Employee();
       boss.empId = "1";

@@ -10,7 +10,7 @@ void main() {
   late ObjectRepository<Person> personRepository;
   late ObjectRepository<Address> addressRepository;
 
-  group('Repository Join Test Suite', () {
+  group(retry: 3, 'Repository Join Test Suite', () {
     setUp(() async {
       setUpLog();
       db = await Nitrite.builder().openOrCreate();

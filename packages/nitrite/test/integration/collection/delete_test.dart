@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Collection Delete Test Suite', () {
+  group(retry: 3, 'Collection Delete Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

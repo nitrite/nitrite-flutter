@@ -8,7 +8,7 @@ FieldValues getDocumentValues(Document document, Fields fields) {
 
   for (var field in fields.fieldNames) {
     var value = document.get(field);
-    fieldValues.values.add(Pair(field, value));
+    fieldValues.values.add((field, value));
   }
 
   return fieldValues;
@@ -33,10 +33,10 @@ Document _removeValues(Document document) {
   if (document.isEmpty) return document;
   var newDoc = emptyDocument();
   for (var entry in document) {
-    if (entry.second is Document) {
-      newDoc.put(entry.first, _removeValues(entry.second as Document));
+    if (entry.$2 is Document) {
+      newDoc.put(entry.$1, _removeValues(entry.$2 as Document));
     } else {
-      newDoc.put(entry.first, null);
+      newDoc.put(entry.$1, null);
     }
   }
   return newDoc;

@@ -22,10 +22,9 @@ class Stack<T> {
 
   /// push element in top of the stack.
   void push(T e) {
-    if(_sizeMax == noLimit || _list.length < _sizeMax) {
+    if (_sizeMax == noLimit || _list.length < _sizeMax) {
       _list.addLast(e);
-    }
-    else {
+    } else {
       throw InvalidOperationException("Stack is full");
     }
   }

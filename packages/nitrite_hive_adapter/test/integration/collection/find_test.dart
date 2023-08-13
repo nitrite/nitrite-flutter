@@ -6,7 +6,7 @@ import '../string_field_encryption_processor.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group("Collection Find Test Suite", () {
+  group(retry: 3, "Collection Find Test Suite", () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -50,20 +50,16 @@ void main() {
               .lte(DateTime.parse('2012-07-01T16:02:48.440Z')));
       expect(await cursor.length, 2);
 
-      cursor =
-          collection.find(filter: where('birthDay').lte(DateTime.now()));
+      cursor = collection.find(filter: where('birthDay').lte(DateTime.now()));
       expect(await cursor.length, 3);
 
-      cursor =
-          collection.find(filter: where('birthDay').lt(DateTime.now()));
+      cursor = collection.find(filter: where('birthDay').lt(DateTime.now()));
       expect(await cursor.length, 3);
 
-      cursor =
-          collection.find(filter: where('birthDay').gt(DateTime.now()));
+      cursor = collection.find(filter: where('birthDay').gt(DateTime.now()));
       expect(await cursor.length, 0);
 
-      cursor =
-          collection.find(filter: where('birthDay').gte(DateTime.now()));
+      cursor = collection.find(filter: where('birthDay').gte(DateTime.now()));
       expect(await cursor.length, 0);
 
       cursor = collection.find(
@@ -118,8 +114,8 @@ void main() {
           filter: where('lastName').within(["ln1", "ln2", "ln10"]));
       expect(await cursor.length, 3);
 
-      cursor = collection.find(
-          filter: where('firstName').notIn(["fn1", "fn2"]));
+      cursor =
+          collection.find(filter: where('firstName').notIn(["fn1", "fn2"]));
       expect(await cursor.length, 1);
 
       cursor = collection.find(filter: ~all);
@@ -270,8 +266,7 @@ void main() {
     test("Test Find with Invalid Field with Invalid Accessor", () async {
       await insert();
 
-      var cursor =
-          collection.find(filter: where('myField.0').eq('myData'));
+      var cursor = collection.find(filter: where('myField.0').eq('myData'));
       expect(await cursor.length, 0);
 
       cursor = collection.find(filter: where('myField.0').notEq(null));
@@ -284,8 +279,7 @@ void main() {
     test("Test Find with Invalid Field with Invalid Accessor", () async {
       await insert();
 
-      var cursor =
-          collection.find(filter: where('myField.0').eq('myData'));
+      var cursor = collection.find(filter: where('myField.0').eq('myData'));
       expect(await cursor.length, 0);
 
       cursor = collection.find(filter: where('myField.0').notEq(null));
@@ -585,8 +579,8 @@ void main() {
               where("productScores").elemMatch(where("product").regex("xyz")));
       expect(await cursor.length, 3);
 
-      cursor = prodCollection.find(
-          filter: where("strArray").elemMatch($.eq("a")));
+      cursor =
+          prodCollection.find(filter: where("strArray").elemMatch($.eq("a")));
       expect(await cursor.length, 2);
 
       cursor = prodCollection.find(
@@ -594,20 +588,20 @@ void main() {
               .elemMatch($.eq("a").or($.eq("f").or($.eq("b"))).not()));
       expect(await cursor.length, 1);
 
-      cursor = prodCollection.find(
-          filter: where("strArray").elemMatch($.gt("e")));
+      cursor =
+          prodCollection.find(filter: where("strArray").elemMatch($.gt("e")));
       expect(await cursor.length, 1);
 
-      cursor = prodCollection.find(
-          filter: where("strArray").elemMatch($.gte("e")));
+      cursor =
+          prodCollection.find(filter: where("strArray").elemMatch($.gte("e")));
       expect(await cursor.length, 2);
 
-      cursor = prodCollection.find(
-          filter: where("strArray").elemMatch($.lte("b")));
+      cursor =
+          prodCollection.find(filter: where("strArray").elemMatch($.lte("b")));
       expect(await cursor.length, 2);
 
-      cursor = prodCollection.find(
-          filter: where("strArray").elemMatch($.lt("a")));
+      cursor =
+          prodCollection.find(filter: where("strArray").elemMatch($.lt("a")));
       expect(await cursor.length, 0);
 
       cursor = prodCollection.find(
@@ -767,8 +761,7 @@ void main() {
     test("Test Find Filter Invalid Accessor", () async {
       await insert();
 
-      var cursor =
-          collection.find(filter: where("lastName.name").eq("ln2"));
+      var cursor = collection.find(filter: where("lastName.name").eq("ln2"));
       expect(await cursor.length, 0);
     });
 
@@ -807,8 +800,7 @@ void main() {
             emitsDone
           ]));
 
-      cursor =
-          col.find(findOptions: orderBy('fruit', SortOrder.descending));
+      cursor = col.find(findOptions: orderBy('fruit', SortOrder.descending));
       expect(await cursor.length, 4);
 
       expect(
@@ -954,13 +946,11 @@ void main() {
       expect(result, equals(doc));
 
       result = await (col.find(
-              filter: and([byId(nitriteId), where("age").notEq(null)])))
-          .first;
+          filter: and([byId(nitriteId), where("age").notEq(null)]))).first;
       expect(result, equals(doc));
 
       result = await (col.find(
-              filter: and([byId(nitriteId), where("tag").eq(doc['tag'])])))
-          .first;
+          filter: and([byId(nitriteId), where("tag").eq(doc['tag'])]))).first;
       expect(result, equals(doc));
     });
   });

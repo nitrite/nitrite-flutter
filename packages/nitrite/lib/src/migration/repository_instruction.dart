@@ -95,8 +95,8 @@ abstract class RepositoryInstruction implements Instruction {
 
   /// Adds an instruction to drop all indices from the [ObjectRepository].
   RepositoryInstruction dropAllIndices() {
-    MigrationStep migrationStep = MigrationStep(
-        InstructionType.repositoryDropIndices, Pair(entityName, key));
+    MigrationStep migrationStep =
+        MigrationStep(InstructionType.repositoryDropIndices, (entityName, key));
     addStep(migrationStep);
     return this;
   }

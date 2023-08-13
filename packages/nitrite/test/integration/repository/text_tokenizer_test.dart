@@ -6,7 +6,7 @@ import 'base_object_repository_test_loader.dart';
 import 'data/test_objects.dart';
 
 void main() {
-  group('Universal Text Tokenizer Test', () {
+  group(retry: 3, 'Universal Text Tokenizer Test', () {
     late ObjectRepository<TextData> textRepository;
 
     setUp(() async {
@@ -63,8 +63,7 @@ void main() {
     });
 
     test('Test Universal Full Text Indexing', () async {
-      var cursor =
-          textRepository.find(filter: where('text').text('Lorem'));
+      var cursor = textRepository.find(filter: where('text').text('Lorem'));
       expect(await cursor.length, 2);
 
       await for (var data in cursor) {

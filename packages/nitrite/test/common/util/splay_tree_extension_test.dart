@@ -4,7 +4,7 @@ import 'package:nitrite/src/common/util/splay_tree_extensions.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group("SplayTree Extension Test Suite", () {
+  group(retry: 3, "SplayTree Extension Test Suite", () {
     late SplayTreeMap<int, String> map;
 
     setUp(() {

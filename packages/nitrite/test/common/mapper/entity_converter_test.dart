@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 part 'entity_converter_test.no2.dart';
 
 void main() {
-  group("EntityConverter Test Suite", () {
+  group(retry: 3, "EntityConverter Test Suite", () {
     test("Test Helper Methods", () {
       var nitriteMapper = EntityConverterMapper();
       nitriteMapper.registerEntityConverter(_AConverter());

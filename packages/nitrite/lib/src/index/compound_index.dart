@@ -122,7 +122,7 @@ class CompoundIndex extends NitriteIndex {
     if (depth >= fieldValues.values.length) return;
 
     var pair = fieldValues.values[depth];
-    var value = pair.second;
+    var value = pair.$2;
     DBValue dbValue;
     if (value == null) {
       dbValue = DBNull.instance;
@@ -155,7 +155,7 @@ class CompoundIndex extends NitriteIndex {
 
   void _deleteFromSubMap(Map subMap, FieldValues fieldValues, int depth) {
     var pair = fieldValues.values[depth];
-    var value = pair.second;
+    var value = pair.$2;
     DBValue dbValue;
     if (value == null) {
       dbValue = DBNull.instance;

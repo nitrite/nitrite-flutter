@@ -1,4 +1,3 @@
-
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/index/compound_index.dart';
 import 'package:nitrite/src/index/nitrite_index.dart';
@@ -56,9 +55,11 @@ abstract class ComparableIndexer extends NitriteIndexer {
 
     NitriteIndex nitriteIndex;
     if (indexDescriptor.isCompoundIndex) {
-      nitriteIndex = CompoundIndex(indexDescriptor, nitriteConfig.getNitriteStore());
+      nitriteIndex =
+          CompoundIndex(indexDescriptor, nitriteConfig.getNitriteStore());
     } else {
-      nitriteIndex = SingleFieldIndex(indexDescriptor, nitriteConfig.getNitriteStore());
+      nitriteIndex =
+          SingleFieldIndex(indexDescriptor, nitriteConfig.getNitriteStore());
     }
 
     _indexRegistry[indexDescriptor] = nitriteIndex;

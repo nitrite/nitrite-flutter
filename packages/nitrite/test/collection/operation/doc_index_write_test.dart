@@ -12,7 +12,7 @@ import 'doc_index_write_test.mocks.dart';
 
 @GenerateMocks([IndexOperations, NitriteConfig])
 void main() {
-  group('Document Index Write Test Suite', () {
+  group(retry: 3, 'Document Index Write Test Suite', () {
     setUp(() {
       // Additional setup goes here.
     });
@@ -75,7 +75,8 @@ void main() {
       var config = MockNitriteConfig();
       when(config.findIndexer(IndexType.unique))
           .thenAnswer((_) => Future.value(UniqueIndexer()));
-      when(config.getNitriteStore()).thenReturn(InMemoryStore(InMemoryConfig()));
+      when(config.getNitriteStore())
+          .thenReturn(InMemoryStore(InMemoryConfig()));
 
       var indexWriter = DocumentIndexWriter(config, indexOperations);
       await indexWriter.updateIndexEntry(

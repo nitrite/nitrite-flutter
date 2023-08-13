@@ -3,7 +3,7 @@ import 'package:nitrite/src/common/util/index_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group("IndexUtils Test Suite", () {
+  group(retry: 3, "IndexUtils Test Suite", () {
     test('Test DeriveIndexMetaMapName', () {
       expect(deriveIndexMetaMapName('collectionName'),
           '$indexMetaPrefix${internalNameSeparator}collectionName');

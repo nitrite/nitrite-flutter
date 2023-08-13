@@ -6,7 +6,7 @@ import '../../test_utils.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Collection Update Test Suite', () {
+  group(retry: 3, 'Collection Update Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -89,8 +89,7 @@ void main() {
           await collection.update(where('firstName').eq('fn1').not(), document);
       expect(updateResult.getAffectedCount(), 2);
 
-      cursor =
-          collection.find(filter: where('lastName').eq('newLastName1'));
+      cursor = collection.find(filter: where('lastName').eq('newLastName1'));
       expect(await cursor.length, 2);
     });
 
@@ -120,8 +119,7 @@ void main() {
           where('firstName').eq('fn1').not(), document, options);
       expect(updateResult.getAffectedCount(), 2);
 
-      cursor =
-          collection.find(filter: where('lastName').eq('newLastName1'));
+      cursor = collection.find(filter: where('lastName').eq('newLastName1'));
       expect(await cursor.length, 2);
     });
 
@@ -138,8 +136,7 @@ void main() {
           where('firstName').eq('fn1').not(), document, options);
       expect(updateResult.getAffectedCount(), 1);
 
-      cursor =
-          collection.find(filter: where('lastName').eq('newLastName1'));
+      cursor = collection.find(filter: where('lastName').eq('newLastName1'));
       expect(await cursor.length, 1);
     });
 

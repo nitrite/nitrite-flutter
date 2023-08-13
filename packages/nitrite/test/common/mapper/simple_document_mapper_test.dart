@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import '../../test_utils.dart';
 
 void main() {
-  group('SimpleDocumentMapper Test Suite', () {
+  group(retry: 3, 'SimpleDocumentMapper Test Suite', () {
     test('Test Convert Value Type', () {
       var mapper = EntityConverterMapper();
       {

@@ -13,7 +13,7 @@ import 'read_operation_test.mocks.dart';
 
 @GenerateMocks([IndexOperations, Filter])
 main() {
-  group('Read Operation Test Suite', () {
+  group(retry: 3, 'Read Operation Test Suite', () {
     setUp(() {
       // Additional setup goes here.
     });

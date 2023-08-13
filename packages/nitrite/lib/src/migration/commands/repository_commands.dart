@@ -5,9 +5,10 @@ import 'package:nitrite/src/migration/commands/commands.dart';
 
 class RepositoryRenameCommand extends CollectionRenameCommand {
   RepositoryRenameCommand(Quartet<String, String?, String, String?> arguments)
-      : super(Pair(
-            findRepositoryNameByTypeName(arguments.first, arguments.second),
-            findRepositoryNameByTypeName(arguments.third, arguments.fourth)));
+      : super((
+          findRepositoryNameByTypeName(arguments.first, arguments.second),
+          findRepositoryNameByTypeName(arguments.third, arguments.fourth)
+        ));
 }
 
 class ChangeDataTypeCommand extends BaseCommand {
@@ -25,12 +26,12 @@ class ChangeDataTypeCommand extends BaseCommand {
     await initialize(nitrite, repositoryName);
 
     await for (var pair in nitriteMap!.entries()) {
-      var document = pair.second;
+      var document = pair.$2;
       var value = document.get(fieldName);
       var newValue = typeConverter(value);
       document.put(fieldName, newValue);
 
-      await nitriteMap!.put(pair.first, document);
+      await nitriteMap!.put(pair.$1, document);
     }
 
     var indexDescriptor =

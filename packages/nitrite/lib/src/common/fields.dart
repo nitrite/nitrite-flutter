@@ -82,7 +82,7 @@ class Fields implements Comparable<Fields> {
 /// Represents a list of document field with
 /// sorting direction for find query.
 class SortableFields extends Fields {
-  final List<Pair<String, SortOrder>> _sortingOrders = [];
+  final List<(String, SortOrder)> _sortingOrders = [];
 
   SortableFields();
 
@@ -108,17 +108,17 @@ class SortableFields extends Fields {
   /// Adds the sort order for a field.
   SortableFields addSortedField(String fieldName, SortOrder sortOrder) {
     super._fieldNames.add(fieldName);
-    _sortingOrders.add(Pair(fieldName, sortOrder));
+    _sortingOrders.add((fieldName, sortOrder));
     return this;
   }
 
   /// Gets the sort by field specifications.
-  List<Pair<String, SortOrder>> get sortingOrders =>
+  List<(String, SortOrder)> get sortingOrders =>
       List.unmodifiable(_sortingOrders);
 }
 
 class FieldValues {
-  final List<Pair<String, dynamic>> values = [];
+  final List<(String, dynamic)> values = [];
 
   NitriteId? nitriteId;
   Fields? _fields;
@@ -128,8 +128,8 @@ class FieldValues {
   dynamic get(String field) {
     if (fields.fieldNames.contains(field)) {
       for (var value in values) {
-        if (value.first == field) {
-          return value.second;
+        if (value.$1 == field) {
+          return value.$2;
         }
       }
     }
@@ -143,8 +143,8 @@ class FieldValues {
 
     var fieldNames = <String>[];
     for (var value in values) {
-      if (!value.first.isNullOrEmpty) {
-        fieldNames.add(value.first);
+      if (!value.$1.isNullOrEmpty) {
+        fieldNames.add(value.$1);
       }
     }
     _fields = Fields.withNames(fieldNames);

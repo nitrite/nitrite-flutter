@@ -106,8 +106,7 @@ abstract class Nitrite {
       return repos.contains(entityName);
     } else {
       var repos = await listKeyedRepositories;
-      return repos.containsKey(key) &&
-          repos[key]?.contains(entityName) != null;
+      return repos.containsKey(key) && repos[key]?.contains(entityName) != null;
     }
   }
 

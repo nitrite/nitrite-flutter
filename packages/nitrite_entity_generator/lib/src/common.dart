@@ -66,7 +66,6 @@ class ConverterInfo {
   }
 }
 
-
 // Metadata for @Field annotation.
 class FieldInfo {
   final String fieldName;

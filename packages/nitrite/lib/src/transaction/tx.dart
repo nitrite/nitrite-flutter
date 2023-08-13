@@ -38,12 +38,7 @@ enum TransactionState {
   aborted
 }
 
-enum ChangeType {
-  insert,
-  update,
-  remove,
-  setAttributes
-}
+enum ChangeType { insert, update, remove, setAttributes }
 
 class TransactionContext {
   final String _collectionName;

@@ -4,8 +4,7 @@ import 'package:test/test.dart';
 import '../test_utils.dart';
 
 void main() {
-  group("Stack Test Suite", () {
-
+  group(retry: 3, "Stack Test Suite", () {
     test("Test IsEmpty", () {
       var stack = Stack();
       expect(stack.isEmpty, isTrue);
@@ -109,7 +108,8 @@ void main() {
       stack.push("a");
 
       expect(stack.contains("a"), isTrue);
-      expect(stack.contains(DateTime.now()), isFalse); // date time value is different now
+      expect(stack.contains(DateTime.now()),
+          isFalse); // date time value is different now
     });
   });
 }

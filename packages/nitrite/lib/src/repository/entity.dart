@@ -26,12 +26,12 @@ class EntityId {
   bool get isEmbedded => _fields.isNotEmpty;
 
   Filter createUniqueFilter(dynamic value, NitriteMapper nitriteMapper) {
-    var document = nitriteMapper.tryConvert<Document, dynamic>(value);
-    if (document == null) {
-      throw ObjectMappingException('Failed to map object to document');
-    }
-
     if (isEmbedded) {
+      var document = nitriteMapper.tryConvert<Document, dynamic>(value);
+      if (document == null) {
+        throw ObjectMappingException('Failed to map $value to document');
+      }
+
       var filters = <Filter>[];
       for (var field in _fields) {
         var filterField = "$_fieldName${NitriteConfig.fieldSeparator}$field";
@@ -43,7 +43,7 @@ class EntityId {
       nitriteFilter.objectFilter = true;
       return nitriteFilter;
     } else {
-      return where(_fieldName).eq(document[_fieldName]);
+      return where(_fieldName).eq(value);
     }
   }
 

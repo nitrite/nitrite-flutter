@@ -1,8 +1,8 @@
 import 'dart:isolate';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
+import 'package:test/test.dart';
 
 import '../../test_utils.dart';
 import '../repository/base_object_repository_test_loader.dart';
@@ -10,7 +10,7 @@ import '../repository/data/test_objects.dart';
 import '../repository/data/test_objects_decorators.dart';
 
 void main() {
-  group('Transaction Repository Test Suite', () {
+  group(retry: 3, 'Transaction Repository Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

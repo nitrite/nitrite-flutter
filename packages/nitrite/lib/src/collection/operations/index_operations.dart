@@ -108,7 +108,7 @@ class IndexOperations {
     }
 
     await for (var entry in _nitriteMap.entries()) {
-      var document = entry.second;
+      var document = entry.$2;
       var fieldValues = getDocumentValues(document, indexDescriptor.fields);
 
       await nitriteIndexer.writeIndexEntry(

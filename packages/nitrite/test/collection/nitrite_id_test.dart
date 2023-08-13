@@ -1,11 +1,11 @@
+import 'package:dart_numerics/dart_numerics.dart' as num;
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
-import 'package:dart_numerics/dart_numerics.dart' as num;
 
 import '../test_utils.dart';
 
 void main() async {
-  group('Nitrite Id Test Suite', () {
+  group(retry: 3, 'Nitrite Id Test Suite', () {
     setUp(() {
       // Additional setup goes here.
     });

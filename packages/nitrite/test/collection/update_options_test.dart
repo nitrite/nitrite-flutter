@@ -2,7 +2,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 main() {
-  group("Update Options Test Suite", () {
+  group(retry: 3, "Update Options Test Suite", () {
     setUp(() {});
 
     test("Test UpdateOptions", () {

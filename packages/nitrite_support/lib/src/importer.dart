@@ -18,7 +18,6 @@ class Importer {
         dbFactory: dbFactory,
       ));
 
-
   void registerConverter(Converter converter) {
     _options.registerConverter(converter);
   }
@@ -29,13 +28,13 @@ class Importer {
 
   Future<void> _readFromFile(String path) async {
     try {
-    var file = File(path);
-    if (file.existsSync()) {
-      var content = await file.readAsString();
-      await _readFromJson(content);
-    } else {
-      throw NitriteIOException('File not found: $path');
-    }
+      var file = File(path);
+      if (file.existsSync()) {
+        var content = await file.readAsString();
+        await _readFromJson(content);
+      } else {
+        throw NitriteIOException('File not found: $path');
+      }
     } catch (e) {
       print(e);
     }
@@ -46,5 +45,3 @@ class Importer {
     await jsonImporter.import(content);
   }
 }
-
-

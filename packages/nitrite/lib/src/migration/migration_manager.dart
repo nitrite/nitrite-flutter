@@ -136,7 +136,7 @@ class MigrationManager {
       Command command;
       switch (step.instructionType) {
         case InstructionType.addPassword:
-          command = AddPasswordCommand(step.arguments as Pair<String, String>);
+          command = AddPasswordCommand(step.arguments as (String, String));
           break;
         case InstructionType.changePassword:
           command = ChangePasswordCommand(
@@ -146,15 +146,13 @@ class MigrationManager {
           command = DropCollectionCommand(step.arguments as String);
           break;
         case InstructionType.dropRepository:
-          command =
-              DropRepositoryCommand(step.arguments as Pair<String, String?>);
+          command = DropRepositoryCommand(step.arguments as (String, String?));
           break;
         case InstructionType.custom:
           command = CustomCommand(step.arguments as CustomInstruction);
           break;
         case InstructionType.collectionRename:
-          command =
-              CollectionRenameCommand(step.arguments as Pair<String, String>);
+          command = CollectionRenameCommand(step.arguments as (String, String));
           break;
         case InstructionType.collectionAddField:
           command = AddFieldCommand(
@@ -165,13 +163,13 @@ class MigrationManager {
               step.arguments as Triplet<String, String, String>);
           break;
         case InstructionType.collectionDeleteField:
-          command = DeleteFieldCommand(step.arguments as Pair<String, String>);
+          command = DeleteFieldCommand(step.arguments as (String, String));
           break;
         case InstructionType.collectionDropIndex:
-          command = DropIndexCommand(step.arguments as Pair<String, Fields?>);
+          command = DropIndexCommand(step.arguments as (String, Fields?));
           break;
         case InstructionType.collectionDropIndices:
-          command = DropIndexCommand(Pair(step.arguments as String, null));
+          command = DropIndexCommand((step.arguments as String, null));
           break;
         case InstructionType.collectionCreateIndex:
           command = CreateIndexCommand(
@@ -200,7 +198,7 @@ class MigrationManager {
           var args = step.arguments as Triplet<String, String?, String>;
           var repositoryName =
               findRepositoryNameByTypeName(args.first, args.second);
-          command = DeleteFieldCommand(Pair(repositoryName, args.third));
+          command = DeleteFieldCommand((repositoryName, args.third));
           break;
         case InstructionType.repositoryChangeDataType:
           command = ChangeDataTypeCommand(step.arguments
@@ -214,13 +212,12 @@ class MigrationManager {
           var args = step.arguments as Triplet<String, String?, Fields>;
           var repositoryName =
               findRepositoryNameByTypeName(args.first, args.second);
-          command = DropIndexCommand(Pair(repositoryName, args.third));
+          command = DropIndexCommand((repositoryName, args.third));
           break;
         case InstructionType.repositoryDropIndices:
-          var args = step.arguments as Pair<String, String?>;
-          var repositoryName =
-              findRepositoryNameByTypeName(args.first, args.second);
-          command = DropIndexCommand(Pair(repositoryName, null));
+          var args = step.arguments as (String, String?);
+          var repositoryName = findRepositoryNameByTypeName(args.$1, args.$2);
+          command = DropIndexCommand((repositoryName, null));
           break;
         case InstructionType.repositoryCreateIndex:
           var args = step.arguments as Quartet<String, String?, Fields, String>;

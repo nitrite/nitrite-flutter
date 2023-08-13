@@ -56,4 +56,3 @@ extension BoxExtension on Box {
     return -(low + 1);
   }
 }
-

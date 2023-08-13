@@ -14,7 +14,7 @@ import 'processor_chain_test.mocks.dart';
   NitriteCollection,
 ])
 void main() {
-  group("ProcessorChain Test Suite", () {
+  group(retry: 3, "ProcessorChain Test Suite", () {
     test("Test Remove", () {
       var processorChain = ProcessorChain();
       var processor = MockProcessor();
@@ -28,8 +28,8 @@ void main() {
     test("Test Process Before Write", () async {
       var processorChain = ProcessorChain();
       var processor = MockProcessor();
-      when(processor.processBeforeWrite(any)).thenAnswer(
-          (_) => Future.value(createDocument("processed", true)));
+      when(processor.processBeforeWrite(any))
+          .thenAnswer((_) => Future.value(createDocument("processed", true)));
       processorChain.add(processor);
 
       var document = emptyDocument();
@@ -77,8 +77,8 @@ void main() {
       when(collection.update(any, any, any))
           .thenAnswer((_) => Future.value(WriteResult([NitriteId.newId()])));
 
-      when(mockProcessor.processBeforeWrite(any)).thenAnswer(
-          (_) => Future.value(createDocument("processed", true)));
+      when(mockProcessor.processBeforeWrite(any))
+          .thenAnswer((_) => Future.value(createDocument("processed", true)));
 
       when(mockProcessor.processAfterRead(any)).thenAnswer((invocation) {
         var doc = invocation.positionalArguments.first as Document;

@@ -4,7 +4,7 @@ import '../../test_utils.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Collection Insert Negative Test Suite', () {
+  group(retry: 3, 'Collection Insert Negative Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

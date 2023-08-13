@@ -5,14 +5,14 @@ import 'package:nitrite/src/collection/operations/index_manager.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
 
 class CollectionRenameCommand extends BaseCommand {
-  final Pair<String, String> _arguments;
+  final (String, String) _arguments;
 
   CollectionRenameCommand(this._arguments);
 
   @override
   Future<void> execute(Nitrite nitrite) async {
-    var oldName = _arguments.first;
-    var newName = _arguments.second;
+    var oldName = _arguments.$1;
+    var newName = _arguments.$2;
 
     await initialize(nitrite, oldName);
 
@@ -24,7 +24,7 @@ class CollectionRenameCommand extends BaseCommand {
       await newOperations.initialize();
 
       await for (var pair in nitriteMap!.entries()) {
-        await newMap.put(pair.first, pair.second);
+        await newMap.put(pair.$1, pair.$2);
       }
 
       var indexManager = IndexManager(oldName, nitrite.config);
@@ -66,14 +66,14 @@ class AddFieldCommand extends BaseCommand {
         await operations?.findIndex(Fields.withNames([fieldName]));
 
     await for (var pair in nitriteMap!.entries()) {
-      var document = pair.second;
+      var document = pair.$2;
       if (thirdArg is Generator) {
         document.put(fieldName, thirdArg(document));
       } else {
         document.put(fieldName, thirdArg);
       }
       // update all documents in parallel
-      await nitriteMap!.put(pair.first, document);
+      await nitriteMap!.put(pair.$1, document);
     }
 
     if (indexDescriptor != null) {
@@ -104,14 +104,14 @@ class RenameFieldCommand extends BaseCommand {
           await indexManager.findMatchingIndexDescriptors(oldField);
 
       await for (var pair in nitriteMap!.entries()) {
-        var document = pair.second;
+        var document = pair.$2;
         if (document.containsKey(oldName)) {
           var value = document.get(oldName);
           document.put(newName, value);
           document.remove(oldName);
 
           // update all documents in parallel
-          await nitriteMap!.put(pair.first, document);
+          await nitriteMap!.put(pair.$1, document);
         }
       }
 
@@ -147,14 +147,14 @@ class RenameFieldCommand extends BaseCommand {
 }
 
 class DeleteFieldCommand extends BaseCommand {
-  final Pair<String, String> _arguments;
+  final (String, String) _arguments;
 
   DeleteFieldCommand(this._arguments);
 
   @override
   Future<void> execute(Nitrite nitrite) async {
-    var collectionName = _arguments.first;
-    var fieldName = _arguments.second;
+    var collectionName = _arguments.$1;
+    var fieldName = _arguments.$2;
 
     await initialize(nitrite, collectionName);
 
@@ -162,9 +162,9 @@ class DeleteFieldCommand extends BaseCommand {
         await operations?.findIndex(Fields.withNames([fieldName]));
 
     await for (var pair in nitriteMap!.entries()) {
-      var document = pair.second;
+      var document = pair.$2;
       document.remove(fieldName);
-      await nitriteMap!.put(pair.first, document);
+      await nitriteMap!.put(pair.$1, document);
     }
 
     if (indexDescriptor != null) {
@@ -174,14 +174,14 @@ class DeleteFieldCommand extends BaseCommand {
 }
 
 class DropIndexCommand extends BaseCommand {
-  final Pair<String, Fields?> _arguments;
+  final (String, Fields?) _arguments;
 
   DropIndexCommand(this._arguments);
 
   @override
   Future<void> execute(Nitrite nitrite) async {
-    var collectionName = _arguments.first;
-    var fields = _arguments.second;
+    var collectionName = _arguments.$1;
+    var fields = _arguments.$2;
 
     await initialize(nitrite, collectionName);
 

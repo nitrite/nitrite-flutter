@@ -16,14 +16,14 @@ class SortedDocumentStream extends StreamView<Document> {
   }
 
   static int _compare(
-      Document a, Document b, List<Pair<String, SortOrder>> sortOrder) {
+      Document a, Document b, List<(String, SortOrder)> sortOrder) {
     if (sortOrder.isEmpty) {
       return 0;
     }
 
     for (var value in sortOrder) {
-      var field = value.first;
-      var order = value.second;
+      var field = value.$1;
+      var order = value.$2;
 
       var aValue = a[field];
       var bValue = b[field];

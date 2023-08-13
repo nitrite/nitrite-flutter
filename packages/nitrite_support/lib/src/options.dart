@@ -1,4 +1,3 @@
-
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_support/src/convert/converter.dart';
 

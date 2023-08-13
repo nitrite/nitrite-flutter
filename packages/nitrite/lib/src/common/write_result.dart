@@ -1,4 +1,3 @@
-
 import 'package:nitrite/nitrite.dart';
 
 class WriteResult extends Iterable<NitriteId> {
@@ -12,5 +11,4 @@ class WriteResult extends Iterable<NitriteId> {
 
   @override
   Iterator<NitriteId> get iterator => _nitriteIds.iterator;
-
 }

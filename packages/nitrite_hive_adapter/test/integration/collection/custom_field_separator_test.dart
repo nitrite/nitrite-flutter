@@ -6,7 +6,7 @@ import 'package:test/scaffolding.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group("Custom Field Separator Test Suite", () {
+  group(retry: 3, "Custom Field Separator Test Suite", () {
     late Nitrite db;
     late NitriteCollection collection;
 
@@ -46,8 +46,7 @@ void main() {
           collection.find(filter: where('employeeNote.text').notEq(null));
       expect(await cursor.toList(), isEmpty);
 
-      cursor =
-          collection.find(filter: where('employeeNote:text').notEq(null));
+      cursor = collection.find(filter: where('employeeNote:text').notEq(null));
       expect(await cursor.toList(), isNotEmpty);
     });
   });

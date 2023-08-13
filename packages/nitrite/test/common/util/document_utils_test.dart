@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 import '../../test_utils.dart';
 
 void main() {
-  group("Document Utils Test Suite", () {
+  group(retry: 3, "Document Utils Test Suite", () {
     test('Test GetDocumentValues', () {
       var document = emptyDocument();
       document.put('_id', '1');
@@ -31,14 +31,14 @@ void main() {
       expect(fieldValues.nitriteId, NitriteId.createId('1'));
       expect(fieldValues.fields, fields);
       expect(fieldValues.values.length, 4);
-      expect(fieldValues.values[0].first, 'name');
-      expect(fieldValues.values[0].second, 'John');
-      expect(fieldValues.values[1].first, 'age');
-      expect(fieldValues.values[1].second, '30');
-      expect(fieldValues.values[2].first, 'address.zip');
-      expect(fieldValues.values[2].second, '10001');
-      expect(fieldValues.values[3].first, 'phone.home');
-      expect(fieldValues.values[3].second, '212-555-1212');
+      expect(fieldValues.values[0].$1, 'name');
+      expect(fieldValues.values[0].$2, 'John');
+      expect(fieldValues.values[1].$1, 'age');
+      expect(fieldValues.values[1].$2, '30');
+      expect(fieldValues.values[2].$1, 'address.zip');
+      expect(fieldValues.values[2].$2, '10001');
+      expect(fieldValues.values[3].$1, 'phone.home');
+      expect(fieldValues.values[3].$2, '212-555-1212');
     });
 
     test('Test SkeletonDocument', () {

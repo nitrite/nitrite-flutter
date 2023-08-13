@@ -19,7 +19,6 @@ abstract class TextTokenizer {
 /// It discards certain words known as stop word depending on
 /// the language chosen.
 abstract class BaseTextTokenizer implements TextTokenizer {
-
   @override
   Set<String> tokenize(String text) {
     var words = <String>{};

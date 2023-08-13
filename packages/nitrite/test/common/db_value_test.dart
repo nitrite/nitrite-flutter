@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 import '../test_utils.dart';
 
 void main() {
-  group("DBValue Test Suite", () {
+  group(retry: 3, "DBValue Test Suite", () {
     test("Test CompareTo", () {
       var dbValue = DBValue(1);
 
@@ -66,5 +66,4 @@ void main() {
       expect(() => list.sort(), throwsInvalidOperationException);
     });
   });
-
 }

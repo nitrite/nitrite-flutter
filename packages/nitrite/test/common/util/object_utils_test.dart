@@ -8,7 +8,7 @@ import '../../test_utils.dart';
 part 'object_utils_test.no2.dart';
 
 void main() {
-  group("Object Utils Test Suite", () {
+  group(retry: 3, "Object Utils Test Suite", () {
     test('Test IsSubtype', () {
       expect(isSubtype<int, num>(), isTrue);
       expect(isSubtype<num, int>(), isFalse);

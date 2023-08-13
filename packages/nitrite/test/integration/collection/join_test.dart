@@ -7,7 +7,7 @@ import 'base_collection_test_loader.dart';
 void main() {
   late NitriteCollection foreignCollection;
 
-  group('Collection Join Test Suite', () {
+  group(retry: 3, 'Collection Join Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

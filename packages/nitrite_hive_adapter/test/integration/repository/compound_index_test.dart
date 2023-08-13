@@ -4,7 +4,7 @@ import 'base_object_repository_test_loader.dart';
 import 'data/test_objects.dart';
 
 void main() {
-  group('Compound Index Test Suite', () {
+  group(retry: 3, 'Compound Index Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

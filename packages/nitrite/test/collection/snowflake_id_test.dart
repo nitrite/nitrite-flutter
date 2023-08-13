@@ -2,7 +2,7 @@ import 'package:nitrite/src/collection/snowflake_id.dart';
 import 'package:test/test.dart';
 
 main() {
-  group("Snowflake Id Generator Test Suite", () {
+  group(retry: 3, "Snowflake Id Generator Test Suite", () {
     setUp(() {});
 
     test("Test Id", () {

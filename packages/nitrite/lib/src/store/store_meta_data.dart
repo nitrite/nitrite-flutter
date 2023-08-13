@@ -12,10 +12,10 @@ class StoreMetaData implements MetaData {
 
   factory StoreMetaData.fromDocument(Document document) {
     return StoreMetaData()
-    ..createTime = document.get('createTime')
-    ..storeVersion = document.get('storeVersion')
-    ..nitriteVersion = document.get('nitriteVersion')
-    ..schemaVersion = document.get('schemaVersion');
+      ..createTime = document.get('createTime')
+      ..storeVersion = document.get('storeVersion')
+      ..nitriteVersion = document.get('nitriteVersion')
+      ..schemaVersion = document.get('schemaVersion');
   }
 
   /// Gets the database info in a document.

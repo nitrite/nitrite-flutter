@@ -85,7 +85,7 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     if (_cleared) Stream.empty();
 
     await for (var entry in entries()) {
-      yield entry.second;
+      yield entry.$2;
     }
   }
 
@@ -137,25 +137,23 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
   }
 
   @override
-  Stream<Pair<K, V>> entries() {
+  Stream<(K, V)> entries() {
     if (_cleared) return Stream.empty();
 
     return ConcatStream([
-      _primaryMap
-          .entries()
-          .where((entry) => !_tombstones.contains(entry.first)),
+      _primaryMap.entries().where((entry) => !_tombstones.contains(entry.$1)),
       _backingMap.entries(),
     ]);
   }
 
   @override
-  Stream<Pair<K, V>> reversedEntries() {
+  Stream<(K, V)> reversedEntries() {
     if (_cleared) return Stream.empty();
 
     return ConcatStream([
       _primaryMap
           .reversedEntries()
-          .where((entry) => !_tombstones.contains(entry.first)),
+          .where((entry) => !_tombstones.contains(entry.$1)),
       _backingMap.reversedEntries(),
     ]);
   }

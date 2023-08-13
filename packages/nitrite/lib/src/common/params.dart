@@ -16,6 +16,7 @@ class LookUp {
 enum SortOrder {
   /// Ascending sort order.
   ascending,
+
   /// Descending sort order.
   descending,
 }

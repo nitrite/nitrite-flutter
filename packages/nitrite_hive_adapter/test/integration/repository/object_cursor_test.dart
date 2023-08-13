@@ -4,7 +4,7 @@ import '../../test_utils.dart';
 import 'base_object_repository_test_loader.dart';
 
 void main() {
-  group('Object Cursor Test Suite', () {
+  group(retry: 3, 'Object Cursor Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

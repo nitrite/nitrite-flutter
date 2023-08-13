@@ -35,7 +35,7 @@ class _StatsCardState extends ConsumerState<StatsCard> {
                   'Completed Task: $completedCounter',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
-                  ),
+                      ),
                 ),
               ),
               Padding(
@@ -43,8 +43,8 @@ class _StatsCardState extends ConsumerState<StatsCard> {
                 child: Text(
                   'Pending Task: $pendingCounter',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                 ),
               ),
             ],

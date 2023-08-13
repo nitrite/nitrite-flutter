@@ -9,8 +9,8 @@ abstract class CollectionInstruction implements Instruction {
 
   /// Adds an instruction to rename a [NitriteCollection].
   CollectionInstruction rename(String name) {
-    MigrationStep migrationStep = MigrationStep(
-        InstructionType.collectionRename, Pair(collectionName, name));
+    MigrationStep migrationStep =
+        MigrationStep(InstructionType.collectionRename, (collectionName, name));
     addStep(migrationStep);
     return _DelegatedInstruction(this);
   }
@@ -45,7 +45,7 @@ abstract class CollectionInstruction implements Instruction {
   /// a [NitriteCollection].
   CollectionInstruction deleteField(String fieldName) {
     MigrationStep migrationStep = MigrationStep(
-        InstructionType.collectionDeleteField, Pair(collectionName, fieldName));
+        InstructionType.collectionDeleteField, (collectionName, fieldName));
     addStep(migrationStep);
     return this;
   }
@@ -54,8 +54,7 @@ abstract class CollectionInstruction implements Instruction {
   CollectionInstruction dropIndex(List<String> indexedFieldNames) {
     Fields indexedFields = Fields.withNames(indexedFieldNames);
     MigrationStep migrationStep = MigrationStep(
-        InstructionType.collectionDropIndex,
-        Pair(collectionName, indexedFields));
+        InstructionType.collectionDropIndex, (collectionName, indexedFields));
     addStep(migrationStep);
     return this;
   }

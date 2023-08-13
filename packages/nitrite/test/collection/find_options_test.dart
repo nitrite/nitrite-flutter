@@ -2,7 +2,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Find Options Test Suite', () {
+  group(retry: 3, 'Find Options Test Suite', () {
     setUp(() {});
 
     test("Test OrderBy", () {

@@ -17,8 +17,7 @@ class TypeValidator extends TypeVisitor {
   }
 
   @override
-  visitFunctionType(FunctionType type) {
-  }
+  visitFunctionType(FunctionType type) {}
 
   @override
   visitInterfaceType(InterfaceType type) {
@@ -68,7 +67,7 @@ class TypeValidator extends TypeVisitor {
         'Void type is not supported for automatic '
         'converter code generation.');
   }
-  
+
   @override
   visitInvalidType(InvalidType type) {
     throw InvalidGenerationSourceError(

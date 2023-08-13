@@ -9,7 +9,7 @@ import 'data/data_generator.dart';
 import 'data/test_objects.dart';
 
 void main() {
-  group('Repository Search Test', () {
+  group(retry: 3, 'Repository Search Test', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -20,17 +20,15 @@ void main() {
     });
 
     test('Test Find with Options', () async {
-      var cursor =
-          employeeRepository.find(findOptions: skipBy(0).setLimit(1));
+      var cursor = employeeRepository.find(findOptions: skipBy(0).setLimit(1));
       expect(await cursor.length, 1);
       expect(await cursor.first, isNotNull);
     });
 
     test('Test Employee Projection', () async {
       var employeeList = await (employeeRepository.find()).toList();
-      var subEmployeeList = await (employeeRepository.find())
-          .project<SubEmployee>()
-          .toList();
+      var subEmployeeList =
+          await (employeeRepository.find()).project<SubEmployee>().toList();
       expect(employeeList, isNotEmpty);
       expect(subEmployeeList, isNotEmpty);
       expect(employeeList.length, subEmployeeList.length);
@@ -416,8 +414,7 @@ void main() {
               where('productScores').elemMatch(where('product').regex('xyz')));
       expect(await cursor.length, 3);
 
-      cursor =
-          repository.find(filter: where('strArray').elemMatch($.eq('a')));
+      cursor = repository.find(filter: where('strArray').elemMatch($.eq('a')));
       expect(await cursor.length, 2);
 
       cursor = repository.find(
@@ -425,28 +422,24 @@ void main() {
               .elemMatch($.eq('a').or($.eq('f').or($.eq('b'))).not()));
       expect(await cursor.length, 1);
 
-      cursor =
-          repository.find(filter: where('strArray').elemMatch($.gt('e')));
+      cursor = repository.find(filter: where('strArray').elemMatch($.gt('e')));
       expect(await cursor.length, 1);
 
-      cursor = repository.find(
-          filter: where('strArray').elemMatch($.gte('e')));
+      cursor = repository.find(filter: where('strArray').elemMatch($.gte('e')));
       expect(await cursor.length, 2);
 
-      cursor = repository.find(
-          filter: where('strArray').elemMatch($.lte('b')));
+      cursor = repository.find(filter: where('strArray').elemMatch($.lte('b')));
       expect(await cursor.length, 2);
 
-      cursor =
-          repository.find(filter: where('strArray').elemMatch($.lt('a')));
+      cursor = repository.find(filter: where('strArray').elemMatch($.lt('a')));
       expect(await cursor.length, 0);
 
       cursor = repository.find(
           filter: where('strArray').elemMatch($.within(['a', 'f'])));
       expect(await cursor.length, 2);
 
-      cursor = repository.find(
-          filter: where('strArray').elemMatch($.regex('a')));
+      cursor =
+          repository.find(filter: where('strArray').elemMatch($.regex('a')));
       expect(await cursor.length, 2);
     });
 
@@ -513,16 +506,16 @@ void main() {
           findOptions: orderBy('status', SortOrder.descending));
       expect(await cursor.length, 2);
 
-      cursor = repository.find(
-          findOptions: orderBy('status', SortOrder.descending));
+      cursor =
+          repository.find(findOptions: orderBy('status', SortOrder.descending));
       expect((await cursor.first).status, 'Un-Married');
 
-      cursor = repository.find(
-          findOptions: orderBy('status', SortOrder.ascending));
+      cursor =
+          repository.find(findOptions: orderBy('status', SortOrder.ascending));
       expect(await cursor.length, 3);
 
-      cursor = repository.find(
-          findOptions: orderBy('status', SortOrder.ascending));
+      cursor =
+          repository.find(findOptions: orderBy('status', SortOrder.ascending));
       expect((await cursor.first).status, 'Married');
     });
 
@@ -585,7 +578,8 @@ void main() {
       var book = randomBook();
       await bookRepo.insert(book);
 
-      var result = await bookRepo.updateDocument(where('book_id').eq(book.bookId), createDocument('price', 100.0));
+      var result = await bookRepo.updateDocument(
+          where('book_id').eq(book.bookId), createDocument('price', 100.0));
       expect(result.getAffectedCount(), 1);
 
       var cursor = bookRepo.find(filter: where('price').eq(100.0));

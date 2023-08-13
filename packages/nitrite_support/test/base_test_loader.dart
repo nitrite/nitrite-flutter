@@ -90,14 +90,3 @@ List<Document> filter(List<Document> documents) {
         ..remove(docSource))
       .toList();
 }
-
-dynamic customEncode(dynamic item) {
-  if (item is DateTime) {
-    return item.toIso8601String();
-  } else if (item is Document) {
-    return (item as dynamic).toJson();
-  } else if (item is NitriteId) {
-    return item.idValue;
-  }
-  return item;
-}

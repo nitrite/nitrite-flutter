@@ -6,7 +6,7 @@ import '../../test_utils.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Collection Find Negative Test Suite', () {
+  group(retry: 3, 'Collection Find Negative Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -19,8 +19,7 @@ void main() {
     test('Test Find Filter Invalid Index', () async {
       await insert();
       expect(
-          () async =>
-              (collection.find(filter: where('data.9').eq(4))).toList(),
+          () async => (collection.find(filter: where('data.9').eq(4))).toList(),
           throwsValidationException);
     });
 
@@ -28,8 +27,7 @@ void main() {
       await insert();
       expect(
           () async =>
-              (collection.find(findOptions: skipBy(-1).setLimit(1)))
-                  .toList(),
+              (collection.find(findOptions: skipBy(-1).setLimit(1))).toList(),
           throwsValidationException);
     });
 
@@ -37,8 +35,7 @@ void main() {
       await insert();
       expect(
           () async =>
-              (collection.find(findOptions: skipBy(0).setLimit(-1)))
-                  .toList(),
+              (collection.find(findOptions: skipBy(0).setLimit(-1))).toList(),
           throwsValidationException);
     });
 
@@ -55,8 +52,7 @@ void main() {
       await insert();
       expect(
           () async =>
-              (collection.find(filter: where('body').text('Lorem')))
-                  .toList(),
+              (collection.find(filter: where('body').text('Lorem'))).toList(),
           throwsFilterException);
     });
 

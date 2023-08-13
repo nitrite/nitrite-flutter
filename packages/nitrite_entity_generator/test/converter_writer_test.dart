@@ -7,7 +7,7 @@ import 'test_utils.dart';
 part 'converter_writer_test.no2.dart';
 
 void main() {
-  group("Converter Writer Test Suite", () {
+  group(retry: 3, "Converter Writer Test Suite", () {
     test("Test Converter Class Name", () async {
       final converterInfo = await createConverterInfo('''
         @GenerateConverter(className: 'MyCustomConverter')

@@ -8,14 +8,14 @@ Document emptyDocument() => _NitriteDocument();
 /// Creates a [Document] from a `Map<String, dynamic>`.
 Document documentFromMap(Map<String, dynamic> map) {
   var doc = emptyDocument();
-    for (var entry in map.entries) {
-      if (entry.value is Map<String, dynamic>) {
-        doc.put(entry.key, documentFromMap(entry.value));
-      } else {
-        doc.put(entry.key, entry.value);
-      }
+  for (var entry in map.entries) {
+    if (entry.value is Map<String, dynamic>) {
+      doc.put(entry.key, documentFromMap(entry.value));
+    } else {
+      doc.put(entry.key, entry.value);
     }
-    return doc;
+  }
+  return doc;
 }
 
 /// Creates a [Document] from the given [key] and [value].
@@ -23,27 +23,26 @@ Document createDocument(String key, dynamic value) =>
     emptyDocument()..put(key, value);
 
 /// Represents a document in Nitrite database.
-/// 
+///
 /// Nitrite document are composed of key-value pairs. The key is always a
-/// [String] and value can be any type including null. 
-/// 
-/// Nitrite document supports nested documents as well. The key of a nested 
-/// document is a [String] separated by [NitriteConfig.fieldSeparator]. 
+/// [String] and value can be any type including null.
+///
+/// Nitrite document supports nested documents as well. The key of a nested
+/// document is a [String] separated by [NitriteConfig.fieldSeparator].
 /// By default, Nitrite uses `.` as field separator. This can be changed by
 /// setting [NitriteConfig.fieldSeparator].
-/// 
+///
 /// For example, if a document has a nested document `{"a": {"b": 1}}`, then the
 /// value inside the nested document can be retrieved by calling `document["a.b"]`.
-/// 
+///
 /// Below fields are reserved and cannot be used as key in a document.
-/// 
+///
 /// * `_id` - The unique identifier of the document. If not provided, Nitrite
 /// will generate a unique [NitriteId] for the document during insertion.
-/// * `_revision` - The revision number of the document. 
+/// * `_revision` - The revision number of the document.
 /// * `_source` - The source of the document.
 /// * `_modified` - The last modified time of the document.
-abstract class Document extends Iterable<Pair<String, dynamic>> {
-
+abstract class Document extends Iterable<(String, dynamic)> {
   /// Associates the specified value with the specified key in this document.
   ///
   /// NOTE: An embedded field is also supported.
@@ -276,9 +275,7 @@ class _NitriteDocument extends Document {
   int get size => _documentMap.length;
 
   @override
-  Iterator<Pair<String, dynamic>> get iterator => _PairIterator(_documentMap);
-
-  Map<String, dynamic> toJson() => _documentMap;
+  Iterator<(String, dynamic)> get iterator => _RecordIterator(_documentMap);
 
   bool _isEmbedded(String field) {
     return field.contains(NitriteConfig.fieldSeparator);
@@ -504,16 +501,16 @@ class _NitriteDocument extends Document {
   }
 }
 
-class _PairIterator implements Iterator<Pair<String, dynamic>> {
+class _RecordIterator implements Iterator<(String, dynamic)> {
   final Iterator<String> _keys;
   final Map<String, dynamic> _documentMap;
 
-  _PairIterator(this._documentMap) : _keys = _documentMap.keys.iterator;
+  _RecordIterator(this._documentMap) : _keys = _documentMap.keys.iterator;
 
   @override
-  Pair<String, dynamic> get current {
+  (String, dynamic) get current {
     var key = _keys.current;
-    return Pair(key, _documentMap[key]);
+    return (key, _documentMap[key]);
   }
 
   @override

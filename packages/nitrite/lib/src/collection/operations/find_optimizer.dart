@@ -282,7 +282,7 @@ class FindOptimizer {
           for (var i = 0; i < length; i++) {
             var indexFieldName = indexedFieldNames[i];
             var findPair = findSortSpec[i];
-            if (indexFieldName != findPair.first) {
+            if (indexFieldName != findPair.$1) {
               // field mismatch in sort spec, can't use index for sorting
               canUseIndex = false;
               break;
@@ -290,7 +290,7 @@ class FindOptimizer {
               canUseIndex = true;
               bool reverseScan = false;
 
-              var findSortOrder = findPair.second;
+              var findSortOrder = findPair.$2;
               if (findSortOrder != SortOrder.ascending) {
                 // if sort order is different, reverse scan in index
                 reverseScan = true;

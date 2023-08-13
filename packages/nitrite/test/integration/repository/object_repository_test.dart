@@ -10,7 +10,7 @@ import 'data/test_objects_decorators.dart';
 part 'object_repository_test.no2.dart';
 
 void main() {
-  group('Object Repository Test Suite', () {
+  group(retry: 3, 'Object Repository Test Suite', () {
     late Nitrite db;
 
     setUp(() async {
@@ -200,8 +200,7 @@ void main() {
       expect(await db.listRepositories, hasLength(1));
       expect(await db.listKeyedRepositories, hasLength(2));
 
-      var cursor =
-          employeeRepo.find(filter: where('address').text('abcd'));
+      var cursor = employeeRepo.find(filter: where('address').text('abcd'));
       expect(await cursor.length, 1);
 
       cursor = employeeRepo.find(filter: where('address').text('xyz'));

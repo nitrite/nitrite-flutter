@@ -10,7 +10,8 @@ class ConverterRegistry {
 
   void register(Converter converter) {
     if (_converters.containsKey(converter.typeId)) {
-      throw ArgumentError('Converter for type ${converter.typeId} already registered.');
+      throw ArgumentError(
+          'Converter for type ${converter.typeId} already registered.');
     }
     _converters[converter.typeId] = converter;
   }

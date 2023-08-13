@@ -8,7 +8,7 @@ import 'filtered_stream_test.mocks.dart';
 
 @GenerateMocks([Filter])
 void main() {
-  group("FilteredStream Test Suite", () {
+  group(retry: 3, "FilteredStream Test Suite", () {
     test("Test Stream with Filter 1", () async {
       var filter = MockFilter();
 

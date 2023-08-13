@@ -206,9 +206,9 @@ class TextFilter extends StringFilter {
     var term = searchString.substring(1);
 
     await for (var entry in indexMap.entries()) {
-      var key = entry.first;
+      var key = entry.$1;
       if (key.endsWith(term.toLowerCase())) {
-        yield* Stream.fromIterable(castList<NitriteId>(entry.second));
+        yield* Stream.fromIterable(castList<NitriteId>(entry.$2));
       }
     }
   }
@@ -222,9 +222,9 @@ class TextFilter extends StringFilter {
     var term = searchString.substring(0, searchString.length - 1);
 
     await for (var entry in indexMap.entries()) {
-      var key = entry.first;
+      var key = entry.$1;
       if (key.startsWith(term.toLowerCase())) {
-        yield* Stream.fromIterable(castList<NitriteId>(entry.second));
+        yield* Stream.fromIterable(castList<NitriteId>(entry.$2));
       }
     }
   }
@@ -232,9 +232,9 @@ class TextFilter extends StringFilter {
   Stream<NitriteId> _searchContains(
       NitriteMap<String, List> indexMap, String term) async* {
     await for (var entry in indexMap.entries()) {
-      var key = entry.first;
+      var key = entry.$1;
       if (key.contains(term.toLowerCase())) {
-        yield* Stream.fromIterable(castList<NitriteId>(entry.second));
+        yield* Stream.fromIterable(castList<NitriteId>(entry.$2));
       }
     }
   }
@@ -443,9 +443,9 @@ class _NotEqualsFilter extends ComparableFilter {
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    await for (Pair<Comparable?, dynamic> entry in indexMap.entries()) {
-      if (!deepEquals(value, entry.first)) {
-        yield* yieldValues(entry.second);
+    await for ((Comparable?, dynamic) entry in indexMap.entries()) {
+      if (!deepEquals(value, entry.$1)) {
+        yield* yieldValues(entry.$2);
       }
     }
   }
@@ -491,11 +491,10 @@ class _InFilter extends ComparableArrayFilter {
     return false;
   }
 
-  @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    await for (Pair<Comparable?, dynamic> entry in indexMap.entries()) {
-      if (_comparableSet.contains(entry.first)) {
-        yield* yieldValues(entry.second);
+    await for ((Comparable?, dynamic) entry in indexMap.entries()) {
+      if (_comparableSet.contains(entry.$1)) {
+        yield* yieldValues(entry.$2);
       }
     }
   }
@@ -521,11 +520,10 @@ class _NotInFilter extends ComparableArrayFilter {
     return false;
   }
 
-  @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    await for (Pair<Comparable?, dynamic> entry in indexMap.entries()) {
-      if (!_comparableSet.contains(entry.first)) {
-        yield* yieldValues(entry.second);
+    await for ((Comparable?, dynamic) entry in indexMap.entries()) {
+      if (!_comparableSet.contains(entry.$1)) {
+        yield* yieldValues(entry.$2);
       }
     }
   }

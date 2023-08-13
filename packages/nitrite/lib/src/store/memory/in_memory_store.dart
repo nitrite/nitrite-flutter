@@ -56,7 +56,7 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   }
 
   @override
-  Future<bool> hasMap(String mapName) async {   
+  Future<bool> hasMap(String mapName) async {
     return _nitriteMapRegistry.containsKey(mapName) ||
         _nitriteRTreeMapRegistry.containsKey(mapName);
   }

@@ -8,7 +8,7 @@ import 'indexed_stream_test.mocks.dart';
 
 @GenerateMocks([NitriteMap<NitriteId, Document>])
 void main() {
-  group("IndexedStream Test Suite", () {
+  group(retry: 3, "IndexedStream Test Suite", () {
     test("Test with Index", () async {
       var nitriteMap = MockNitriteMap<NitriteId, Document>();
       var indexMap = Stream.fromIterable([

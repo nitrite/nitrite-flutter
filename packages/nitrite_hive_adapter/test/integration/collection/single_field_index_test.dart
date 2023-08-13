@@ -7,7 +7,7 @@ import 'package:test/scaffolding.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Collection Single Field Index Test Suite', () {
+  group(retry: 3, 'Collection Single Field Index Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

@@ -46,8 +46,8 @@ class Attributes {
   factory Attributes.fromDocument(Document document) {
     Attributes attr = Attributes();
     for (var pair in document) {
-      if (pair.first != docId) {
-        attr._attributes[pair.first] = pair.second;
+      if (pair.$1 != docId) {
+        attr._attributes[pair.$1] = pair.$2;
       }
     }
     return attr;

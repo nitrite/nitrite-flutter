@@ -39,8 +39,8 @@ class RepositoryOperations<T> {
 
   void serializeFields(Document document) {
     for (var pair in document) {
-      var key = pair.first;
-      var value = pair.second;
+      var key = pair.$1;
+      var value = pair.$2;
       document.put(key, serialize(value));
     }
   }
@@ -136,7 +136,14 @@ class RepositoryOperations<T> {
       throw NotIdentifiableException('No id value found for the object');
     }
 
-    return _objectIdField!.createUniqueFilter(element, _nitriteMapper);
+    var document = _nitriteMapper.tryConvert<Document, T>(element);
+    if (document == null) {
+      throw ObjectMappingException('Failed to map object to document');
+    }
+
+    var idValue = document[_objectIdField!.fieldName];
+
+    return _objectIdField!.createUniqueFilter(idValue, _nitriteMapper);
   }
 
   void removeNitriteId(Document document) {
@@ -158,7 +165,7 @@ class RepositoryOperations<T> {
       throw InvalidIdException('Id cannot be null');
     }
 
-    return _objectIdField!.createIdFilter(id, _nitriteMapper);
+    return _objectIdField!.createUniqueFilter(id, _nitriteMapper);
   }
 
   Filter asObjectFilter(Filter filter) {
@@ -167,11 +174,7 @@ class RepositoryOperations<T> {
       filter.nitriteConfig = _nitriteConfig;
 
       if (filter is FieldBasedFilter) {
-        var field = filter.field;
-        if (_objectIdField != null && _objectIdField!.fieldName == field) {
-          return _objectIdField!
-              .createUniqueFilter(filter.value, _nitriteMapper);
-        }
+        return _createObjectFilter(filter);
       }
     }
     return filter;
@@ -182,5 +185,22 @@ class RepositoryOperations<T> {
     var documentCursor = _nitriteCollection.find(
         filter: asObjectFilter(filter), findOptions: findOptions);
     return ObjectCursor<T>(documentCursor, _nitriteMapper);
+  }
+
+  Filter _createObjectFilter(FieldBasedFilter filter) {
+    if (_objectIdField != null && _objectIdField!.fieldName == filter.field) {
+      if (filter is EqualsFilter) {
+        return _objectIdField!.createUniqueFilter(filter.value, _nitriteMapper);
+      } else if (filter is ComparableFilter) {
+        var fieldValue = filter.value;
+        var converted =
+            _nitriteMapper.tryConvert<Document, dynamic>(fieldValue);
+        if (converted is Document) {
+          throw InvalidOperationException('Cannot compare object of type '
+              '${fieldValue.runtimeType} with id field');
+        }
+      }
+    }
+    return filter;
   }
 }

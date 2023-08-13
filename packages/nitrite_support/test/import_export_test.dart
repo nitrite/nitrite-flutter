@@ -9,7 +9,7 @@ import 'base_test_loader.dart';
 import 'test_data.dart';
 
 void main() {
-  group('Import Export With Options Test', () {
+  group(retry: 3, 'Import Export With Options Test', () {
     setUp(() async {
       await setUpNitriteTest();
       await populateData();

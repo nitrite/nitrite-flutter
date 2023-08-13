@@ -82,7 +82,8 @@ abstract class InstructionSet {
   DatabaseInstruction forDatabase();
 
   /// Creates a [RepositoryInstruction].
-  RepositoryInstruction forRepository<T>({EntityDecorator<T>? entityDecorator, String? key});
+  RepositoryInstruction forRepository<T>(
+      {EntityDecorator<T>? entityDecorator, String? key});
 
   /// Creates a [CollectionInstruction].
   CollectionInstruction forCollection(String collectionName);

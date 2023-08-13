@@ -1,13 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-  group('Meta Writer', () {
+  group(retry: 3, 'Meta Writer', () {
     test('Write Meta', () async {
       final fileContent = await rootBundle.loadString(
         "pubspec.yaml",

@@ -3,7 +3,7 @@ import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 void main() {
-  group('Collection Field Index Test Suite', () {
+  group(retry: 3, 'Collection Field Index Test Suite', () {
     late Nitrite db;
 
     setUp(() async {

@@ -64,10 +64,10 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   }
 
   @override
-  Stream<Pair<Key, Value>> entries() async* {
+  Stream<(Key, Value)> entries() async* {
     for (var key in _lazyBox.keys) {
       var val = await _lazyBox.get(key);
-      yield Pair(_unWrapKey(key), val);
+      yield (_unWrapKey(key), val);
     }
   }
 
@@ -170,11 +170,11 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   }
 
   @override
-  Stream<Pair<Key, Value>> reversedEntries() async* {
+  Stream<(Key, Value)> reversedEntries() async* {
     var reversedKeys = _lazyBox.keys.toList().reversed;
     for (var key in reversedKeys) {
       var val = await _lazyBox.get(key);
-      yield Pair(_unWrapKey(key), val);
+      yield (_unWrapKey(key), val);
     }
   }
 

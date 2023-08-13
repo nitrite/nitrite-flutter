@@ -6,6 +6,10 @@ packages:
   - examples/**
   - doc/**
 
+ignore:
+  - packages/**/build/**
+  - examples/**/build/**
+
 command:
   version:
     # Generate commit links in package changelogs.
@@ -22,16 +26,15 @@ scripts:
 
   analyze:
     run: |
-      melos exec -c 10 -- \
-        flutter analyze --fatal-infos
+      melos exec -c 10 -- flutter analyze --fatal-infos
     description: Run `flutter analyze` for all packages.
 
   format:
-    run: melos exec flutter format . --fix
-    description: Run `flutter format` for all packages.
+    run: melos exec dart format . --fix
+    description: Run `dart format` for all packages.
 
   dartdoc:
-    run: melos exec flutter pub run dartdoc
+    run: melos exec dart doc .
     description: Run dartdoc checks for all packages.
 
   test:all:
@@ -42,8 +45,8 @@ scripts:
 
   test:
     run: |
-      melos exec -c 6 --fail-fast -- \
-        "flutter test --no-pub"
+      melos exec -c 6 --fail-fast --ignore="*generator*" -- flutter test --no-pub &&
+      melos exec -c 6 --fail-fast --scope="*generator*" -- dart run build_runner test --no-pub
     description: Run `flutter test` for a specific package.
     select-package:
       dir-exists:
@@ -62,12 +65,3 @@ scripts:
   clean:deep:
       run: git clean -x -d -f -q
       description: Clean things very deeply, can be used to establish "pristine checkout" status.
-
-  qualitycheck:
-    run: |
-      melos run clean:deep && \
-      melos clean && \
-      melos bootstrap && \
-      melos run lint:all && \
-      melos run test:all
-    description: Run all targets generally expected in CI for a full local quality check.

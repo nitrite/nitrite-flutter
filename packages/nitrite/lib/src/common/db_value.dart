@@ -26,9 +26,9 @@ class DBValue implements Comparable<DBValue> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is DBValue &&
-              runtimeType == other.runtimeType &&
-              _value == other._value;
+      other is DBValue &&
+          runtimeType == other.runtimeType &&
+          _value == other._value;
 
   @override
   int get hashCode => _value.hashCode;
@@ -38,7 +38,7 @@ class DBValue implements Comparable<DBValue> {
 class DBNull extends DBValue {
   static final DBNull _instance = DBNull._();
 
-  DBNull._(): super(null);
+  DBNull._() : super(null);
 
   static DBNull get instance => _instance;
 
@@ -58,8 +58,7 @@ class DBNull extends DBValue {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is DBNull &&
-              runtimeType == other.runtimeType;
+      other is DBNull && runtimeType == other.runtimeType;
 
   @override
   int get hashCode => _value.hashCode;
@@ -75,8 +74,7 @@ class UnknownType implements Comparable<UnknownType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is UnknownType &&
-              runtimeType == other.runtimeType;
+      other is UnknownType && runtimeType == other.runtimeType;
 
   @override
   int get hashCode => 0;

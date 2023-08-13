@@ -28,7 +28,8 @@ class Migration {
   }
 
   void _execute() {
-    var instructionSet = _NitriteInstructionSet(_migrationSteps, _nitriteMapper);
+    var instructionSet =
+        _NitriteInstructionSet(_migrationSteps, _nitriteMapper);
     _prepare(instructionSet);
     _executed = true;
   }

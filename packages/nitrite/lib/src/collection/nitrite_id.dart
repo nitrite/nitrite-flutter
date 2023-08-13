@@ -3,7 +3,7 @@ import 'package:nitrite/src/collection/snowflake_id.dart';
 
 /// A unique identifier across the Nitrite database. Each document in a
 /// collection is associated with a unique [NitriteId].
-/// 
+///
 /// During insertion if a unique object is supplied in the '_id' field
 /// of the document, then the value of the '_id' field will be used to
 /// create a new [NitriteId]. If the '_id' field is not supplied, then
@@ -14,8 +14,8 @@ class NitriteId implements Comparable<NitriteId> {
 
   String _idValue = "";
 
-  /// Gets the underlying value of the [NitriteId]. 
-  /// 
+  /// Gets the underlying value of the [NitriteId].
+  ///
   /// The value is a string representation of a 64bit integer number.
   String get idValue => _idValue;
 
@@ -30,7 +30,7 @@ class NitriteId implements Comparable<NitriteId> {
   }
 
   /// Creates a new [NitriteId] from a value.
-  /// 
+  ///
   /// The value must be a string representation of a 64bit integer number.
   static NitriteId createId(String value) {
     validId(value);
@@ -40,7 +40,7 @@ class NitriteId implements Comparable<NitriteId> {
   }
 
   /// Validates a value to be used as a [NitriteId].
-  /// 
+  ///
   /// The value must be a string representation of a 64bit integer number.
   static bool validId(dynamic value) {
     if (value == null) {
@@ -51,8 +51,11 @@ class NitriteId implements Comparable<NitriteId> {
       int.parse(value.toString());
       return true;
     } on FormatException catch (e, stackTrace) {
-      throw InvalidIdException("Id must be a string representation "
-          "of 64bit integer number $value", stackTrace: stackTrace, cause: e);
+      throw InvalidIdException(
+          "Id must be a string representation "
+          "of 64bit integer number $value",
+          stackTrace: stackTrace,
+          cause: e);
     }
   }
 

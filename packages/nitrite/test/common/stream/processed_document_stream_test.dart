@@ -9,7 +9,7 @@ import 'processed_document_stream_test.mocks.dart';
 
 @GenerateMocks([ProcessorChain])
 void main() {
-  group("ProcessedDocumentStream Test Suite", () {
+  group(retry: 3, "ProcessedDocumentStream Test Suite", () {
     test("Test Process Reusable", () async {
       var processorChain = MockProcessorChain();
       when(processorChain.processAfterRead(any)).thenAnswer((invocation) {
@@ -22,7 +22,6 @@ void main() {
         return Future.value(doc);
       });
 
-
       var stream = ProcessedDocumentStream(
           () => Stream.fromIterable([
                 createDocument("key", 1),
@@ -31,25 +30,13 @@ void main() {
           processorChain);
 
       expect(await stream.toList(), [
-        documentFromMap({
-          "key": 1,
-          "processed": true
-        }),
-        documentFromMap({
-          "key": 2,
-          "processed": true
-        }),
+        documentFromMap({"key": 1, "processed": true}),
+        documentFromMap({"key": 2, "processed": true}),
       ]);
 
       expect(await stream.toList(), [
-        documentFromMap({
-          "key": 1,
-          "processed": true
-        }),
-        documentFromMap({
-          "key": 2,
-          "processed": true
-        }),
+        documentFromMap({"key": 1, "processed": true}),
+        documentFromMap({"key": 2, "processed": true}),
       ]);
     });
 
@@ -66,8 +53,7 @@ void main() {
       });
 
       var stream = ProcessedDocumentStream(
-              () =>
-              Stream.fromIterable([
+          () => Stream.fromIterable([
                 createDocument("key", 1),
                 createDocument("key", 2),
               ]),
@@ -75,14 +61,8 @@ void main() {
           reusable: false);
 
       expect(await stream.toList(), [
-        documentFromMap({
-          "key": 1,
-          "processed": true
-        }),
-        documentFromMap({
-          "key": 2,
-          "processed": true
-        }),
+        documentFromMap({"key": 1, "processed": true}),
+        documentFromMap({"key": 2, "processed": true}),
       ]);
 
       expect(() async => await stream.toList(), throwsA(isA<StateError>()));

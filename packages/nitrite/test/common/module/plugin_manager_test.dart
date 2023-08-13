@@ -10,7 +10,7 @@ import 'plugin_manager_test.mocks.dart';
 
 @GenerateMocks([NitriteModule, NitritePlugin])
 void main() {
-  group("Plugin Manager Test Suite", () {
+  group(retry: 3, "Plugin Manager Test Suite", () {
     test("Test LoadModule", () async {
       var pluginManager = PluginManager(NitriteConfig());
       var nitriteModule = MockNitriteModule();

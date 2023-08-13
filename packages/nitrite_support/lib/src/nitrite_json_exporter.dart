@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:nitrite/nitrite.dart';
 // ignore: implementation_imports
-import 'package:nitrite/src/common/util/object_utils.dart';
-// ignore: implementation_imports
 import 'package:nitrite/src/collection/operations/index_manager.dart';
+// ignore: implementation_imports
+import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite_support/src/convert/binary_writer.dart';
 import 'package:nitrite_support/src/convert/converter_registry.dart';
 import 'package:nitrite_support/src/options.dart';
@@ -14,8 +14,7 @@ class NitriteJsonExporter {
   final ExportOptions _options;
   final ConverterRegistry _converterRegistry;
 
-  NitriteJsonExporter(this._options) :
-    _converterRegistry = ConverterRegistry();
+  NitriteJsonExporter(this._options) : _converterRegistry = ConverterRegistry();
 
   Future<String> export() async {
     for (var element in _options.converters) {
@@ -225,13 +224,13 @@ class NitriteJsonExporter {
     return json.toString();
   }
 
-  String _exportPair(Pair pair) {
+  String _exportPair((dynamic, dynamic) pair) {
     var json = StringBuffer();
     json.write('{');
     json.write('"$tagKey":');
-    json.write('"${_writeEncodedObject(pair.first)}"');
+    json.write('"${_writeEncodedObject(pair.$1)}"');
     json.write(',"$tagValue":');
-    json.write('"${_writeEncodedObject((pair.second))}"');
+    json.write('"${_writeEncodedObject((pair.$2))}"');
     json.write('}');
     return json.toString();
   }

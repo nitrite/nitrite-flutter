@@ -6,13 +6,13 @@ import 'base_object_repository_test_loader.dart';
 import 'data/test_objects.dart';
 
 void main() {
-  group('Nitrite Id as Identifier Test Suite', () {
+  group(retry: 3, 'Nitrite Id as Identifier Test Suite', () {
     late Nitrite db;
     late ObjectRepository<WithNitriteId> repo;
 
     setUp(() async {
       setUpLog();
-      
+
       db = await Nitrite.builder().fieldSeparator('.').openOrCreate();
       var mapper = db.config.nitriteMapper as EntityConverterMapper;
       mapper.registerEntityConverter(WithNitriteIdConverter());

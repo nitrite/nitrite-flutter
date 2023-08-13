@@ -81,17 +81,17 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   }
 
   @override
-  Stream<Pair<Key, Value>> entries() {
+  Stream<(Key, Value)> entries() {
     _checkOpened();
     return Stream.fromIterable(
-        _backingMap.entries.map((e) => Pair(e.key, e.value)));
+        _backingMap.entries.map((e) => (e.key, e.value)));
   }
 
   @override
-  Stream<Pair<Key, Value>> reversedEntries() {
+  Stream<(Key, Value)> reversedEntries() {
     _checkOpened();
     return Stream.fromIterable(
-        _backingMap.reversedEntries.map((e) => Pair(e.key, e.value)));
+        _backingMap.reversedEntries.map((e) => (e.key, e.value)));
   }
 
   @override

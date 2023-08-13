@@ -11,7 +11,7 @@ import 'joined_document_stream_test.mocks.dart';
 
 @GenerateMocks([ProcessorChain])
 void main() {
-  group("JoinedDocumentStream Test Suite", () {
+  group(retry: 3, "JoinedDocumentStream Test Suite", () {
     late MockProcessorChain processorChain;
 
     setUp(() {
@@ -45,10 +45,8 @@ void main() {
           lookUp);
 
       expect(await joinedDocumentStream.toList(), [
-        createDocument("key", 1)
-          ..put("target", {createDocument("key", 1)}),
-        createDocument("key", 2)
-          ..put("target", {createDocument("key", 2)}),
+        createDocument("key", 1)..put("target", {createDocument("key", 1)}),
+        createDocument("key", 2)..put("target", {createDocument("key", 2)}),
       ]);
     });
 

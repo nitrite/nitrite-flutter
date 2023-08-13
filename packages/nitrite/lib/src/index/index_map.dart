@@ -120,24 +120,24 @@ class IndexMap {
     return dbKey == null || dbKey is DBNull ? null : dbKey.value;
   }
 
-  Stream<Pair<Comparable?, dynamic>> entries() async* {
+  Stream<(Comparable?, dynamic)> entries() async* {
     if (_nitriteMap != null) {
       if (!_reverseScan) {
         yield* _nitriteMap!.entries().map((entry) {
-          var dbKey = entry.first;
+          var dbKey = entry.$1;
           if (dbKey is DBNull) {
-            return Pair(null, entry.second);
+            return (null, entry.$2);
           } else {
-            return Pair(dbKey.value, entry.second);
+            return (dbKey.value, entry.$2);
           }
         });
       } else {
         yield* _nitriteMap!.reversedEntries().map((entry) {
-          var dbKey = entry.first;
+          var dbKey = entry.$1;
           if (dbKey is DBNull) {
-            return Pair(null, entry.second);
+            return (null, entry.$2);
           } else {
-            return Pair(dbKey.value, entry.second);
+            return (dbKey.value, entry.$2);
           }
         });
       }
@@ -146,18 +146,18 @@ class IndexMap {
         yield* Stream.fromIterable(_navigableMap!.entries.map((entry) {
           var dbKey = entry.key;
           if (dbKey is DBNull) {
-            return Pair(null, entry.value);
+            return (null, entry.value);
           } else {
-            return Pair(dbKey.value, entry.value);
+            return (dbKey.value, entry.value);
           }
         }));
       } else {
         yield* Stream.fromIterable(_navigableMap!.reversedEntries.map((entry) {
           var dbKey = entry.key;
           if (dbKey is DBNull) {
-            return Pair(null, entry.value);
+            return (null, entry.value);
           } else {
-            return Pair(dbKey.value, entry.value);
+            return (dbKey.value, entry.value);
           }
         }));
       }
@@ -169,15 +169,15 @@ class IndexMap {
     // scan each entry of the navigable map and collect all terminal nitrite-ids
     await for (var entry in entries()) {
       // if the value is terminal, collect all nitrite-ids
-      if (entry.second is List) {
-        var second = entry.second as List;
+      if (entry.$2 is List) {
+        var second = entry.$2 as List;
         var nitriteIds = castList<NitriteId>(second);
         yield* Stream.fromIterable(nitriteIds);
       }
 
       // if the value is not terminal, scan recursively
-      if (entry.second is Map) {
-        var subMap = entry.second;
+      if (entry.$2 is Map) {
+        var subMap = entry.$2;
         var indexMap = IndexMap(subMap: subMap);
         yield* indexMap.getTerminalNitriteIds();
       }

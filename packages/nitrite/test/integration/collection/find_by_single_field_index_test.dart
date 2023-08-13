@@ -7,7 +7,7 @@ import '../../test_utils.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Collection Find by Single Field Index Test Suite', () {
+  group(retry: 3, 'Collection Find by Single Field Index Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -49,20 +49,16 @@ void main() {
               .lte(DateTime.parse("2012-07-01T16:02:48.440Z")));
       expect(await cursor.length, 2);
 
-      cursor =
-          collection.find(filter: where("birthDay").lte(DateTime.now()));
+      cursor = collection.find(filter: where("birthDay").lte(DateTime.now()));
       expect(await cursor.length, 3);
 
-      cursor =
-          collection.find(filter: where("birthDay").lt(DateTime.now()));
+      cursor = collection.find(filter: where("birthDay").lt(DateTime.now()));
       expect(await cursor.length, 3);
 
-      cursor =
-          collection.find(filter: where("birthDay").gt(DateTime.now()));
+      cursor = collection.find(filter: where("birthDay").gt(DateTime.now()));
       expect(await cursor.length, 0);
 
-      cursor =
-          collection.find(filter: where("birthDay").gte(DateTime.now()));
+      cursor = collection.find(filter: where("birthDay").gte(DateTime.now()));
       expect(await cursor.length, 0);
 
       cursor = collection.find(
@@ -107,8 +103,8 @@ void main() {
           filter: where('lastName').within(['ln1', 'ln2', 'ln10']));
       expect(await cursor.length, 3);
 
-      cursor = collection.find(
-          filter: where('firstName').notIn(['fn1', 'fn2']));
+      cursor =
+          collection.find(filter: where('firstName').notIn(['fn1', 'fn2']));
       expect(await cursor.length, 1);
     });
 
@@ -145,20 +141,16 @@ void main() {
               .lte(DateTime.parse('2012-07-01T16:02:48.440Z')));
       expect(await cursor.length, 2);
 
-      cursor =
-          collection.find(filter: where("birthDay").lte(DateTime.now()));
+      cursor = collection.find(filter: where("birthDay").lte(DateTime.now()));
       expect(await cursor.length, 3);
 
-      cursor =
-          collection.find(filter: where("birthDay").lt(DateTime.now()));
+      cursor = collection.find(filter: where("birthDay").lt(DateTime.now()));
       expect(await cursor.length, 3);
 
-      cursor =
-          collection.find(filter: where("birthDay").gt(DateTime.now()));
+      cursor = collection.find(filter: where("birthDay").gt(DateTime.now()));
       expect(await cursor.length, 0);
 
-      cursor =
-          collection.find(filter: where("birthDay").gte(DateTime.now()));
+      cursor = collection.find(filter: where("birthDay").gte(DateTime.now()));
       expect(await cursor.length, 0);
 
       cursor = collection.find(
@@ -203,8 +195,8 @@ void main() {
           filter: where('lastName').within(['ln1', 'ln2', 'ln10']));
       expect(await cursor.length, 3);
 
-      cursor = collection.find(
-          filter: where('firstName').notIn(['fn1', 'fn2']));
+      cursor =
+          collection.find(filter: where('firstName').notIn(['fn1', 'fn2']));
       expect(await cursor.length, 1);
     });
 

@@ -15,7 +15,6 @@ class ConverterGenerator extends GeneratorForAnnotation<GenerateConverter> {
   @override
   generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
-
     // @GenerateConverter is class level annotation only.
     if (element is! ClassElement) {
       throw InvalidGenerationSourceError(

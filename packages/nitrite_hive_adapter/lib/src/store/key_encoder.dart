@@ -25,4 +25,3 @@ class KeyCodec {
     return reader.read();
   }
 }
-

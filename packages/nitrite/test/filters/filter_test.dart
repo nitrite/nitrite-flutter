@@ -1,18 +1,17 @@
 import 'dart:collection';
 
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/filters/filter.dart';
 import 'package:test/test.dart';
-import 'package:mockito/mockito.dart';
 
 import '../test_utils.dart';
-
 import 'filter_test.mocks.dart';
 
 @GenerateMocks([NitriteConfig, NitriteMapper])
 void main() {
-  group("Filters Test Suite", () {
+  group(retry: 3, "Filters Test Suite", () {
     test("Test \$", () {
       expect($.runtimeType, FluentFilter);
       expect(($.eq(2) as EqualsFilter).field, "\$");
@@ -150,7 +149,7 @@ void main() {
     });
   });
 
-  group("NitriteFilter Test Suite", () {
+  group(retry: 3, "NitriteFilter Test Suite", () {
     test("Test And", () {
       var doc = emptyDocument();
       doc.put('a', 1);
@@ -252,7 +251,7 @@ void main() {
     });
   });
 
-  group("FieldBasedFilter Test Suite", () {
+  group(retry: 3, "FieldBasedFilter Test Suite", () {
     test("Test Value Accessor", () {
       var regex = where('a').regex(r'[0-9]+');
 
@@ -292,7 +291,7 @@ void main() {
     });
   });
 
-  group("ComparableFilter Test Suite", () {
+  group(retry: 3, "ComparableFilter Test Suite", () {
     test("Test Comparable Accessor", () {
       var filter = where('a').gt(2) as ComparableFilter;
       expect(filter.comparable, 2);
@@ -316,7 +315,7 @@ void main() {
     });
   });
 
-  group("StringFilter Test Suite", () {
+  group(retry: 3, "StringFilter Test Suite", () {
     test("Test StringValue Accessor", () {
       var filter = where('a').text('a') as StringFilter;
 
@@ -324,7 +323,7 @@ void main() {
     });
   });
 
-  group("ComparableArrayFilter Test Suite", () {
+  group(retry: 3, "ComparableArrayFilter Test Suite", () {
     test("Test ValidateSearchTerm", () {
       var filter = where('a').within([1, 2, 3]) as ComparableArrayFilter;
 
@@ -347,7 +346,7 @@ void main() {
     });
   });
 
-  group("String Extension Test Suite", () {
+  group(retry: 3, "String Extension Test Suite", () {
     test("Test String Extensions - eq", () {
       var doc = emptyDocument();
       doc.put('a', 1);

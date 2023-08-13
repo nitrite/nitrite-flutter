@@ -19,7 +19,7 @@ class DocumentAdapter extends TypeAdapter<Document> {
   void write(BinaryWriter writer, Document obj) {
     var map = <String, dynamic>{};
     for (var pair in obj) {
-      map[pair.first] = pair.second;
+      map[pair.$1] = pair.$2;
     }
     writer.writeMap(map);
   }

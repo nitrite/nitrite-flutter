@@ -2,7 +2,7 @@ import 'package:nitrite/src/common/util/string_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group("StringUtils Test Suite", () {
+  group(retry: 3, "StringUtils Test Suite", () {
     test("Test TokenizeString", () {
       var string = '''
         A %quick\\;

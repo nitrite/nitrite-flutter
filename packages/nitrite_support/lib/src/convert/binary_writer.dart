@@ -246,7 +246,8 @@ class BinaryWriter {
     } else {
       var resolved = _converterRegistry.getConverterByValue(value);
       if (resolved == null) {
-        throw NitriteException('Cannot write, unknown type: ${value.runtimeType}. '
+        throw NitriteException(
+            'Cannot write, unknown type: ${value.runtimeType}. '
             'Did you forget to register a converter?');
       }
       if (writeTypeId) {

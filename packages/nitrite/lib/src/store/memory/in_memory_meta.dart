@@ -2,6 +2,6 @@
 /// THIS FILE IS AUTOMATICALLY OVER WRITTEN BY MetaUpdate 
 
 Map<String, String> meta = <String, String>{
-  "version":"0.0.1",
+  "version":"1.0.0",
 };
   

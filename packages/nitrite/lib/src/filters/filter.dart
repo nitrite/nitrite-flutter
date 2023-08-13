@@ -253,6 +253,18 @@ abstract class FieldBasedFilter extends NitriteFilter {
       NitriteMapper nitriteMapper, String field, dynamic value) {
     field.notNullOrEmpty("field cannot be empty");
   }
+
+  /// Yield values after index scanning.
+  Stream<dynamic> yieldValues(dynamic value) async* {
+    if (value is List) {
+      // if it is a list then it is filtering on either single field index,
+      // or it is a terminal filter on compound index, emit the nitrite-ids
+      yield* Stream.fromIterable(value);
+    } else if (value is Map) {
+      // if it is a map then filtering on compound index, emit sub-map
+      yield value;
+    }
+  }
 }
 
 /// Represents a filter based on document field holding [Comparable] values.
@@ -268,18 +280,6 @@ abstract class ComparableFilter extends FieldBasedFilter {
 
   /// Apply this filter on a nitrite index.
   Stream<dynamic> applyOnIndex(IndexMap indexMap);
-
-  /// Yield values after index scanning.
-  Stream<dynamic> yieldValues(dynamic value) async* {
-    if (value is List) {
-      // if it is a list then it is filtering on either single field index,
-      // or it is a terminal filter on compound index, emit the nitrite-ids
-      yield* Stream.fromIterable(value);
-    } else if (value is Map) {
-      // if it is a map then filtering on compound index, emit sub-map
-      yield value;
-    }
-  }
 }
 
 /// Represents a filter on string values.
@@ -301,7 +301,7 @@ abstract class IndexOnlyFilter extends ComparableFilter {
   bool canBeGrouped(IndexOnlyFilter other);
 }
 
-abstract class ComparableArrayFilter extends ComparableFilter {
+abstract class ComparableArrayFilter extends FieldBasedFilter {
   ComparableArrayFilter(super.field, super.value);
 
   @override

@@ -1,4 +1,3 @@
-
 import 'package:nitrite/nitrite.dart';
 
 String deriveIndexMetaMapName(String collectionName) {

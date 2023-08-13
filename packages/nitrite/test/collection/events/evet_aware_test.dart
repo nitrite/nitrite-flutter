@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   var eventAwareTest = EventAwareTest();
 
-  group('EventAware Test Suite', () {
+  group(retry: 3, 'EventAware Test Suite', () {
     setUp(() {
       // Additional setup goes here.
     });

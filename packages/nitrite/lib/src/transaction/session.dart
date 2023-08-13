@@ -231,8 +231,7 @@ class _NitriteTransaction extends Transaction {
     var nitriteStore = _nitrite.getStore();
     var nitriteConfig = _nitrite.config;
     _transactionConfig = TransactionConfig(nitriteConfig);
-    _transactionConfig
-        .loadModule(module([TransactionStore(nitriteStore)]));
+    _transactionConfig.loadModule(module([TransactionStore(nitriteStore)]));
 
     await _transactionConfig.autoConfigure();
     await _transactionConfig.initialize();

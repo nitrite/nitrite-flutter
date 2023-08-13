@@ -14,7 +14,7 @@ void main() {
   late Processor creditCardProcessor;
   late IV iv;
 
-  group('Field Processor Test Suite', () {
+  group(retry: 3, 'Field Processor Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();

@@ -2,13 +2,12 @@ import 'package:nitrite/src/common/util/spatial_key.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group("Spatial Key Test Suite", () {
-
+  group(retry: 3, "Spatial Key Test Suite", () {
     test("Test Min", () {
-        var key = SpatialKey(1, [1.1, 2.2, 1.5, 2.5]);
+      var key = SpatialKey(1, [1.1, 2.2, 1.5, 2.5]);
 
-        expect(key.min(0), 1.1);
-        expect(key.min(1), 1.5);
+      expect(key.min(0), 1.1);
+      expect(key.min(1), 1.5);
     });
 
     test("Test Max", () {

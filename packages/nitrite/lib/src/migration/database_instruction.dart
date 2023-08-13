@@ -8,7 +8,7 @@ abstract class DatabaseInstruction implements Instruction {
   /// Adds an instruction to set an user authentication to the database.
   DatabaseInstruction addPassword(String username, String password) {
     MigrationStep migrationStep =
-        MigrationStep(InstructionType.addPassword, Pair(username, password));
+        MigrationStep(InstructionType.addPassword, (username, password));
     addStep(migrationStep);
     return this;
   }
@@ -39,7 +39,7 @@ abstract class DatabaseInstruction implements Instruction {
         : getEntityName<T>(nitriteMapper);
 
     MigrationStep migrationStep =
-        MigrationStep(InstructionType.dropRepository, Pair(entityName, key));
+        MigrationStep(InstructionType.dropRepository, (entityName, key));
     addStep(migrationStep);
     return this;
   }

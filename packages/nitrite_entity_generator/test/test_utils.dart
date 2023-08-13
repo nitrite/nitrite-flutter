@@ -67,9 +67,9 @@ Future<EntityInfo> createEntityInfo(final String entity) async {
   });
 
   return library.classes
-    .where((element) => element.hasAnnotation(Entity))
-    .map((element) => EntityParser(element).parse())
-    .first;
+      .where((element) => element.hasAnnotation(Entity))
+      .map((element) => EntityParser(element).parse())
+      .first;
 }
 
 Future<ConverterInfo> createConverterInfo(final String converter) async {

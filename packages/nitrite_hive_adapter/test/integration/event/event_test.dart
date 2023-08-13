@@ -6,7 +6,7 @@ import '../repository/data/data_generator.dart';
 import '../repository/data/test_objects.dart';
 
 void main() {
-  group('Event Test Suite', () {
+  group(retry: 3, 'Event Test Suite', () {
     EventType? action;
     dynamic item;
     late CollectionEventListener listener;

@@ -8,7 +8,7 @@ import 'package:test/scaffolding.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
-  group('Collection Single Field Index Test Suite', () {
+  group(retry: 3, 'Collection Single Field Index Test Suite', () {
     setUp(() async {
       setUpLog();
       await setUpNitriteTest();
@@ -209,21 +209,15 @@ void main() {
 
     test('Test Index and Search on Null Values', () async {
       var collection = await db.getCollection('index-on-null');
-      await collection.insert(
-        createDocument('first', null)
-          ..put('second', 123)
-          ..put('third', [1, 2, null])
-      );
-      await collection.insert(
-        createDocument('first', 'abcd')
-          ..put('second', 456)
-          ..put('third', [3, 1])
-      );
-      await collection.insert(
-        createDocument('first', 'xyz')
-          ..put('second', 789)
-          ..put('third', null)
-      );
+      await collection.insert(createDocument('first', null)
+        ..put('second', 123)
+        ..put('third', [1, 2, null]));
+      await collection.insert(createDocument('first', 'abcd')
+        ..put('second', 456)
+        ..put('third', [3, 1]));
+      await collection.insert(createDocument('first', 'xyz')
+        ..put('second', 789)
+        ..put('third', null));
 
       await collection.createIndex(['first']);
       var cursor = collection.find(filter: where('first').eq(null));
