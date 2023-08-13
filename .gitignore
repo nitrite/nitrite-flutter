@@ -1020,3 +1020,9 @@ packages/**/doc
 
 # mockito generated files
 *.mocks.dart
+
+# other generated files
+*.g.dart
+
+# coverage reports
+coverage/

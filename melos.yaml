@@ -20,6 +20,17 @@ command:
     workspaceChangelog: true
 
 scripts:
+  prepare:
+    run: |
+      dart pub global activate coverage &&
+      dart pub global activate dartdoc
+    description: Prepare build system.
+
+  generate:
+    run: |
+      melos exec -- dart run build_runner build --delete-conflicting-outputs
+    description: Run `build_runner` for all package.
+
   lint:all:
     run: melos run analyze && melos run format
     description: Run all static analysis checks.
@@ -45,14 +56,11 @@ scripts:
 
   test:
     run: |
-      melos exec -c 6 --fail-fast --ignore="*generator*" -- flutter test --no-pub &&
-      melos exec -c 6 --fail-fast --scope="*generator*" -- dart run build_runner test --no-pub
+      melos run generate &&
+      melos exec -c 6 --fail-fast --ignore="*generator*" --ignore="*demo*" -- flutter test --coverage --no-pub &&
+      melos exec -c 6 --fail-fast --scope="*generator*" -- dart pub global run coverage:test_with_coverage &&
+      melos exec --ignore="*demo*" -- genhtml coverage/lcov.info --output-directory=coverage/
     description: Run `flutter test` for a specific package.
-    select-package:
-      dir-exists:
-        - test
-      ignore:
-        - "*examples*"
 
   coverage:
     run: |
@@ -60,8 +68,9 @@ scripts:
       melos exec -- genhtml coverage/lcov.info --output-directory=coverage/
     select-package:
       dir-exists: test
-    description: Generate coverage for the selected package.
+    description: Generate coverage for a specific package.
 
   clean:deep:
       run: git clean -x -d -f -q
       description: Clean things very deeply, can be used to establish "pristine checkout" status.
+

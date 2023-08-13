@@ -26,6 +26,9 @@ jobs:
       - name: Setup Melos
         uses: bluefireteam/melos-action@v1
 
+      - name: Install lcov
+        run: sudo apt-get update -qq -y && sudo apt-get install lcov
+
       - name: Validate Nitrite
         run: melos run test:all
 
@@ -46,6 +49,9 @@ jobs:
       - name: Setup Melos
         uses: bluefireteam/melos-action@v1
 
+      - name: Install lcov
+        run: brew install lcov
+
       - name: Validate Nitrite
         run: melos run test:all
 
@@ -65,6 +71,11 @@ jobs:
 
       - name: Setup Melos
         uses: bluefireteam/melos-action@v1
+
+      - name: Install lcov
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          name: install lcov
 
       - name: Validate Nitrite
         shell: cmd
