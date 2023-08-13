@@ -32,8 +32,7 @@ jobs:
 
       - name: Setup Build System
         shell: bash
-        working-directory: ${GITHUB_WORKSPACE}
-        run: ${GITHUB_WORKSPACE}\.github\workflows\scripts\install-tools.sh
+        run: .\.github\workflows\scripts\install-tools.sh
 
       - name: Build Nitrite
         run: melos run test
@@ -66,8 +65,7 @@ jobs:
 
       - name: Setup Build System
         shell: bash
-        working-directory: ${GITHUB_WORKSPACE}
-        run: ${GITHUB_WORKSPACE}\.github\workflows\scripts\install-tools.sh
+        run: .\.github\workflows\scripts\install-tools.sh
 
       - name: Build Nitrite
         run: melos run test
@@ -93,8 +91,7 @@ jobs:
 
       - name: Setup Build System
         shell: cmd
-        working-directory: ${GITHUB_WORKSPACE}
-        run: ${GITHUB_WORKSPACE}\.github\workflows\scripts\install-tools.bat
+        run: .\.github\workflows\scripts\install-tools.bat
 
       - name: Build Nitrite
         shell: cmd
