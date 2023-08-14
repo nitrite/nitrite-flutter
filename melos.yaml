@@ -54,8 +54,8 @@ scripts:
       melos exec -c 6 --fail-fast --ignore="*generator*" --ignore="*demo*" -- flutter test --coverage --no-pub &&
       melos exec -c 6 --fail-fast --scope="*generator*" -- dart pub global run coverage:test_with_coverage &&
       melos exec --ignore="*demo*" -- genhtml coverage/lcov.info --output-directory=coverage/ &&
-      melos exec -c 1 --file-exists=coverage/lcov.info -- coverde filter --input ./coverage/lcov.info --output MELOS_ROOT_PATH/coverage/filtered.lcov.info --filters \.g\.dart
-      coverde value -i coverage/filtered.lcov.info > MELOS_ROOT_PATH/coverage/result.txt
+      melos exec -c 1 --file-exists=coverage/lcov.info -- coverde filter --input ./coverage/lcov.info --output coverage/filtered.lcov.info --filters \.g\.dart
+      coverde value -i coverage/filtered.lcov.info > coverage/result.txt
     description: Run `flutter test` for a specific package.
 
   clean:deep:

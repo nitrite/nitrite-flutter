@@ -1,7 +1,7 @@
 # Nitrite Database
 
-<p>
-    <img src="assets/nitrite-logo.svg" width="256" alt="nitrite logo" style="display: block; margin: auto;">
+<p align="center">
+    <img src="assets/nitrite-logo.svg" width="256" alt="nitrite logo">
 </p>
 
 **NO**sql **O**bject (**NO<sub>2</sub>** a.k.a Nitrite) database is an open source nosql embedded
