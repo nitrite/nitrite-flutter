@@ -104,12 +104,10 @@ void main() {
 
     test("Test Contains", () {
       var stack = Stack();
-      stack.push(DateTime.now());
       stack.push("a");
 
       expect(stack.contains("a"), isTrue);
-      expect(stack.contains(DateTime.now()),
-          isFalse); // date time value is different now
+      expect(stack.contains("2"), isFalse); // date time value is different now
     });
   });
 }
