@@ -60,15 +60,12 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Install lcov
-        run: brew install lcov
-
       - name: Setup Build System
         shell: bash
         run: ./.github/workflows/scripts/install-tools.sh
 
       - name: Build Nitrite
-        run: melos run test
+        run: melos run test:without-coverage
 
   test_windows:
     name: Build Nitrite on Windows
@@ -84,15 +81,10 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Install lcov
-        uses: crazy-max/ghaction-chocolatey@v2
-        with:
-          args: install lcov
-
       - name: Setup Build System
         shell: cmd
         run: .\.github\workflows\scripts\install-tools.bat
 
       - name: Build Nitrite
         shell: cmd
-        run: melos run test
+        run: melos run test:without-coverage

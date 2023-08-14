@@ -27,16 +27,12 @@ class Importer {
   }
 
   Future<void> _readFromFile(String path) async {
-    try {
-      var file = File(path);
-      if (file.existsSync()) {
-        var content = await file.readAsString();
-        await _readFromJson(content);
-      } else {
-        throw NitriteIOException('File not found: $path');
-      }
-    } catch (e) {
-      print(e);
+    var file = File(path);
+    if (file.existsSync()) {
+      var content = await file.readAsString();
+      await _readFromJson(content);
+    } else {
+      throw NitriteIOException('File not found: $path');
     }
   }
 

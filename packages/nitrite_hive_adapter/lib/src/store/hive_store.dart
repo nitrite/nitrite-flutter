@@ -1,5 +1,6 @@
 // ignore_for_file: implementation_imports
 
+import 'package:hive/hive.dart';
 import 'package:hive/src/box/default_compaction_strategy.dart';
 import 'package:hive/src/hive_impl.dart';
 import 'package:logging/logging.dart';
@@ -22,12 +23,14 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
 
   late HiveImpl _hive;
   late KeyCodec _keyCodec;
+  late Box _masterBox;
 
   HiveStore(this._hiveConfig) : super(_hiveConfig);
 
   @override
   Future<void> close() async {
     if (!_closed) {
+      await _masterBox.flush();
       await _hive.close();
       _closed = true;
     }
@@ -57,8 +60,9 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
   }
 
   @override
-  Future<bool> hasMap(String mapName) {
-    return _hive.boxExists(mapName);
+  Future<bool> hasMap(String mapName) async {
+    var boxName = await _findBoxName(mapName);
+    return _hive.boxExists(boxName);
   }
 
   @override
@@ -71,23 +75,13 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
   bool get isReadOnly => false;
 
   @override
-  Future<NitriteMap<Key, Value>> openMap<Key, Value>(String mapName) async {
-    if (_nitriteMapRegistry.containsKey(mapName)) {
-      return _nitriteMapRegistry[mapName] as NitriteMap<Key, Value>;
-    } else {
-      var nitriteMap = await _openBoxMap<Key, Value>(mapName);
-      _nitriteMapRegistry[mapName] = nitriteMap;
-      return nitriteMap;
-    }
-  }
-
-  @override
   Future<void> openOrCreate() async {
     try {
       if (_closed) {
         _hive = await openHiveDb(_hiveConfig);
         _keyCodec = KeyCodec(_hive);
         _closed = false;
+        _masterBox = await _hive.openBox('__hive_master__');
         initEventBus();
         alert(StoreEvents.opened);
       }
@@ -95,6 +89,17 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
       _log.severe('Error while opening database', e, s);
       throw NitriteIOException('Failed to open database',
           cause: e, stackTrace: s);
+    }
+  }
+
+  @override
+  Future<NitriteMap<Key, Value>> openMap<Key, Value>(String mapName) async {
+    if (_nitriteMapRegistry.containsKey(mapName)) {
+      return _nitriteMapRegistry[mapName] as NitriteMap<Key, Value>;
+    } else {
+      var nitriteMap = await _openBoxMap<Key, Value>(mapName);
+      _nitriteMapRegistry[mapName] = nitriteMap;
+      return nitriteMap;
     }
   }
 
@@ -113,20 +118,18 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
 
   @override
   Future<void> removeMap(String mapName) async {
-    _hive.unregisterBox(mapName);
     var catalog = await getCatalog();
     catalog.remove(mapName);
     _nitriteMapRegistry.remove(mapName);
-    await _hive.deleteBoxFromDisk(mapName);
+    await _removeBox(mapName);
   }
 
   @override
   Future<void> removeRTree(String rTreeName) async {
-    _hive.unregisterBox(rTreeName);
     var catalog = await getCatalog();
     catalog.remove(rTreeName);
     _nitriteRTreeMapRegistry.remove(rTreeName);
-    await _hive.deleteBoxFromDisk(rTreeName);
+    await _removeBox(rTreeName);
   }
 
   @override
@@ -137,8 +140,9 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
     var compactionStrategy =
         _hiveConfig.compactionStrategy ?? defaultCompactionStrategy;
     var crashRecovery = _hiveConfig.crashRecovery;
+    var boxName = await _findBoxName(mapName);
 
-    var box = await _hive.openLazyBox(mapName,
+    var box = await _hive.openLazyBox(boxName,
         encryptionCipher: encryptionCipher,
         compactionStrategy: compactionStrategy,
         keyComparator: nitriteKeyComparator,
@@ -146,5 +150,31 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
 
     return BoxMap<Key, Value>(
         mapName, box, this, _keyCodec, nitriteKeyComparator);
+  }
+
+  Future<void> _removeBox(String mapName) async {
+    var boxName = await _findBoxName(mapName);
+    await _masterBox.delete(mapName);
+    await _masterBox.flush();
+
+    await _hive.deleteBoxFromDisk(boxName);
+  }
+
+  Future<String> _findBoxName(String mapName) async {
+    if (_masterBox.containsKey(mapName)) {
+      return _masterBox.get(mapName);
+    }
+    var sanitizedName = _sanitizeName(mapName);
+    _masterBox.put(mapName, sanitizedName);
+    await _masterBox.flush();
+    return sanitizedName;
+  }
+
+  String _sanitizeName(String mapName) {
+    return mapName.replaceAll("\$", "_")
+        .replaceAll("|", "_")
+        .replaceAll(":", "_")
+        .replaceAll(".", "_")
+        .replaceAll("+", "_");
   }
 }

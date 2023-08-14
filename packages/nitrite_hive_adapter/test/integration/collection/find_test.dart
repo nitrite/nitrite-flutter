@@ -436,7 +436,8 @@ void main() {
         ..put('address.city', null)
         ..put('address.state', null);
 
-      var cursor = collection.find();
+      var cursor =
+          collection.find(findOptions: orderBy("name", SortOrder.descending));
       var stream = cursor.project(projection);
 
       expect(await stream.length, 2);

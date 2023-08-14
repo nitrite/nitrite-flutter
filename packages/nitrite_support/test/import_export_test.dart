@@ -31,6 +31,8 @@ void main() {
       }
 
       await sourceDb.close();
+      await destDb.close();
+
       var exporter = Exporter.withOptions(
         dbFactory: () async => createDb(getTempPath('nitrite_source.db')),
         collections: ['first'],
