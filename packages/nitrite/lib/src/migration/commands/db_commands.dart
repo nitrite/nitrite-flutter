@@ -17,7 +17,7 @@ class AddPasswordCommand extends Command {
 }
 
 class ChangePasswordCommand extends Command {
-  final Triplet<String, String, String> _arguments;
+  final (String, String, String) _arguments;
 
   ChangePasswordCommand(this._arguments);
 
@@ -25,7 +25,7 @@ class ChangePasswordCommand extends Command {
   Future<void> execute(Nitrite nitrite) {
     var authService = UserAuthenticationService(nitrite.getStore());
     return authService.addOrUpdatePassword(
-        true, _arguments.first, _arguments.second, _arguments.third);
+        true, _arguments.$1, _arguments.$2, _arguments.$3);
   }
 }
 

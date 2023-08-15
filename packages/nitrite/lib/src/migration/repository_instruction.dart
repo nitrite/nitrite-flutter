@@ -22,7 +22,7 @@ abstract class RepositoryInstruction implements Instruction {
   RepositoryInstruction renameRepository(String entityName, {String? key}) {
     MigrationStep migrationStep = MigrationStep(
         InstructionType.renameRepository,
-        Quartet(this.entityName, this.key, entityName, key));
+        (this.entityName, this.key, entityName, key));
     addStep(migrationStep);
     return _DelegatedInstruction(this, entityName, key);
   }
@@ -36,9 +36,9 @@ abstract class RepositoryInstruction implements Instruction {
       {dynamic defaultValue, Generator? generator}) {
     MigrationStep migrationStep = generator == null
         ? MigrationStep(InstructionType.repositoryAddField,
-            Quartet(entityName, key, fieldName, generator))
+            (entityName, key, fieldName, generator))
         : MigrationStep(InstructionType.repositoryAddField,
-            Quartet(entityName, key, fieldName, defaultValue));
+            (entityName, key, fieldName, defaultValue));
     addStep(migrationStep);
     return this;
   }
@@ -48,7 +48,7 @@ abstract class RepositoryInstruction implements Instruction {
   RepositoryInstruction renameField(String oldName, String newName) {
     MigrationStep migrationStep = MigrationStep(
         InstructionType.repositoryRenameField,
-        Quartet(entityName, key, oldName, newName));
+        (entityName, key, oldName, newName));
     addStep(migrationStep);
     return this;
   }
@@ -58,7 +58,7 @@ abstract class RepositoryInstruction implements Instruction {
   RepositoryInstruction deleteField(String fieldName) {
     MigrationStep migrationStep = MigrationStep(
         InstructionType.repositoryDeleteField,
-        Triplet(entityName, key, fieldName));
+        (entityName, key, fieldName));
     addStep(migrationStep);
     return this;
   }
@@ -69,7 +69,7 @@ abstract class RepositoryInstruction implements Instruction {
       String fieldName, TypeConverter converter) {
     MigrationStep migrationStep = MigrationStep(
         InstructionType.repositoryChangeDataType,
-        Quartet(entityName, key, fieldName, converter));
+        (entityName, key, fieldName, converter));
     addStep(migrationStep);
     return this;
   }
@@ -79,7 +79,7 @@ abstract class RepositoryInstruction implements Instruction {
   RepositoryInstruction changeIdField(Fields oldField, Fields newField) {
     MigrationStep migrationStep = MigrationStep(
         InstructionType.repositoryChangeIdField,
-        Quartet(entityName, key, oldField, newField));
+        (entityName, key, oldField, newField));
     addStep(migrationStep);
     return this;
   }
@@ -88,7 +88,7 @@ abstract class RepositoryInstruction implements Instruction {
   RepositoryInstruction dropIndex(List<String> fieldNames) {
     Fields fields = Fields.withNames(fieldNames);
     MigrationStep migrationStep = MigrationStep(
-        InstructionType.repositoryDropIndex, Triplet(entityName, key, fields));
+        InstructionType.repositoryDropIndex, (entityName, key, fields));
     addStep(migrationStep);
     return this;
   }
@@ -106,7 +106,7 @@ abstract class RepositoryInstruction implements Instruction {
     Fields fields = Fields.withNames(fieldNames);
     MigrationStep migrationStep = MigrationStep(
         InstructionType.repositoryCreateIndex,
-        Quartet(entityName, key, fields, indexType));
+        (entityName, key, fields, indexType));
     addStep(migrationStep);
     return this;
   }

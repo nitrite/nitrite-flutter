@@ -50,15 +50,15 @@ class CollectionRenameCommand extends BaseCommand {
 }
 
 class AddFieldCommand extends BaseCommand {
-  final Triplet<String, String, dynamic> _arguments;
+  final (String, String, dynamic) _arguments;
 
   AddFieldCommand(this._arguments);
 
   @override
   Future<void> execute(Nitrite nitrite) async {
-    var collectionName = _arguments.first;
-    var fieldName = _arguments.second;
-    var thirdArg = _arguments.third;
+    var collectionName = _arguments.$1;
+    var fieldName = _arguments.$2;
+    var thirdArg = _arguments.$3;
 
     await initialize(nitrite, collectionName);
 
@@ -84,15 +84,15 @@ class AddFieldCommand extends BaseCommand {
 }
 
 class RenameFieldCommand extends BaseCommand {
-  final Triplet<String, String, String> _arguments;
+  final (String, String, String) _arguments;
 
   RenameFieldCommand(this._arguments);
 
   @override
   Future<void> execute(Nitrite nitrite) async {
-    var collectionName = _arguments.first;
-    var oldName = _arguments.second;
-    var newName = _arguments.third;
+    var collectionName = _arguments.$1;
+    var oldName = _arguments.$2;
+    var newName = _arguments.$3;
 
     await initialize(nitrite, collectionName);
 
@@ -194,15 +194,15 @@ class DropIndexCommand extends BaseCommand {
 }
 
 class CreateIndexCommand extends BaseCommand {
-  final Triplet<String, Fields, String> _arguments;
+  final (String, Fields, String) _arguments;
 
   CreateIndexCommand(this._arguments);
 
   @override
   Future<void> execute(Nitrite nitrite) async {
-    var collectionName = _arguments.first;
-    var fields = _arguments.second;
-    var indexType = _arguments.third;
+    var collectionName = _arguments.$1;
+    var fields = _arguments.$2;
+    var indexType = _arguments.$3;
 
     await initialize(nitrite, collectionName);
 

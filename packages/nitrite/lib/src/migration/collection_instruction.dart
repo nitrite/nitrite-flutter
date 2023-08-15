@@ -23,8 +23,8 @@ abstract class CollectionInstruction implements Instruction {
   CollectionInstruction addField(String fieldName,
       {dynamic defaultValue, Generator? generator}) {
     dynamic argument = generator == null
-        ? Triplet(collectionName, fieldName, defaultValue)
-        : Triplet(collectionName, fieldName, generator);
+        ? (collectionName, fieldName, defaultValue)
+        : (collectionName, fieldName, generator);
     MigrationStep migrationStep =
         MigrationStep(InstructionType.collectionAddField, argument);
     addStep(migrationStep);
@@ -36,7 +36,7 @@ abstract class CollectionInstruction implements Instruction {
   CollectionInstruction renameField(String oldName, String newName) {
     MigrationStep migrationStep = MigrationStep(
         InstructionType.collectionRenameField,
-        Triplet(collectionName, oldName, newName));
+        (collectionName, oldName, newName));
     addStep(migrationStep);
     return this;
   }
@@ -72,7 +72,7 @@ abstract class CollectionInstruction implements Instruction {
     Fields indexedFields = Fields.withNames(fieldNames);
     MigrationStep migrationStep = MigrationStep(
         InstructionType.collectionCreateIndex,
-        Triplet(collectionName, indexedFields, indexType));
+        (collectionName, indexedFields, indexType));
     addStep(migrationStep);
     return this;
   }

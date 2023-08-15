@@ -31,10 +31,10 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
   Future<void> close() async {
     if (!_closed) {
       await _masterBox.flush();
-      await _hive.close();
       _closed = true;
     }
 
+    await _hive.close();
     _nitriteMapRegistry.clear();
     _nitriteRTreeMapRegistry.clear();
     return super.close();
@@ -81,7 +81,7 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
         _hive = await openHiveDb(_hiveConfig);
         _keyCodec = KeyCodec(_hive);
         _closed = false;
-        _masterBox = await _hive.openBox('__hive_master__');
+        _masterBox = await _hive.openBox('__nitrite_master__');
         initEventBus();
         alert(StoreEvents.opened);
       }

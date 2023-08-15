@@ -6,7 +6,6 @@ export 'meta/attributes.dart';
 export 'module/index.dart';
 export 'params.dart';
 export 'processors/index.dart';
-export 'tuples/tuples.dart';
 export 'util/spatial_key.dart';
 export 'write_result.dart';
 export 'persistent_collection.dart';

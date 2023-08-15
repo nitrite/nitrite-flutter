@@ -18,7 +18,7 @@ abstract class DatabaseInstruction implements Instruction {
   DatabaseInstruction changePassword(
       String username, String oldPassword, String newPassword) {
     MigrationStep migrationStep = MigrationStep(InstructionType.changePassword,
-        Triplet(username, oldPassword, newPassword));
+        (username, oldPassword, newPassword));
     addStep(migrationStep);
     return this;
   }

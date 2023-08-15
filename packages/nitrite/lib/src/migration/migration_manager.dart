@@ -140,7 +140,7 @@ class MigrationManager {
           break;
         case InstructionType.changePassword:
           command = ChangePasswordCommand(
-              step.arguments as Triplet<String, String, String>);
+              step.arguments as (String, String, String));
           break;
         case InstructionType.dropCollection:
           command = DropCollectionCommand(step.arguments as String);
@@ -156,11 +156,11 @@ class MigrationManager {
           break;
         case InstructionType.collectionAddField:
           command = AddFieldCommand(
-              step.arguments as Triplet<String, String, dynamic>);
+              step.arguments as (String, String, dynamic));
           break;
         case InstructionType.collectionRenameField:
           command = RenameFieldCommand(
-              step.arguments as Triplet<String, String, String>);
+              step.arguments as (String, String, String));
           break;
         case InstructionType.collectionDeleteField:
           command = DeleteFieldCommand(step.arguments as (String, String));
@@ -173,46 +173,46 @@ class MigrationManager {
           break;
         case InstructionType.collectionCreateIndex:
           command = CreateIndexCommand(
-              step.arguments as Triplet<String, Fields, String>);
+              step.arguments as (String, Fields, String));
           break;
         case InstructionType.renameRepository:
           command = RepositoryRenameCommand(
-              step.arguments as Quartet<String, String?, String, String?>);
+              step.arguments as (String, String?, String, String?));
           break;
         case InstructionType.repositoryAddField:
           var args =
-              step.arguments as Quartet<String, String?, String, dynamic>;
+              step.arguments as (String, String?, String, dynamic);
           var repositoryName =
-              findRepositoryNameByTypeName(args.first, args.second);
+              findRepositoryNameByTypeName(args.$1, args.$2);
           command =
-              AddFieldCommand(Triplet(repositoryName, args.third, args.fourth));
+              AddFieldCommand((repositoryName, args.$3, args.$4));
           break;
         case InstructionType.repositoryRenameField:
-          var args = step.arguments as Quartet<String, String?, String, String>;
+          var args = step.arguments as (String, String?, String, String);
           var repositoryName =
-              findRepositoryNameByTypeName(args.first, args.second);
+              findRepositoryNameByTypeName(args.$1, args.$2);
           command = RenameFieldCommand(
-              Triplet(repositoryName, args.third, args.fourth));
+              (repositoryName, args.$3, args.$4));
           break;
         case InstructionType.repositoryDeleteField:
-          var args = step.arguments as Triplet<String, String?, String>;
+          var args = step.arguments as (String, String?, String);
           var repositoryName =
-              findRepositoryNameByTypeName(args.first, args.second);
-          command = DeleteFieldCommand((repositoryName, args.third));
+              findRepositoryNameByTypeName(args.$1, args.$2);
+          command = DeleteFieldCommand((repositoryName, args.$3));
           break;
         case InstructionType.repositoryChangeDataType:
           command = ChangeDataTypeCommand(step.arguments
-              as Quartet<String, String?, String, TypeConverter>);
+              as (String, String?, String, TypeConverter));
           break;
         case InstructionType.repositoryChangeIdField:
           command = ChangeIdFieldCommand(
-              step.arguments as Quartet<String, String?, Fields, Fields>);
+              step.arguments as (String, String?, Fields, Fields));
           break;
         case InstructionType.repositoryDropIndex:
-          var args = step.arguments as Triplet<String, String?, Fields>;
+          var args = step.arguments as (String, String?, Fields);
           var repositoryName =
-              findRepositoryNameByTypeName(args.first, args.second);
-          command = DropIndexCommand((repositoryName, args.third));
+              findRepositoryNameByTypeName(args.$1, args.$2);
+          command = DropIndexCommand((repositoryName, args.$3));
           break;
         case InstructionType.repositoryDropIndices:
           var args = step.arguments as (String, String?);
@@ -220,11 +220,11 @@ class MigrationManager {
           command = DropIndexCommand((repositoryName, null));
           break;
         case InstructionType.repositoryCreateIndex:
-          var args = step.arguments as Quartet<String, String?, Fields, String>;
+          var args = step.arguments as (String, String?, Fields, String);
           var repositoryName =
-              findRepositoryNameByTypeName(args.first, args.second);
+              findRepositoryNameByTypeName(args.$1, args.$2);
           command = CreateIndexCommand(
-              Triplet(repositoryName, args.third, args.fourth));
+              (repositoryName, args.$3, args.$4));
           break;
       }
 

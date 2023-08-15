@@ -4,24 +4,24 @@ import 'package:nitrite/src/migration/commands/collection_commands.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
 
 class RepositoryRenameCommand extends CollectionRenameCommand {
-  RepositoryRenameCommand(Quartet<String, String?, String, String?> arguments)
+  RepositoryRenameCommand((String, String?, String, String?) arguments)
       : super((
-          findRepositoryNameByTypeName(arguments.first, arguments.second),
-          findRepositoryNameByTypeName(arguments.third, arguments.fourth)
+          findRepositoryNameByTypeName(arguments.$1, arguments.$2),
+          findRepositoryNameByTypeName(arguments.$3, arguments.$4)
         ));
 }
 
 class ChangeDataTypeCommand extends BaseCommand {
-  final Quartet<String, String?, String, TypeConverter> _arguments;
+  final (String, String?, String, TypeConverter) _arguments;
 
   ChangeDataTypeCommand(this._arguments);
 
   @override
   Future<void> execute(Nitrite nitrite) async {
     var repositoryName =
-        findRepositoryNameByTypeName(_arguments.first, _arguments.second);
-    var fieldName = _arguments.third;
-    TypeConverter typeConverter = _arguments.fourth;
+        findRepositoryNameByTypeName(_arguments.$1, _arguments.$2);
+    var fieldName = _arguments.$3;
+    TypeConverter typeConverter = _arguments.$4;
 
     await initialize(nitrite, repositoryName);
 
@@ -43,16 +43,16 @@ class ChangeDataTypeCommand extends BaseCommand {
 }
 
 class ChangeIdFieldCommand extends BaseCommand {
-  final Quartet<String, String?, Fields, Fields> _arguments;
+  final (String, String?, Fields, Fields) _arguments;
 
   ChangeIdFieldCommand(this._arguments);
 
   @override
   Future<void> execute(Nitrite nitrite) async {
     var repositoryName =
-        findRepositoryNameByTypeName(_arguments.first, _arguments.second);
-    var oldFields = _arguments.third;
-    var newFields = _arguments.fourth;
+        findRepositoryNameByTypeName(_arguments.$1, _arguments.$2);
+    var oldFields = _arguments.$3;
+    var newFields = _arguments.$4;
 
     await initialize(nitrite, repositoryName);
 
