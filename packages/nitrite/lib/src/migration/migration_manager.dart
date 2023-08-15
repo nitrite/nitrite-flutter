@@ -139,8 +139,8 @@ class MigrationManager {
           command = AddPasswordCommand(step.arguments as (String, String));
           break;
         case InstructionType.changePassword:
-          command = ChangePasswordCommand(
-              step.arguments as (String, String, String));
+          command =
+              ChangePasswordCommand(step.arguments as (String, String, String));
           break;
         case InstructionType.dropCollection:
           command = DropCollectionCommand(step.arguments as String);
@@ -155,12 +155,12 @@ class MigrationManager {
           command = CollectionRenameCommand(step.arguments as (String, String));
           break;
         case InstructionType.collectionAddField:
-          command = AddFieldCommand(
-              step.arguments as (String, String, dynamic));
+          command =
+              AddFieldCommand(step.arguments as (String, String, dynamic));
           break;
         case InstructionType.collectionRenameField:
-          command = RenameFieldCommand(
-              step.arguments as (String, String, String));
+          command =
+              RenameFieldCommand(step.arguments as (String, String, String));
           break;
         case InstructionType.collectionDeleteField:
           command = DeleteFieldCommand(step.arguments as (String, String));
@@ -172,37 +172,31 @@ class MigrationManager {
           command = DropIndexCommand((step.arguments as String, null));
           break;
         case InstructionType.collectionCreateIndex:
-          command = CreateIndexCommand(
-              step.arguments as (String, Fields, String));
+          command =
+              CreateIndexCommand(step.arguments as (String, Fields, String));
           break;
         case InstructionType.renameRepository:
           command = RepositoryRenameCommand(
               step.arguments as (String, String?, String, String?));
           break;
         case InstructionType.repositoryAddField:
-          var args =
-              step.arguments as (String, String?, String, dynamic);
-          var repositoryName =
-              findRepositoryNameByTypeName(args.$1, args.$2);
-          command =
-              AddFieldCommand((repositoryName, args.$3, args.$4));
+          var args = step.arguments as (String, String?, String, dynamic);
+          var repositoryName = findRepositoryNameByTypeName(args.$1, args.$2);
+          command = AddFieldCommand((repositoryName, args.$3, args.$4));
           break;
         case InstructionType.repositoryRenameField:
           var args = step.arguments as (String, String?, String, String);
-          var repositoryName =
-              findRepositoryNameByTypeName(args.$1, args.$2);
-          command = RenameFieldCommand(
-              (repositoryName, args.$3, args.$4));
+          var repositoryName = findRepositoryNameByTypeName(args.$1, args.$2);
+          command = RenameFieldCommand((repositoryName, args.$3, args.$4));
           break;
         case InstructionType.repositoryDeleteField:
           var args = step.arguments as (String, String?, String);
-          var repositoryName =
-              findRepositoryNameByTypeName(args.$1, args.$2);
+          var repositoryName = findRepositoryNameByTypeName(args.$1, args.$2);
           command = DeleteFieldCommand((repositoryName, args.$3));
           break;
         case InstructionType.repositoryChangeDataType:
-          command = ChangeDataTypeCommand(step.arguments
-              as (String, String?, String, TypeConverter));
+          command = ChangeDataTypeCommand(
+              step.arguments as (String, String?, String, TypeConverter));
           break;
         case InstructionType.repositoryChangeIdField:
           command = ChangeIdFieldCommand(
@@ -210,8 +204,7 @@ class MigrationManager {
           break;
         case InstructionType.repositoryDropIndex:
           var args = step.arguments as (String, String?, Fields);
-          var repositoryName =
-              findRepositoryNameByTypeName(args.$1, args.$2);
+          var repositoryName = findRepositoryNameByTypeName(args.$1, args.$2);
           command = DropIndexCommand((repositoryName, args.$3));
           break;
         case InstructionType.repositoryDropIndices:
@@ -221,10 +214,8 @@ class MigrationManager {
           break;
         case InstructionType.repositoryCreateIndex:
           var args = step.arguments as (String, String?, Fields, String);
-          var repositoryName =
-              findRepositoryNameByTypeName(args.$1, args.$2);
-          command = CreateIndexCommand(
-              (repositoryName, args.$3, args.$4));
+          var repositoryName = findRepositoryNameByTypeName(args.$1, args.$2);
+          command = CreateIndexCommand((repositoryName, args.$3, args.$4));
           break;
       }
 

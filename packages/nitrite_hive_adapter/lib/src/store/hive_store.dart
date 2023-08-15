@@ -171,7 +171,8 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
   }
 
   String _sanitizeName(String mapName) {
-    return mapName.replaceAll("\$", "_")
+    return mapName
+        .replaceAll("\$", "_")
         .replaceAll("|", "_")
         .replaceAll(":", "_")
         .replaceAll(".", "_")

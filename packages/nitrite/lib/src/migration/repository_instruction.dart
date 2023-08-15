@@ -57,8 +57,7 @@ abstract class RepositoryInstruction implements Instruction {
   /// the [ObjectRepository].
   RepositoryInstruction deleteField(String fieldName) {
     MigrationStep migrationStep = MigrationStep(
-        InstructionType.repositoryDeleteField,
-        (entityName, key, fieldName));
+        InstructionType.repositoryDeleteField, (entityName, key, fieldName));
     addStep(migrationStep);
     return this;
   }

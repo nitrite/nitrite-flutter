@@ -1,0 +1,40 @@
+name: Release Nitrite
+
+on:
+  push:
+    branches:
+      - release
+    paths-ignore:
+      - "README.md"
+      - "CHANGELOG.md"
+
+jobs:
+  test_linux:
+    name: Release Nitrite on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Setup Build System
+        shell: bash
+        run: ./.github/workflows/scripts/install-tools.sh
+
+      - name: Build Nitrite
+        run: melos run test
+
+      - name: Generate Docs
+        run: melos run dartdoc
+
+      - name: Version Nitrite
+        run: melos run version
+
+      - name: Publish Nitrite
+        run: melos run publish
