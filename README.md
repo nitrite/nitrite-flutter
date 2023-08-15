@@ -1,5 +1,8 @@
 # Nitrite Database
 
+[![Build Nitrite](https://github.com/nitrite/nitrite-flutter/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/nitrite/nitrite-flutter/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/nitrite/nitrite-flutter/branch/main/graph/badge.svg?token=yqfI3tbHqp)](https://codecov.io/gh/nitrite/nitrite-flutter)
+
 <p align="center">
     <img src="assets/nitrite-logo.svg" width="256" alt="nitrite logo">
 </p>
