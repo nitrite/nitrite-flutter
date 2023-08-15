@@ -1,3 +1,5 @@
+// coverage:ignore-file
+
 import 'languages.dart';
 
 class Afrikaans implements Language {

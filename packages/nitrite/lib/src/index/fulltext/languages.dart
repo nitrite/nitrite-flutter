@@ -1,3 +1,5 @@
+// coverage:ignore-file
+
 /// Represents a set of stop words for a specific language.
 abstract class Language {
   /// A set of stop words for the language.
