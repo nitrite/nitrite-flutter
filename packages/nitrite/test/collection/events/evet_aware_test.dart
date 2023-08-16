@@ -1,4 +1,4 @@
-import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/collection/events/event_aware.dart';
 import 'package:test/test.dart';
 
 void main() {

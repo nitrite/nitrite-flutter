@@ -7,6 +7,7 @@ import 'package:nitrite/src/collection/operations/document_index_writer.dart';
 import 'package:nitrite/src/collection/operations/read_operations.dart';
 import 'package:nitrite/src/common/processors/processor.dart';
 
+/// @nodoc
 class WriteOperations {
   static final Logger _log = Logger('WriteOperations');
   final DocumentIndexWriter _documentIndexWriter;

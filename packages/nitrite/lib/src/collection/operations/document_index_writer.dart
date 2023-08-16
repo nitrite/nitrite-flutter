@@ -4,6 +4,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/index_operations.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
 
+/// @nodoc
 class DocumentIndexWriter {
   final NitriteConfig _nitriteConfig;
   final IndexOperations _indexOperations;

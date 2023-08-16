@@ -6,6 +6,7 @@ import 'package:nitrite/src/collection/operations/collection_operations.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:quiver/core.dart';
 
+/// @nodoc
 class CollectionFactory {
   final Map<String, NitriteCollection> _collectionMap = {};
 

@@ -120,6 +120,7 @@ abstract class Document extends Iterable<(String, dynamic)> {
   Map<String, dynamic> toMap();
 }
 
+/// @nodoc
 class _NitriteDocument extends Document {
   static final List<String> _reservedFields = <String>[
     docId,

@@ -4,7 +4,7 @@ export 'src/nitrite_base.dart';
 export 'src/nitrite_builder.dart';
 export 'src/nitrite_config.dart';
 
-export 'src/collection/index.dart';
+export 'src/collection/index.dart' hide EventAware;
 export 'src/common/index.dart';
 export 'src/exception/exceptions.dart';
 export 'src/store/index.dart';

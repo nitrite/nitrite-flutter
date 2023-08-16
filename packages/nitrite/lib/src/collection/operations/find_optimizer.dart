@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/filters/filter.dart';
 
+/// @nodoc
 class FindOptimizer {
   FindPlan optimize(Filter filter, FindOptions? findOptions,
       Iterable<IndexDescriptor> indexDescriptors) {

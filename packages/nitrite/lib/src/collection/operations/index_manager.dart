@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 
+/// @nodoc
 class IndexManager {
   final NitriteConfig _nitriteConfig;
   final NitriteStore _nitriteStore;

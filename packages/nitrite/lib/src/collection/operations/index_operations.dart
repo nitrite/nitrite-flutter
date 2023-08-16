@@ -3,6 +3,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/index_manager.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
 
+/// @nodoc
 class IndexOperations {
   final String _collectionName;
   final NitriteConfig _nitriteConfig;

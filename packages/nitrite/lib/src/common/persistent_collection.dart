@@ -1,4 +1,5 @@
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/collection/events/event_aware.dart';
 import 'package:nitrite/src/common/initializable.dart';
 
 /// The interface Persistent collection.

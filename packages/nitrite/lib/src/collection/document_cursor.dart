@@ -7,7 +7,7 @@ import 'package:nitrite/src/common/stream/processed_document_stream.dart';
 import 'package:nitrite/src/common/stream/projected_document_stream.dart';
 import 'package:rxdart/streams.dart';
 
-/// The [DocumentCursor] represents a cursor as a stream of `Document`
+/// The [DocumentCursor] represents a cursor as a stream of [Document]
 /// to iterate over [NitriteCollection.find] results. It also provides methods
 /// for projection and perform left outer joins with other [DocumentCursor]s.
 ///
@@ -37,13 +37,14 @@ abstract class DocumentCursor extends Stream<Document> {
   /// Performs a left outer join with a foreign cursor with the specified
   /// lookup parameters.
   ///
-  /// It performs an equality match on the localString to the foreignString
+  /// It performs an equality match on the localField to the foreignField
   /// from the documents of the foreign cursor.
-  /// If an input document does not contain the localString, the join treats
+  /// If an input document does not contain the localField, the join treats
   /// the field as having a value of `null` for matching purposes.
   Stream<Document> leftJoin(DocumentCursor foreignCursor, LookUp lookup);
 }
 
+/// @nodoc
 class DocumentStream extends DocumentCursor {
   final Stream<Document> _stream;
   final FutureFactory<FindPlan> _findPlanFactory;

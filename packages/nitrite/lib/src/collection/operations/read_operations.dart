@@ -11,6 +11,7 @@ import 'package:nitrite/src/common/stream/sorted_document_stream.dart';
 import 'package:nitrite/src/filters/filter.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// @nodoc
 class ReadOperations {
   final String _collectionName;
   final NitriteConfig _nitriteConfig;

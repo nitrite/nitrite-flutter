@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:logging/logging.dart';
 import 'package:uuid/uuid.dart';
 
+/// @nodoc
 class SnowflakeIdGenerator {
   final Random _random = Random.secure();
   final int _nodeIdBits = 10;

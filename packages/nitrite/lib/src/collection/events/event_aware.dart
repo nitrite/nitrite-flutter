@@ -5,14 +5,9 @@ import 'package:nitrite/nitrite.dart';
 typedef CollectionEventListener<T> = void Function(
     CollectionEventInfo<T> event);
 
-/// Interface to be implemented by collections that wish to be aware
-/// of any event.
+/// @nodoc
 abstract class EventAware {
-  /// Subscribes an [CollectionEventListener] instance to listen to any
-  /// collection events.
   void subscribe<T>(CollectionEventListener<T> listener);
-
-  /// Unsubscribes an [CollectionEventListener] instance.
   void unsubscribe<T>(CollectionEventListener<T> listener);
 }
 

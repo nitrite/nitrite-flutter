@@ -6,6 +6,7 @@ import 'package:nitrite/src/collection/operations/read_operations.dart';
 import 'package:nitrite/src/collection/operations/write_operations.dart';
 import 'package:nitrite/src/common/processors/processor.dart';
 
+/// @nodoc
 class CollectionOperations {
   final String _collectionName;
   final NitriteMap<NitriteId, Document> _nitriteMap;
