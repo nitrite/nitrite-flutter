@@ -1,7 +1,7 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_support/src/convert/binary_reader.dart';
-import 'package:nitrite_support/src/convert/binary_writer.dart';
-import 'package:nitrite_support/src/convert/converter.dart';
+import 'package:nitrite_support/src/exchange/convert/binary_reader.dart';
+import 'package:nitrite_support/src/exchange/convert/binary_writer.dart';
+import 'package:nitrite_support/src/exchange/convert/converter.dart';
 
 class DateTimeConverter extends Converter<DateTime> {
   @override

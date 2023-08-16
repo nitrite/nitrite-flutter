@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:compute/compute.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_support/src/convert/converter.dart';
-import 'package:nitrite_support/src/nitrite_json_importer.dart';
-import 'package:nitrite_support/src/options.dart';
+import 'package:nitrite_support/src/exchange/convert/converter.dart';
+
+import 'nitrite_json_importer.dart';
+import 'options.dart';
 
 class Importer {
   final ImportOptions _options;

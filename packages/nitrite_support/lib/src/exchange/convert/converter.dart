@@ -1,5 +1,5 @@
-import 'package:nitrite_support/src/convert/binary_reader.dart';
-import 'package:nitrite_support/src/convert/binary_writer.dart';
+import 'package:nitrite_support/src/exchange/convert/binary_reader.dart';
+import 'package:nitrite_support/src/exchange/convert/binary_writer.dart';
 
 abstract class Converter<T> {
   int get typeId;

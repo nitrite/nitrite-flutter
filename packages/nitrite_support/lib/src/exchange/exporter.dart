@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:compute/compute.dart';
-import 'package:nitrite_support/src/convert/converter.dart';
-import 'package:nitrite_support/src/nitrite_json_exporter.dart';
-import 'package:nitrite_support/src/options.dart';
+import 'package:nitrite_support/src/exchange/convert/converter.dart';
+
+import 'nitrite_json_exporter.dart';
+import 'options.dart';
 
 /// Nitrite database export utility. It exports data to
 /// a json file. Contents of a Nitrite database can be exported

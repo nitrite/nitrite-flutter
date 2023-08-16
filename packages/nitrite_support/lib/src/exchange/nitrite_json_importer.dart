@@ -5,9 +5,10 @@ import 'dart:typed_data';
 import 'package:nitrite/nitrite.dart';
 // ignore: implementation_imports
 import 'package:nitrite/src/collection/operations/index_manager.dart';
-import 'package:nitrite_support/src/convert/binary_reader.dart';
-import 'package:nitrite_support/src/convert/converter_registry.dart';
-import 'package:nitrite_support/src/options.dart';
+import 'package:nitrite_support/src/exchange/convert/binary_reader.dart';
+import 'package:nitrite_support/src/exchange/convert/converter_registry.dart';
+
+import 'options.dart';
 
 class NitriteJsonImporter {
   final ImportOptions _options;

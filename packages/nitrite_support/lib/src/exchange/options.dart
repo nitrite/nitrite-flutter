@@ -1,5 +1,5 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_support/src/convert/converter.dart';
+import 'package:nitrite_support/src/exchange/convert/converter.dart';
 
 /// A function to create/open a `Nitrite` instance.
 typedef NitriteFactory = Future<Nitrite> Function();

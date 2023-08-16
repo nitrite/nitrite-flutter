@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_support/src/convert/converter_registry.dart';
-import 'package:nitrite_support/src/convert/type_token.dart';
+import 'package:nitrite_support/src/exchange/convert/converter_registry.dart';
+import 'package:nitrite_support/src/exchange/convert/type_token.dart';
 
 class BinaryWriter {
   static const _initBufferSize = 4096;

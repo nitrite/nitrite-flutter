@@ -6,9 +6,10 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/index_manager.dart';
 // ignore: implementation_imports
 import 'package:nitrite/src/common/util/object_utils.dart';
-import 'package:nitrite_support/src/convert/binary_writer.dart';
-import 'package:nitrite_support/src/convert/converter_registry.dart';
-import 'package:nitrite_support/src/options.dart';
+import 'package:nitrite_support/src/exchange/convert/binary_writer.dart';
+import 'package:nitrite_support/src/exchange/convert/converter_registry.dart';
+
+import 'options.dart';
 
 class NitriteJsonExporter {
   final ExportOptions _options;

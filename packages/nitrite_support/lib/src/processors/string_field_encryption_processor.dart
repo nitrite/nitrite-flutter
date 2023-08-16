@@ -1,10 +1,9 @@
-import 'package:nitrite/nitrite.dart';
 import 'package:encrypt/encrypt.dart';
-import 'package:nitrite/src/common/util/validation_utils.dart';
+import 'package:nitrite/nitrite.dart';
 
-final key = Key.fromLength(32);
-final iv = IV.fromLength(16);
-final encrypter = Encrypter(AES(key));
+final _key = Key.fromLength(32);
+final _iv = IV.fromLength(16);
+final _encryptor = Encrypter(AES(_key));
 
 class StringFieldEncryptionProcessor extends Processor {
   final List<String> fields = [];
@@ -18,8 +17,8 @@ class StringFieldEncryptionProcessor extends Processor {
     var copy = document.clone();
     for (var field in fields) {
       var value = copy.get<String>(field);
-      if (!value.isNullOrEmpty) {
-        value = _decrypt(value!);
+      if (value != null && value.isNotEmpty) {
+        value = _decrypt(value);
         copy[field] = value;
       }
     }
@@ -31,8 +30,8 @@ class StringFieldEncryptionProcessor extends Processor {
     var copy = document.clone();
     for (var field in fields) {
       var value = copy.get<String>(field);
-      if (!value.isNullOrEmpty) {
-        value = _encrypt(value!);
+      if (value != null && value.isNotEmpty) {
+        value = _encrypt(value);
         copy[field] = value;
       }
     }
@@ -41,9 +40,9 @@ class StringFieldEncryptionProcessor extends Processor {
 }
 
 String _encrypt(String plainText) {
-  return encrypter.encrypt(plainText, iv: iv).base64;
+  return _encryptor.encrypt(plainText, iv: _iv).base64;
 }
 
 String _decrypt(String encrypted) {
-  return encrypter.decrypt64(encrypted, iv: iv);
+  return _encryptor.decrypt64(encrypted, iv: _iv);
 }

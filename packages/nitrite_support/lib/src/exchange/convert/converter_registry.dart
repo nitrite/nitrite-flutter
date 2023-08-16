@@ -1,5 +1,5 @@
-import 'package:nitrite_support/src/convert/builtin_converters.dart';
-import 'package:nitrite_support/src/convert/converter.dart';
+import 'package:nitrite_support/src/exchange/convert/builtin_converters.dart';
+import 'package:nitrite_support/src/exchange/convert/converter.dart';
 
 class ConverterRegistry {
   static final Map<int, Converter> _converters = {};
