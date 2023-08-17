@@ -59,33 +59,34 @@ void main() {
 
     test('Test Drop Index', () async {
       await collection.createIndex(['firstName', 'lastName']);
-      expectLater(
+      await expectLater(
           collection.hasIndex(['firstName', 'lastName']), completion(isTrue));
-      expectLater(collection.hasIndex(['firstName']), completion(isTrue));
+      await expectLater(collection.hasIndex(['firstName']), completion(isTrue));
 
       await collection.createIndex(['firstName']);
-      expectLater(collection.hasIndex(['firstName']), completion(isTrue));
+      await expectLater(collection.hasIndex(['firstName']), completion(isTrue));
 
       await collection.dropIndex(['firstName']);
-      expectLater(collection.hasIndex(['firstName']), completion(isTrue));
-      expectLater(
+      await expectLater(collection.hasIndex(['firstName']), completion(isTrue));
+      await expectLater(
           collection.hasIndex(['firstName', 'lastName']), completion(isTrue));
 
       await collection.createIndex(['firstName']);
       await collection.dropIndex(['firstName', 'lastName']);
-      expectLater(collection.hasIndex(['firstName']), completion(isTrue));
-      expectLater(
+      await expectLater(collection.hasIndex(['firstName']), completion(isTrue));
+      await expectLater(
           collection.hasIndex(['firstName', 'lastName']), completion(isFalse));
 
       await collection.dropIndex(['firstName']);
-      expectLater(collection.hasIndex(['firstName']), completion(isFalse));
+      await expectLater(
+          collection.hasIndex(['firstName']), completion(isFalse));
       expect((await collection.listIndexes()).length, 0);
     });
 
     test('Test Has Index', () async {
-      expectLater(collection.hasIndex(['lastName']), completion(isFalse));
+      await expectLater(collection.hasIndex(['lastName']), completion(isFalse));
       await collection.createIndex(['lastName', 'firstName']);
-      expectLater(collection.hasIndex(['lastName']), completion(isTrue));
+      await expectLater(collection.hasIndex(['lastName']), completion(isTrue));
     });
 
     test('Test Drop All Indexes', () async {
@@ -102,14 +103,14 @@ void main() {
 
     test('Test Rebuild Index', () async {
       await collection.createIndex(['firstName', 'lastName']);
-      expectLater(collection.hasIndex(['firstName']), completion(isTrue));
-      expectLater(
+      await expectLater(collection.hasIndex(['firstName']), completion(isTrue));
+      await expectLater(
           collection.hasIndex(['firstName', 'lastName']), completion(isTrue));
 
       await insert();
       await collection.rebuildIndex(['firstName', 'lastName']);
-      expectLater(collection.hasIndex(['firstName']), completion(isTrue));
-      expectLater(
+      await expectLater(collection.hasIndex(['firstName']), completion(isTrue));
+      await expectLater(
           collection.hasIndex(['firstName', 'lastName']), completion(isTrue));
     });
 
@@ -139,7 +140,7 @@ void main() {
       await collection.createIndex(['firstName', 'lastName']);
       await collection.rebuildIndex(['firstName', 'lastName']);
 
-      expectLater(
+      await expectLater(
           collection.hasIndex(['firstName', 'lastName']), completion(isTrue));
     });
 
@@ -158,8 +159,10 @@ void main() {
       await collection.insert(document);
 
       var cursor = collection.find(filter: where('firstName').eq(null));
-      expectLater(cursor.first, completion(containsPair('lastName', 'ln1')));
-      expectLater(cursor.first, completion(containsPair('firstName', isNull)));
+      await expectLater(
+          cursor.first, completion(containsPair('lastName', 'ln1')));
+      await expectLater(
+          cursor.first, completion(containsPair('firstName', isNull)));
 
       document = emptyDocument()
         ..put("firstName", 'fn4')
@@ -171,18 +174,21 @@ void main() {
       await collection.insert(document);
 
       cursor = collection.find(filter: where('lastName').eq(null));
-      expectLater(cursor.first, completion(containsPair('firstName', 'fn4')));
-      expectLater(cursor.first, completion(containsPair('lastName', isNull)));
+      await expectLater(
+          cursor.first, completion(containsPair('firstName', 'fn4')));
+      await expectLater(
+          cursor.first, completion(containsPair('lastName', isNull)));
 
       cursor = collection.find(
           filter:
               and([where('birthDay').eq(null), where("lastName").eq(null)]));
-      expectLater(cursor.first, completion(containsPair('lastName', isNull)));
+      await expectLater(
+          cursor.first, completion(containsPair('lastName', isNull)));
     });
 
     test('Test Drop All and Create Index', () async {
       await collection.createIndex(['firstName', 'lastName']);
-      expectLater(collection.hasIndex(['firstName']), completion(isTrue));
+      await expectLater(collection.hasIndex(['firstName']), completion(isTrue));
 
       var cursor = collection.find(
           filter:
@@ -222,32 +228,32 @@ void main() {
 
       var cursor = collection.find(
           filter: and([where('field1').eq(0.03), where('field2').eq(5)]));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
 
       cursor = collection.find(
           filter: and([where('field1').eq(5), where('field2').eq(null)]));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
 
       cursor = collection.find(filter: where('field1').eq(5));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
 
       cursor = collection.find(filter: where('field1').eq(5.0));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
 
       await collection.createIndex(['field1', 'field2']);
       cursor = collection.find(
           filter: and([where('field1').eq(0.03), where('field2').eq(5)]));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
 
       cursor = collection.find(
           filter: and([where('field1').eq(5), where('field2').eq(null)]));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
 
       cursor = collection.find(filter: where('field1').eq(5));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
 
       cursor = collection.find(filter: where('field1').eq(5.0));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
     });
 
     test('Test Index Event', () async {
@@ -279,7 +285,7 @@ void main() {
       await collection
           .createIndex(['first', 'second'], indexOptions(IndexType.nonUnique));
       var cursor = collection.find();
-      expectLater(cursor.length, completion(1000));
+      await expectLater(cursor.length, completion(1000));
       expect(failed, isFalse);
       expect(completed, isTrue);
     });
@@ -296,10 +302,10 @@ void main() {
 
       await collection.createIndex(['third', 'first']);
       var cursor = collection.find(filter: where('first').eq(null));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
 
       cursor = collection.find(filter: where('third').eq(null));
-      expectLater(cursor.length, completion(2));
+      await expectLater(cursor.length, completion(2));
     });
   });
 }

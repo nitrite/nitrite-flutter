@@ -43,7 +43,7 @@ class ConverterParser extends Parser<ConverterInfo> {
         ?.toStringValue();
 
     if (converterName == null || converterName.isEmpty) {
-      return _classElement.displayName + 'Converter';
+      return '${_classElement.displayName}Converter';
     } else {
       return converterName;
     }
@@ -174,7 +174,7 @@ class ConverterParser extends Parser<ConverterInfo> {
     }
 
     bool hasDefaultCtor =
-        validConstructors.any((ctor) => ctor.parameters.length == 0);
+        validConstructors.any((ctor) => ctor.parameters.isEmpty);
 
     bool hasAllOptionalPositionalCtor = validConstructors.any((ctor) =>
         ctor.parameters.isNotEmpty &&
@@ -228,14 +228,14 @@ class ConverterParser extends Parser<ConverterInfo> {
 
     // get field details from parents
     var supertypes = _classElement.allSupertypes;
-    supertypes.forEach((type) {
+    for (var type in supertypes) {
       // use recursion to scan the heirarchy
       var superParser = ConverterParser(type.element as ClassElement);
       var superFieldInfos = superParser._getFieldInfoList();
       if (superFieldInfos.isNotEmpty) {
         fieldInfos.addAll(superFieldInfos);
       }
-    });
+    }
 
     return fieldInfos.toList();
   }
@@ -334,14 +334,14 @@ class ConverterParser extends Parser<ConverterInfo> {
 
     // get property info from parents
     var supertypes = _classElement.allSupertypes;
-    supertypes.forEach((type) {
+    for (var type in supertypes) {
       // use recursion to scan the heirarchy
       var superParser = ConverterParser(type.element as ClassElement);
       var superPropInfos = superParser._getPropertyInfoList();
       if (superPropInfos.isNotEmpty) {
         propInfos.addAll(superPropInfos);
       }
-    });
+    }
 
     return propInfos.toList();
   }

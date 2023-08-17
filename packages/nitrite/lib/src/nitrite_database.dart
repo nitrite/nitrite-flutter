@@ -126,7 +126,7 @@ class NitriteDatabase extends Nitrite {
   Future<void> commit() async {
     checkOpened();
     try {
-      _nitriteStore.commit();
+      await _nitriteStore.commit();
     } catch (e, stackTrace) {
       throw NitriteIOException('Error occurred while committing the database',
           stackTrace: stackTrace, cause: e);

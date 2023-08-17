@@ -38,8 +38,8 @@ void main() {
       expect(indexScanFilter?.filters.skip(2).first,
           where('firstName').notEq('fn1'));
 
-      expectLater(cursor.length, completion(1));
-      expectLater(cursor.first,
+      await expectLater(cursor.length, completion(1));
+      await expectLater(cursor.first,
           completion(containsPair('body', 'quick hello world from nitrite')));
     });
 

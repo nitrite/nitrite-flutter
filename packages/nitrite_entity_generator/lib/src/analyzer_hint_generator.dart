@@ -14,23 +14,22 @@ class AnalyzerHintGenerator extends Generator {
   final converterChecker = TypeChecker.fromRuntime(no2.GenerateConverter);
 
   @override
-  FutureOr<String> generate(
-      LibraryReader libraryReader, BuildStep buildStep) async {
+  FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     final values = <String>{};
     // @Entity found
-    bool isEntity = libraryReader.annotatedWith(entityChecker).isNotEmpty;
+    bool isEntity = library.annotatedWith(entityChecker).isNotEmpty;
     // @GenerateConverter found
-    bool isConverter = libraryReader.annotatedWith(converterChecker).isNotEmpty;
+    bool isConverter = library.annotatedWith(converterChecker).isNotEmpty;
 
     if (isEntity || isConverter) {
-      final library = Library((builder) {
+      final lib = Library((builder) {
         builder
           ..body.add(const Code(
               "// ignore_for_file: invalid_use_of_internal_member\n"))
           ..body.add(const Code('\n'));
       });
 
-      return _dartfmt.format('${library.accept(DartEmitter())}');
+      return _dartfmt.format('${lib.accept(DartEmitter())}');
     } else {
       return values.join('\n\n');
     }

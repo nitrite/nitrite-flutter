@@ -12,7 +12,7 @@ class ConverterWriter {
   Class write() {
     return Class((builder) {
       builder
-        ..name = '${_converterInfo.converterName}'
+        ..name = _converterInfo.converterName
         ..extend = refer('EntityConverter<${_converterInfo.className}>')
         ..methods.add(_generateFromDocument())
         ..methods.add(_generateToDocument());
@@ -26,7 +26,7 @@ class ConverterWriter {
         ..name = 'fromDocument'
         ..annotations.add(refer('override'))
         ..lambda = false
-        ..returns = refer('${_converterInfo.className}')
+        ..returns = refer(_converterInfo.className)
         ..requiredParameters.add(Parameter((builder) {
           builder
             ..name = 'document'
@@ -37,7 +37,7 @@ class ConverterWriter {
             ..name = 'nitriteMapper'
             ..type = refer('NitriteMapper');
         }))
-        ..body = Code('${_generateFromDocumentBody()}');
+        ..body = Code(_generateFromDocumentBody());
     });
   }
 
@@ -52,14 +52,14 @@ class ConverterWriter {
         ..requiredParameters.add(Parameter((builder) {
           builder
             ..name = 'entity'
-            ..type = refer('${_converterInfo.className}');
+            ..type = refer(_converterInfo.className);
         }))
         ..requiredParameters.add(Parameter((builder) {
           builder
             ..name = 'nitriteMapper'
             ..type = refer('NitriteMapper');
         }))
-        ..body = Code('${_generateToDocumentBody()}');
+        ..body = Code(_generateToDocumentBody());
     });
   }
 
@@ -125,7 +125,7 @@ class ConverterWriter {
         } else {
           buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
-              '${fieldInfo.fieldType.getDisplayString(withNullability: true)}');
+              fieldInfo.fieldType.getDisplayString(withNullability: true));
           buffer.write(', Document>(');
           buffer.write("document['$keyName'])");
 
@@ -183,7 +183,7 @@ class ConverterWriter {
         } else {
           buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
-              '${fieldInfo.fieldType.getDisplayString(withNullability: true)}');
+              fieldInfo.fieldType.getDisplayString(withNullability: true));
           buffer.write(', Document>(');
           buffer.write("document['$keyName'])");
 
@@ -231,7 +231,7 @@ class ConverterWriter {
         } else {
           buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
-              '${propInfo.fieldType.getDisplayString(withNullability: true)}');
+              propInfo.fieldType.getDisplayString(withNullability: true));
           buffer.write(', Document>(');
           buffer.write("document['$keyName'])");
 
@@ -285,7 +285,7 @@ class ConverterWriter {
           buffer.write("document.put('$keyName', ");
           buffer.write('nitriteMapper.tryConvert<Document, ');
           buffer.write(
-              '${fieldInfo.fieldType.getDisplayString(withNullability: true)}');
+              fieldInfo.fieldType.getDisplayString(withNullability: true));
           buffer.writeln('>(entity.${fieldInfo.fieldName}));');
         }
       }
@@ -326,7 +326,7 @@ class ConverterWriter {
           buffer.write("document.put('$keyName', ");
           buffer.write('nitriteMapper.tryConvert<Document, ');
           buffer.write(
-              '${propInfo.fieldType.getDisplayString(withNullability: true)}');
+              propInfo.fieldType.getDisplayString(withNullability: true));
           buffer.writeln('>(entity.${propInfo.getterFieldName}));');
         }
       }

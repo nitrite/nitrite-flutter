@@ -126,7 +126,7 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
 
       attributes.set(Attributes.lastModifiedTime,
           DateTime.now().millisecondsSinceEpoch.toString());
-      metaMap.put(name, attributes.toDocument());
+      await metaMap.put(name, attributes.toDocument());
     }
   }
 }

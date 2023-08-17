@@ -46,19 +46,20 @@ void main() {
       expect(writeResult.getAffectedCount(), 3);
 
       var cursor = collection.find(filter: where('color').eq('red'));
-      expectLater(cursor.first, completion(containsPair('name', 'Anindya')));
+      await expectLater(
+          cursor.first, completion(containsPair('name', 'Anindya')));
 
       cursor = collection.find(filter: where('books.name').text('abcd'));
-      expectLater(cursor.length, completion(2));
+      await expectLater(cursor.length, completion(2));
 
       cursor = collection.find(filter: where('books.tag').eq('tag2'));
-      expectLater(cursor.length, completion(2));
+      await expectLater(cursor.length, completion(2));
 
       cursor = collection.find(filter: where('books.tag').eq('tag5'));
-      expectLater(cursor.length, completion(1));
+      await expectLater(cursor.length, completion(1));
 
       cursor = collection.find(filter: where('books.tag').eq('tag10'));
-      expectLater(cursor.length, completion(0));
+      await expectLater(cursor.length, completion(0));
     });
   });
 }

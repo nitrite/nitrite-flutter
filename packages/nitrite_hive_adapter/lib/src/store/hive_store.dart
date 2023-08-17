@@ -119,7 +119,7 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
   @override
   Future<void> removeMap(String mapName) async {
     var catalog = await getCatalog();
-    catalog.remove(mapName);
+    await catalog.remove(mapName);
     _nitriteMapRegistry.remove(mapName);
     await _removeBox(mapName);
   }
@@ -127,7 +127,7 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
   @override
   Future<void> removeRTree(String rTreeName) async {
     var catalog = await getCatalog();
-    catalog.remove(rTreeName);
+    await catalog.remove(rTreeName);
     _nitriteRTreeMapRegistry.remove(rTreeName);
     await _removeBox(rTreeName);
   }
@@ -165,7 +165,7 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
       return _masterBox.get(mapName);
     }
     var sanitizedName = _sanitizeName(mapName);
-    _masterBox.put(mapName, sanitizedName);
+    await _masterBox.put(mapName, sanitizedName);
     await _masterBox.flush();
     return sanitizedName;
   }

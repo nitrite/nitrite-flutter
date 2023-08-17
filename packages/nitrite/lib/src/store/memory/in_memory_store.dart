@@ -47,7 +47,7 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
 
     _nitriteMapRegistry.clear();
     _nitriteRTreeMapRegistry.clear();
-    super.close();
+    await super.close();
   }
 
   @override

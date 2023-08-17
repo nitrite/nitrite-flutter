@@ -12,7 +12,7 @@ void main() async {
       var collection = await db.getCollection("test");
 
       var attributes = Attributes("test");
-      collection.setAttributes(attributes);
+      await collection.setAttributes(attributes);
 
       expect(await collection.getAttributes(), attributes);
     });

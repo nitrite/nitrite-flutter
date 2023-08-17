@@ -44,8 +44,8 @@ String defaultValue(DartType type) {
   if (isNum.isExactlyType(type)) return "0";
   if (isInt.isExactlyType(type)) return "0";
   if (isDouble.isExactlyType(type)) return "0.0";
-  if (isString.isExactlyType(type)) return '\"\"';
-  if (isRunes.isExactlyType(type)) return '\"\"';
+  if (isString.isExactlyType(type)) return '""';
+  if (isRunes.isExactlyType(type)) return '""';
   if (isBool.isExactlyType(type)) return "false";
   if (isDateTime.isExactlyType(type)) return "DateTime.now()";
   if (isDuration.isExactlyType(type)) return "Duration.zero";

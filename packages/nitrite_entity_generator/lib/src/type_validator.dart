@@ -21,7 +21,7 @@ class TypeValidator extends TypeVisitor {
 
   @override
   visitInterfaceType(InterfaceType type) {
-    type.typeArguments.forEach((arg) {
+    for (var arg in type.typeArguments) {
       if (arg.isDartCoreIterable ||
           arg.isDartCoreMap ||
           arg.isDartCoreList ||
@@ -45,7 +45,7 @@ class TypeValidator extends TypeVisitor {
             'converter code generation.',
             element: _element);
       }
-    });
+    }
   }
 
   @override

@@ -133,19 +133,15 @@ class F {
 @GenerateConverter()
 class G {
   String _field1;
-  String _field2;
+  String field2;
 
-  G([this._field1 = "", this._field2 = ""]);
+  G([this._field1 = "", this.field2 = ""]);
 
   @DocumentKey(alias: 'firstField')
   String get field1 => _field1;
 
-  String get field2 => _field2;
-
   @DocumentKey(alias: 'firstField')
-  void set field1(String value) => this._field1 = value;
-
-  void set field2(String value) => this._field2 = value;
+  set field1(String value) => _field1 = value;
 }
 
 @GenerateConverter()
@@ -162,10 +158,10 @@ class H {
   String get field2 => _field2;
 
   @DocumentKey(alias: 'firstField')
-  void set field1(String value) => this._field1 = value;
+  set field1(String value) => _field1 = value;
 
   @IgnoredKey()
-  void set field2(String value) => this._field2 = value;
+  set field2(String value) => _field2 = value;
 }
 
 @GenerateConverter()

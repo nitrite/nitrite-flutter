@@ -26,7 +26,7 @@ class EntityWriter {
         ..type = MethodType.getter
         ..lambda = true
         ..returns = refer('String')
-        ..body = Code('\"${_entityInfo.entityName}\"');
+        ..body = Code('"${_entityInfo.entityName}"');
     });
   }
 
@@ -43,10 +43,9 @@ class EntityWriter {
         builder.body = Code('const []');
       } else {
         StringBuffer buffer = StringBuffer();
-        _entityInfo.entityIndices.forEach((index) {
+        for (var index in _entityInfo.entityIndices) {
           buffer.write('EntityIndex([');
-          buffer.write(
-              index.fieldNames.map((field) => '\"${field}\"').join(', '));
+          buffer.write(index.fieldNames.map((field) => '"$field"').join(', '));
           buffer.write('], ');
           switch (index.indexType) {
             case IndexType.unique:
@@ -63,7 +62,7 @@ class EntityWriter {
               break;
           }
           buffer.writeln(',');
-        });
+        }
 
         builder.body = Code('''
           const [
@@ -92,13 +91,13 @@ class EntityWriter {
         var isNitriteId = _entityInfo.entityId!.isNitriteId;
         if (_entityInfo.entityId!.subFields.isEmpty) {
           builder.body = Code(
-              'EntityId(\"${_entityInfo.entityId!.fieldName}\", $isNitriteId)');
+              'EntityId("${_entityInfo.entityId!.fieldName}", $isNitriteId)');
         } else {
           builder.body = Code('''
             EntityId(
-              \"${_entityInfo.entityId!.fieldName}\",
+              "${_entityInfo.entityId!.fieldName}",
               $isNitriteId,
-              [${_entityInfo.entityId!.subFields.map((field) => '\"${field}\"').join(', ')}],
+              [${_entityInfo.entityId!.subFields.map((field) => '"$field"').join(', ')}],
             )
           ''');
         }

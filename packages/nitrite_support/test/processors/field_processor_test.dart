@@ -102,7 +102,7 @@ void main() {
         },
       );
 
-      collection.addProcessor(wrongProcessor);
+      await collection.addProcessor(wrongProcessor);
 
       var document = createDocument('name', 'Jane Doe')
         ..put('creditCardNumber', '5500960345687452')

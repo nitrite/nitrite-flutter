@@ -242,7 +242,7 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     if (!_droppedFlag) {
       await _backingMap.clear();
       _tombstones.clear();
-      _primaryMap.drop();
+      await _primaryMap.drop();
       _cleared = true;
       _droppedFlag = true;
       await _store.removeMap(_mapName);

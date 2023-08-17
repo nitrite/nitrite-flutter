@@ -151,10 +151,10 @@ class _IndexScanner {
 
     // get index details from all super classes
     var superTypes = _classElement.allSupertypes;
-    superTypes.forEach((type) {
+    for (var type in superTypes) {
       var scanner = _IndexScanner(type.element as ClassElement);
       indexes.addAll(scanner.getIndexes());
-    });
+    }
 
     return indexes.toList();
   }
