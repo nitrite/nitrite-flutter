@@ -77,6 +77,42 @@ Future<void> setUpNitriteTest() async {
 }
 
 Future<void> cleanUp() async {
+  if (!companyRepository.isDropped && companyRepository.isOpen) {
+    await companyRepository.clear();
+    expect(await companyRepository.size, 0);
+  }
+
+  if (!employeeRepository.isDropped && employeeRepository.isOpen) {
+    await employeeRepository.clear();
+    expect(await employeeRepository.size, 0);
+  }
+
+  if (!aObjectRepository.isDropped && aObjectRepository.isOpen) {
+    await aObjectRepository.clear();
+    expect(await aObjectRepository.size, 0);
+  }
+
+  if (!cObjectRepository.isDropped && cObjectRepository.isOpen) {
+    await cObjectRepository.clear();
+    expect(await cObjectRepository.size, 0);
+  }
+
+  if (!bookRepository.isDropped && bookRepository.isOpen) {
+    await bookRepository.clear();
+    expect(await bookRepository.size, 0);
+  }
+
+  if (!productRepository.isDropped && productRepository.isOpen) {
+    await productRepository.clear();
+    expect(await productRepository.size, 0);
+  }
+
+  if (!upcomingProductRepository.isDropped &&
+      upcomingProductRepository.isOpen) {
+    await upcomingProductRepository.clear();
+    expect(await upcomingProductRepository.size, 0);
+  }
+
   if (!db.isClosed) {
     await db.commit();
     await db.close();
