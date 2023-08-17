@@ -1,6 +1,8 @@
 import 'package:nitrite/nitrite.dart';
 
-/// Represents a nitrite database plugin component.
+/// An abstract class that represents a plugin for working with Nitrite
+/// database and provides methods for initializing and closing the 
+/// plugin instance.
 abstract class NitritePlugin {
   /// Initializes the plugin instance.
   Future<void> initialize(NitriteConfig nitriteConfig);
@@ -9,17 +11,21 @@ abstract class NitritePlugin {
   Future<void> close() async {}
 }
 
-/// Represents a nitrite plugin modules which may contains
-/// one or more nitrite plugins.
+/// An abstract class that represents a module encapsulating a set of
+/// [NitritePlugin] objects.
 abstract class NitriteModule {
   /// Returns the set of [NitritePlugin] encapsulated by this module.
   Set<NitritePlugin> get plugins;
 }
 
-/// Creates a [NitriteModule] from a set of [NitritePlugin]s.
+/// Creates a Nitrite module with a set of [NitritePlugin]s.
+/// 
+/// Args:
+///   plugins (List<NitritePlugin>): A list of [NitritePlugin] objects.
 NitriteModule module(List<NitritePlugin> plugins) =>
     _NitriteModule(plugins.toSet());
 
+///@nodoc
 class _NitriteModule implements NitriteModule {
   @override
   final Set<NitritePlugin> plugins;

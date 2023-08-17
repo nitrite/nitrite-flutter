@@ -15,7 +15,7 @@ void main() {
 
       db = await Nitrite.builder().fieldSeparator(':').openOrCreate();
 
-      var mapper = db.config.nitriteMapper as EntityConverterMapper;
+      var mapper = db.config.nitriteMapper as SimpleNitriteMapper;
       mapper.registerEntityConverter(CompanyConverter());
       mapper.registerEntityConverter(EmployeeForCustomSeparatorConverter());
       mapper.registerEntityConverter(NoteConverter());

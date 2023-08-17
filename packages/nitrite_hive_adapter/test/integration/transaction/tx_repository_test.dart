@@ -637,7 +637,7 @@ void main() {
               .loadModule(storeModule)
               .fieldSeparator('.')
               .openOrCreate(username: 'test', password: 'test');
-          var mapper = db.config.nitriteMapper as EntityConverterMapper;
+          var mapper = db.config.nitriteMapper as SimpleNitriteMapper;
           mapper.registerEntityConverter(TxDataConverter());
 
           var session = db.createSession();
@@ -669,7 +669,7 @@ void main() {
           .fieldSeparator('.')
           .openOrCreate(username: 'test', password: 'test');
 
-      var mapper = db.config.nitriteMapper as EntityConverterMapper;
+      var mapper = db.config.nitriteMapper as SimpleNitriteMapper;
       mapper.registerEntityConverter(TxDataConverter());
 
       repository =

@@ -4,17 +4,14 @@ import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:uuid/uuid.dart';
 
-/// Interface to be implemented by database objects that wish to be
-/// aware of their metadata attributes.
+/// @nodoc
 abstract class AttributesAware {
-  /// Returns the metadata [attributes] of an object.
   Future<Attributes> getAttributes();
 
-  /// Sets new meta data [attributes].
   Future<void> setAttributes(Attributes attributes);
 }
 
-/// Represents metadata attributes of a collection.
+/// Represents metadata attributes of a [NitriteMap].
 class Attributes {
   static final String createdTime = "created_at";
   static final String lastModifiedTime = "last_modified_at";
@@ -43,6 +40,13 @@ class Attributes {
     set(uniqueId, uuid.v4());
   }
 
+  /// Creates an instance of the Attributes class from a [Document] object.
+  /// 
+  /// Args:
+  ///   document (Document): The parameter "document" is of type "Document".
+  /// 
+  /// Returns:
+  ///   The method is returning an instance of the [Attributes] class.
   factory Attributes.fromDocument(Document document) {
     Attributes attr = Attributes();
     for (var pair in document) {
@@ -53,7 +57,17 @@ class Attributes {
     return attr;
   }
 
-  /// Set attributes.
+  /// Adds a key-value pair to the attributes and returns 
+  /// the updated [Attributes] object.
+  /// 
+  /// Args:
+  ///   key (String): The key parameter is a string that represents the 
+  /// name of the attribute.
+  ///   value (String): The value parameter is a string that represents 
+  /// the value to be associated with the given key.
+  /// 
+  /// Returns:
+  ///   The method is returning an object of type [Attributes].
   Attributes set(String key, String value) {
     _attributes[key] = value;
     _attributes[lastModifiedTime] =
@@ -61,7 +75,7 @@ class Attributes {
     return this;
   }
 
-  /// Get string value of an attribute.
+  /// Retrieves the value associated with a given key from a [Attributes].
   String? operator [](String key) {
     return _attributes[key];
   }

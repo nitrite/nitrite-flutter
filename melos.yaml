@@ -42,6 +42,10 @@ scripts:
     run: melos exec dart doc .
     description: Run dartdoc checks for all packages.
 
+  upgrade:
+    run: melos exec -- flutter pub upgrade
+    description: Run `flutter pub upgrade` for all packages.
+
   test:
     run: |
       melos run test-with-coverage --no-select

@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   group(retry: 3, "MutatedObjectStream Test Suite", () {
     test("Test Mutate with Id Strip", () async {
-      var nitriteMapper = EntityConverterMapper();
+      var nitriteMapper = SimpleNitriteMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
 
       var stream = MutatedObjectStream<_A>(
@@ -27,7 +27,7 @@ void main() {
     });
 
     test("Test Mutate without Id Strip", () async {
-      var nitriteMapper = EntityConverterMapper();
+      var nitriteMapper = SimpleNitriteMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
 
       var stream = MutatedObjectStream<_A>(

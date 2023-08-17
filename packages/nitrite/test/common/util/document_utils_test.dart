@@ -42,7 +42,7 @@ void main() {
     });
 
     test('Test SkeletonDocument', () {
-      var nitriteMapper = EntityConverterMapper();
+      var nitriteMapper = SimpleNitriteMapper();
       nitriteMapper.registerEntityConverter(_PersonConverter());
       nitriteMapper.registerEntityConverter(_AddressConverter());
       nitriteMapper.registerEntityConverter(_PhoneConverter());
@@ -57,7 +57,7 @@ void main() {
     });
 
     test('Test SkeletonDocument with value type', () {
-      var nitriteMapper = EntityConverterMapper();
+      var nitriteMapper = SimpleNitriteMapper();
       expect(() => skeletonDocument<int>(nitriteMapper),
           throwsObjectMappingException);
     });

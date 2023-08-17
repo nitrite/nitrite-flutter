@@ -20,7 +20,7 @@ void main() {
           .loadModule(module([NitriteTextIndexer(tokenizer)]))
           .openOrCreate();
 
-      var documentMapper = db.config.nitriteMapper as EntityConverterMapper;
+      var documentMapper = db.config.nitriteMapper as SimpleNitriteMapper;
       documentMapper.registerEntityConverter(TextDataConverter());
       textRepository = await db.getRepository<TextData>();
 

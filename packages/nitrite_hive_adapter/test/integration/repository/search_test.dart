@@ -542,7 +542,7 @@ void main() {
     });
 
     test('Test Between Filter', () async {
-      var documentMapper = db.config.nitriteMapper as EntityConverterMapper;
+      var documentMapper = db.config.nitriteMapper as SimpleNitriteMapper;
       documentMapper.registerEntityConverter(_TestDataConverter());
 
       var data1 = _TestData(DateTime.parse('2020-01-11'));

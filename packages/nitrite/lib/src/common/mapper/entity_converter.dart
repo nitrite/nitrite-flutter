@@ -1,7 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 
-/// A class that implements this interface can be used to convert
-/// entity into a database {@link Document} and back again.
+/// An abstract class that is used to convert an entity of type [T]
+/// into a database [Document] and vice versa.
 abstract class EntityConverter<T> {
   /// Gets the entity type.
   Type get entityType => T;

@@ -24,7 +24,7 @@ void main() {
     });
 
     test("All Valid Converters", () {
-      var nitriteMapper = EntityConverterMapper();
+      var nitriteMapper = SimpleNitriteMapper();
       nitriteMapper.registerEntityConverter(AConverter());
       nitriteMapper.registerEntityConverter(MyBConverter());
       nitriteMapper.registerEntityConverter(CConverter());

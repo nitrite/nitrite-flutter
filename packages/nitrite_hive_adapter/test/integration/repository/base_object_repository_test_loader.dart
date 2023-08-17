@@ -134,7 +134,7 @@ Future<void> _openDb() async {
       .fieldSeparator('.')
       .openOrCreate();
 
-  var mapper = db.config.nitriteMapper as EntityConverterMapper;
+  var mapper = db.config.nitriteMapper as SimpleNitriteMapper;
   mapper.registerEntityConverter(CompanyConverter());
   mapper.registerEntityConverter(EmployeeConverter());
   mapper.registerEntityConverter(NoteConverter());

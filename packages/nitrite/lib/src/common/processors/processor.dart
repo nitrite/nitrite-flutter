@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 
-/// Represents a document processor.
+/// A class that provides methods to process a document before
+/// writing it into database or after reading from the database.
 abstract class Processor {
   /// Processes a document before writing it into database.
   Future<Document> processBeforeWrite(Document document);
@@ -8,7 +9,13 @@ abstract class Processor {
   /// Processes a document after reading from the database.
   Future<Document> processAfterRead(Document document);
 
-  /// Processes all documents of a [PersistentCollection].
+  /// Processes documents in a persistent collection, updates them,
+  /// and saves the changes back to the collection.
+  ///
+  /// Args:
+  ///   collection (PersistentCollection): The [collection] parameter is of
+  /// type [PersistentCollection]. It can be either a [NitriteCollection]
+  /// or an [ObjectRepository].
   Future<void> process(PersistentCollection collection) async {
     NitriteCollection? nitriteCollection;
     if (collection is NitriteCollection) {
@@ -31,12 +38,10 @@ abstract class Processor {
   }
 }
 
-/// Represents a chain of document processors. The processors are executed
-/// in the order they are added to the chain.
+/// @nodoc
 class ProcessorChain extends Processor {
   final List<Processor> processors = [];
 
-  /// Creates a new [ProcessorChain] instance.
   ProcessorChain([List<Processor> processors = const []]) {
     this.processors.addAll(processors);
   }
@@ -59,12 +64,10 @@ class ProcessorChain extends Processor {
     return document;
   }
 
-  /// Adds a [Processor] to the chain.
   void add(Processor processor) {
     processors.add(processor);
   }
 
-  /// Removes a [Processor] from the chain.
   void remove(Processor processor) {
     processors.remove(processor);
   }

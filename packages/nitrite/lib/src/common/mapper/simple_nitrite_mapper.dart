@@ -3,12 +3,15 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// A [NitriteMapper] based on [EntityConverter] implementation.
-class EntityConverterMapper extends NitriteMapper {
+/// 
+/// This mapper is used by default in nitrite. It uses [EntityConverter] 
+/// to convert an object and vice versa.
+class SimpleNitriteMapper extends NitriteMapper {
   final Set<String> _valueTypes = {};
   final Map<String, EntityConverter> _converterRegistry = {};
 
-  /// Creates a new [EntityConverterMapper].
-  EntityConverterMapper([List<Type> valueTypes = const []]) {
+  /// Creates a new [SimpleNitriteMapper].
+  SimpleNitriteMapper([List<Type> valueTypes = const []]) {
     _registerValueTypes(valueTypes);
   }
 

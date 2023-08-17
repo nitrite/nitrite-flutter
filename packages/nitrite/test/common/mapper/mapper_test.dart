@@ -18,7 +18,7 @@ void main() {
       emp.joiningDate = DateTime.now();
       emp.boss = boss;
 
-      var mapper = EntityConverterMapper();
+      var mapper = SimpleNitriteMapper();
       mapper.registerEntityConverter(_EmployeeConverter());
       var stopWatch = Stopwatch();
       stopWatch.start();
@@ -49,7 +49,7 @@ void main() {
       dept.employees.add(emp);
       dept.employees.add(boss);
 
-      var mapper = EntityConverterMapper();
+      var mapper = SimpleNitriteMapper();
       mapper.registerEntityConverter(_EmployeeConverter());
       mapper.registerEntityConverter(_DepartmentConverter());
 

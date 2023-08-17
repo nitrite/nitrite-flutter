@@ -111,7 +111,7 @@ void main() {
     });
 
     test("Test ValidateProjectionType", () {
-      var nitriteMapper = EntityConverterMapper();
+      var nitriteMapper = SimpleNitriteMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
       nitriteMapper.registerEntityConverter(_CConverter());
 
@@ -128,7 +128,7 @@ void main() {
     });
 
     test("Test ValidateRepositoryType", () {
-      var nitriteMapper = EntityConverterMapper();
+      var nitriteMapper = SimpleNitriteMapper();
       nitriteMapper.registerEntityConverter(_AConverter());
       nitriteMapper.registerEntityConverter(_CConverter());
 

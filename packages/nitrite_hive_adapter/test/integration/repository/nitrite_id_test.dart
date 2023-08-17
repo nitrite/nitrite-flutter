@@ -14,7 +14,7 @@ void main() {
       setUpLog();
 
       db = await Nitrite.builder().fieldSeparator('.').openOrCreate();
-      var mapper = db.config.nitriteMapper as EntityConverterMapper;
+      var mapper = db.config.nitriteMapper as SimpleNitriteMapper;
       mapper.registerEntityConverter(WithNitriteIdConverter());
       repo = await db.getRepository<WithNitriteId>();
     });

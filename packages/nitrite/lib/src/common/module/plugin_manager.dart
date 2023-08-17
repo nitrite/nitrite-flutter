@@ -5,8 +5,7 @@ import 'package:nitrite/src/index/comparable_indexer.dart';
 import 'package:nitrite/src/index/nitrite_text_indexer.dart';
 import 'package:nitrite/src/store/memory/in_memory_store_module.dart';
 
-/// The nitrite database plugin manager. It loads the nitrite plugins
-/// before opening the database.
+/// @nodoc
 class PluginManager {
   static final Logger _log = Logger('PluginManager');
 
@@ -16,7 +15,6 @@ class PluginManager {
   NitriteMapper? _nitriteMapper;
   NitriteStore? _nitriteStore;
 
-  /// Creates a new [PluginManager] instance.
   PluginManager(this._nitriteConfig);
 
   Map<String, NitriteIndexer> get indexerMap => _indexerMap;
@@ -25,7 +23,6 @@ class PluginManager {
   NitriteStore<Config> getNitriteStore<Config extends StoreConfig>() =>
       _nitriteStore! as NitriteStore<Config>;
 
-  /// Loads a [NitriteModule] instance.
   Future<void> loadModule(NitriteModule module) async {
     if (!module.plugins.isNullOrEmpty) {
       for (var plugin in module.plugins) {
@@ -140,7 +137,7 @@ class PluginManager {
 
     if (_nitriteMapper == null) {
       _log.fine("Loading nitrite mapper");
-      var plugin = EntityConverterMapper();
+      var plugin = SimpleNitriteMapper();
       await _loadPlugin(plugin);
     }
 

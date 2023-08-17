@@ -36,7 +36,7 @@ void main() {
       var nitriteStore = pluginManager.getNitriteStore();
       expect(nitriteStore, TypeMatcher<InMemoryStore>());
       expect(pluginManager.indexerMap.length, 3);
-      expect(pluginManager.nitriteMapper, TypeMatcher<EntityConverterMapper>());
+      expect(pluginManager.nitriteMapper, TypeMatcher<SimpleNitriteMapper>());
       expect(nitriteStore.isClosed, isFalse);
     });
   });

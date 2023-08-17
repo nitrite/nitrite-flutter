@@ -6,7 +6,7 @@ import '../../test_utils.dart';
 void main() {
   group(retry: 3, 'SimpleDocumentMapper Test Suite', () {
     test('Test Convert Value Type', () {
-      var mapper = EntityConverterMapper();
+      var mapper = SimpleNitriteMapper();
       {
         var value = mapper.tryConvert<int, int>(1);
         expect(value, 1);
@@ -50,7 +50,7 @@ void main() {
     });
 
     test('Test Convert From Document', () {
-      var mapper = EntityConverterMapper();
+      var mapper = SimpleNitriteMapper();
       {
         var value = mapper
             .tryConvert<Document, Document>(createDocument("key", "value"));
@@ -59,21 +59,21 @@ void main() {
     });
 
     test("Test Convert To Document without EntityConverter", () {
-      var mapper = EntityConverterMapper();
+      var mapper = SimpleNitriteMapper();
       var a = _A("test");
       expect(() => mapper.tryConvert<Document, _A>(a),
           throwsObjectMappingException);
     });
 
     test("Test Convert Document To Entity without EntityConverter", () {
-      var mapper = EntityConverterMapper();
+      var mapper = SimpleNitriteMapper();
       expect(
           () => mapper.tryConvert<_A, Document>(createDocument("key", "value")),
           throwsObjectMappingException);
     });
 
     test("Test Convert Document To Entity with EntityConverter", () {
-      var mapper = EntityConverterMapper();
+      var mapper = SimpleNitriteMapper();
       mapper.registerEntityConverter(_BConverter());
 
       var b = mapper.tryConvert<_B, Document>(createDocument("value", "test"));
@@ -82,7 +82,7 @@ void main() {
     });
 
     test("Test Convert Entity To Document with EntityConverter", () {
-      var mapper = EntityConverterMapper();
+      var mapper = SimpleNitriteMapper();
       mapper.registerEntityConverter(_BConverter());
 
       var b = _B("test");
@@ -92,7 +92,7 @@ void main() {
     });
 
     test("Test Convert Nullable Entity", () {
-      var mapper = EntityConverterMapper();
+      var mapper = SimpleNitriteMapper();
       mapper.registerEntityConverter(_BConverter());
 
       var b = _B("test");

@@ -51,7 +51,7 @@ Future<Nitrite> createDb(String dbFile) async {
   var storeModule =
       HiveModule.withConfig().crashRecovery(true).path(dbFile).build();
 
-  var documentMapper = EntityConverterMapper()
+  var documentMapper = SimpleNitriteMapper()
     ..registerEntityConverter(EmployeeConverter())
     ..registerEntityConverter(CompanyConverter())
     ..registerEntityConverter(NoteConverter());
