@@ -1,3 +1,4 @@
+/// @nodoc
 int compareNum(num x, num y) {
   if (_isSpecial(x) || _isSpecial(y)) {
     return x.toDouble().compareTo(y.toDouble());

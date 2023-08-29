@@ -13,21 +13,34 @@ FluentFilter $ = where("\$");
 /// A filter to select all elements.
 final Filter all = _All();
 
-/// Where clause for fluent filter api.
+/// Creates a new [FluentFilter] instance with the specified field name.
 FluentFilter where(String field) {
   var filter = FluentFilter._();
   filter._field = field;
   return filter;
 }
 
-/// Filter by document _id.
+/// Returns a filter that matches documents with the specified NitriteId.
+/// 
+/// The returned filter matches documents where the value of the "docId" field 
+/// is equal to the specified NitriteId's idValue.
+/// 
+/// Example usage:
+/// ```
+/// var id = NitriteId.newId();
+/// var filter = byId(id);
+/// var result = collection.find(filter);
+/// ```
 Filter byId(NitriteId id) => EqualsFilter(docId, id.idValue);
 
+/// @nodoc
 Filter createUniqueFilter(Document document) {
   return byId(document.id);
 }
 
-/// Performs logical AND on the given filters.
+/// Returns a filter that performs a logical AND operation on the provided filters.
+/// The returned filter accepts a document if all filters in the list accept 
+/// the document.
 Filter and(List<Filter> filters) {
   filters.notNullOrEmpty('At least two filters must be specified');
   if (filters.length < 2) {
@@ -37,7 +50,9 @@ Filter and(List<Filter> filters) {
   return AndFilter(filters);
 }
 
-/// Performs logical OR on the given filters.
+/// Returns a filter that performs a logical OR operation on the provided list 
+/// of filters. The returned filter selects all documents that satisfy at least 
+/// one of the filters in the list.
 Filter or(List<Filter> filters) {
   filters.notNullOrEmpty('At least two filters must be specified');
   if (filters.length < 2) {
@@ -57,33 +72,34 @@ class FluentFilter {
 
   FluentFilter._();
 
-  /// Creates an equality filter which matches documents where the value
-  /// of a field equals the specified value.
+
+  /// Returns a filter that matches documents where the value 
+  /// of the given field is equal to the specified value.
   NitriteFilter eq(dynamic value) => EqualsFilter(_field, value);
 
-  /// Creates an equality filter which matches documents where the value
-  /// of a field not equals the specified value.
+  /// Returns a filter that matches documents where the value of 
+  /// the field is not equal to the given [value].
   NitriteFilter notEq(dynamic value) => _NotEqualsFilter(_field, value);
 
-  /// Creates a greater than filter which matches those documents where the value
-  /// of the field is greater than the specified value.
+  /// Returns a filter that matches documents where the value of the field is 
+  /// greater than the given value.
   NitriteFilter gt(dynamic value) => _GreaterThanFilter(_field, value);
 
-  /// Creates a greater equal filter which matches those documents where the value
-  /// of the field is greater than or equals to the specified value.
+  /// Returns a filter that matches documents where the value of the field 
+  /// is greater than or equal to the specified value.
   NitriteFilter gte(dynamic value) => _GreaterEqualFilter(_field, value);
 
-  /// Creates a lesser than filter which matches those documents where the value
-  /// of the field is less than the specified value.
+  /// Returns a filter that matches documents where the value of the 
+  /// field is less than the given value.
   NitriteFilter lt(dynamic value) => _LesserThanFilter(_field, value);
 
-  /// Creates a lesser equal filter which matches those documents where the value
-  /// of the field is less than or equals to the specified value.
+  /// Returns a filter that matches documents where the value of the 
+  /// field is less than or equal to the specified value.
   NitriteFilter lte(dynamic value) => _LesserEqualFilter(_field, value);
 
-  /// Creates a between filter which matches those documents where the value
-  /// of the field is within the specified bound including the end values.
-  ///
+  /// Returns a filter that matches documents where the value of a 
+  /// field is between the specified lower and upper bounds (inclusive).
+  /// 
   /// ```dart
   /// collection.find(where("age").between(30, 40));
   /// ```
@@ -94,8 +110,8 @@ class FluentFilter {
           _Bound(upperBound, lowerBound,
               upperInclusive: upperInclusive, lowerInclusive: lowerInclusive));
 
-  /// Creates a text filter which performs a text search on the content of
-  /// the fields indexed with a full-text index.
+  /// Returns a filter which performs a text search on the content of 
+  /// the field indexed with a full-text index.
   NitriteFilter text(String value) => TextFilter(_field, value);
 
   /// Creates a string filter which provides regular expression capabilities
@@ -141,19 +157,21 @@ class FluentFilter {
 /// the index map for that value. But if the value is not indexed, it scans
 /// the whole collection.
 abstract class Filter {
-  /// Filters a document map and returns `true` if the criteria matches.
+  /// Applies the filter to the given element.
   bool apply(Document doc);
 
   /// Creates a not filter which performs a logical NOT operation on a filter
   /// and selects the documents that **do not** satisfy the criteria.
-  /// This also includes documents that do not contain the value.
+  /// 
+  /// NOTE: This also includes documents that do not contain the value.
   Filter operator ~() {
     return _NotFilter(this);
   }
 
   /// Creates a not filter which performs a logical NOT operation on a filter
   /// and selects the documents that **do not** satisfy the criteria.
-  /// This also includes documents that do not contain the value.
+  /// 
+  /// NOTE: This also includes documents that do not contain the value.
   Filter not() {
     return _NotFilter(this);
   }

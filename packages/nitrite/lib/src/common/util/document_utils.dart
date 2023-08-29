@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 
+/// @nodoc
 FieldValues getDocumentValues(Document document, Fields fields) {
   var fieldValues = FieldValues();
   fieldValues.nitriteId = document.id;
@@ -14,6 +15,7 @@ FieldValues getDocumentValues(Document document, Fields fields) {
   return fieldValues;
 }
 
+/// @nodoc
 Document skeletonDocument<T>(NitriteMapper nitriteMapper) {
   var dummy = newInstance<T>(nitriteMapper);
   var document = nitriteMapper.tryConvert<Document, T>(dummy);

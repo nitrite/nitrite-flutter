@@ -12,11 +12,12 @@ class LookUp {
   LookUp(this.localField, this.foreignField, this.targetField);
 }
 
-/// An enum to specify a sort order.
+/// An enum is used to specify the sort order for sorting operations.
+/// 
 enum SortOrder {
-  /// Ascending sort order.
+  /// Represents the ascending sort order.
   ascending,
 
-  /// Descending sort order.
+  /// Represents the descending sort order.
   descending,
 }

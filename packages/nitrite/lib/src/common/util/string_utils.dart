@@ -37,6 +37,7 @@ var _splitters = [
   '\\'
 ];
 
+/// @nodoc
 List<String> tokenizeString(String text) => _splitters.isEmpty
     ? [text]
     : text

@@ -3,8 +3,10 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/number_utils.dart' as numbers;
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
+/// @nodoc
 bool isSubtype<Subtype, Type>() => <Subtype>[] is List<Type>;
 
+/// @nodoc
 String getKeyName(String collectionName) {
   if (collectionName.contains(keyObjSeparator)) {
     var split = collectionName.split(keyObjSeparator);
@@ -14,6 +16,7 @@ String getKeyName(String collectionName) {
       "object repository");
 }
 
+/// @nodoc
 String getKeyedRepositoryType(String collectionName) {
   if (collectionName.contains(keyObjSeparator)) {
     var split = collectionName.split(keyObjSeparator);
@@ -23,6 +26,7 @@ String getKeyedRepositoryType(String collectionName) {
       "object repository");
 }
 
+/// @nodoc
 bool deepEquals(o1, o2) {
   if (o1 == null && o2 == null) {
     return true;
@@ -52,6 +56,7 @@ bool deepEquals(o1, o2) {
   }
 }
 
+/// @nodoc
 int compare(Comparable first, Comparable second) {
   if (first is num && second is num) {
     var result = numbers.compareNum(first, second);
@@ -71,10 +76,12 @@ int compare(Comparable first, Comparable second) {
   }
 }
 
+/// @nodoc
 String findRepositoryNameByType<T>(NitriteMapper nitriteMapper, [String? key]) {
   return findRepositoryNameByTypeName(getEntityName<T>(nitriteMapper), key);
 }
 
+/// @nodoc
 String findRepositoryNameByTypeName(String entityName, String? key) {
   if (key.isNullOrEmpty) {
     return entityName;
@@ -83,6 +90,7 @@ String findRepositoryNameByTypeName(String entityName, String? key) {
   }
 }
 
+/// @nodoc
 String getEntityName<T>(NitriteMapper nitriteMapper) {
   if (isSubtype<T, NitriteEntity>()) {
     NitriteEntity entity = newInstance<T>(nitriteMapper) as NitriteEntity;
@@ -93,6 +101,7 @@ String getEntityName<T>(NitriteMapper nitriteMapper) {
   return T.toString();
 }
 
+/// @nodoc
 String findRepositoryNameByDecorator<T>(EntityDecorator<T> entityDecorator,
     [String? key]) {
   var entityName = entityDecorator.entityName;
@@ -102,6 +111,7 @@ String findRepositoryNameByDecorator<T>(EntityDecorator<T> entityDecorator,
   return findRepositoryNameByTypeName(entityName, key);
 }
 
+/// @nodoc
 T? newInstance<T>(NitriteMapper nitriteMapper) {
   try {
     if (isBuiltInValueType<T>()) {
@@ -115,6 +125,7 @@ T? newInstance<T>(NitriteMapper nitriteMapper) {
   }
 }
 
+/// @nodoc
 List<Type> builtInTypes() {
   return [
     num,
@@ -130,6 +141,7 @@ List<Type> builtInTypes() {
   ];
 }
 
+/// @nodoc
 bool isBuiltInValueType<T>() {
   if (T.toString() == 'void') return true;
   if (isSubtype<T, num>()) return true;
@@ -153,6 +165,7 @@ bool isBuiltInValueType<T>() {
   return false;
 }
 
+/// @nodoc
 T? defaultValue<T>() {
   if (isSubtype<T, int>()) {
     return 0 as T;
@@ -167,6 +180,7 @@ T? defaultValue<T>() {
   }
 }
 
+/// @nodoc
 List<T> castList<T>(List<dynamic> dynamicList) {
   return dynamicList.map((e) => e as T).toList();
 }

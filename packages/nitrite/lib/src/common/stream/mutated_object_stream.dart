@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 class MutatedObjectStream<T> extends StreamView<T> {
   MutatedObjectStream(
       Stream<Document> documentStream, NitriteMapper nitriteMapper,

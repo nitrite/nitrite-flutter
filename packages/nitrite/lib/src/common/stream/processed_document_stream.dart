@@ -5,8 +5,7 @@ import 'package:rxdart/rxdart.dart';
 typedef StreamFactory<T> = Stream<T> Function();
 typedef FutureFactory<T> = Future<T> Function();
 
-// a defer stream is used here so that the processing would
-// start after the subscription
+/// @nodoc
 class ProcessedDocumentStream extends DeferStream<Document> {
   ProcessedDocumentStream(
       StreamFactory<Document> streamFactory, ProcessorChain processorChain,

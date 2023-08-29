@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 
+/// @nodoc
 class JoinedDocumentStream extends StreamView<Document> {
   JoinedDocumentStream(
       Stream<Document> stream, DocumentCursor foreignCursor, LookUp lookup)

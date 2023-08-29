@@ -2,7 +2,8 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/events/event_aware.dart';
 import 'package:nitrite/src/common/initializable.dart';
 
-/// The interface Persistent collection.
+/// A persistent collection interface that provides methods to manage and 
+/// manipulate data in a Nitrite database. 
 abstract class PersistentCollection<T>
     implements EventAware, AttributesAware, Initializable {
   /// Adds a data processor to this collection.
@@ -10,7 +11,7 @@ abstract class PersistentCollection<T>
 
   /// Creates an index on the [fields], if not already exists.
   /// If [indexOptions] is [null], it will use default options.
-  /// <p>
+  /// 
   /// The default indexing option is -
   ///
   /// ```dart
@@ -19,6 +20,7 @@ abstract class PersistentCollection<T>
   ///
   /// NOTE:
   /// - **_id** field is always indexed.
+  /// - But full-text indexing is not supported on **_id** value.
   /// - Indexing on non-comparable value is not supported.
   Future<void> createIndex(List<String> fields, [IndexOptions? indexOptions]);
 

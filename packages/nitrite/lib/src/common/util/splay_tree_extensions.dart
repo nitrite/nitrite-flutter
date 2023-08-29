@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+/// @nodoc
 extension SplayTreeMapEx on SplayTreeMap {
   static SplayTreeMap? fromMap(Map? map) {
     if (map == null) return null;

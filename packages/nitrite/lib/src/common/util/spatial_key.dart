@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 
+/// @nodoc
 class SpatialKey {
   final int id;
   final List<double> minMax;

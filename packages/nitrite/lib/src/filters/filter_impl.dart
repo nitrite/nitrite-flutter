@@ -1,5 +1,6 @@
 part of 'filter.dart';
 
+/// @nodoc
 class IndexScanFilter extends Filter {
   final Iterable<ComparableFilter> filters;
 
@@ -12,6 +13,7 @@ class IndexScanFilter extends Filter {
   }
 }
 
+/// @nodoc
 class EqualsFilter extends ComparableFilter {
   EqualsFilter(String field, dynamic value) : super(field, _wrapNull(value));
 
@@ -37,6 +39,7 @@ class EqualsFilter extends ComparableFilter {
   toString() => "($field == $value)";
 }
 
+/// @nodoc
 class OrFilter extends LogicalFilter {
   OrFilter(List<Filter> filters) : super(filters);
 
@@ -66,6 +69,7 @@ class OrFilter extends LogicalFilter {
   }
 }
 
+/// @nodoc
 class AndFilter extends LogicalFilter {
   AndFilter(List<Filter> filters) : super(filters) {
     for (int i = 1; i < filters.length; i++) {

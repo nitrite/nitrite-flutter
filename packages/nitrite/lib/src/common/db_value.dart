@@ -1,5 +1,6 @@
 import 'package:nitrite/src/common/util/object_utils.dart';
 
+/// @nodoc
 class DBValue implements Comparable<DBValue> {
   final Comparable? _value;
 
@@ -34,7 +35,7 @@ class DBValue implements Comparable<DBValue> {
   int get hashCode => _value.hashCode;
 }
 
-/// This class acts as a surrogate for null key.
+/// @nodoc
 class DBNull extends DBValue {
   static final DBNull _instance = DBNull._();
 
@@ -64,7 +65,7 @@ class DBNull extends DBValue {
   int get hashCode => _value.hashCode;
 }
 
-/// Represents an unknown type.
+/// @nodoc
 class UnknownType implements Comparable<UnknownType> {
   @override
   int compareTo(UnknownType other) {

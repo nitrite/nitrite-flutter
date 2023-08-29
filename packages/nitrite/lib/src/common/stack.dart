@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 class Stack<T> {
   final ListQueue<T> _list = ListQueue();
 

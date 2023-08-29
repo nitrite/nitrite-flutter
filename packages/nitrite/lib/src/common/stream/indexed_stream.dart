@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 class IndexedStream extends StreamView<Document> {
   IndexedStream(
       Stream<NitriteId> stream, NitriteMap<NitriteId, Document> nitriteMap)

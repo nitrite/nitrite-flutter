@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 class ProjectedDocumentStream extends StreamView<Document> {
   ProjectedDocumentStream(Stream<Document> stream, Document projection)
       : super(_project(stream, projection));

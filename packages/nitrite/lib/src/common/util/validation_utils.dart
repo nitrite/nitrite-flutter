@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 
+/// @nodoc
 void validateIterableIndexField(Iterable fieldValue, String field) {
   if (fieldValue.isNotEmpty) {
     for (var value in fieldValue) {
@@ -10,6 +11,7 @@ void validateIterableIndexField(Iterable fieldValue, String field) {
   }
 }
 
+/// @nodoc
 void validateArrayIndexItem(dynamic value, String field) {
   if (value is Iterable) {
     throw InvalidOperationException('Nested iterables are not supported');
@@ -21,6 +23,7 @@ void validateArrayIndexItem(dynamic value, String field) {
   }
 }
 
+/// @nodoc
 void validateStringIterableIndexField(Iterable fieldValue, String field) {
   if (!fieldValue.isNullOrEmpty) {
     for (var value in fieldValue) {
@@ -30,6 +33,7 @@ void validateStringIterableIndexField(Iterable fieldValue, String field) {
   }
 }
 
+/// @nodoc
 void validateStringIterableItem(dynamic value, String field) {
   if (value is! String) {
     throw IndexingException('Each value in the iterable field $field must '
@@ -37,6 +41,7 @@ void validateStringIterableItem(dynamic value, String field) {
   }
 }
 
+/// @nodoc
 void validateProjectionType<T>(NitriteMapper nitriteMapper) {
   T? value;
   try {
@@ -63,6 +68,7 @@ void validateProjectionType<T>(NitriteMapper nitriteMapper) {
   }
 }
 
+/// @nodoc
 void validateRepositoryType<T>(NitriteMapper nitriteMapper) {
   dynamic value;
   try {
@@ -83,6 +89,7 @@ void validateRepositoryType<T>(NitriteMapper nitriteMapper) {
   }
 }
 
+/// @nodoc
 extension ValidationUtils<T> on T {
   bool get isNullOrEmpty {
     if (this == null) {

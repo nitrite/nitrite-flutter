@@ -4,7 +4,8 @@ import 'package:collection/collection.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
-/// Represents a list of document fields.
+/// Represents a collection of document field names and provides methods for
+/// manipulating and comparing them.
 class Fields implements Comparable<Fields> {
   List<String> _fieldNames = [];
 
@@ -25,7 +26,7 @@ class Fields implements Comparable<Fields> {
   /// Gets the encoded name for this [Fields].
   String get encodedName => _fieldNames.join(internalNameSeparator);
 
-  /// Adds a new field name.
+  /// Adds a field name to a list of field names and returns the updated list.
   Fields addField(String fieldName) {
     fieldName.notNullOrEmpty('Field name cannot be empty');
     _fieldNames.add(fieldName);
@@ -79,8 +80,8 @@ class Fields implements Comparable<Fields> {
   int get hashCode => DeepCollectionEquality().hash(_fieldNames);
 }
 
-/// Represents a list of document field with
-/// sorting direction for find query.
+/// Represents a collection of fields that can be sorted, with each field
+/// having a specified sort order.
 class SortableFields extends Fields {
   final List<(String, SortOrder)> _sortingOrders = [];
 
@@ -117,14 +118,15 @@ class SortableFields extends Fields {
       List.unmodifiable(_sortingOrders);
 }
 
+/// Represents a collection of field-value pairs, with methods to retrieve
+/// values by field name.
 class FieldValues {
   final List<(String, dynamic)> values = [];
 
   NitriteId? nitriteId;
   Fields? _fields;
 
-  FieldValues();
-
+  /// Retrieves the value associated with a given field name.
   dynamic get(String field) {
     if (fields.fieldNames.contains(field)) {
       for (var value in values) {
@@ -136,6 +138,7 @@ class FieldValues {
     return null;
   }
 
+  /// Returns the [Fields] object associated with this instance.
   Fields get fields {
     if (_fields != null) {
       return _fields!;
@@ -151,6 +154,7 @@ class FieldValues {
     return _fields!;
   }
 
+  /// Sets the [fields] property in the [FieldValues] class. 
   set fields(Fields fields) {
     _fields = fields;
   }
