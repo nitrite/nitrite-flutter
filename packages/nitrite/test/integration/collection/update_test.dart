@@ -246,5 +246,34 @@ void main() {
       expect(() async => await collection.updateOne(doc3),
           throwsUniqueConstraintException);
     });
+
+    test('Test Update Nested Document', () async {
+      var doc1 = createDocument("conversation",
+          createDocument("unread", createDocument("me", 1).put("other", 2)));
+      var doc2 = createDocument("conversation",
+          createDocument("unread", createDocument("me", 10).put("other", 4)));
+
+      var coll = await db.getCollection('test_updateNestedDocument');
+      await coll.insertMany([doc1, doc2]);
+
+      var cursor = coll.find(filter: where('conversation.unread.me').gt(5));
+      expect(await cursor.length, 1);
+
+      var update = createDocument(
+          "conversation", createDocument("unread", createDocument("me", 0)));
+      var updateResult = await coll.update(all, update);
+      expect(updateResult.getAffectedCount(), 2);
+
+      print(await coll.find().toList());
+
+      cursor = coll.find(filter: where('conversation.unread.me').gt(5));
+      expect(await cursor.length, 0);
+
+      cursor = coll.find(filter: where('conversation.unread.other').lt(5));
+      expect(await cursor.length, 2);
+
+      cursor = coll.find(filter: where('conversation.unread.me').gt(5));
+      expect(await cursor.length, 0);
+    });
   });
 }

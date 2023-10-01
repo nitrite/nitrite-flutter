@@ -229,7 +229,29 @@ class _NitriteDocument extends Document {
   @override
   Document merge(Document document) {
     if (document is _NitriteDocument) {
-      _documentMap.addAll(document._documentMap);
+      for (var entry in document) {
+        var key = entry.$1;
+        var value = entry.$2;
+
+        if (value is _NitriteDocument) {
+          // if the value is a document, merge it recursively
+          if (containsKey(key)) {
+            // if the current document already contains the key,
+            // then merge the embedded document
+            var existingValue = this[key];
+            if (existingValue is _NitriteDocument) {
+              existingValue.merge(value);
+            }
+          } else {
+            // if the current document does not contain the key,
+            // then put the embedded document as it is
+            put(key, value);
+          }
+        } else {
+          // if there is no more embedded document, put the field in the document
+          put(key, value);
+        }
+      }
     } else {
       throw InvalidOperationException(
           "Document merge only supports NitriteDocument");
