@@ -7,6 +7,7 @@ import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/transaction/tx.dart';
 import 'package:quiver/core.dart';
 
+/// @nodoc
 class DefaultTransactionalCollection extends NitriteCollection {
   final NitriteCollection _primary;
   final TransactionContext _context;

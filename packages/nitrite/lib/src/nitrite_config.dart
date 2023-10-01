@@ -3,8 +3,9 @@ import 'dart:collection';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/module/plugin_manager.dart';
 
-/// A class to configure [Nitrite] database.
+/// NitriteConfig is a configuration class for Nitrite database.
 class NitriteConfig {
+  /// The separator used to separate field names in a nested field.
   static String fieldSeparator = ".";
 
   int _schemaVersion = initialSchemaVersion;
@@ -14,13 +15,13 @@ class NitriteConfig {
   final List<NitriteModule> _modules = <NitriteModule>[];
   late PluginManager _pluginManager;
 
-  /// Gets the [Migration] steps.
+  /// A map of migrations to be applied to the database.
   Map<int, SplayTreeMap<int, Migration>> get migrations => _migrations;
 
   /// Returns the [PluginManager] instance.
   PluginManager get pluginManager => _pluginManager;
 
-  /// Gets the current schema version.
+  /// The schema version of the Nitrite database.
   int get schemaVersion => _schemaVersion;
 
   /// Instantiates a new [NitriteConfig].
@@ -28,8 +29,9 @@ class NitriteConfig {
     _pluginManager = PluginManager(this);
   }
 
-  /// Sets the embedded field separator character. Default value
-  /// is `.`
+  /// Sets the field separator for Nitrite database.
+  /// 
+  /// Throws [InvalidOperationException] if the database is already initialized.
   void setFieldSeparator(String fieldSeparator) {
     if (_configured) {
       throw InvalidOperationException("Cannot change the separator after "
@@ -38,7 +40,10 @@ class NitriteConfig {
     NitriteConfig.fieldSeparator = fieldSeparator;
   }
 
-  /// Loads [NitriteModule] instance.
+  /// Loads [NitritePlugin] instances defined in the [NitriteModule]
+  /// into the configuration.
+  /// 
+  /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig loadModule(NitriteModule module) {
     if (_configured) {
       throw InvalidOperationException("Cannot load module after database "
@@ -48,7 +53,11 @@ class NitriteConfig {
     return this;
   }
 
-  /// Adds instructions to perform during schema migration.
+  /// Adds a migration step to the configuration. A migration step is a process 
+  /// of updating the database from one version to another. If the database is 
+  /// already initialized, then migration steps cannot be added.
+  /// 
+  /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig addMigration(Migration migration) {
     if (_configured) {
       throw InvalidOperationException("Cannot add migration after database "
@@ -67,7 +76,9 @@ class NitriteConfig {
     return this;
   }
 
-  /// Sets the current schema version.
+  /// Sets the current schema version of the Nitrite database.
+  /// 
+  /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig currentSchemaVersion(int version) {
     if (_configured) {
       throw InvalidOperationException("Cannot change the schema version after "
@@ -77,8 +88,7 @@ class NitriteConfig {
     return this;
   }
 
-  /// Autoconfigures nitrite database with default configuration values and
-  /// default built-in plugins.
+  /// Automatically configures Nitrite database by finding and loading plugins.
   Future<void> autoConfigure() async {
     if (_configured) {
       throw InvalidOperationException("Cannot auto configure after database "
@@ -88,14 +98,9 @@ class NitriteConfig {
     return _pluginManager.findAndLoadPlugins();
   }
 
-  /// Loads the modules.
-  Future<void> _loadModules() async {
-    for (NitriteModule module in _modules) {
-      await _pluginManager.loadModule(module);
-    }
-  }
-
-  /// Finds a [NitriteIndexer] by indexType.
+  /// Finds the [NitriteIndexer] for the given index type.
+  /// 
+  /// Throws [IndexingException] if no indexer is found for the given index type.
   Future<NitriteIndexer> findIndexer(String indexType) async {
     var nitriteIndexer = pluginManager.indexerMap[indexType];
     if (nitriteIndexer != null) {
@@ -106,15 +111,16 @@ class NitriteConfig {
     }
   }
 
-  /// Gets the [NitriteMapper] instance.
+  /// Returns the [NitriteMapper] instance used by Nitrite.
   NitriteMapper get nitriteMapper => pluginManager.nitriteMapper;
 
-  /// Gets [NitriteStore] instance.
+  /// Returns the [NitriteStore] associated with this instance.
   NitriteStore<Config> getNitriteStore<Config extends StoreConfig>() {
     return pluginManager.getNitriteStore();
   }
 
-  /// Closes the config and plugin manager.
+  /// Closes the [NitriteConfig] instance and releases any resources 
+  /// associated with it.
   Future<void> close() {
     return pluginManager.close();
   }
@@ -123,5 +129,11 @@ class NitriteConfig {
   Future<void> initialize() async {
     _configured = true;
     return _pluginManager.initializePlugins();
+  }
+
+  Future<void> _loadModules() async {
+    for (NitriteModule module in _modules) {
+      await _pluginManager.loadModule(module);
+    }
   }
 }

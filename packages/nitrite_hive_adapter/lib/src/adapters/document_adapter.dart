@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 class DocumentAdapter extends TypeAdapter<Document> {
   @override
   int get typeId => 2;

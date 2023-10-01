@@ -21,10 +21,10 @@ FluentFilter where(String field) {
 }
 
 /// Returns a filter that matches documents with the specified NitriteId.
-/// 
-/// The returned filter matches documents where the value of the "docId" field 
+///
+/// The returned filter matches documents where the value of the "docId" field
 /// is equal to the specified NitriteId's idValue.
-/// 
+///
 /// Example usage:
 /// ```
 /// var id = NitriteId.newId();
@@ -39,7 +39,7 @@ Filter createUniqueFilter(Document document) {
 }
 
 /// Returns a filter that performs a logical AND operation on the provided filters.
-/// The returned filter accepts a document if all filters in the list accept 
+/// The returned filter accepts a document if all filters in the list accept
 /// the document.
 Filter and(List<Filter> filters) {
   filters.notNullOrEmpty('At least two filters must be specified');
@@ -50,8 +50,8 @@ Filter and(List<Filter> filters) {
   return AndFilter(filters);
 }
 
-/// Returns a filter that performs a logical OR operation on the provided list 
-/// of filters. The returned filter selects all documents that satisfy at least 
+/// Returns a filter that performs a logical OR operation on the provided list
+/// of filters. The returned filter selects all documents that satisfy at least
 /// one of the filters in the list.
 Filter or(List<Filter> filters) {
   filters.notNullOrEmpty('At least two filters must be specified');
@@ -72,34 +72,33 @@ class FluentFilter {
 
   FluentFilter._();
 
-
-  /// Returns a filter that matches documents where the value 
+  /// Returns a filter that matches documents where the value
   /// of the given field is equal to the specified value.
   NitriteFilter eq(dynamic value) => EqualsFilter(_field, value);
 
-  /// Returns a filter that matches documents where the value of 
+  /// Returns a filter that matches documents where the value of
   /// the field is not equal to the given [value].
   NitriteFilter notEq(dynamic value) => _NotEqualsFilter(_field, value);
 
-  /// Returns a filter that matches documents where the value of the field is 
+  /// Returns a filter that matches documents where the value of the field is
   /// greater than the given value.
   NitriteFilter gt(dynamic value) => _GreaterThanFilter(_field, value);
 
-  /// Returns a filter that matches documents where the value of the field 
+  /// Returns a filter that matches documents where the value of the field
   /// is greater than or equal to the specified value.
   NitriteFilter gte(dynamic value) => _GreaterEqualFilter(_field, value);
 
-  /// Returns a filter that matches documents where the value of the 
+  /// Returns a filter that matches documents where the value of the
   /// field is less than the given value.
   NitriteFilter lt(dynamic value) => _LesserThanFilter(_field, value);
 
-  /// Returns a filter that matches documents where the value of the 
+  /// Returns a filter that matches documents where the value of the
   /// field is less than or equal to the specified value.
   NitriteFilter lte(dynamic value) => _LesserEqualFilter(_field, value);
 
-  /// Returns a filter that matches documents where the value of a 
+  /// Returns a filter that matches documents where the value of a
   /// field is between the specified lower and upper bounds (inclusive).
-  /// 
+  ///
   /// ```dart
   /// collection.find(where("age").between(30, 40));
   /// ```
@@ -110,41 +109,41 @@ class FluentFilter {
           _Bound(upperBound, lowerBound,
               upperInclusive: upperInclusive, lowerInclusive: lowerInclusive));
 
-  /// Returns a filter which performs a text search on the content of 
+  /// Returns a filter which performs a text search on the content of
   /// the field indexed with a full-text index.
   NitriteFilter text(String value) => TextFilter(_field, value);
 
-  /// Creates a string filter which provides regular expression capabilities
-  /// for pattern matching strings in documents.
+  /// Creates a filter that matches documents where the value of the
+  /// specified field matches the specified regular expression pattern.
   NitriteFilter regex(String value) => _RegexFilter(_field, value);
 
-  /// Creates an in filter which matches the documents where
-  /// the value of a field equals any value in the specified values.
+  /// Creates a filter that matches documents where the value of the field
+  /// is in the specified array of values.
   NitriteFilter within(List<Comparable> value) => _InFilter(_field, value);
 
-  /// Creates a notIn filter which matches the documents where
-  /// the value of a field not equals any value in the specified values.
+  /// Creates a filter that matches documents where the value of the field
+  /// is not in the specified array of values.
   NitriteFilter notIn(List<Comparable> value) => _NotInFilter(_field, value);
 
-  /// Creates an element match filter that matches documents that contain a list
-  /// value with at least one element that matches the specified filter.
+  /// Creates a filter that matches documents where the value of a field
+  /// contains at least one element that matches the specified filter.
   NitriteFilter elemMatch(Filter filter) => _ElementMatchFilter(_field, filter);
 
-  /// Creates a greater than filter which matches those documents where the value
-  /// of the field is greater than the specified value.
+  /// Returns a filter that matches documents where the value of the field is
+  /// greater than the given value.
   NitriteFilter operator >(dynamic value) => _GreaterThanFilter(_field, value);
 
-  /// Creates a greater equal filter which matches those documents where the value
-  /// of the field is greater than or equals to the specified value.
+  /// Returns a filter that matches documents where the value of the field
+  /// is greater than or equal to the specified value.
   NitriteFilter operator >=(dynamic value) =>
       _GreaterEqualFilter(_field, value);
 
-  /// Creates a lesser than filter which matches those documents where the value
-  /// of the field is less than the specified value.
+  /// Returns a filter that matches documents where the value of the
+  /// field is less than the given value.
   NitriteFilter operator <(dynamic value) => _LesserThanFilter(_field, value);
 
-  /// Creates a lesser equal filter which matches those documents where the value
-  /// of the field is less than or equals to the specified value.
+  /// Returns a filter that matches documents where the value of the
+  /// field is less than or equal to the specified value.
   NitriteFilter operator <=(dynamic value) => _LesserEqualFilter(_field, value);
 }
 
@@ -162,7 +161,7 @@ abstract class Filter {
 
   /// Creates a not filter which performs a logical NOT operation on a filter
   /// and selects the documents that **do not** satisfy the criteria.
-  /// 
+  ///
   /// NOTE: This also includes documents that do not contain the value.
   Filter operator ~() {
     return _NotFilter(this);
@@ -170,14 +169,14 @@ abstract class Filter {
 
   /// Creates a not filter which performs a logical NOT operation on a filter
   /// and selects the documents that **do not** satisfy the criteria.
-  /// 
+  ///
   /// NOTE: This also includes documents that do not contain the value.
   Filter not() {
     return _NotFilter(this);
   }
 }
 
-/// Represents a nitrite filter.
+/// An abstract class representing a filter for Nitrite database.
 abstract class NitriteFilter extends Filter {
   NitriteConfig? nitriteConfig;
   String? collectionName;
@@ -242,7 +241,8 @@ abstract class LogicalFilter extends NitriteFilter {
   LogicalFilter(this.filters);
 }
 
-/// Represents a filter based on value of a nitrite document field.
+/// The base class for all field-based filters in Nitrite.
+/// Provides common functionality for filters that operate on a specific field.
 abstract class FieldBasedFilter extends NitriteFilter {
   String field;
   dynamic _value;
@@ -267,6 +267,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
     return _value;
   }
 
+  /// Validates the search term for a given field and value.
   void validateSearchTerm(
       NitriteMapper nitriteMapper, String field, dynamic value) {
     field.notNullOrEmpty("field cannot be empty");
@@ -285,7 +286,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
   }
 }
 
-/// Represents a filter based on document field holding [Comparable] values.
+/// An abstract class representing a filter that compares fields.
 abstract class ComparableFilter extends FieldBasedFilter {
   ComparableFilter(String field, dynamic value) : super(field, value);
 
@@ -300,15 +301,16 @@ abstract class ComparableFilter extends FieldBasedFilter {
   Stream<dynamic> applyOnIndex(IndexMap indexMap);
 }
 
-/// Represents a filter on string values.
+/// An abstract class representing a filter for string values.
 abstract class StringFilter extends ComparableFilter {
   StringFilter(String field, dynamic value) : super(field, value);
 
   String get stringValue => value as String;
 }
 
-/// Represents an index-only filter. This filter does not support
-/// collection scan.
+/// An abstract class representing a filter that can be applied to an index.
+///
+/// NOTE: This filter does not support collection scan.
 abstract class IndexOnlyFilter extends ComparableFilter {
   IndexOnlyFilter(super.field, super.value);
 
@@ -319,6 +321,7 @@ abstract class IndexOnlyFilter extends ComparableFilter {
   bool canBeGrouped(IndexOnlyFilter other);
 }
 
+/// @nodoc
 abstract class ComparableArrayFilter extends FieldBasedFilter {
   ComparableArrayFilter(super.field, super.value);
 

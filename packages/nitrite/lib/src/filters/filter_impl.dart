@@ -106,6 +106,7 @@ class AndFilter extends LogicalFilter {
   }
 }
 
+/// @nodoc
 class TextFilter extends StringFilter {
   TextTokenizer? _tokenizer;
 

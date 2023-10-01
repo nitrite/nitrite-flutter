@@ -4,6 +4,7 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/repository/repository_operations.dart';
 
+/// @nodoc
 class RepositoryFactory {
   final Map<String, ObjectRepository<dynamic>> _repositoryMap = {};
   final CollectionFactory _collectionFactory;

@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 class FieldsAdapter extends TypeAdapter<Fields> {
   @override
   int get typeId => 6;

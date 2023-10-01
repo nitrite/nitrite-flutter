@@ -11,6 +11,7 @@ import 'package:nitrite_support/src/exchange/convert/converter_registry.dart';
 
 import 'options.dart';
 
+/// @nodoc
 class NitriteJsonExporter {
   final ExportOptions _options;
   final ConverterRegistry _converterRegistry;

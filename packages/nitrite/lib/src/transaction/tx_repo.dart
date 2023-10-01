@@ -2,6 +2,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/repository/repository_operations.dart';
 
+/// @nodoc
 class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   final ObjectRepository<T> _primary;
   final NitriteCollection _backingCollection;

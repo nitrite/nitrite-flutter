@@ -63,7 +63,7 @@ scripts:
       melos run generate &&
       melos exec -c 6 --fail-fast --ignore="*generator*" --ignore="*demo*" -- flutter test --coverage --no-pub &&
       melos exec -c 6 --fail-fast --scope="*generator*" -- dart pub global run coverage:test_with_coverage &&
-      melos exec -c 1 --file-exists=coverage/lcov.info --scope="nitrite" -- lcov --remove coverage/lcov.info "lib/src/migration/*" "lib/src/transaction/*" &&
+      melos exec -c 1 --file-exists=coverage/lcov.info --scope="nitrite" -- lcov --remove coverage/lcov.info "lib/src/migration/*" "lib/src/transaction/*" "lib/src/index/fulltext/stop_words.dart" &&
       melos exec --ignore="*demo*" -- genhtml coverage/lcov.info --output-directory=coverage/ &&
       melos exec -c 1 --file-exists=coverage/lcov.info -- coverde filter --input ./coverage/lcov.info --output MELOS_ROOT_PATH/coverage/filtered.lcov.info --filters \.g\.dart &&
       coverde value -i coverage/filtered.lcov.info > MELOS_ROOT_PATH/coverage/result.txt
@@ -80,3 +80,6 @@ scripts:
       run: git clean -x -d -f -q
       description: Clean things very deeply, can be used to establish "pristine checkout" status.
 
+  clean:
+    run: melos exec -- flutter clean
+    description: Run `flutter clean` for all packages.

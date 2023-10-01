@@ -2,6 +2,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/transaction/tx_map.dart';
 import 'package:nitrite/src/transaction/tx_rtree.dart';
 
+/// @nodoc
 class TransactionConfig extends NitriteConfig {
   final NitriteConfig _nitriteConfig;
 
@@ -16,6 +17,7 @@ class TransactionConfig extends NitriteConfig {
   NitriteMapper get nitriteMapper => _nitriteConfig.nitriteMapper;
 }
 
+/// @nodoc
 class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
   final NitriteStore<T> _primaryStore;
   final Map<String, NitriteMap<dynamic, dynamic>> _mapRegistry = {};

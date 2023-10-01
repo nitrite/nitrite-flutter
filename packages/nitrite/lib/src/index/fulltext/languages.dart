@@ -6,6 +6,8 @@ abstract class Language {
   Set<String> stopWords();
 }
 
+/// An enum representing the supported languages for full-text search in 
+/// Nitrite.
 enum Languages {
   all,
   afrikaans,

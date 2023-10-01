@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 
-/// The nitrite event details.
+/// Represents an event information object that contains the event
+/// type and Nitrite configuration.
 class EventInfo {
   StoreEvents event;
   NitriteConfig nitriteConfig;
@@ -8,8 +9,20 @@ class EventInfo {
   EventInfo(this.event, this.nitriteConfig);
 }
 
-/// Represents an event listener for store events.
+/// A function type that defines the signature of a store event listener.
 typedef StoreEventListener = void Function(EventInfo eventInfo);
 
-/// Nitrite store related events.
-enum StoreEvents { opened, commit, closing, closed }
+/// An enumeration of events that can occur in a Nitrite store.
+enum StoreEvents {
+  /// Event emitted when a Nitrite database is opened.
+  opened,
+
+  /// Event emitted when a commit is made to the database.
+  commit,
+
+  /// Event emitted when a Nitrite database is about to close.
+  closing,
+
+  /// Event emitted when a Nitrite database is closed.
+  closed
+}

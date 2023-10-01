@@ -5,7 +5,7 @@ import 'package:nitrite/src/index/index_scanner.dart';
 import 'package:nitrite/src/index/nitrite_index.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// Represents a nitrite compound index.
+/// @nodoc
 class CompoundIndex extends NitriteIndex {
   final IndexDescriptor _indexDescriptor;
   final NitriteStore _nitriteStore;

@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.1.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -37,8 +37,8 @@ dependencies:
   flutter_slidable: ^3.0.0
   flutter_riverpod: ^2.3.6
   riverpod_annotation: ^2.1.1
-  nitrite: ^0.0.1
-  nitrite_hive_adapter: ^0.0.1
+  nitrite: ^1.0.0
+  nitrite_hive_adapter: ^1.0.0
   path_provider: ^2.0.15
   uuid: ^3.0.7
 

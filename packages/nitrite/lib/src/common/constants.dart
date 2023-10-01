@@ -40,7 +40,7 @@ const List<String> reservedNames = <String>[
   keyObjSeparator
 ];
 
-/// @nodoc
+/// The initial schema version of Nitrite database.
 const int initialSchemaVersion = 1;
 
 /// @nodoc

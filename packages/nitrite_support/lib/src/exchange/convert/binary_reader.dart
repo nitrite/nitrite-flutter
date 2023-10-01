@@ -6,6 +6,7 @@ import 'package:nitrite_support/src/exchange/convert/binary_writer.dart';
 import 'package:nitrite_support/src/exchange/convert/converter_registry.dart';
 import 'package:nitrite_support/src/exchange/convert/type_token.dart';
 
+/// @nodoc
 class BinaryReader {
   static const _utf8Decoder = Utf8Decoder();
   final Uint8List _buffer;

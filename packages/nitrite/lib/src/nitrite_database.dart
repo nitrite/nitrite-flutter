@@ -7,6 +7,7 @@ import 'package:nitrite/src/migration/migration_manager.dart';
 import 'package:nitrite/src/repository/repository_factory.dart';
 import 'package:nitrite/src/store/user_auth_service.dart';
 
+/// @nodoc
 class NitriteDatabase extends Nitrite {
   static final Logger _log = Logger('NitriteDatabase');
 

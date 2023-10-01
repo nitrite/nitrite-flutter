@@ -3,6 +3,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_store.dart';
 import 'package:nitrite_hive_adapter/src/store/key_encoder.dart';
 
+/// @nodoc
 class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   final String _mapName;
   final LazyBox _lazyBox;
@@ -42,8 +43,6 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   @override
   Future<void> close() async {
     if (!_closed && !_dropped) {
-      // FIXME: Windows test fails if this is called
-      // await _lazyBox.close();
       await _store.closeMap(_mapName);
       _closed = true;
     }

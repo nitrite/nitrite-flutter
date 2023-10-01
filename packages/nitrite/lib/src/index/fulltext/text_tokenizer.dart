@@ -3,7 +3,7 @@ import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/index/fulltext/languages.dart';
 import 'package:nitrite/src/index/fulltext/stop_words.dart';
 
-/// A stop-word based string tokenizer.
+/// An abstract class representing a stop-word based text tokenizer.
 abstract class TextTokenizer {
   /// Gets the language for the tokenizer.
   Languages get language;
@@ -58,7 +58,8 @@ class EnglishTextTokenizer extends BaseTextTokenizer {
   Set<String> stopWords() => _language.stopWords();
 }
 
-/// A [TextTokenizer] implementation for various languages.
+/// A [TextTokenizer] implementation that tokenizes text using a
+/// universal approach.
 class UniversalTextTokenizer extends BaseTextTokenizer {
   final Set<String> _stopWords = <String>{};
 

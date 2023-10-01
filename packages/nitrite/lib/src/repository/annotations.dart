@@ -1,7 +1,7 @@
 import 'package:meta/meta_meta.dart';
 import 'package:nitrite/nitrite.dart';
 
-/// Indicates that an annotated field is the id field.
+/// Annotation to mark a field as the id field of a repository.
 @Target({TargetKind.field})
 class Id {
   /// The custom name of the field.
@@ -13,7 +13,7 @@ class Id {
   const Id({required this.fieldName, this.embeddedFields = const []});
 }
 
-/// Specifies a field to be indexed.
+/// Annotation to mark a field as indexed.
 @Target({TargetKind.classType})
 class Index {
   /// The field name to be indexed.
@@ -25,14 +25,15 @@ class Index {
   const Index({required this.fields, this.type = IndexType.unique});
 }
 
-/// Mark a class as an entity for an [ObjectRepository].
+/// Annotation to mark a class as an entity. An entity is a persistent class
+/// which can be stored in an [ObjectRepository].
 @Target({TargetKind.classType})
 class Entity {
   /// Name of the [ObjectRepository]. By default,
   /// the name would be the class name of the entity.
   final String name;
 
-  /// Index definitions of the entity.
+  /// A list of indices for the repository.
   final List<Index> indices;
 
   const Entity({this.name = "", this.indices = const []});

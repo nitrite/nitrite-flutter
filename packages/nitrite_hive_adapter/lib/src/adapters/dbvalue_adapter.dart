@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 class DBValueAdapter extends TypeAdapter<DBValue> {
   @override
   int get typeId => 4;

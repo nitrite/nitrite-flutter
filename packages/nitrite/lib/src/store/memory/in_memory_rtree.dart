@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 class InMemoryRTree<Key extends BoundingBox, Value>
     extends NitriteRTree<Key, Value> {
   final Map<SpatialKey, Key> _backingMap = SplayTreeMap<SpatialKey, Key>();

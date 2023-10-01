@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 
+/// @nodoc
 class NitriteEntityReader<T> {
   final NitriteMapper _nitriteMapper;
   final NitriteCollection _nitriteCollection;

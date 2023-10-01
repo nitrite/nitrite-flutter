@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 
+/// @nodoc
 extension BoxExtension on Box {
   dynamic higherKey(dynamic key) {
     return _getMinMax(key, false, true);

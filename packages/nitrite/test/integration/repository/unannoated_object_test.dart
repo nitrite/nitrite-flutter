@@ -29,7 +29,7 @@ void main() {
 
       var findRecord = cursor.project<ClassA>();
       expect(await findRecord.length, 10);
-      findRecord.forEach((element) {
+      await findRecord.forEach((element) {
         expect(element.b, isNotNull);
         expect(element.blob, isNotEmpty);
         expect(element.string, isNotEmpty);
@@ -43,7 +43,7 @@ void main() {
       expect(await cursor.isEmpty, false);
       findRecord = cursor.project<ClassA>();
       expect(await findRecord.length, 7);
-      findRecord.forEach((element) {
+      await findRecord.forEach((element) {
         expect(element.b, isNotNull);
         expect(element.blob, isNotEmpty);
         expect(element.string, isNotEmpty);
@@ -57,7 +57,7 @@ void main() {
       expect(await cursorC.isEmpty, false);
       var findRecordC = cursorC.project<ClassC>();
       expect(await findRecordC.length, 7);
-      findRecordC.forEach((element) {
+      await findRecordC.forEach((element) {
         expect(element.digit, isNonZero);
         expect(element.id, isNonZero);
         expect(element.parent, isNotNull);
@@ -89,7 +89,7 @@ void main() {
 
       var miniProducts = cursor.project<MiniProduct>();
       expect(await miniProducts.length, 10);
-      miniProducts.forEach((miniProduct) async {
+      await miniProducts.forEach((miniProduct) async {
         var products = productRepository.find(
             filter: where('productId.uniqueId').eq(miniProduct.uniqueId));
 
@@ -126,7 +126,7 @@ void main() {
 
       var miniProducts = cursor.project<MiniProduct>();
       expect(await miniProducts.length, 10);
-      miniProducts.forEach((miniProduct) async {
+      await miniProducts.forEach((miniProduct) async {
         var products = upcomingProductRepository.find(
             filter: where('productId.uniqueId').eq(miniProduct.uniqueId));
 

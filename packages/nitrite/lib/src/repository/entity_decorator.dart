@@ -1,8 +1,8 @@
 import 'package:nitrite/nitrite.dart';
 
-/// A class that implements this interface can be used to decorate
-/// an entity of type T for nitrite database where using [Entity]
-/// or its related annotations is not possible on a class.
+/// An interface that can be used to implement a decorator
+/// for an entity class of type [T], where annotating the class
+/// with [Entity] or its friends is not possible.
 abstract class EntityDecorator<T> {
   /// Gets the entity type of the decorator.
   Type get entityType => T;
@@ -17,6 +17,7 @@ abstract class EntityDecorator<T> {
   String get entityName => T.toString();
 }
 
+/// @nodoc
 class EntityDecoratorReader<T> {
   final EntityDecorator<T> _entityDecorator;
   final NitriteCollection _collection;

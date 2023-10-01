@@ -1,9 +1,9 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/fields.dart';
 import 'package:nitrite/src/index/compound_index.dart';
 import 'package:nitrite/src/index/nitrite_index.dart';
 import 'package:nitrite/src/index/single_field_index.dart';
 
+/// @nodoc
 abstract class ComparableIndexer extends NitriteIndexer {
   final Map<IndexDescriptor, NitriteIndex> _indexRegistry = {};
 
@@ -68,6 +68,7 @@ abstract class ComparableIndexer extends NitriteIndexer {
   }
 }
 
+/// @nodoc
 class UniqueIndexer extends ComparableIndexer {
   @override
   String get indexType => IndexType.unique;
@@ -76,6 +77,7 @@ class UniqueIndexer extends ComparableIndexer {
   bool get isUnique => true;
 }
 
+/// @nodoc
 class NonUniqueIndexer extends ComparableIndexer {
   @override
   String get indexType => IndexType.nonUnique;

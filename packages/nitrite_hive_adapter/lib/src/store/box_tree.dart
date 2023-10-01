@@ -2,6 +2,7 @@ import 'package:nitrite/nitrite.dart';
 
 import 'box_map.dart';
 
+/// @nodoc
 class BoxTree<Key extends BoundingBox, Value> extends NitriteRTree<Key, Value> {
   final BoxMap<SpatialKey, Key> _backingMap;
   bool _dropped = false;

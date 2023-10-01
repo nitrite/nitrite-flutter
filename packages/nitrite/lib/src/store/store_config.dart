@@ -1,21 +1,21 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
-/// Represents a [NitriteStore] configuration.
+/// Represents the configuration interface of a [NitriteStore].
 abstract class StoreConfig {
-  /// Gets file path for the store.
+  /// Gets the file path of the store.
   String? get filePath;
 
-  /// Indicates if the [NitriteStore] is a readonly store.
+  /// Returns true if the store is read-only, false otherwise.
   bool get isReadOnly;
 
-  /// Adds a [StoreEventListener] instance and subscribe it to store event.
+  /// Adds a [StoreEventListener] to the store configuration.
+  /// The listener will be notified of any store events.
   void addStoreEventListener(StoreEventListener listener);
 
-  /// Indicates if the [NitriteStore] is an in-memory store.
+  /// Returns true if the store is in-memory, false otherwise.
   bool get isInMemory => filePath.isNullOrEmpty;
 
-  /// Gets all [StoreEventListener] instances that would be subscribed
-  /// with the [NitriteStore].
+  // Returns a set of [StoreEventListener]s for the store.
   Set<StoreEventListener> get eventListeners;
 }

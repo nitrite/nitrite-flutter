@@ -4,6 +4,7 @@ import 'package:nitrite/src/collection/operations/collection_operations.dart';
 import 'package:nitrite/src/collection/operations/index_manager.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
 
+/// @nodoc
 class CollectionRenameCommand extends BaseCommand {
   final (String, String) _arguments;
 
@@ -49,6 +50,7 @@ class CollectionRenameCommand extends BaseCommand {
   }
 }
 
+/// @nodoc
 class AddFieldCommand extends BaseCommand {
   final (String, String, dynamic) _arguments;
 
@@ -83,6 +85,7 @@ class AddFieldCommand extends BaseCommand {
   }
 }
 
+/// @nodoc
 class RenameFieldCommand extends BaseCommand {
   final (String, String, String) _arguments;
 
@@ -146,6 +149,7 @@ class RenameFieldCommand extends BaseCommand {
   }
 }
 
+/// @nodoc
 class DeleteFieldCommand extends BaseCommand {
   final (String, String) _arguments;
 
@@ -173,6 +177,7 @@ class DeleteFieldCommand extends BaseCommand {
   }
 }
 
+/// @nodoc
 class DropIndexCommand extends BaseCommand {
   final (String, Fields?) _arguments;
 
@@ -193,6 +198,7 @@ class DropIndexCommand extends BaseCommand {
   }
 }
 
+/// @nodoc
 class CreateIndexCommand extends BaseCommand {
   final (String, Fields, String) _arguments;
 

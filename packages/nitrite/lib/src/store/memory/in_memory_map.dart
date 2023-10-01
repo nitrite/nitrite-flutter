@@ -4,6 +4,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/splay_tree_extensions.dart';
 
+/// @nodoc
 class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   final SplayTreeMap<Key, Value> _backingMap;
   final NitriteStore _nitriteStore;

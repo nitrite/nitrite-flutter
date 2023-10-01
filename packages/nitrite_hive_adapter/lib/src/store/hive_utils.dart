@@ -10,6 +10,7 @@ import 'package:nitrite_hive_adapter/src/adapters/nitrite_id_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/set_adapter.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_module.dart';
 
+/// @nodoc
 Future<HiveImpl> openHiveDb(HiveConfig hiveConfig) async {
   var hive = HiveImpl();
 
@@ -35,6 +36,7 @@ void _registerBuiltinTypeAdapters(HiveImpl hive) {
   hive.registerAdapter(DateTimeAdapter(), internal: true);
 }
 
+/// @nodoc
 int nitriteKeyComparator(dynamic k1, dynamic k2) {
   if (k1 is Comparable && k2 is Comparable) {
     return compare(k1, k2);

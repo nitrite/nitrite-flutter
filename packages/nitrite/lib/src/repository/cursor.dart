@@ -44,6 +44,7 @@ abstract class Cursor<T> extends StreamView<T> {
       Cursor<Foreign> foreignCursor, LookUp lookup);
 }
 
+/// @nodoc
 class ObjectCursor<T> extends Cursor<T> {
   final DocumentCursor _documentCursor;
   final NitriteMapper _nitriteMapper;

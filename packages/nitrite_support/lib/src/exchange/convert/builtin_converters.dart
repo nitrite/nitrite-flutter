@@ -3,6 +3,7 @@ import 'package:nitrite_support/src/exchange/convert/binary_reader.dart';
 import 'package:nitrite_support/src/exchange/convert/binary_writer.dart';
 import 'package:nitrite_support/src/exchange/convert/converter.dart';
 
+/// @nodoc
 class DateTimeConverter extends Converter<DateTime> {
   @override
   DateTime decode(BinaryReader reader) {
@@ -18,6 +19,7 @@ class DateTimeConverter extends Converter<DateTime> {
   int get typeId => 12;
 }
 
+/// @nodoc
 class NitriteIdConverter extends Converter<NitriteId> {
   @override
   NitriteId decode(BinaryReader reader) {
@@ -33,6 +35,7 @@ class NitriteIdConverter extends Converter<NitriteId> {
   int get typeId => 13;
 }
 
+/// @nodoc
 class DocumentConverter extends Converter<Document> {
   @override
   Document decode(BinaryReader reader) {

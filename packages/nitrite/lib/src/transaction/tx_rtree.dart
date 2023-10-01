@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// @nodoc
 class TransactionalRTree<Key extends BoundingBox, Value>
     extends NitriteRTree<Key, Value> {
   final Map<SpatialKey, Key> _map;

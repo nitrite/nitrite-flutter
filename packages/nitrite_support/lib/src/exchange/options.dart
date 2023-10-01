@@ -1,9 +1,10 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_support/src/exchange/convert/converter.dart';
 
-/// A function to create/open a `Nitrite` instance.
+/// A function for creating a `Nitrite` instance.
 typedef NitriteFactory = Future<Nitrite> Function();
 
+/// @nodoc
 class ImportOptions {
   final List<Converter> converters = [];
   final NitriteFactory dbFactory;
@@ -17,6 +18,7 @@ class ImportOptions {
   }
 }
 
+/// @nodoc
 class ExportOptions {
   final bool exportIndices;
   final bool exportData;

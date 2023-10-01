@@ -9,6 +9,7 @@ import 'package:nitrite/src/migration/commands/repository_commands.dart';
 import 'package:nitrite/src/migration/instructions.dart';
 import 'package:nitrite/src/migration/migration.dart';
 
+/// @nodoc
 class MigrationManager {
   final Nitrite _database;
   final NitriteMapper _nitriteMapper;

@@ -1,5 +1,4 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/fields.dart';
 
 /// Represents options to configure update operation.
 class UpdateOptions {

@@ -10,6 +10,7 @@ import 'package:nitrite_support/src/exchange/convert/converter_registry.dart';
 
 import 'options.dart';
 
+/// @nodoc
 class NitriteJsonImporter {
   final ImportOptions _options;
   final ConverterRegistry _converterRegistry;

@@ -5,7 +5,7 @@ import 'package:nitrite/src/store/nitrite_store.dart';
 import 'package:nitrite/src/store/store_config.dart';
 import 'package:nitrite/src/store/store_module.dart';
 
-/// The in-memory nitrite store config.
+/// @nodoc
 class InMemoryConfig extends StoreConfig {
   Set<StoreEventListener> _eventListeners = <StoreEventListener>{};
 
@@ -25,7 +25,7 @@ class InMemoryConfig extends StoreConfig {
       Set.unmodifiable(_eventListeners);
 }
 
-/// The in-memory store module for nitrite.
+/// @nodoc
 class InMemoryStoreModule extends StoreModule {
   InMemoryConfig _storeConfig = InMemoryConfig();
 
@@ -41,7 +41,7 @@ class InMemoryStoreModule extends StoreModule {
   Set<NitritePlugin> get plugins => <NitritePlugin>{getStore()};
 }
 
-/// The in-memory store module builder.
+/// @nodoc
 class InMemoryModuleBuilder {
   final Set<StoreEventListener> _eventListeners = <StoreEventListener>{};
   final InMemoryConfig _dbConfig = InMemoryConfig();

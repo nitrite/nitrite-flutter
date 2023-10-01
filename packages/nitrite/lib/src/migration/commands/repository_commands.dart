@@ -3,6 +3,7 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/migration/commands/collection_commands.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
 
+/// @nodoc
 class RepositoryRenameCommand extends CollectionRenameCommand {
   RepositoryRenameCommand((String, String?, String, String?) arguments)
       : super((
@@ -11,6 +12,7 @@ class RepositoryRenameCommand extends CollectionRenameCommand {
         ));
 }
 
+/// @nodoc
 class ChangeDataTypeCommand extends BaseCommand {
   final (String, String?, String, TypeConverter) _arguments;
 
@@ -42,6 +44,7 @@ class ChangeDataTypeCommand extends BaseCommand {
   }
 }
 
+/// @nodoc
 class ChangeIdFieldCommand extends BaseCommand {
   final (String, String?, Fields, Fields) _arguments;
 

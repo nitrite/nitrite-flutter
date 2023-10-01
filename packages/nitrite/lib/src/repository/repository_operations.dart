@@ -5,6 +5,7 @@ import 'package:nitrite/src/repository/cursor.dart';
 import 'package:nitrite/src/repository/entity_decorator.dart';
 import 'package:nitrite/src/repository/nitrite_entity_reader.dart';
 
+/// @nodoc
 class RepositoryOperations<T> {
   final NitriteConfig _nitriteConfig;
   final NitriteMapper _nitriteMapper;

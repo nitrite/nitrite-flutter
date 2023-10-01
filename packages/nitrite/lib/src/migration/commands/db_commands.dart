@@ -3,6 +3,7 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/migration/commands/commands.dart';
 import 'package:nitrite/src/store/user_auth_service.dart';
 
+/// @nodoc
 class AddPasswordCommand extends Command {
   final (String, String) _arguments;
 
@@ -16,6 +17,7 @@ class AddPasswordCommand extends Command {
   }
 }
 
+/// @nodoc
 class ChangePasswordCommand extends Command {
   final (String, String, String) _arguments;
 
@@ -29,6 +31,7 @@ class ChangePasswordCommand extends Command {
   }
 }
 
+/// @nodoc
 class DropCollectionCommand extends BaseCommand {
   final String _collectionName;
 
@@ -42,11 +45,13 @@ class DropCollectionCommand extends BaseCommand {
   }
 }
 
+/// @nodoc
 class DropRepositoryCommand extends DropCollectionCommand {
   DropRepositoryCommand((String, String?) arguments)
       : super(findRepositoryNameByTypeName(arguments.$1, arguments.$2));
 }
 
+/// @nodoc
 class CustomCommand extends Command {
   final CustomInstruction _instruction;
 

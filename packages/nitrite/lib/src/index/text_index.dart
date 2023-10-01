@@ -2,8 +2,10 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/index_utils.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
+import 'package:nitrite/src/filters/filter.dart';
 import 'package:nitrite/src/index/nitrite_index.dart';
 
+/// @nodoc
 class TextIndex extends NitriteIndex {
   final IndexDescriptor _indexDescriptor;
   final NitriteStore _nitriteStore;

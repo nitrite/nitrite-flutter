@@ -4,10 +4,6 @@ export 'filter.dart'
         OrFilter,
         EqualsFilter,
         IndexScanFilter,
-        FieldBasedFilter,
-        LogicalFilter,
-        ComparableFilter,
-        StringFilter,
-        IndexOnlyFilter,
+        TextFilter,
         ComparableArrayFilter;
 export 'filter_extension.dart';

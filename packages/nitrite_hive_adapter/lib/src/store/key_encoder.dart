@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:hive/src/binary/binary_writer_impl.dart';
 import 'package:hive/src/binary/binary_reader_impl.dart';
 
+/// @nodoc
 class KeyCodec {
   final TypeRegistry _typeRegistry;
 

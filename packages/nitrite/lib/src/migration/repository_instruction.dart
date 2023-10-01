@@ -3,7 +3,7 @@ import 'package:nitrite/src/migration/instructions.dart';
 import 'package:nitrite/src/migration/migration.dart';
 
 /// Represents a default value generator for the document fields
-/// during field manipulation instruction.
+/// in field manipulation instruction.
 typedef Generator = dynamic Function(Document document);
 
 /// Represents a type converter. It converts an object of a certain type

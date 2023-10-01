@@ -2,15 +2,14 @@ import 'package:event_bus/event_bus.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/collection_operations.dart';
 
-/// Represents a database migration command.
+/// @nodoc
 abstract class Command {
-  /// Executes a migration step on the database.
   Future<void> execute(Nitrite nitrite);
 
-  /// Closes the command and release any resource held.
   Future<void> close() async {}
 }
 
+/// @nodoc
 abstract class BaseCommand implements Command {
   NitriteStore? nitriteStore;
   NitriteMap<NitriteId, Document>? nitriteMap;

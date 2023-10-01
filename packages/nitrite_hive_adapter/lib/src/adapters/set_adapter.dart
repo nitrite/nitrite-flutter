@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 
+/// @nodoc
 class SetAdapter implements TypeAdapter<Set<dynamic>> {
   @override
   int get typeId => 3;

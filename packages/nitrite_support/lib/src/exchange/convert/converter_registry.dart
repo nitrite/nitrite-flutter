@@ -1,6 +1,7 @@
 import 'package:nitrite_support/src/exchange/convert/builtin_converters.dart';
 import 'package:nitrite_support/src/exchange/convert/converter.dart';
 
+/// @nodoc
 class ConverterRegistry {
   static final Map<int, Converter> _converters = {};
 

@@ -1,3 +1,4 @@
+// ignore: implementation_imports
 import 'package:build/src/builder/build_step.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';

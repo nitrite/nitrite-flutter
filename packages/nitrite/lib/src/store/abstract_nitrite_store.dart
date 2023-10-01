@@ -4,6 +4,8 @@ import 'package:event_bus/event_bus.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/store/store_catalog.dart';
 
+/// An abstract implementation of the [NitriteStore] interface
+/// that provides common functionality for Nitrite data stores.
 abstract class AbstractNitriteStore<Config extends StoreConfig>
     implements NitriteStore<Config> {
   final EventBus _eventBus = EventBus();
@@ -20,7 +22,7 @@ abstract class AbstractNitriteStore<Config extends StoreConfig>
     _storeConfig.eventListeners.forEach(subscribe);
   }
 
-  /// Alerts about a [StoreEvents] to all subscribed [StoreEventListener]s.
+  /// Sends an alert to the event bus for the specified event type.
   void alert(StoreEvents eventType) {
     if (!_eventBus.streamController.isClosed) {
       _eventBus.fire(EventInfo(eventType, _nitriteConfig));

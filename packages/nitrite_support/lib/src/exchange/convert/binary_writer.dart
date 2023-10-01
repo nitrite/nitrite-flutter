@@ -5,6 +5,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_support/src/exchange/convert/converter_registry.dart';
 import 'package:nitrite_support/src/exchange/convert/type_token.dart';
 
+/// @nodoc
 class BinaryWriter {
   static const _initBufferSize = 4096;
   static const _utf8Encoder = Utf8Encoder();

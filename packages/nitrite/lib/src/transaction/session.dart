@@ -9,6 +9,15 @@ import 'package:nitrite/src/transaction/tx_repo.dart';
 import 'package:nitrite/src/transaction/tx_store.dart';
 import 'package:uuid/uuid.dart';
 
+/// A session represents a transactional context for a Nitrite database.
+/// It provides methods to create a new transaction.
+///
+/// A session should be closed after use to release any resources
+/// associated with it.
+///
+/// If a session is closed and the transaction is not committed,
+/// all opened transactions will get rolled back and all volatile
+/// data gets discarded for the session.
 class Session {
   final Nitrite _nitrite;
   final Map<String, Transaction> transactionMap = {};
@@ -17,6 +26,7 @@ class Session {
 
   Session(this._nitrite);
 
+  /// Begins a new transaction.
   Future<Transaction> beginTransaction() async {
     if (!_active) {
       throw TransactionException('Session is closed');
@@ -28,6 +38,22 @@ class Session {
     return tx;
   }
 
+  /// Executes a transaction with the given action.
+  ///
+  /// If the [action] completes successfully, the transaction is committed.
+  /// If the [action] throws an exception, the transaction is rolled back 
+  /// unless the exception is of a type specified in [rollbackFor]. 
+  /// If [rollbackFor] is empty, all exceptions will cause the transaction 
+  /// to be rolled back.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// await db.executeTransaction((tx) async {
+  ///   var txCol = await tx.getCollection('test');
+  ///   var document = createDocument('firstName', 'John');
+  ///   await txCol.insert(document);
+  /// });
+  /// ```
   Future<void> executeTransaction(Future<void> Function(Transaction tx) action,
       {List<Type> rollbackFor = const []}) async {
     if (!_active) {
@@ -52,6 +78,11 @@ class Session {
     }
   }
 
+  /// Closes the session.
+  /// 
+  /// If the session is closed and the transaction is not committed,
+  /// all opened transactions will get rolled back and all volatile
+  /// data gets discarded for the session.
   Future<void> close() async {
     _active = false;
     for (var tx in transactionMap.values) {

@@ -1,26 +1,32 @@
 import 'package:nitrite/nitrite.dart';
 
-/// Represents an indexer for creating a nitrite index.
+/// An abstract class representing a Nitrite indexer plugin.
+/// 
+/// NitriteIndexer extends NitritePlugin and provides a base class for all Nitrite
+/// indexer plugins. It defines the basic structure and functionality of an indexer
+/// plugin that can be used to index Nitrite collections.
 abstract class NitriteIndexer extends NitritePlugin {
   /// Gets the index type.
   String get indexType;
 
-  /// Validates an index on the fields.
+  /// Validates the given fields for indexing.
   Future<void> validateIndex(Fields fields);
 
-  /// Drops the index specified by the index descriptor.
+  /// Drops the index from the collection.
   Future<void> dropIndex(
       IndexDescriptor indexDescriptor, NitriteConfig nitriteConfig);
 
-  /// Writes an index entry.
+  /// Writes an index entry for the given field values and index descriptor.
   Future<void> writeIndexEntry(FieldValues fieldValues,
       IndexDescriptor indexDescriptor, NitriteConfig nitriteConfig);
 
-  /// Removes an index entry.
+  /// Removes an index entry for the given field values and index descriptor 
+  /// from the Nitrite database.
   Future<void> removeIndexEntry(FieldValues fieldValues,
       IndexDescriptor indexDescriptor, NitriteConfig nitriteConfig);
 
-  /// Finds a list of [NitriteId] after executing the [FindPlan] on the index.
+  /// Finds the NitriteIds of the documents that match the given filter in 
+  /// the specified collection.
   Stream<NitriteId> findByFilter(
       FindPlan findPlan, NitriteConfig nitriteConfig);
 }

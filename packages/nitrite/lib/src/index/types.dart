@@ -2,16 +2,23 @@ import 'package:nitrite/nitrite.dart';
 
 /// Represents a bounding box for spatial indexing.
 abstract class BoundingBox {
+  /// Returns the minimum x-coordinate of the bounding box.
   double get minX;
+
+  /// Returns the maximum x-coordinate of the bounding box.
   double get minY;
+
+  /// Returns the minimum y-coordinate of the bounding box.
   double get maxX;
+
+  /// Returns the maximum Y coordinate of the bounding box.
   double get maxY;
 }
 
 /// Creates an [IndexOptions] with the specified [indexType].
 IndexOptions indexOptions(String indexType) => IndexOptions(indexType);
 
-/// Represents options to apply while creating an index.
+/// Options for configuring an index.
 class IndexOptions {
   /// Specifies the type of an index to create.
   String indexType;
@@ -19,14 +26,19 @@ class IndexOptions {
   IndexOptions(this.indexType);
 }
 
-/// Represents a type of nitrite index.
-abstract class IndexType {
+/// An interface representing the types of indexes supported by Nitrite.
+interface class IndexType {
+  /// Represents a unique index type.
   static const String unique = "Unique";
+
+  /// Represents a non-unique index type.
   static const String nonUnique = "NonUnique";
+
+  /// Represents a full text index type.
   static const String fullText = "Fulltext";
 }
 
-/// Represents index metadata.
+/// @nodoc
 class IndexMeta {
   IndexDescriptor? indexDescriptor;
   String? indexMap;
@@ -54,7 +66,7 @@ class IndexMeta {
       .put('isDirty', isDirty);
 }
 
-/// Represents a nitrite database index.
+/// A class representing the descriptor of a Nitrite index.
 class IndexDescriptor implements Comparable<IndexDescriptor> {
   final String _indexType;
   final Fields _indexFields;
@@ -62,6 +74,15 @@ class IndexDescriptor implements Comparable<IndexDescriptor> {
 
   IndexDescriptor(this._indexType, this._indexFields, this._collectionName);
 
+  /// Factory method to create an [IndexDescriptor] from a [Document].
+  ///
+  /// The [Document] should contain the following fields:
+  ///
+  /// - `indexFields`: The fields to index.
+  /// - `indexType`: The type of index.
+  /// - `collectionName`: Name of the collection.
+  ///
+  /// Throws a [NitriteException] if the [Document] is missing any of the required fields.
   factory IndexDescriptor.fromDocument(Document document) {
     if ('IndexDescriptor' == document[typeId]) {
       var indexType = document['indexType'] as String;
@@ -72,6 +93,9 @@ class IndexDescriptor implements Comparable<IndexDescriptor> {
     throw NitriteException('document is not a valid IndexDescriptor');
   }
 
+  /// Converts the [IndexDescriptor] object to a [Document] object.
+  ///
+  /// Returns a [Document] object representing the [IndexDescriptor] object.
   Document toDocument() => createDocument(typeId, 'IndexDescriptor')
       .put('indexType', _indexType)
       .put('indexFields', _indexFields.fieldNames)

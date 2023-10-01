@@ -2,7 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:nitrite/nitrite.dart';
 
-/// Represents an entity id declaration.
+/// Represents the unique identifier for an entity in an [ObjectRepository].
+///
+/// An entity ID consists of a field name and optional sub-fields.
+/// If sub-fields are present, the ID is considered to be embedded.
 class EntityId {
   final String _fieldName;
   final bool _isNitriteId;
@@ -11,20 +14,26 @@ class EntityId {
   EntityId(this._fieldName,
       [this._isNitriteId = false, this._fields = const []]);
 
+  /// Returns the name of the id field.
   String get fieldName => _fieldName;
 
+  /// Returns true if the entity ID is a [NitriteId].
   bool get isNitriteId => _isNitriteId;
 
+  /// Returns a list of sub-fields of the id field.
   List<String> get subFields => _fields;
 
+  /// Returns a list of embedded field names.
   List<String> get embeddedFieldNames {
     return _fields
         .map((field) => "$_fieldName${NitriteConfig.fieldSeparator}$field")
         .toList();
   }
 
+  /// Checks if the entity id is embedded.
   bool get isEmbedded => _fields.isNotEmpty;
 
+  /// @nodoc
   Filter createUniqueFilter(dynamic value, NitriteMapper nitriteMapper) {
     if (isEmbedded) {
       var document = nitriteMapper.tryConvert<Document, dynamic>(value);
@@ -47,6 +56,7 @@ class EntityId {
     }
   }
 
+  /// @nodoc
   Filter createIdFilter(dynamic id, NitriteMapper nitriteMapper) {
     if (isEmbedded) {
       var document = nitriteMapper.tryConvert<Document, dynamic>(id);
@@ -89,15 +99,17 @@ class EntityId {
       ListEquality().hash(_fields);
 }
 
-/// Represents an entity index declaration.
+/// Represents an index for an entity in the Nitrite database.
 class EntityIndex {
   final List<String> _fields;
   final String _type;
 
   const EntityIndex(this._fields, [this._type = IndexType.unique]);
 
+  /// The list of field names on which index is created.
   List<String> get fieldNames => _fields;
 
+  /// The type of index to be used for the entity field.
   String get indexType => _type;
 
   @override
@@ -117,8 +129,8 @@ class EntityIndex {
   }
 }
 
-/// For internal use only
 @internal
+/// @nodoc
 abstract class NitriteEntity {
   String? get entityName;
   List<EntityIndex>? get entityIndexes;

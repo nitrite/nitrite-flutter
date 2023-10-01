@@ -3,22 +3,26 @@ import 'package:nitrite/src/store/store_catalog.dart';
 
 /// Represents a storage interface for Nitrite database.
 abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
-  /// Opens or creates this nitrite store.
+  /// Opens the store if it exists, or creates a new one if it doesn't.
   Future<void> openOrCreate();
 
   /// Checks whether this store is closed.
   bool get isClosed;
 
-  /// Gets the set of all [NitriteCollection] names in store.
+  /// Returns a [Future] that completes with a [Set] of all
+  /// collection names in the Nitrite database.
   Future<Set<String>> get collectionNames;
 
-  /// Gets the set of all [ObjectRepository] details in store.
+  /// Returns a [Future] that completes with a [Set] of all
+  /// repository names in the Nitrite database.
   Future<Set<String>> get repositoryRegistry;
 
-  /// Gets the set of all keyed-[ObjectRepository] details in store.
+  /// Gets the set of all keyed-[ObjectRepository] details in 
+  /// the Nitrite database.
   Future<Map<String, Set<String>>> get keyedRepositoryRegistry;
 
-  /// Checks whether there are any unsaved changes.
+  /// Returns a [Future] that completes with a [bool] indicating 
+  /// whether there are unsaved changes in the Nitrite store.
   Future<bool> get hasUnsavedChanges;
 
   /// Checks whether the store is opened in readonly mode.
@@ -28,42 +32,56 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   /// changes to disk. It does nothing if there are no unsaved changes.
   Future<void> commit();
 
-  /// This method runs before store [close()], to run cleanup routines.
+  /// This method is called before closing the store. Any resource cleanup
+  /// tasks should be performed in this method.
   Future<void> beforeClose();
 
-  /// Checks whether a map with the name already exists in the store or not.
+  /// Returns a Future that completes with a boolean value indicating whether
+  /// a [NitriteMap] with the given name exists in the store.
   Future<bool> hasMap(String mapName);
-
-  /// Opens a [NitriteMap] with the default settings. The map is
-  /// automatically created if it does not yet exist. If a map with this
-  /// name is already opened, this map is returned.
+  
+  /// Opens a [NitriteMap] with the given [mapName] and returns a [Future] 
+  /// that completes with the opened map.
+  /// 
+  /// The map is automatically created if it does not yet exist. 
+  /// If a map with this name is already opened, this map is returned.
+  ///
+  /// The [Key] and [Value] types are generic and should be specified 
+  /// when calling this method.
   Future<NitriteMap<Key, Value>> openMap<Key, Value>(String mapName);
 
-  /// Closes a [NitriteMap] in the store.
+  /// Closes a [NitriteMap] with the specified name in the store.
   Future<void> closeMap(String mapName);
 
-  /// Removes a [NitriteMap] from the store.
+  /// Removes a [NitriteMap] with the specified name from the store.
   Future<void> removeMap(String mapName);
-
-  /// Opens a [NitriteRTree] with the default settings. The RTree is
-  /// automatically created if it does not yet exist. If a RTree with this
-  /// name is already open, this RTree is returned.
+  
+  /// Opens an [NitriteRTree] with the given key and value types. The key type must
+  /// extend the [BoundingBox] class. Returns a [NitriteRTree] instance that can
+  /// be used to perform R-Tree operations on the data.
+  /// 
+  /// The R-Tree is automatically created if it does not yet exist. If a R-Tree
+  /// with this name is already open, this R-Tree is returned.
+  ///
+  /// The [Key] and [Value] types are generic and should be specified when
+  /// calling this method.
   Future<NitriteRTree<Key, Value>> openRTree<Key extends BoundingBox, Value>(
       String rTreeName);
 
-  /// Closes a RTree in the store.
+  /// Closes a [NitriteRTree] with the specified name in the store.
   Future<void> closeRTree(String rTreeName);
 
-  /// Removes a RTree from the store.
+  /// Removes a [NitriteRTree] with the specified name from the store.
   Future<void> removeRTree(String rTreeName);
 
-  /// Adds a [StoreEventListener] to listen to all store events.
+  /// Subscribes a [StoreEventListener] to this store. The listener will be 
+  /// notified of any changes made to the store.
   void subscribe(StoreEventListener listener);
 
-  /// Removes a [StoreEventListener] to unsubscribe from all store events.
+  /// Unsubscribes a [StoreEventListener] from this store.
   void unsubscribe(StoreEventListener listener);
 
-  /// Gets the underlying store engine version.
+  /// Gets the underlying storage engine version.
   String get storeVersion;
 
   /// Gets the store configuration.

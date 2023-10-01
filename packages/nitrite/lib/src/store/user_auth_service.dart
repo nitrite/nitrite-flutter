@@ -3,6 +3,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 import 'package:nitrite/src/store/user_credential.dart';
 
+/// @nodoc
 class UserAuthenticationService {
   final NitriteStore _nitriteStore;
 

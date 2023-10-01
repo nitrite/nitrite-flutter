@@ -1,7 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/store/meta_data.dart';
 
-/// The nitrite database metadata.
+/// @nodoc
 class StoreMetaData implements MetaData {
   int? createTime;
   String? storeVersion;
@@ -18,7 +18,6 @@ class StoreMetaData implements MetaData {
       ..schemaVersion = document.get('schemaVersion');
   }
 
-  /// Gets the database info in a document.
   @override
   Document getInfo() {
     return emptyDocument()

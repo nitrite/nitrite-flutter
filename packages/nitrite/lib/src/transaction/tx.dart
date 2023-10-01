@@ -3,12 +3,38 @@ import 'dart:collection';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/transaction/tx_store.dart';
 
-/// Represents an ACID transaction on nitrite database.
+/// Represents a transaction in Nitrite database. 
+/// It provides methods to perform ACID operations on Nitrite database 
+/// collections and repositories. 
+/// 
+/// A transaction can be committed or rolled back. Once a transaction is 
+/// committed, all changes made during the transaction are persisted to 
+/// the underlying store. If a transaction is rolled back, all changes 
+/// made during the transaction are discarded.
+/// 
+/// NOTE: Certain operations are auto-committed in Nitrite database. Those
+/// operations are not part of transaction and cannot be rolled back. 
+/// The following operations are auto-committed:
+/// 
+/// * [NitriteCollection.createIndex]
+/// * [NitriteCollection.rebuildIndex]
+/// * [NitriteCollection.dropIndex]
+/// * [NitriteCollection.dropAllIndices]
+/// * [NitriteCollection.clear]
+/// * [NitriteCollection.drop]
+/// * [NitriteCollection.close]
+/// * [ObjectRepository.createIndex]
+/// * [ObjectRepository.rebuildIndex]
+/// * [ObjectRepository.dropIndex]
+/// * [ObjectRepository.dropAllIndices]
+/// * [ObjectRepository.clear]
+/// * [ObjectRepository.drop]
+/// * [ObjectRepository.close]
 abstract class Transaction {
-  /// Returns the id of the transaction.
+  /// Gets the unique identifier of the transaction.
   String get id;
 
-  /// Returns the state of the transaction.
+  /// Returns the current state of the transaction.
   TransactionState get state;
 
   /// Gets a [NitriteCollection] to perform ACID operations on it.
@@ -21,25 +47,39 @@ abstract class Transaction {
   /// Completes the transaction and commits the data to the underlying store.
   Future<void> commit();
 
-  /// Rolls back the changes.
+  /// Rolls back the transaction, discarding any changes made during 
+  /// the transaction.
   Future<void> rollback();
 
   /// Closes this transaction.
   Future<void> close();
 }
 
-/// The transaction state.
+/// An enumeration representing the possible states of a transaction.
 enum TransactionState {
+  /// The transaction is active.
   active,
+
+  /// The transaction is partially committed.
   partiallyCommitted,
+
+  /// The transaction is committed.
   committed,
+
+  /// The transaction is closed.
   closed,
+
+  /// The transaction is failed and rolled back.
   failed,
+
+  /// The transaction is aborted.
   aborted
 }
 
+/// @nodoc
 enum ChangeType { insert, update, remove, setAttributes }
 
+/// @nodoc
 class TransactionContext {
   final String _collectionName;
   final Queue<JournalEntry> _journal = Queue();
@@ -62,8 +102,10 @@ class TransactionContext {
   }
 }
 
+/// @nodoc
 typedef TxAction = Future<void> Function();
 
+/// @nodoc
 class JournalEntry {
   final ChangeType _changeType;
   final TxAction _commit;
@@ -82,6 +124,7 @@ class JournalEntry {
   TxAction get rollback => _rollback;
 }
 
+/// @nodoc
 class UndoEntry {
   final String _collectionName;
   final TxAction _rollback;

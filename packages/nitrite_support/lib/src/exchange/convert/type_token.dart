@@ -1,3 +1,4 @@
+/// @nodoc
 class TypeToken {
   /// null
   static const nullT = 0;

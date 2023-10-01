@@ -5,6 +5,7 @@ import 'package:nitrite/src/common/util/splay_tree_extensions.dart';
 
 import '../common/util/object_utils.dart';
 
+/// @nodoc
 class IndexMap {
   final NitriteMap<DBValue, dynamic>? _nitriteMap;
   final SplayTreeMap<dynamic, dynamic>? _navigableMap;

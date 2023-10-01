@@ -5,6 +5,7 @@ import 'package:nitrite/src/common/util/splay_tree_extensions.dart';
 import 'package:nitrite/src/store/memory/in_memory_map.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// @nodoc
 class TransactionalMap<K, V> extends NitriteMap<K, V> {
   final NitriteMap<K, V> _primaryMap;
   final NitriteMap<K, V> _backingMap;

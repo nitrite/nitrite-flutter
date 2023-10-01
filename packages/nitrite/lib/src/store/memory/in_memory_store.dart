@@ -3,6 +3,7 @@ import 'package:nitrite/src/store/memory/in_memory_map.dart';
 import 'package:nitrite/src/store/memory/in_memory_rtree.dart';
 import 'package:nitrite/src/store/memory/in_memory_store_module.dart';
 
+/// @nodoc
 class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   final Map<String, NitriteMap<dynamic, dynamic>> _nitriteMapRegistry;
   final Map<String, NitriteRTree<dynamic, dynamic>> _nitriteRTreeMapRegistry;

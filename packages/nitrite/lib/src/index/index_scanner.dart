@@ -1,9 +1,9 @@
 import 'package:logging/logging.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/filters/filter.dart';
 import 'package:nitrite/src/index/index_map.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// @nodoc
 class IndexScanner {
   static final Logger _log = Logger('IndexScanner');
 

@@ -1,6 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/index/text_index.dart';
 
+/// @nodoc
 class NitriteTextIndexer extends NitriteIndexer {
   final TextTokenizer _tokenizer;
   final Map<IndexDescriptor, TextIndex> _indexRegistry = {};

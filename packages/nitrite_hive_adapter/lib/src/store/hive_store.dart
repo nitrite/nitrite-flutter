@@ -13,6 +13,7 @@ import 'box_tree.dart';
 import 'hive_module.dart';
 import 'hive_utils.dart';
 
+/// @nodoc
 class HiveStore extends AbstractNitriteStore<HiveConfig> {
   static final Logger _log = Logger('HiveStore');
 

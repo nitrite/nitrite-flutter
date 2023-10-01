@@ -2,10 +2,12 @@ import 'dart:collection';
 
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 abstract class MetaData {
   Document getInfo();
 }
 
+/// @nodoc
 class MapMetaData implements MetaData {
   late Set<String> _mapNames;
 

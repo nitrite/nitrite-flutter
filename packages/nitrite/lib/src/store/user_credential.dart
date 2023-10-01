@@ -1,5 +1,6 @@
 import 'package:nitrite/nitrite.dart';
 
+/// @nodoc
 class UserCredential {
   String _passwordHash;
 
