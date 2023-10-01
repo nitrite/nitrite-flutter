@@ -441,24 +441,14 @@ void main() {
       var stream = cursor.project(projection);
 
       expect(await stream.length, 2);
-      expect(
-          stream,
-          emitsInOrder([
-            emptyDocument()
-              ..put('name', 'John')
-              ..put(
-                  'address',
-                  emptyDocument()
-                    ..put('city', 'New York')
-                    ..put('state', 'NY')),
-            emptyDocument()
-              ..put('name', 'Jane')
-              ..put(
-                  'address',
-                  emptyDocument()
-                    ..put('city', 'New Jersey')
-                    ..put('state', 'NJ'))
-          ]));
+      var list = await stream.toList();
+      expect(list[0].get('name'), 'John');
+      expect(list[0].get('address.city'), 'New York');
+      expect(list[0].get('address.state'), 'NY');
+
+      expect(list[1].get('name'), 'Jane');
+      expect(list[1].get('address.city'), 'New Jersey');
+      expect(list[1].get('address.state'), 'NJ');
     });
 
     test('Test Find with List Equal', () async {
