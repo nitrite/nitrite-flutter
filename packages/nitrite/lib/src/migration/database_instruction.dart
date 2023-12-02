@@ -6,7 +6,7 @@ import 'package:nitrite/src/migration/migration.dart';
 /// Represents a migration instruction set for the nitrite database.
 abstract class DatabaseInstruction implements Instruction {
   /// Adds an instruction to set an user authentication to the database.
-  DatabaseInstruction addPassword(String username, String password) {
+  DatabaseInstruction addUser(String username, String password) {
     MigrationStep migrationStep =
         MigrationStep(InstructionType.addPassword, (username, password));
     addStep(migrationStep);

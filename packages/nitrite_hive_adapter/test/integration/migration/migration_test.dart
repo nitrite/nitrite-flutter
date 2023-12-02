@@ -43,9 +43,7 @@ void main() {
         initialSchemaVersion,
         2,
         (instructionSet) {
-          instructionSet
-              .forDatabase()
-              .addPassword('test-user', 'test-password');
+          instructionSet.forDatabase().addUser('test-user', 'test-password');
 
           instructionSet
               .forRepository<OldClass>(key: 'demo1')
@@ -109,9 +107,7 @@ void main() {
         initialSchemaVersion,
         2,
         (instructionSet) {
-          instructionSet
-              .forDatabase()
-              .addPassword('test-user', 'test-password');
+          instructionSet.forDatabase().addUser('test-user', 'test-password');
 
           instructionSet
               .forCollection('test')
