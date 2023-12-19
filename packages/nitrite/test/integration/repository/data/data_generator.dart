@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:faker/faker.dart';
+
 import 'test_objects.dart' as obj;
 import 'test_objects_decorators.dart';
 
@@ -41,7 +42,7 @@ obj.Employee generateEmployee(obj.Company? company) {
       empId: DateTime.now().millisecondsSinceEpoch + counter++,
       joinDate: faker.date.dateTime(),
       address: faker.address.streetAddress(),
-      emailAddress: faker.internet.email(),
+      emailAddress: faker.internet.safeEmail(),
       blob: utf8.encode(faker.lorem.sentence()),
       company: company,
       employeeNote: generateNote());

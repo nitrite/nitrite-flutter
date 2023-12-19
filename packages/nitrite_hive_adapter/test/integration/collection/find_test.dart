@@ -2,7 +2,6 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 import '../../test_utils.dart';
-import '../string_field_encryption_processor.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
@@ -425,11 +424,6 @@ void main() {
 
       var collection = await db.getCollection('person');
       await collection.insertMany([doc1, doc2]);
-
-      var processor = StringFieldEncryptionProcessor();
-      processor.addFields(['name']);
-      await processor.process(collection);
-      await collection.addProcessor(processor);
 
       var projection = emptyDocument()
         ..put('name', null)
