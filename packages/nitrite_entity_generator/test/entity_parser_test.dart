@@ -31,7 +31,7 @@ void main() {
     ]);
     expect(entity.entityId, isNotNull);
     expect(entity.entityId!.fieldName, 'person_id');
-    expect(entity.entityId!.embeddedFieldNames, isEmpty);
+    expect(entity.entityId!.encodedFieldNames, isEmpty);
   });
 
   test('Parse entity without default constructor', () async {
@@ -58,7 +58,7 @@ void main() {
     ]);
     expect(entity.entityId, isNotNull);
     expect(entity.entityId!.fieldName, 'person_id');
-    expect(entity.entityId!.embeddedFieldNames, isEmpty);
+    expect(entity.entityId!.encodedFieldNames, isEmpty);
   });
 
   test('Parse entity without entity name', () async {
@@ -86,7 +86,7 @@ void main() {
     ]);
     expect(entity.entityId, isNotNull);
     expect(entity.entityId!.fieldName, 'person_id');
-    expect(entity.entityId!.embeddedFieldNames, isEmpty);
+    expect(entity.entityId!.encodedFieldNames, isEmpty);
   });
 
   test('Parse entity without any indexes', () async {
@@ -109,7 +109,7 @@ void main() {
     expect(entity.entityIndices.length, 0);
     expect(entity.entityId, isNotNull);
     expect(entity.entityId!.fieldName, 'person_id');
-    expect(entity.entityId!.embeddedFieldNames, isEmpty);
+    expect(entity.entityId!.encodedFieldNames, isEmpty);
   });
 
   test('Parse entity without Id', () async {
@@ -157,7 +157,7 @@ void main() {
     ]);
     expect(entity.entityId, isNotNull);
     expect(entity.entityId!.fieldName, 'personId');
-    expect(entity.entityId!.embeddedFieldNames, isEmpty);
+    expect(entity.entityId!.encodedFieldNames, isEmpty);
   });
 
   test('Parse entity without Id field name', () async {
@@ -185,7 +185,7 @@ void main() {
     ]);
     expect(entity.entityId, isNotNull);
     expect(entity.entityId!.fieldName, 'personId');
-    expect(entity.entityId!.embeddedFieldNames, isEmpty);
+    expect(entity.entityId!.encodedFieldNames, isEmpty);
   });
 
   test('Parse entity Id with wrong embedded fields', () async {
@@ -239,10 +239,10 @@ void main() {
     ]);
     expect(entity.entityId, isNotNull);
     expect(entity.entityId!.fieldName, 'personId');
-    expect(entity.entityId!.subFields, ['age', 'dob']);
-    expect(entity.entityId!.embeddedFieldNames, isNotEmpty);
+    expect(entity.entityId!.embeddedFields, ['age', 'dob']);
+    expect(entity.entityId!.encodedFieldNames, isNotEmpty);
     expect(
-        entity.entityId!.embeddedFieldNames, ['personId.age', 'personId.dob']);
+        entity.entityId!.encodedFieldNames, ['personId.age', 'personId.dob']);
   });
 
   test("Parse entity with multiple id", () async {

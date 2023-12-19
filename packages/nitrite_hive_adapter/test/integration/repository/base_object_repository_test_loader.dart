@@ -131,33 +131,31 @@ Future<void> _openDb() async {
 
   db = await Nitrite.builder()
       .loadModule(storeModule)
+      .registerEntityConverter(CompanyConverter())
+      .registerEntityConverter(EmployeeConverter())
+      .registerEntityConverter(NoteConverter())
+      .registerEntityConverter(MyBookConverter())
+      .registerEntityConverter(BookIdConverter())
+      .registerEntityConverter(ClassAConverter())
+      .registerEntityConverter(ClassBConverter())
+      .registerEntityConverter(ClassCConverter())
+      .registerEntityConverter(ElemMatchConverter())
+      .registerEntityConverter(TextDataConverter())
+      .registerEntityConverter(SubEmployeeConverter())
+      .registerEntityConverter(ProductScoreConverter())
+      .registerEntityConverter(PersonEntityConverter())
+      .registerEntityConverter(RepeatableIndexTestConverter())
+      .registerEntityConverter(EncryptedPersonConverter())
+      .registerEntityConverter(TxDataConverter())
+      .registerEntityConverter(WithNitriteIdConverter())
+      .registerEntityConverter(ProductConverter())
+      .registerEntityConverter(ProductIdConverter())
+      .registerEntityConverter(ManufacturerConverter())
+      .registerEntityConverter(MiniProductConverter())
+      .registerEntityConverter(WithNullIdConverter())
+      .registerEntityConverter(NewClassConverter())
+      .registerEntityConverter(OldClassConverter())
+      .registerEntityConverter(LiteratureConverter())
       .fieldSeparator('.')
       .openOrCreate();
-
-  var mapper = db.config.nitriteMapper as SimpleNitriteMapper;
-  mapper.registerEntityConverter(CompanyConverter());
-  mapper.registerEntityConverter(EmployeeConverter());
-  mapper.registerEntityConverter(NoteConverter());
-  mapper.registerEntityConverter(MyBookConverter());
-  mapper.registerEntityConverter(BookIdConverter());
-  mapper.registerEntityConverter(ClassAConverter());
-  mapper.registerEntityConverter(ClassBConverter());
-  mapper.registerEntityConverter(ClassCConverter());
-  mapper.registerEntityConverter(ElemMatchConverter());
-  mapper.registerEntityConverter(TextDataConverter());
-  mapper.registerEntityConverter(SubEmployeeConverter());
-  mapper.registerEntityConverter(ProductScoreConverter());
-  mapper.registerEntityConverter(PersonEntityConverter());
-  mapper.registerEntityConverter(RepeatableIndexTestConverter());
-  mapper.registerEntityConverter(EncryptedPersonConverter());
-  mapper.registerEntityConverter(TxDataConverter());
-  mapper.registerEntityConverter(WithNitriteIdConverter());
-  mapper.registerEntityConverter(ProductConverter());
-  mapper.registerEntityConverter(ProductIdConverter());
-  mapper.registerEntityConverter(ManufacturerConverter());
-  mapper.registerEntityConverter(MiniProductConverter());
-  mapper.registerEntityConverter(WithNullIdConverter());
-  mapper.registerEntityConverter(NewClassConverter());
-  mapper.registerEntityConverter(OldClassConverter());
-  mapper.registerEntityConverter(LiteratureConverter());
 }

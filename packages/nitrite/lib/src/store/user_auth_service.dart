@@ -53,6 +53,9 @@ class UserAuthenticationService {
         if (!crypt.match(oldPassword)) {
           throw NitriteSecurityException('Username or password is invalid');
         }
+      } else {
+        // if credential is null, it means the user is not present, so we cannot update
+        throw NitriteSecurityException('Username or password is invalid');
       }
     } else {
       if (await _nitriteStore.hasMap(userMap)) {

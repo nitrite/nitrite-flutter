@@ -23,6 +23,15 @@ class NitriteBuilder {
     return this;
   }
 
+  /// Registers an [EntityConverter] with Nitrite. The converter is used to
+  /// convert between an entity and a [Document]. This method allows you to
+  /// register a custom converter for a specific entity.
+  NitriteBuilder registerEntityConverter(
+      EntityConverter<dynamic> entityConverter) {
+    nitriteConfig.registerEntityConverter(entityConverter);
+    return this;
+  }
+
   /// Loads a Nitrite module into the Nitrite database. The module can be
   /// used to extend the functionality of Nitrite.
   NitriteBuilder loadModule(NitriteModule module) {
@@ -50,18 +59,18 @@ class NitriteBuilder {
   /// everytime. If it is configured as a file based database, and if the file
   /// does not exist, then it will create a new file store and open the database;
   /// otherwise it will open the existing database file.
-  /// 
+  ///
   /// If the username and password is not provided, then it will open the database
   /// without any authentication.
-  /// 
+  ///
   /// If the username and password both are provided, then it will open the database
   /// with authentication. If the database is not already created, then it will
   /// create a new database with the given username and password.
-  /// 
+  ///
   /// If the database is already created, then it will open the database with the
   /// given username and password. If the username and password is not valid, then
   /// it will throw an exception.
-  /// 
+  ///
   /// NOTE: Both username and password must be provided or both must be null.
   Future<Nitrite> openOrCreate({String? username, String? password}) async {
     await nitriteConfig.autoConfigure();

@@ -3,19 +3,19 @@ import 'dart:collection';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/transaction/tx_store.dart';
 
-/// Represents a transaction in Nitrite database. 
-/// It provides methods to perform ACID operations on Nitrite database 
-/// collections and repositories. 
-/// 
-/// A transaction can be committed or rolled back. Once a transaction is 
-/// committed, all changes made during the transaction are persisted to 
-/// the underlying store. If a transaction is rolled back, all changes 
+/// Represents a transaction in Nitrite database.
+/// It provides methods to perform transactional operations on Nitrite database
+/// collections and repositories.
+///
+/// A transaction can be committed or rolled back. Once a transaction is
+/// committed, all changes made during the transaction are persisted to
+/// the underlying store. If a transaction is rolled back, all changes
 /// made during the transaction are discarded.
-/// 
+///
 /// NOTE: Certain operations are auto-committed in Nitrite database. Those
-/// operations are not part of transaction and cannot be rolled back. 
+/// operations are not part of transaction and cannot be rolled back.
 /// The following operations are auto-committed:
-/// 
+///
 /// * [NitriteCollection.createIndex]
 /// * [NitriteCollection.rebuildIndex]
 /// * [NitriteCollection.dropIndex]
@@ -37,17 +37,17 @@ abstract class Transaction {
   /// Returns the current state of the transaction.
   TransactionState get state;
 
-  /// Gets a [NitriteCollection] to perform ACID operations on it.
+  /// Gets a [NitriteCollection] to perform transactional operations on it.
   Future<NitriteCollection> getCollection(String name);
 
-  /// Gets an [ObjectRepository] to perform ACID operations on it.
+  /// Gets an [ObjectRepository] to perform transactional operations on it.
   Future<ObjectRepository<T>> getRepository<T>(
       {EntityDecorator<T>? entityDecorator, String? key});
 
   /// Completes the transaction and commits the data to the underlying store.
   Future<void> commit();
 
-  /// Rolls back the transaction, discarding any changes made during 
+  /// Rolls back the transaction, discarding any changes made during
   /// the transaction.
   Future<void> rollback();
 

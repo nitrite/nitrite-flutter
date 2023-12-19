@@ -14,7 +14,7 @@ void main() {
     final idField = IdFieldParser(fieldElement).parse();
 
     expect(idField.fieldName, equals('id'));
-    expect(idField.embeddedFieldNames, isEmpty);
+    expect(idField.encodedFieldNames, isEmpty);
     expect(idField.isEmbedded, isFalse);
   });
 
@@ -27,7 +27,7 @@ void main() {
     final idField = IdFieldParser(fieldElement).parse();
 
     expect(idField.fieldName, equals('id'));
-    expect(idField.embeddedFieldNames, isEmpty);
+    expect(idField.encodedFieldNames, isEmpty);
     expect(idField.isEmbedded, isFalse);
   });
 
@@ -40,7 +40,7 @@ void main() {
     final idField = IdFieldParser(fieldElement).parse();
 
     expect(idField.fieldName, equals('customName'));
-    expect(idField.embeddedFieldNames, isEmpty);
+    expect(idField.encodedFieldNames, isEmpty);
     expect(idField.isEmbedded, isFalse);
   });
 
@@ -73,10 +73,10 @@ void main() {
     final idField = IdFieldParser(fieldElement).parse();
 
     expect(idField.fieldName, equals('customName'));
-    expect(idField.embeddedFieldNames, isNotEmpty);
+    expect(idField.encodedFieldNames, isNotEmpty);
     expect(idField.isEmbedded, isTrue);
-    expect(idField.embeddedFieldNames, equals(['customName.name']));
-    expect(idField.subFields, equals(['name']));
+    expect(idField.encodedFieldNames, equals(['customName.name']));
+    expect(idField.embeddedFields, equals(['name']));
   });
 
   test("Parse Id field with invalid type and embedded field", () async {

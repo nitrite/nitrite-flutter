@@ -89,7 +89,7 @@ class EntityWriter {
         builder.returns = refer('EntityId');
 
         var isNitriteId = _entityInfo.entityId!.isNitriteId;
-        if (_entityInfo.entityId!.subFields.isEmpty) {
+        if (_entityInfo.entityId!.embeddedFields.isEmpty) {
           builder.body = Code(
               'EntityId("${_entityInfo.entityId!.fieldName}", $isNitriteId)');
         } else {
@@ -97,7 +97,7 @@ class EntityWriter {
             EntityId(
               "${_entityInfo.entityId!.fieldName}",
               $isNitriteId,
-              [${_entityInfo.entityId!.subFields.map((field) => '"$field"').join(', ')}],
+              [${_entityInfo.entityId!.embeddedFields.map((field) => '"$field"').join(', ')}],
             )
           ''');
         }

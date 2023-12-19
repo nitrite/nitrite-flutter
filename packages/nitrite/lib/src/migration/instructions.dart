@@ -12,8 +12,8 @@ typedef CustomInstruction = Future<void> Function(Nitrite nitrite);
 
 /// Represents an instruction type.
 enum InstructionType {
-  /// The add password instruction.
-  addPassword,
+  /// The add user authentication instruction.
+  addUser,
 
   /// The change password instruction.
   changePassword,

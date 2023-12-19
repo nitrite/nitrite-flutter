@@ -8,7 +8,7 @@ abstract class DatabaseInstruction implements Instruction {
   /// Adds an instruction to set an user authentication to the database.
   DatabaseInstruction addUser(String username, String password) {
     MigrationStep migrationStep =
-        MigrationStep(InstructionType.addPassword, (username, password));
+        MigrationStep(InstructionType.addUser, (username, password));
     addStep(migrationStep);
     return this;
   }

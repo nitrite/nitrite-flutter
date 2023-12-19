@@ -20,11 +20,11 @@ class EntityId {
   /// Returns true if the entity ID is a [NitriteId].
   bool get isNitriteId => _isNitriteId;
 
-  /// Returns a list of sub-fields of the id field.
-  List<String> get subFields => _fields;
+  /// Returns a list of embedded fields of the id field.
+  List<String> get embeddedFields => _fields;
 
-  /// Returns a list of embedded field names.
-  List<String> get embeddedFieldNames {
+  /// Returns a list of encoded field names.
+  List<String> get encodedFieldNames {
     return _fields
         .map((field) => "$_fieldName${NitriteConfig.fieldSeparator}$field")
         .toList();
@@ -130,6 +130,7 @@ class EntityIndex {
 }
 
 @internal
+
 /// @nodoc
 abstract class NitriteEntity {
   String? get entityName;

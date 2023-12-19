@@ -14,6 +14,7 @@ class NitriteConfig {
   bool _configured = false;
   final List<NitriteModule> _modules = <NitriteModule>[];
   late PluginManager _pluginManager;
+  final List<EntityConverter> _entityConverters = <EntityConverter>[];
 
   /// A map of migrations to be applied to the database.
   Map<int, SplayTreeMap<int, Migration>> get migrations => _migrations;
@@ -30,7 +31,7 @@ class NitriteConfig {
   }
 
   /// Sets the field separator for Nitrite database.
-  /// 
+  ///
   /// Throws [InvalidOperationException] if the database is already initialized.
   void setFieldSeparator(String fieldSeparator) {
     if (_configured) {
@@ -42,7 +43,7 @@ class NitriteConfig {
 
   /// Loads [NitritePlugin] instances defined in the [NitriteModule]
   /// into the configuration.
-  /// 
+  ///
   /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig loadModule(NitriteModule module) {
     if (_configured) {
@@ -53,10 +54,22 @@ class NitriteConfig {
     return this;
   }
 
-  /// Adds a migration step to the configuration. A migration step is a process 
-  /// of updating the database from one version to another. If the database is 
+  /// Registers an [EntityConverter] with Nitrite. The converter is used to
+  /// convert between an entity and a [Document].
+  ///
+  /// Throws [InvalidOperationException] if the database is already initialized.
+  void registerEntityConverter(EntityConverter<dynamic> entityConverter) {
+    if (_configured) {
+      throw InvalidOperationException("Cannot register entity converter after "
+          "database initialization");
+    }
+    _entityConverters.add(entityConverter);
+  }
+
+  /// Adds a migration step to the configuration. A migration step is a process
+  /// of updating the database from one version to another. If the database is
   /// already initialized, then migration steps cannot be added.
-  /// 
+  ///
   /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig addMigration(Migration migration) {
     if (_configured) {
@@ -77,7 +90,7 @@ class NitriteConfig {
   }
 
   /// Sets the current schema version of the Nitrite database.
-  /// 
+  ///
   /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig currentSchemaVersion(int version) {
     if (_configured) {
@@ -99,7 +112,7 @@ class NitriteConfig {
   }
 
   /// Finds the [NitriteIndexer] for the given index type.
-  /// 
+  ///
   /// Throws [IndexingException] if no indexer is found for the given index type.
   Future<NitriteIndexer> findIndexer(String indexType) async {
     var nitriteIndexer = pluginManager.indexerMap[indexType];
@@ -119,7 +132,7 @@ class NitriteConfig {
     return pluginManager.getNitriteStore();
   }
 
-  /// Closes the [NitriteConfig] instance and releases any resources 
+  /// Closes the [NitriteConfig] instance and releases any resources
   /// associated with it.
   Future<void> close() {
     return pluginManager.close();
@@ -132,6 +145,14 @@ class NitriteConfig {
   }
 
   Future<void> _loadModules() async {
+    if (_entityConverters.isNotEmpty) {
+      var mapper = SimpleNitriteMapper();
+      for (EntityConverter entityConverter in _entityConverters) {
+        mapper.registerEntityConverter(entityConverter);
+      }
+      await _pluginManager.loadModule(module([mapper]));
+    }
+
     for (NitriteModule module in _modules) {
       await _pluginManager.loadModule(module);
     }

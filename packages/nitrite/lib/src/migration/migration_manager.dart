@@ -136,7 +136,7 @@ class MigrationManager {
     try {
       Command command;
       switch (step.instructionType) {
-        case InstructionType.addPassword:
+        case InstructionType.addUser:
           command = AddPasswordCommand(step.arguments as (String, String));
           break;
         case InstructionType.changePassword:

@@ -19,7 +19,7 @@ class NitriteEntityReader<T> {
       _objectIdField = entity.entityId;
 
       var idFieldNames = _objectIdField!.isEmbedded
-          ? _objectIdField!.embeddedFieldNames
+          ? _objectIdField!.encodedFieldNames
           : [_objectIdField!.fieldName];
 
       var hasIndex = await _nitriteCollection.hasIndex(idFieldNames);

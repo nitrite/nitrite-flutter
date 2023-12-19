@@ -17,15 +17,6 @@ class Attributes {
   static final String lastModifiedTime = "last_modified_at";
   static final String owner = "owner";
   static final String uniqueId = "uuid";
-  static final String syncLock = "sync_lock";
-  static final String expiryWait = "expiry_wait";
-  static final String tombstone = "tombstone";
-  static final String feedLedger = "feed_ledger";
-  static final String localCollectionMarker = "local_collection_marker";
-  static final String remoteCollectionMarker = "remote_collection_marker";
-  static final String localTombstoneMarker = "local_tombstone_marker";
-  static final String remoteTombstoneMarker = "remote_tombstone_marker";
-  static final String replica = "replica";
 
   Map<String, String> _attributes = {};
 
@@ -41,10 +32,10 @@ class Attributes {
   }
 
   /// Creates an instance of the Attributes class from a [Document] object.
-  /// 
+  ///
   /// Args:
   ///   document (Document): The parameter "document" is of type "Document".
-  /// 
+  ///
   /// Returns:
   ///   The method is returning an instance of the [Attributes] class.
   factory Attributes.fromDocument(Document document) {
@@ -57,15 +48,15 @@ class Attributes {
     return attr;
   }
 
-  /// Adds a key-value pair to the attributes and returns 
+  /// Adds a key-value pair to the attributes and returns
   /// the updated [Attributes] object.
-  /// 
+  ///
   /// Args:
-  ///   key (String): The key parameter is a string that represents the 
+  ///   key (String): The key parameter is a string that represents the
   /// name of the attribute.
-  ///   value (String): The value parameter is a string that represents 
+  ///   value (String): The value parameter is a string that represents
   /// the value to be associated with the given key.
-  /// 
+  ///
   /// Returns:
   ///   The method is returning an object of type [Attributes].
   Attributes set(String key, String value) {

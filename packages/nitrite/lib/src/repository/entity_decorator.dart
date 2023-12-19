@@ -33,7 +33,7 @@ class EntityDecoratorReader<T> {
       _objectIdField = _entityDecorator.idField;
 
       var idFieldNames = _entityDecorator.idField!.isEmbedded
-          ? _entityDecorator.idField!.embeddedFieldNames
+          ? _entityDecorator.idField!.encodedFieldNames
           : [_entityDecorator.idField!.fieldName];
 
       var hasIndex = await _collection.hasIndex(idFieldNames);
