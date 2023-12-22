@@ -60,7 +60,7 @@ abstract class NitriteCollection extends PersistentCollection<Document> {
   Future<WriteResult> updateOne(Document document,
       {bool insertIfAbsent = false});
 
-  /// Update the filtered elements in the collection with the [update].
+  /// Update the filtered documents in the collection with the [update].
   ///
   /// If the [filter] is [all], it will update all documents in the collection.
   ///
@@ -70,7 +70,7 @@ abstract class NitriteCollection extends PersistentCollection<Document> {
   Future<WriteResult> update(Filter filter, Document update,
       [UpdateOptions? updateOptions]);
 
-  /// Removes matching elements from the collection.
+  /// Removes matching documents from the collection.
   ///
   /// If the [filter] is [all], it will remove all documents from the collection.
   ///
