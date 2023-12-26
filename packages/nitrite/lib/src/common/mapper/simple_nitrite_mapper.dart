@@ -38,6 +38,8 @@ class SimpleNitriteMapper extends NitriteMapper {
         }
       } else if (source is Document) {
         return _convertFromDocument<Target, Source>(source);
+      } else if (source is Target || Target == dynamic) {
+        return source;
       }
     }
 

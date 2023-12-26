@@ -8,7 +8,6 @@ import 'package:nitrite/src/common/stream/filtered_stream.dart';
 import 'package:nitrite/src/common/stream/indexed_stream.dart';
 import 'package:nitrite/src/common/stream/processed_document_stream.dart';
 import 'package:nitrite/src/common/stream/sorted_document_stream.dart';
-import 'package:nitrite/src/filters/filter.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// @nodoc
