@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
-import 'package:nitrite/src/index/index_map.dart';
 
 part 'filter_impl.dart';
 
@@ -288,7 +287,7 @@ abstract class FieldBasedFilter extends NitriteFilter {
 
 /// An abstract class representing a filter that compares fields.
 abstract class ComparableFilter extends FieldBasedFilter {
-  ComparableFilter(String field, dynamic value) : super(field, value);
+  ComparableFilter(super.field, super.value);
 
   Comparable get comparable {
     if (value == null) {
@@ -303,7 +302,7 @@ abstract class ComparableFilter extends FieldBasedFilter {
 
 /// An abstract class representing a filter for string values.
 abstract class StringFilter extends ComparableFilter {
-  StringFilter(String field, dynamic value) : super(field, value);
+  StringFilter(super.field, super.value);
 
   String get stringValue => value as String;
 }

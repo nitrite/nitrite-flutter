@@ -136,14 +136,10 @@ void main() {
     });
 
     test('Test NewInstance', () {
-      var nitriteMapper = SimpleNitriteMapper();
-      nitriteMapper.addValueType<_B>();
+      var nitriteMapper = SimpleNitriteMapper([_B]);
       nitriteMapper.registerEntityConverter(_FConverter());
 
       var f = newInstance<_F>(nitriteMapper);
-      expect(f, isNotNull);
-
-      f = newInstance<_F?>(nitriteMapper);
       expect(f, isNotNull);
 
       var i = newInstance<num>(nitriteMapper);
@@ -198,8 +194,7 @@ void main() {
     });
 
     test('Test IsBuiltInValueType', () {
-      var nitriteMapper = SimpleNitriteMapper();
-      nitriteMapper.addValueType<_B>();
+      var nitriteMapper = SimpleNitriteMapper([_B]);
       nitriteMapper.registerEntityConverter(_FConverter());
 
       expect(isBuiltInValueType<num>(), isTrue);

@@ -3,8 +3,8 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// A [NitriteMapper] based on [EntityConverter] implementation.
-/// 
-/// This mapper is used by default in nitrite. It uses [EntityConverter] 
+///
+/// This mapper is used by default in nitrite. It uses [EntityConverter]
 /// to convert an object and vice versa.
 class SimpleNitriteMapper extends NitriteMapper {
   final Set<String> _valueTypes = {};
@@ -50,12 +50,6 @@ class SimpleNitriteMapper extends NitriteMapper {
   @override
   Future<void> initialize(NitriteConfig nitriteConfig) async {}
 
-  /// Adds a value type to ignore during mapping.
-  void addValueType<T>() {
-    _valueTypes.add("$T");
-    _valueTypes.add("$T?");
-  }
-
   /// Registers an [EntityConverter].
   void registerEntityConverter(EntityConverter<dynamic> entityConverter) {
     entityConverter.notNullOrEmpty("entityConverter cannot be null");
@@ -80,30 +74,55 @@ class SimpleNitriteMapper extends NitriteMapper {
 
   /// Converts an object of type [Source] to a document.
   Document _convertToDocument<Source>(Source source) {
-    var type = source != null ? source.runtimeType.toString() : "$Source";
-    if (_converterRegistry.containsKey(type)) {
-      var serializer = _converterRegistry[type] as EntityConverter<Source>;
+    var converter = _findEntityConverter(source);
+    if (converter != null) {
       try {
-        return serializer.toDocument(source, this);
+        return converter.toDocument(source, this);
       } on StackOverflowError {
-        throw ObjectMappingException('Circular reference detected in $type');
+        throw ObjectMappingException('Circular reference detected in $source');
       }
     }
 
     throw ObjectMappingException('Can\'t convert object of type '
-        '$type to Document, try registering a '
+        '${source.runtimeType} to Document, try registering a '
         'EntityConverter for it.');
   }
 
   /// Converts a document to a target object of type [Target].
   Target? _convertFromDocument<Target, Source>(Document source) {
-    var type = "$Target";
-    if (_converterRegistry.containsKey(type)) {
-      var serializer = _converterRegistry[type] as EntityConverter<Target>;
-      return serializer.fromDocument(source, this);
+    var converter = _findEntityConverterByType<Target>();
+    if (converter != null) {
+      return converter.fromDocument(source, this) as Target;
     }
 
     throw ObjectMappingException('Can\'t convert Document to type '
-        '$type, try registering a EntityConverter for it.');
+        '$Target, try registering a EntityConverter for it.');
+  }
+
+  EntityConverter? _findEntityConverter(dynamic value) {
+    EntityConverter? match;
+    for (var converter in _converterRegistry.values) {
+      if (converter.matchesRuntimeType(value)) {
+        return converter;
+      }
+
+      if (converter.matchesType(value) && match == null) {
+        match = converter;
+      }
+    }
+    return match;
+  }
+
+  EntityConverter? _findEntityConverterByType<T>() {
+    for (var converter in _converterRegistry.values) {
+      if (converter.matchesByType<T>()) {
+        return converter;
+      }
+
+      if (converter.matchesByType<T?>()) {
+        return converter;
+      }
+    }
+    return null;
   }
 }

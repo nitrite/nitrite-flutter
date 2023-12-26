@@ -125,7 +125,7 @@ class ConverterWriter {
         } else {
           buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
-              fieldInfo.fieldType.getDisplayString(withNullability: true));
+              fieldInfo.fieldType.getDisplayString(withNullability: false));
           buffer.write(', Document>(');
           buffer.write("document['$keyName'])");
 
@@ -183,7 +183,7 @@ class ConverterWriter {
         } else {
           buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
-              fieldInfo.fieldType.getDisplayString(withNullability: true));
+              fieldInfo.fieldType.getDisplayString(withNullability: false));
           buffer.write(', Document>(');
           buffer.write("document['$keyName'])");
 
@@ -231,7 +231,7 @@ class ConverterWriter {
         } else {
           buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
-              propInfo.fieldType.getDisplayString(withNullability: true));
+              propInfo.fieldType.getDisplayString(withNullability: false));
           buffer.write(', Document>(');
           buffer.write("document['$keyName'])");
 
@@ -285,7 +285,7 @@ class ConverterWriter {
           buffer.write("document.put('$keyName', ");
           buffer.write('nitriteMapper.tryConvert<Document, ');
           buffer.write(
-              fieldInfo.fieldType.getDisplayString(withNullability: true));
+              fieldInfo.fieldType.getDisplayString(withNullability: false));
           buffer.writeln('>(entity.${fieldInfo.fieldName}));');
         }
       }
@@ -326,7 +326,7 @@ class ConverterWriter {
           buffer.write("document.put('$keyName', ");
           buffer.write('nitriteMapper.tryConvert<Document, ');
           buffer.write(
-              propInfo.fieldType.getDisplayString(withNullability: true));
+              propInfo.fieldType.getDisplayString(withNullability: false));
           buffer.writeln('>(entity.${propInfo.getterFieldName}));');
         }
       }

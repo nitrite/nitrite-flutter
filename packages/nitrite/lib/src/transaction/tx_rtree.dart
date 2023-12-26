@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 /// @nodoc
 class TransactionalRTree<Key extends BoundingBox, Value>
     extends NitriteRTree<Key, Value> {
-  final Map<SpatialKey, Key> _map;
+  final Map<SpatialKey, Key?> _map;
   final NitriteRTree<Key, Value> _primaryRTree;
   final String _mapName;
   final NitriteStore _store;
@@ -18,7 +18,7 @@ class TransactionalRTree<Key extends BoundingBox, Value>
   Future<int> size() async => _map.length;
 
   @override
-  Future<void> add(Key key, NitriteId? value) async {
+  Future<void> add(Key? key, NitriteId? value) async {
     if (value != null && value.idValue.isNotEmpty) {
       var spatialKey = _getKey(key, int.parse(value.idValue));
       _map[spatialKey] = key;
@@ -26,7 +26,7 @@ class TransactionalRTree<Key extends BoundingBox, Value>
   }
 
   @override
-  Future<void> remove(Key key, NitriteId? value) async {
+  Future<void> remove(Key? key, NitriteId? value) async {
     if (value != null && value.idValue.isNotEmpty) {
       var spatialKey = _getKey(key, int.parse(value.idValue));
       _map.remove(spatialKey);
@@ -34,7 +34,7 @@ class TransactionalRTree<Key extends BoundingBox, Value>
   }
 
   @override
-  Stream<NitriteId> findIntersectingKeys(Key key) {
+  Stream<NitriteId> findIntersectingKeys(Key? key) {
     var spatialKey = _getKey(key, 0);
     var set = <NitriteId>{};
 
@@ -52,7 +52,7 @@ class TransactionalRTree<Key extends BoundingBox, Value>
   }
 
   @override
-  Stream<NitriteId> findContainedKeys(Key key) {
+  Stream<NitriteId> findContainedKeys(Key? key) {
     var spatialKey = _getKey(key, 0);
     var set = <NitriteId>{};
 
@@ -87,7 +87,10 @@ class TransactionalRTree<Key extends BoundingBox, Value>
     await _store.removeRTree(_mapName);
   }
 
-  SpatialKey _getKey(Key key, int id) {
+  SpatialKey _getKey(Key? key, int id) {
+    if (key == null || key == BoundingBox.empty) {
+      return SpatialKey(id, []);
+    }
     return SpatialKey(id, [key.minX, key.maxX, key.minY, key.maxY]);
   }
 

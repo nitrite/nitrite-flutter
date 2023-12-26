@@ -19,6 +19,9 @@ class NitriteConfig {
   /// A map of migrations to be applied to the database.
   Map<int, SplayTreeMap<int, Migration>> get migrations => _migrations;
 
+  /// A list of [EntityConverter] instances registered with Nitrite.
+  List<EntityConverter> get entityConverters => _entityConverters;
+
   /// Returns the [PluginManager] instance.
   PluginManager get pluginManager => _pluginManager;
 
@@ -58,12 +61,14 @@ class NitriteConfig {
   /// convert between an entity and a [Document].
   ///
   /// Throws [InvalidOperationException] if the database is already initialized.
-  void registerEntityConverter(EntityConverter<dynamic> entityConverter) {
+  NitriteConfig registerEntityConverter(
+      EntityConverter<dynamic> entityConverter) {
     if (_configured) {
       throw InvalidOperationException("Cannot register entity converter after "
           "database initialization");
     }
     _entityConverters.add(entityConverter);
+    return this;
   }
 
   /// Adds a migration step to the configuration. A migration step is a process
@@ -145,14 +150,6 @@ class NitriteConfig {
   }
 
   Future<void> _loadModules() async {
-    if (_entityConverters.isNotEmpty) {
-      var mapper = SimpleNitriteMapper();
-      for (EntityConverter entityConverter in _entityConverters) {
-        mapper.registerEntityConverter(entityConverter);
-      }
-      await _pluginManager.loadModule(module([mapper]));
-    }
-
     for (NitriteModule module in _modules) {
       await _pluginManager.loadModule(module);
     }

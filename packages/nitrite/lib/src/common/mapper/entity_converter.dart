@@ -1,8 +1,10 @@
 import 'package:nitrite/nitrite.dart';
 
+import '../util/object_utils.dart';
+
 /// An abstract class that is used to convert an entity of type [T]
 /// into a database [Document] and vice versa.
-abstract class EntityConverter<T> {
+abstract class EntityConverter<T> extends NitritePlugin {
   /// Gets the entity type.
   Type get entityType => T;
 
@@ -186,4 +188,13 @@ abstract class EntityConverter<T> {
     }
     return resultMap;
   }
+
+  bool matchesRuntimeType(dynamic value) => value.runtimeType == T;
+
+  bool matchesType(dynamic value) => value is T;
+
+  bool matchesByType<R>() => isSubtype<R?, T?>();
+
+  @override
+  Future<void> initialize(NitriteConfig nitriteConfig) async {}
 }

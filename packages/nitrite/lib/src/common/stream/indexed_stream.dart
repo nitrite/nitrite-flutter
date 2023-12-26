@@ -12,7 +12,9 @@ class IndexedStream extends StreamView<Document> {
       NitriteMap<NitriteId, Document> nitriteMap) async* {
     await for (var id in stream) {
       var doc = await nitriteMap[id];
-      yield doc!;
+      if (doc != null) {
+        yield doc;
+      }
     }
   }
 }

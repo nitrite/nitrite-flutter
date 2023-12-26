@@ -18,7 +18,7 @@ class DBValue implements Comparable<DBValue> {
       return -1;
     }
 
-    return compare(_value!, other._value!);
+    return compare(_value, other._value);
   }
 
   @override

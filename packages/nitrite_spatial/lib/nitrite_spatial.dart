@@ -1,7 +1,7 @@
 library nitrite_spatial;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/converter.dart';
+export 'src/filter.dart' show Center, SpatialFilter, SpatialFluentFilter, where;
+export 'src/geom_utils.dart' show GeometrySerializer;
+export 'src/indexer.dart' show spatialIndex;
+export 'src/module.dart';

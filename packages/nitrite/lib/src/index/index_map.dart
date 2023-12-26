@@ -26,9 +26,9 @@ class IndexMap {
         : (comparable == null ? DBNull.instance : DBValue(comparable));
 
     if (_nitriteMap != null) {
-      return _nitriteMap![dbKey];
+      return _nitriteMap[dbKey];
     } else if (_navigableMap != null) {
-      return _navigableMap![dbKey];
+      return _navigableMap[dbKey];
     }
     return null;
   }
@@ -40,15 +40,15 @@ class IndexMap {
 
     if (!_reverseScan) {
       if (_nitriteMap != null) {
-        dbKey = await _nitriteMap!.ceilingKey(dbKey);
+        dbKey = await _nitriteMap.ceilingKey(dbKey);
       } else if (_navigableMap != null) {
-        dbKey = _navigableMap!.ceilingKey(dbKey);
+        dbKey = _navigableMap.ceilingKey(dbKey);
       }
     } else {
       if (_nitriteMap != null) {
-        dbKey = await _nitriteMap!.floorKey(dbKey);
+        dbKey = await _nitriteMap.floorKey(dbKey);
       } else if (_navigableMap != null) {
-        dbKey = _navigableMap!.floorKey(dbKey);
+        dbKey = _navigableMap.floorKey(dbKey);
       }
     }
 
@@ -62,15 +62,15 @@ class IndexMap {
 
     if (!_reverseScan) {
       if (_nitriteMap != null) {
-        dbKey = await _nitriteMap!.higherKey(dbKey);
+        dbKey = await _nitriteMap.higherKey(dbKey);
       } else if (_navigableMap != null) {
-        dbKey = _navigableMap!.higherKey(dbKey);
+        dbKey = _navigableMap.higherKey(dbKey);
       }
     } else {
       if (_nitriteMap != null) {
-        dbKey = await _nitriteMap!.lowerKey(dbKey);
+        dbKey = await _nitriteMap.lowerKey(dbKey);
       } else if (_navigableMap != null) {
-        dbKey = _navigableMap!.lowerKey(dbKey);
+        dbKey = _navigableMap.lowerKey(dbKey);
       }
     }
 
@@ -84,15 +84,15 @@ class IndexMap {
 
     if (!_reverseScan) {
       if (_nitriteMap != null) {
-        dbKey = await _nitriteMap!.floorKey(dbKey);
+        dbKey = await _nitriteMap.floorKey(dbKey);
       } else if (_navigableMap != null) {
-        dbKey = _navigableMap!.floorKey(dbKey);
+        dbKey = _navigableMap.floorKey(dbKey);
       }
     } else {
       if (_nitriteMap != null) {
-        dbKey = await _nitriteMap!.ceilingKey(dbKey);
+        dbKey = await _nitriteMap.ceilingKey(dbKey);
       } else if (_navigableMap != null) {
-        dbKey = _navigableMap!.ceilingKey(dbKey);
+        dbKey = _navigableMap.ceilingKey(dbKey);
       }
     }
 
@@ -106,15 +106,15 @@ class IndexMap {
 
     if (!_reverseScan) {
       if (_nitriteMap != null) {
-        dbKey = await _nitriteMap!.lowerKey(dbKey);
+        dbKey = await _nitriteMap.lowerKey(dbKey);
       } else if (_navigableMap != null) {
-        dbKey = _navigableMap!.lowerKey(dbKey);
+        dbKey = _navigableMap.lowerKey(dbKey);
       }
     } else {
       if (_nitriteMap != null) {
-        dbKey = await _nitriteMap!.higherKey(dbKey);
+        dbKey = await _nitriteMap.higherKey(dbKey);
       } else if (_navigableMap != null) {
-        dbKey = _navigableMap!.higherKey(dbKey);
+        dbKey = _navigableMap.higherKey(dbKey);
       }
     }
 
@@ -124,7 +124,7 @@ class IndexMap {
   Stream<(Comparable?, dynamic)> entries() async* {
     if (_nitriteMap != null) {
       if (!_reverseScan) {
-        yield* _nitriteMap!.entries().map((entry) {
+        yield* _nitriteMap.entries().map((entry) {
           var dbKey = entry.$1;
           if (dbKey is DBNull) {
             return (null, entry.$2);
@@ -133,7 +133,7 @@ class IndexMap {
           }
         });
       } else {
-        yield* _nitriteMap!.reversedEntries().map((entry) {
+        yield* _nitriteMap.reversedEntries().map((entry) {
           var dbKey = entry.$1;
           if (dbKey is DBNull) {
             return (null, entry.$2);
@@ -144,7 +144,7 @@ class IndexMap {
       }
     } else if (_navigableMap != null) {
       if (!_reverseScan) {
-        yield* Stream.fromIterable(_navigableMap!.entries.map((entry) {
+        yield* Stream.fromIterable(_navigableMap.entries.map((entry) {
           var dbKey = entry.key;
           if (dbKey is DBNull) {
             return (null, entry.value);
@@ -153,7 +153,7 @@ class IndexMap {
           }
         }));
       } else {
-        yield* Stream.fromIterable(_navigableMap!.reversedEntries.map((entry) {
+        yield* Stream.fromIterable(_navigableMap.reversedEntries.map((entry) {
           var dbKey = entry.key;
           if (dbKey is DBNull) {
             return (null, entry.value);

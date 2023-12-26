@@ -5,22 +5,22 @@ class SpatialKey {
   final int id;
   final List<double> minMax;
 
-  const SpatialKey(this.id, this.minMax);
+  SpatialKey(this.id, this.minMax);
 
   double min(int dim) {
-    return minMax[dim * 2];
+    return minMax[dim + dim];
   }
 
   void setMin(int dim, double value) {
-    minMax[dim * 2] = value;
+    minMax[dim + dim] = value;
   }
 
   double max(int dim) {
-    return minMax[dim * 2 + 1];
+    return minMax[dim + dim + 1];
   }
 
   void setMax(int dim, double value) {
-    minMax[dim * 2 + 1] = value;
+    minMax[dim + dim + 1] = value;
   }
 
   bool isNull() {
@@ -43,5 +43,10 @@ class SpatialKey {
     }
 
     return ListEquality().equals(minMax, other.minMax);
+  }
+
+  @override
+  String toString() {
+    return 'SpatialKey{id: $id, minMax: $minMax}';
   }
 }

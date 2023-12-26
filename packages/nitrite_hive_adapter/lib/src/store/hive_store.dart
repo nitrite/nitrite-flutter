@@ -9,7 +9,7 @@ import 'package:nitrite_hive_adapter/src/store/box_map.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_meta.dart';
 import 'package:nitrite_hive_adapter/src/store/key_encoder.dart';
 
-import 'box_tree.dart';
+import 'box_rtree.dart';
 import 'hive_module.dart';
 import 'hive_utils.dart';
 
@@ -108,13 +108,13 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
   Future<NitriteRTree<Key, Value>> openRTree<Key extends BoundingBox, Value>(
       String rTreeName) async {
     if (_nitriteRTreeMapRegistry.containsKey(rTreeName)) {
-      return _nitriteRTreeMapRegistry[rTreeName] as NitriteRTree<Key, Value>;
-    } else {
-      var nitriteMap = await _openBoxMap<SpatialKey, Key>(rTreeName);
-      var rTree = BoxTree<Key, Value>(nitriteMap);
-      _nitriteRTreeMapRegistry[rTreeName] = rTree;
-      return rTree;
+      return _nitriteRTreeMapRegistry[rTreeName] as BoxRTree<Key, Value>;
     }
+
+    var nitriteMap = await _openBoxMap<SpatialKey, Key?>(rTreeName);
+    var rTree = BoxRTree<Key, Value>(nitriteMap);
+    _nitriteRTreeMapRegistry[rTreeName] = rTree;
+    return rTree;
   }
 
   @override
@@ -165,6 +165,7 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
     if (_masterBox.containsKey(mapName)) {
       return _masterBox.get(mapName);
     }
+
     var sanitizedName = _sanitizeName(mapName);
     await _masterBox.put(mapName, sanitizedName);
     await _masterBox.flush();

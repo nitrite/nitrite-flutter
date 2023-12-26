@@ -9,6 +9,7 @@ import 'package:nitrite/src/store/memory/in_memory_store_module.dart';
 class PluginManager {
   static final Logger _log = Logger('PluginManager');
 
+  final List<EntityConverter> _entityConverters = [];
   final Map<String, NitriteIndexer> _indexerMap = {};
   final NitriteConfig _nitriteConfig;
 
@@ -85,6 +86,8 @@ class PluginManager {
       await _loadNitriteMapper(plugin);
     } else if (plugin is NitriteStore) {
       await _loadNitriteStore(plugin);
+    } else if (plugin is EntityConverter) {
+      await _loadEntityConverter(plugin);
     } else {
       await plugin.close();
       throw PluginException("Unknown plugin type: ${plugin.runtimeType}");
@@ -116,6 +119,10 @@ class PluginManager {
     _indexerMap[plugin.indexType] = plugin;
   }
 
+  Future<void> _loadEntityConverter(EntityConverter plugin) async {
+    _entityConverters.add(plugin);
+  }
+
   Future<void> _loadInternalPlugins() async {
     if (!_indexerMap.containsKey(IndexType.unique)) {
       _log.fine("Loading default unique indexer");
@@ -139,6 +146,20 @@ class PluginManager {
       _log.fine("Loading nitrite mapper");
       var plugin = SimpleNitriteMapper();
       await _loadPlugin(plugin);
+    }
+
+    if (_nitriteMapper != null && _nitriteMapper is SimpleNitriteMapper) {
+      if (_nitriteConfig.entityConverters.isNotEmpty) {
+        for (var converter in _nitriteConfig.entityConverters) {
+          (_nitriteMapper as SimpleNitriteMapper)
+              .registerEntityConverter(converter);
+        }
+      }
+
+      for (var converter in _entityConverters) {
+        (_nitriteMapper as SimpleNitriteMapper)
+            .registerEntityConverter(converter);
+      }
     }
 
     if (_nitriteStore == null) {

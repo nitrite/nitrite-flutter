@@ -1,11 +1,9 @@
-import 'dart:collection';
-
 import 'package:nitrite/nitrite.dart';
 
 /// @nodoc
 class InMemoryRTree<Key extends BoundingBox, Value>
     extends NitriteRTree<Key, Value> {
-  final Map<SpatialKey, Key> _backingMap = SplayTreeMap<SpatialKey, Key>();
+  final Map<SpatialKey, Key?> _backingMap = <SpatialKey, Key?>{};
   final NitriteStore _nitriteStore;
   final String _mapName;
 
@@ -21,7 +19,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   }
 
   @override
-  Future<void> add(Key key, NitriteId? value) async {
+  Future<void> add(Key? key, NitriteId? value) async {
     _checkOpened();
     if (value != null) {
       var spatialKey = _getKey(key, int.parse(value.idValue));
@@ -30,7 +28,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   }
 
   @override
-  Future<void> remove(Key key, NitriteId? value) async {
+  Future<void> remove(Key? key, NitriteId? value) async {
     _checkOpened();
     if (value != null) {
       var spatialKey = _getKey(key, int.parse(value.idValue));
@@ -39,7 +37,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   }
 
   @override
-  Stream<NitriteId> findIntersectingKeys(Key key) async* {
+  Stream<NitriteId> findIntersectingKeys(Key? key) async* {
     _checkOpened();
     var spatialKey = _getKey(key, 0);
 
@@ -51,7 +49,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   }
 
   @override
-  Stream<NitriteId> findContainedKeys(Key key) async* {
+  Stream<NitriteId> findContainedKeys(Key? key) async* {
     _checkOpened();
     var spatialKey = _getKey(key, 0);
 
@@ -83,25 +81,38 @@ class InMemoryRTree<Key extends BoundingBox, Value>
     await _nitriteStore.removeRTree(_mapName);
   }
 
-  SpatialKey _getKey(Key key, int id) {
+  SpatialKey _getKey(Key? key, int id) {
+    if (key == null || key == BoundingBox.empty) {
+      return SpatialKey(id, []);
+    }
     return SpatialKey(id, [key.minX, key.maxX, key.minY, key.maxY]);
   }
 
   bool _isOverlap(SpatialKey a, SpatialKey b) {
+    if (a.isNull() || b.isNull()) {
+      return false;
+    }
+
     for (var i = 0; i < 2; i++) {
       if (a.max(i) < b.min(i) || a.min(i) > b.max(i)) {
         return false;
       }
     }
+
     return true;
   }
 
   bool _isInside(SpatialKey a, SpatialKey b) {
+    if (a.isNull() || b.isNull()) {
+      return false;
+    }
+
     for (var i = 0; i < 2; i++) {
       if (a.min(i) <= b.min(i) || a.max(i) >= b.max(i)) {
         return false;
       }
     }
+
     return true;
   }
 

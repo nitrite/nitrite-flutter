@@ -21,7 +21,7 @@ class RepositoryOperations<T> {
       : _nitriteMapper = _nitriteConfig.nitriteMapper {
     if (_entityDecorator != null) {
       _entityDecoratorReader =
-          EntityDecoratorReader<T>(_entityDecorator!, _nitriteCollection);
+          EntityDecoratorReader<T>(_entityDecorator, _nitriteCollection);
     } else {
       _nitriteEntityReader =
           NitriteEntityReader<T>(_nitriteMapper, _nitriteCollection);

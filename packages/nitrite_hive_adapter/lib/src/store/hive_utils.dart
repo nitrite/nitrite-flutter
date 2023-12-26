@@ -8,6 +8,7 @@ import 'package:nitrite_hive_adapter/src/adapters/document_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/fields_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/nitrite_id_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/set_adapter.dart';
+import 'package:nitrite_hive_adapter/src/adapters/spatial_adapters.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_module.dart';
 
 /// @nodoc
@@ -22,7 +23,9 @@ Future<HiveImpl> openHiveDb(HiveConfig hiveConfig) async {
   _registerBuiltinTypeAdapters(hive);
 
   // register user adapters (if any)
-  hiveConfig.typeAdapters.forEach(hive.registerAdapter);
+  for (var register in hiveConfig.typeAdapterRegistry) {
+    register(hive);
+  }
   return hive;
 }
 
@@ -34,13 +37,14 @@ void _registerBuiltinTypeAdapters(HiveImpl hive) {
   hive.registerAdapter(DBNullAdapter());
   hive.registerAdapter(FieldsAdapter());
   hive.registerAdapter(DateTimeAdapter(), internal: true);
+  hive.registerAdapter(SpatialKeyAdapter());
+  hive.registerAdapter(BoundingBoxAdapter());
 }
 
 /// @nodoc
 int nitriteKeyComparator(dynamic k1, dynamic k2) {
   if (k1 is Comparable && k2 is Comparable) {
     return compare(k1, k2);
-  } else {
-    return 1;
   }
+  return 1;
 }

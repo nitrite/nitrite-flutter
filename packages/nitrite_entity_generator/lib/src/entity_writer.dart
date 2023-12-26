@@ -58,7 +58,7 @@ class EntityWriter {
               buffer.write('IndexType.fullText)');
               break;
             default:
-              buffer.write(index.indexType.toString());
+              buffer.write('\'${index.indexType}\')');
               break;
           }
           buffer.writeln(',');

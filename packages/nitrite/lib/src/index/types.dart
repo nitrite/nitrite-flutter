@@ -1,18 +1,43 @@
 import 'package:nitrite/nitrite.dart';
 
 /// Represents a bounding box for spatial indexing.
-abstract class BoundingBox {
+class BoundingBox {
+  /// An empty bounding box.
+  static final empty = BoundingBox(0, 0, 0, 0);
+
   /// Returns the minimum x-coordinate of the bounding box.
-  double get minX;
+  final double minX;
 
   /// Returns the maximum x-coordinate of the bounding box.
-  double get minY;
+  final double minY;
 
   /// Returns the minimum y-coordinate of the bounding box.
-  double get maxX;
+  final double maxX;
 
   /// Returns the maximum Y coordinate of the bounding box.
-  double get maxY;
+  final double maxY;
+
+  /// Creates a new [BoundingBox] with the specified coordinates.
+  BoundingBox(this.minX, this.minY, this.maxX, this.maxY);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BoundingBox &&
+          runtimeType == other.runtimeType &&
+          minX == other.minX &&
+          minY == other.minY &&
+          maxX == other.maxX &&
+          maxY == other.maxY;
+
+  @override
+  int get hashCode =>
+      minX.hashCode ^ minY.hashCode ^ maxX.hashCode ^ maxY.hashCode;
+
+  @override
+  String toString() {
+    return 'BoundingBox{minX: $minX, minY: $minY, maxX: $maxX, maxY: $maxY}';
+  }
 }
 
 /// Creates an [IndexOptions] with the specified [indexType].

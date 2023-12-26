@@ -5,13 +5,13 @@ import 'package:nitrite/src/store/memory/in_memory_store_module.dart';
 
 /// @nodoc
 class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
-  final Map<String, NitriteMap<dynamic, dynamic>> _nitriteMapRegistry;
-  final Map<String, NitriteRTree<dynamic, dynamic>> _nitriteRTreeMapRegistry;
+  final Map<String, dynamic> _nitriteMapRegistry;
+  final Map<String, dynamic> _nitriteRTreeMapRegistry;
   bool _closed = false;
 
   InMemoryStore(super._storeConfig)
-      : _nitriteMapRegistry = <String, NitriteMap<dynamic, dynamic>>{},
-        _nitriteRTreeMapRegistry = <String, NitriteRTree<dynamic, dynamic>>{};
+      : _nitriteMapRegistry = <String, dynamic>{},
+        _nitriteRTreeMapRegistry = <String, dynamic>{};
 
   @override
   bool get isClosed => _closed;
@@ -38,12 +38,10 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
     _closed = true;
 
     // to avoid concurrent modification exception
-    var tempMap =
-        Map<String, NitriteMap<dynamic, dynamic>>.from(_nitriteMapRegistry);
+    var tempMap = Map.from(_nitriteMapRegistry);
     tempMap.entries.forEach(close);
 
-    tempMap = Map<String, NitriteMap<dynamic, dynamic>>.from(
-        _nitriteRTreeMapRegistry);
+    tempMap = Map.from(_nitriteRTreeMapRegistry);
     tempMap.entries.forEach(close);
 
     _nitriteMapRegistry.clear();

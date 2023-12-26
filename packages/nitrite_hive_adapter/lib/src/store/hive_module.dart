@@ -12,7 +12,7 @@ class HiveConfig extends StoreConfig {
   CompactionStrategy? _compactionStrategy;
   bool _crashRecovery = true;
   Set<StoreEventListener> _eventListeners = {};
-  Set<TypeAdapter<dynamic>> _typeAdapters = {};
+  Set<TypeAdapterRegistrar> _typeAdapterRegistry = {};
 
   @override
   void addStoreEventListener(StoreEventListener listener) {
@@ -42,7 +42,8 @@ class HiveConfig extends StoreConfig {
   bool get crashRecovery => _crashRecovery;
 
   /// Returns an unmodifiable set of [TypeAdapter]s used by the Hive store.
-  Set<TypeAdapter<dynamic>> get typeAdapters => Set.unmodifiable(_typeAdapters);
+  Set<TypeAdapterRegistrar> get typeAdapterRegistry =>
+      Set.unmodifiable(_typeAdapterRegistry);
 
   /// Returns a new instance of [HiveConfig] with the same values as the current
   ///  instance.
@@ -54,7 +55,7 @@ class HiveConfig extends StoreConfig {
       .._compactionStrategy = _compactionStrategy
       .._crashRecovery = _crashRecovery
       .._encryptionCipher = _encryptionCipher
-      .._typeAdapters = _typeAdapters;
+      .._typeAdapterRegistry = _typeAdapterRegistry;
   }
 }
 
@@ -95,27 +96,26 @@ class HiveModuleBuilder {
 
   late Set<StoreEventListener> _eventListeners;
   late HiveConfig _storeConfig;
-  late Set<TypeAdapter<dynamic>> _typeAdapters;
+  late Set<TypeAdapterRegistrar> _typeAdapterRegistry;
 
   /// Creates a new instance of [HiveModuleBuilder].
   HiveModuleBuilder() {
     _storeConfig = HiveConfig();
     _eventListeners = {};
-    _typeAdapters = {};
+    _typeAdapterRegistry = {};
   }
 
-  
   /// Sets the path of the Hive database file.
-  /// 
+  ///
   /// [value] is the path of the Hive database file.
-  /// 
+  ///
   /// Returns a [HiveModuleBuilder] instance.
   HiveModuleBuilder path(String value) {
     _path = value;
     return this;
   }
 
-  /// Returns a [HiveModuleBuilder] instance with the given [value] as the 
+  /// Returns a [HiveModuleBuilder] instance with the given [value] as the
   /// storage backend preference.
   HiveModuleBuilder backendPreference(HiveStorageBackendPreference value) {
     _backendPreference = value;
@@ -123,9 +123,9 @@ class HiveModuleBuilder {
   }
 
   /// Sets the encryption cipher for the Hive database.
-  /// 
+  ///
   /// The [value] parameter is the encryption cipher to be used.
-  /// 
+  ///
   /// Returns a [HiveModuleBuilder] instance.
   HiveModuleBuilder encryptionCipher(HiveCipher value) {
     _encryptionCipher = value;
@@ -133,7 +133,7 @@ class HiveModuleBuilder {
   }
 
   /// Sets the compaction strategy for the Hive module.
-  /// 
+  ///
   /// The `value` parameter specifies the compaction strategy to be set.
   /// Returns a [HiveModuleBuilder] instance.
   HiveModuleBuilder compactionStrategy(CompactionStrategy value) {
@@ -150,25 +150,28 @@ class HiveModuleBuilder {
   /// Returns a set of [StoreEventListener]s that are registered with this [HiveModule].
   Set<StoreEventListener> get eventListeners =>
       Set.unmodifiable(_eventListeners);
-      
+
   /// Adds a listener to the store events.
   ///
-  /// The [listener] parameter is a function that will be called whenever a 
+  /// The [listener] parameter is a function that will be called whenever a
   /// store event occurs.
-  void addStoreEventListener(StoreEventListener listener) {
+  HiveModuleBuilder addStoreEventListener(StoreEventListener listener) {
     _eventListeners.add(listener);
+    return this;
   }
 
-  /// Returns an unmodifiable set of [TypeAdapter]s used by the Hive store.
-  Set<TypeAdapter<dynamic>> get typeAdapters => Set.unmodifiable(_typeAdapters);
+  /// Returns an unmodifiable set of [TypeAdapterRegistrar]s used by the Hive store.
+  Set<TypeAdapterRegistrar> get typeAdapterRegistry =>
+      Set.unmodifiable(_typeAdapterRegistry);
 
-  
   /// Adds a [TypeAdapter] for the specified type [T] to the module.
   ///
-  /// The [TypeAdapter] will be used to serialize and deserialize objects of 
+  /// The [TypeAdapter] will be used to serialize and deserialize objects of
   /// type [T] when they are stored in the Hive database.
-  void addTypeAdapter<T>(TypeAdapter<T> typeAdapter) {
-    _typeAdapters.add(typeAdapter);
+  HiveModuleBuilder addTypeAdapter<T>(TypeAdapter<T> typeAdapter) {
+    _typeAdapterRegistry
+        .add((HiveInterface hive) => hive.registerAdapter<T>(typeAdapter));
+    return this;
   }
 
   /// Builds a [HiveModule] instance.
@@ -180,10 +183,13 @@ class HiveModuleBuilder {
     _storeConfig._encryptionCipher = _encryptionCipher;
     _storeConfig._compactionStrategy = _compactionStrategy;
     _storeConfig._crashRecovery = _crashRecovery;
-    _storeConfig._typeAdapters = _typeAdapters;
+    _storeConfig._typeAdapterRegistry = _typeAdapterRegistry;
     _storeConfig._eventListeners = _eventListeners;
 
     module._storeConfig = _storeConfig;
     return module;
   }
 }
+
+/// A function that registers a [TypeAdapter] with the Hive store.
+typedef TypeAdapterRegistrar = void Function(HiveInterface);
