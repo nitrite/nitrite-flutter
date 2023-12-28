@@ -363,7 +363,7 @@ To build and test Nitrite, you need to install melos. Melos is a CLI tool to man
 ```shell script
 
 melos bs
-melos test
+melos run test
 
 ```
 
