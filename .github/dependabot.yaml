@@ -1,0 +1,70 @@
+version: 2
+
+enable-beta-ecosystems: true
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: main
+
+  - package-ecosystem: "pub"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: main
+
+  - package-ecosystem: "pub"
+    directory: "/examples/nitrite_demo"
+    schedule:
+      interval: "daily"
+    target-branch: main
+    ignore:
+      - dependency-name: "nitrite"
+      - dependency-name: "nitrite_entity_generator"
+      - dependency-name: "nitrite_hive_adapter"
+
+  - package-ecosystem: "pub"
+    directory: "/packages/nitrite"
+    schedule:
+      interval: "daily"
+    target-branch: main
+    ignore:
+      - dependency-name: "nitrite_entity_generator"
+
+  - package-ecosystem: "pub"
+    directory: "/packages/nitrite_entity_generator"
+    schedule:
+      interval: "daily"
+    target-branch: main
+    ignore:
+      - dependency-name: "nitrite"
+
+  - package-ecosystem: "pub"
+    directory: "/packages/nitrite_hive_adapter"
+    schedule:
+      interval: "daily"
+    target-branch: main
+    ignore:
+      - dependency-name: "nitrite"
+      - dependency-name: "nitrite_entity_generator"
+
+  - package-ecosystem: "pub"
+    directory: "/packages/nitrite_spatial"
+    schedule:
+      interval: "daily"
+    target-branch: main
+    ignore:
+      - dependency-name: "nitrite"
+      - dependency-name: "nitrite_entity_generator"
+      - dependency-name: "nitrite_hive_adapter"
+
+  - package-ecosystem: "pub"
+    directory: "/packages/nitrite_support"
+    schedule:
+      interval: "daily"
+    target-branch: main
+    ignore:
+      - dependency-name: "nitrite"
+      - dependency-name: "nitrite_entity_generator"
+      - dependency-name: "nitrite_hive_adapter"
