@@ -67,7 +67,7 @@ void main() {
   });
 }
 
-@GenerateConverter()
+@Convertable()
 class _Employee {
   String? empId;
   String? name;
@@ -89,7 +89,7 @@ class _Employee {
       empId.hashCode ^ name.hashCode ^ joiningDate.hashCode ^ boss.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class _Department {
   String? name;
   List<_Employee> employees = [];

@@ -42,7 +42,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.4.6
-  nitrite_entity_generator: ^[version]
+  nitrite_generator: ^[version]
 
 ```
 
@@ -87,7 +87,7 @@ The nitrite entity generator package can automatically generate entity classes f
 ```yaml
 
 dev_dependencies:
-  nitrite_entity_generator: ^[version]
+  nitrite_generator: ^[version]
 
 ```
 

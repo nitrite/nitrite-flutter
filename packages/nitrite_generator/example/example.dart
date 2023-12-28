@@ -2,7 +2,7 @@ import 'package:nitrite/nitrite.dart';
 
 part 'example.no2.dart';
 
-@GenerateConverter(className: 'MyBookConverter')
+@Convertable(className: 'MyBookConverter')
 @Entity(name: 'books', indices: [
   Index(fields: ['tags'], type: IndexType.nonUnique),
   Index(fields: ['description'], type: IndexType.fullText),
@@ -29,7 +29,7 @@ class Book with _$BookEntityMixin {
 }
 
 // composite id class
-@GenerateConverter()
+@Convertable()
 class BookId {
   String? isbn;
 

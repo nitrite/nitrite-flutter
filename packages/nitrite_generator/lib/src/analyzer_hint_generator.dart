@@ -11,7 +11,7 @@ class AnalyzerHintGenerator extends Generator {
 
   // generates hint only where nitrite annotations are present
   final entityChecker = TypeChecker.fromRuntime(no2.Entity);
-  final converterChecker = TypeChecker.fromRuntime(no2.GenerateConverter);
+  final converterChecker = TypeChecker.fromRuntime(no2.Convertable);
 
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {

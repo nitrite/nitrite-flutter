@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:nitrite_entity_generator/src/type_checker.dart';
+import 'package:nitrite_generator/src/type_checker.dart';
 
 extension IterableExtension<T> on Iterable<T> {
   // discard null values and transform only non-null values

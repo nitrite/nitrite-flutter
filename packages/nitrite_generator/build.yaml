@@ -1,12 +1,12 @@
 targets:
   $default:
     builders:
-      nitrite_entity_generator:
+      nitrite_generator:
         enabled: true
 
 builders:
-  nitrite_entity_generator:
-    import: "package:nitrite_entity_generator/builder.dart"
+  nitrite_generator:
+    import: "package:nitrite_generator/builder.dart"
     # The builder function name, which gets called on build/watch
     builder_factories: ["nitriteEntityBuilder"]
     # The 'partId' argument to 'PartBuilder' is 'no2'

@@ -8,7 +8,7 @@ part 'test_data.no2.dart';
 @Entity(indices: [
   Index(fields: ['geometry'], type: spatialIndex),
 ])
-@GenerateConverter()
+@Convertable()
 class SpatialData with _$SpatialDataEntityMixin {
   @Id(fieldName: 'id')
   int? id;

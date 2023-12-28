@@ -482,7 +482,7 @@ void main() {
   });
 }
 
-@GenerateConverter()
+@Convertable()
 @Entity(name: 'entity.employee', indices: [
   Index(fields: ['firstName'], type: IndexType.nonUnique),
   Index(fields: ['lastName'], type: IndexType.nonUnique),

@@ -15,7 +15,7 @@ var faker = Faker(seed: DateTime.now().millisecondsSinceEpoch);
   Index(fields: ["address"], type: IndexType.fullText),
   Index(fields: ["employeeNote.text"], type: IndexType.fullText),
 ])
-@GenerateConverter()
+@Convertable()
 class Employee with _$EmployeeEntityMixin {
   @Id(fieldName: 'empId')
   int? empId;
@@ -120,7 +120,7 @@ class Company with _$CompanyEntityMixin {
       employeeRecord.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class Note {
   final int noteId;
   final String text;

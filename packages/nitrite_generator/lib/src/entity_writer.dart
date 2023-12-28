@@ -1,6 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_entity_generator/src/common.dart';
+import 'package:nitrite_generator/src/common.dart';
 
 class EntityWriter {
   final EntityInfo _entityInfo;

@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:nitrite_entity_generator/src/common.dart';
-import 'package:nitrite_entity_generator/src/type_checker.dart';
+import 'package:nitrite_generator/src/common.dart';
+import 'package:nitrite_generator/src/type_checker.dart';
 import 'package:source_gen/source_gen.dart';
 
 class ConverterWriter {

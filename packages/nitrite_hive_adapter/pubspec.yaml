@@ -22,7 +22,7 @@ dev_dependencies:
   flutter_lints: ^3.0.1
   build_runner: ^2.4.7
   hive_generator: ^2.0.1
-  nitrite_entity_generator: ^1.0.0
+  nitrite_generator: ^1.0.0
   test: any
   encrypt: ^5.0.3
   faker: ^2.0.0

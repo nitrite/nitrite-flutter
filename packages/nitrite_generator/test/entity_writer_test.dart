@@ -1,5 +1,5 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:nitrite_entity_generator/src/entity_writer.dart';
+import 'package:nitrite_generator/src/entity_writer.dart';
 import 'package:test/test.dart';
 
 import 'test_utils.dart';

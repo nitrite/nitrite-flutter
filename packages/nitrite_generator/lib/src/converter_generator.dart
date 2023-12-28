@@ -1,16 +1,16 @@
+import 'package:analyzer/dart/element/element.dart';
 // ignore: implementation_imports
 import 'package:build/src/builder/build_step.dart';
-import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_entity_generator/src/converter_parser.dart';
+import 'package:nitrite_generator/src/converter_parser.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'converter_writer.dart';
 
 // Generates codes for @GenerateConverter annotation.
-class ConverterGenerator extends GeneratorForAnnotation<GenerateConverter> {
+class ConverterGenerator extends GeneratorForAnnotation<Convertable> {
   final _dartfmt = DartFormatter();
 
   @override

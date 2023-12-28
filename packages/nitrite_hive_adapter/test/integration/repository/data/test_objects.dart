@@ -4,7 +4,7 @@ import 'package:nitrite/src/common/util/number_utils.dart';
 
 part 'test_objects.no2.dart';
 
-@GenerateConverter(className: 'MyBookConverter')
+@Convertable(className: 'MyBookConverter')
 @Entity(name: 'books', indices: [
   Index(fields: ['tags'], type: IndexType.nonUnique),
   Index(fields: ['description'], type: IndexType.fullText),
@@ -50,7 +50,7 @@ class Book with _$BookEntityMixin {
       description.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class BookId {
   String? isbn;
 
@@ -108,7 +108,7 @@ abstract class ParentClass extends SuperDuperClass {
 }
 
 @Entity()
-@GenerateConverter()
+@Convertable()
 class ChildClass extends ParentClass with _$ChildClassEntityMixin {
   String? name;
 
@@ -125,7 +125,7 @@ class ChildClass extends ParentClass with _$ChildClassEntityMixin {
 }
 
 @Entity()
-@GenerateConverter()
+@Convertable()
 class ClassA with _$ClassAEntityMixin {
   ClassB? b;
   String? uid;
@@ -150,7 +150,7 @@ class ClassA with _$ClassAEntityMixin {
   String toString() => '{b: $b, uid: $uid, string: $string, blob: $blob}';
 }
 
-@GenerateConverter()
+@Convertable()
 class ClassB implements Comparable<ClassB> {
   int? number;
   String? text;
@@ -176,7 +176,7 @@ class ClassB implements Comparable<ClassB> {
 }
 
 @Entity()
-@GenerateConverter()
+@Convertable()
 class ClassC with _$ClassCEntityMixin {
   int? id;
   double? digit;
@@ -289,7 +289,7 @@ class CompanyConverter extends EntityConverter<Company> {
   Index(fields: ["address"], type: IndexType.fullText),
   Index(fields: ["employeeNote.text"], type: IndexType.fullText),
 ])
-@GenerateConverter()
+@Convertable()
 class Employee with _$EmployeeEntityMixin {
   @Id(fieldName: 'empId')
   int? empId;
@@ -352,7 +352,7 @@ class Employee with _$EmployeeEntityMixin {
   }
 }
 
-@GenerateConverter()
+@Convertable()
 class SubEmployee {
   int? empId;
   DateTime? joinDate;
@@ -371,7 +371,7 @@ class SubEmployee {
   int get hashCode => empId.hashCode ^ joinDate.hashCode ^ address.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class Note {
   final int noteId;
   final String text;
@@ -395,7 +395,7 @@ class Note {
   }
 }
 
-@GenerateConverter()
+@Convertable()
 class ElemMatch {
   int? id;
   List<String>? strArray;
@@ -414,7 +414,7 @@ class ElemMatch {
   int get hashCode => id.hashCode ^ strArray.hashCode ^ productScores.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class ProductScore {
   String? product;
   int? score;
@@ -431,10 +431,10 @@ class ProductScore {
   int get hashCode => product.hashCode ^ score.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class EmptyClass {}
 
-@GenerateConverter()
+@Convertable()
 class EncryptedPerson {
   String? name;
   String? creditCardNumber;
@@ -463,7 +463,7 @@ class EncryptedPerson {
   Index(fields: ['name'], type: IndexType.fullText),
   Index(fields: ['status'], type: IndexType.nonUnique)
 ])
-@GenerateConverter()
+@Convertable()
 class PersonEntity with _$PersonEntityEntityMixin {
   @Id(fieldName: 'uuid')
   String? uuid;
@@ -497,7 +497,7 @@ class PersonEntity with _$PersonEntityEntityMixin {
   Index(fields: ['lastName'], type: IndexType.fullText),
   Index(fields: ['age'], type: IndexType.nonUnique)
 ])
-@GenerateConverter()
+@Convertable()
 class RepeatableIndexTest with _$RepeatableIndexTestEntityMixin {
   String? firstName;
   int? age;
@@ -517,7 +517,7 @@ class RepeatableIndexTest with _$RepeatableIndexTestEntityMixin {
 }
 
 @Entity()
-@GenerateConverter()
+@Convertable()
 class StressRecord with _$StressRecordEntityMixin {
   final String firstName;
   final String lastName;
@@ -553,7 +553,7 @@ class StressRecord with _$StressRecordEntityMixin {
       notes.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class WithCircularReference {
   String? name;
   WithCircularReference? parent;
@@ -570,7 +570,7 @@ class WithCircularReference {
   int get hashCode => name.hashCode ^ parent.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class WithTypeField {
   @Id(fieldName: 'name')
   String? name;
@@ -588,7 +588,7 @@ class WithTypeField {
   int get hashCode => name.hashCode ^ clazz.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class WithDateId {
   @Id(fieldName: 'id')
   DateTime id;
@@ -616,7 +616,7 @@ class WithDateIdDecorator extends EntityDecorator<WithDateId> {
   List<EntityIndex> get indexFields => [];
 }
 
-@GenerateConverter()
+@Convertable()
 class WithEmptyStringId {
   @Id(fieldName: 'name')
   final String name;
@@ -644,7 +644,7 @@ class WithEmptyStringIdEntityDecorator
 }
 
 @Entity()
-@GenerateConverter()
+@Convertable()
 class WithNitriteId with _$WithNitriteIdEntityMixin {
   @Id(fieldName: 'idField')
   NitriteId? idField;
@@ -668,14 +668,14 @@ class WithNitriteId with _$WithNitriteIdEntityMixin {
 }
 
 @Entity()
-@GenerateConverter()
+@Convertable()
 class WithNullId with _$WithNullIdEntityMixin {
   @Id(fieldName: 'name')
   String? name;
   int? number;
 }
 
-@GenerateConverter()
+@Convertable()
 class WithObjectId {
   @Id(fieldName: 'withOutId', embeddedFields: ['name', 'number'])
   WithOutId? withOutId;
@@ -691,7 +691,7 @@ class WithObjectId {
   int get hashCode => withOutId.hashCode;
 }
 
-@GenerateConverter()
+@Convertable()
 class WithOutId implements Comparable<WithOutId> {
   final String name;
   final int number;
@@ -723,7 +723,7 @@ class WithOutIdEntityDecorator extends EntityDecorator<WithOutId> {
   List<EntityIndex> get indexFields => [];
 }
 
-@GenerateConverter()
+@Convertable()
 class WithTransientField {
   @IgnoredKey()
   String? name;
@@ -745,13 +745,13 @@ class WithTransientFieldDecorator extends EntityDecorator<WithTransientField> {
 @Entity(indices: [
   Index(fields: ['text'], type: IndexType.fullText)
 ])
-@GenerateConverter()
+@Convertable()
 class TextData with _$TextDataEntityMixin {
   int? id;
   String? text;
 }
 
-@GenerateConverter()
+@Convertable()
 class TxData {
   @Id(fieldName: 'id')
   int? id;
@@ -763,7 +763,7 @@ class TxData {
   Index(fields: ["address"], type: IndexType.fullText),
   Index(fields: ["employeeNote:text"], type: IndexType.fullText),
 ])
-@GenerateConverter()
+@Convertable()
 class EmployeeForCustomSeparator with _$EmployeeForCustomSeparatorEntityMixin {
   @Id(fieldName: 'empId')
   int? empId;
@@ -817,7 +817,7 @@ class EmployeeForCustomSeparator with _$EmployeeForCustomSeparatorEntityMixin {
   Index(fields: ["literature.text"], type: IndexType.fullText),
   Index(fields: ["literature.ratings"], type: IndexType.nonUnique),
 ])
-@GenerateConverter()
+@Convertable()
 class OldClass with _$OldClassEntityMixin {
   @Id(fieldName: 'uuid')
   String? uuid;
@@ -827,7 +827,7 @@ class OldClass with _$OldClassEntityMixin {
   Literature? literature;
 }
 
-@GenerateConverter()
+@Convertable()
 class Literature {
   String? text;
   double? ratings;
@@ -838,7 +838,7 @@ class Literature {
   Index(fields: ["fullName"], type: IndexType.nonUnique),
   Index(fields: ["literature.ratings"], type: IndexType.nonUnique),
 ])
-@GenerateConverter()
+@Convertable()
 class NewClass with _$NewClassEntityMixin {
   @Id(fieldName: 'empId')
   int? empId;

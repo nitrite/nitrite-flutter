@@ -1,5 +1,5 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_entity_generator/src/entity_parser.dart';
+import 'package:nitrite_generator/src/entity_parser.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
 

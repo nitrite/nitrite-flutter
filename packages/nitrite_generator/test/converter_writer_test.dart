@@ -1,5 +1,5 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_entity_generator/src/converter_writer.dart';
+import 'package:nitrite_generator/src/converter_writer.dart';
 import 'package:test/test.dart';
 
 import 'test_utils.dart';
@@ -86,21 +86,21 @@ void main() {
   });
 }
 
-@GenerateConverter()
+@Convertable()
 class A {
   String field;
 
   A([this.field = "a"]);
 }
 
-@GenerateConverter(className: 'MyBConverter')
+@Convertable(className: 'MyBConverter')
 class B {
   String field;
 
   B([this.field = "a"]);
 }
 
-@GenerateConverter()
+@Convertable()
 class C {
   final String field1;
   final String field2;
@@ -108,7 +108,7 @@ class C {
   C({this.field1 = "", this.field2 = ""});
 }
 
-@GenerateConverter()
+@Convertable()
 class D {
   String? field1;
   String? field2;
@@ -116,13 +116,13 @@ class D {
   D({this.field1 = "", this.field2 = ""});
 }
 
-@GenerateConverter()
+@Convertable()
 class E {
   String? field1;
   String? field2;
 }
 
-@GenerateConverter()
+@Convertable()
 class F {
   String? field1;
   String? field2;
@@ -130,7 +130,7 @@ class F {
   F([this.field1 = "", this.field2 = ""]);
 }
 
-@GenerateConverter()
+@Convertable()
 class G {
   String _field1;
   String field2;
@@ -144,7 +144,7 @@ class G {
   set field1(String value) => _field1 = value;
 }
 
-@GenerateConverter()
+@Convertable()
 class H {
   String _field1;
   String _field2;
@@ -164,7 +164,7 @@ class H {
   set field2(String value) => _field2 = value;
 }
 
-@GenerateConverter()
+@Convertable()
 class Employee {
   @Id(fieldName: 'empId')
   final int empId;

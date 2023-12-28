@@ -1,10 +1,10 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build_test/build_test.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_entity_generator/src/common.dart';
-import 'package:nitrite_entity_generator/src/converter_parser.dart';
-import 'package:nitrite_entity_generator/src/entity_parser.dart';
-import 'package:nitrite_entity_generator/src/extensions.dart';
+import 'package:nitrite_generator/src/common.dart';
+import 'package:nitrite_generator/src/converter_parser.dart';
+import 'package:nitrite_generator/src/entity_parser.dart';
+import 'package:nitrite_generator/src/extensions.dart';
 import 'package:source_gen/source_gen.dart';
 
 Future<ClassElement> createClassElement(final String clazz) async {
@@ -87,7 +87,7 @@ Future<ConverterInfo> createConverterInfo(final String converter) async {
   });
 
   return library.classes
-      .where((element) => element.hasAnnotation(GenerateConverter))
+      .where((element) => element.hasAnnotation(Convertable))
       .map((element) => ConverterParser(element).parse())
       .first;
 }

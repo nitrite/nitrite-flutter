@@ -1,9 +1,9 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_entity_generator/src/common.dart';
-import 'package:nitrite_entity_generator/src/extensions.dart';
-import 'package:nitrite_entity_generator/src/parser.dart';
-import 'package:nitrite_entity_generator/src/type_checker.dart';
+import 'package:nitrite_generator/src/common.dart';
+import 'package:nitrite_generator/src/extensions.dart';
+import 'package:nitrite_generator/src/parser.dart';
+import 'package:nitrite_generator/src/type_checker.dart';
 import 'package:source_gen/source_gen.dart';
 
 class IdFieldParser implements Parser<EntityId> {

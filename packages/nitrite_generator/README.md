@@ -5,7 +5,7 @@ Nitrite Entity Generator is a code generator for Nitrite database. It uses [sour
 ```yaml
 
 dev_dependencies:
-  nitrite_entity_generator: ^[version]
+  nitrite_generator: ^[version]
 
 ```
 

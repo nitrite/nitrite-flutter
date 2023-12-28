@@ -2,7 +2,7 @@ import 'package:nitrite/nitrite.dart';
 
 part 'test_objects_decorators.no2.dart';
 
-@GenerateConverter()
+@Convertable()
 class Manufacturer {
   String? name;
   String? address;
@@ -29,7 +29,7 @@ class ManufacturerDecorator extends EntityDecorator<Manufacturer> {
   List<EntityIndex> get indexFields => [];
 }
 
-@GenerateConverter()
+@Convertable()
 class MiniProduct {
   @DocumentKey(alias: 'productId.uniqueId')
   String? uniqueId;
@@ -57,7 +57,7 @@ class MiniProduct {
   String toString() => '{uniqueId: $uniqueId}';
 }
 
-@GenerateConverter()
+@Convertable()
 class Product {
   final ProductId? productId;
   final Manufacturer? manufacturer;
@@ -91,7 +91,7 @@ class Product {
   String toString() => '{productId: $productId}';
 }
 
-@GenerateConverter()
+@Convertable()
 class ProductId {
   final String uniqueId;
   final String productCode;

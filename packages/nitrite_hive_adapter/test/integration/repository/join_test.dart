@@ -91,7 +91,7 @@ void main() {
 }
 
 @Entity()
-@GenerateConverter()
+@Convertable()
 class Person with _$PersonEntityMixin {
   @Id(fieldName: 'nitriteId')
   NitriteId? nitriteId;
@@ -105,7 +105,7 @@ class Person with _$PersonEntityMixin {
 }
 
 @Entity()
-@GenerateConverter()
+@Convertable()
 class Address with _$AddressEntityMixin {
   @Id(fieldName: 'nitriteId')
   NitriteId? nitriteId;
@@ -118,7 +118,7 @@ class Address with _$AddressEntityMixin {
   }
 }
 
-@GenerateConverter()
+@Convertable()
 class PersonDetails {
   @Id(fieldName: 'nitriteId')
   NitriteId? nitriteId;

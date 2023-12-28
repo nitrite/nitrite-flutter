@@ -1,4 +1,4 @@
-import 'package:nitrite_entity_generator/src/id_field_parser.dart';
+import 'package:nitrite_generator/src/id_field_parser.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
 

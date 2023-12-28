@@ -43,13 +43,13 @@ class Entity {
 /// the code for [EntityConverter] implementation of
 /// the marked class.
 @Target({TargetKind.classType})
-class GenerateConverter {
+class Convertable {
   /// Specifies the generated class name, default is empty.
   /// If empty, it will generate the class with name
   /// <marked class name>Converter
   final String className;
 
-  const GenerateConverter({this.className = ""});
+  const Convertable({this.className = ""});
 }
 
 /// Specifies nitrite code generators to consider the marked

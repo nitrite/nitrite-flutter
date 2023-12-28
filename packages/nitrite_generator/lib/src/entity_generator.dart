@@ -1,11 +1,11 @@
+import 'package:analyzer/dart/element/element.dart';
+import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite_entity_generator/src/entity_parser.dart';
-import 'package:nitrite_entity_generator/src/entity_writer.dart';
+import 'package:nitrite_generator/src/entity_parser.dart';
+import 'package:nitrite_generator/src/entity_writer.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:analyzer/dart/element/element.dart';
-import 'package:build/build.dart';
 
 class NitriteEntityGenerator extends GeneratorForAnnotation<Entity> {
   final _dartfmt = DartFormatter();

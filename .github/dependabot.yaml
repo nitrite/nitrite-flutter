@@ -21,7 +21,7 @@ updates:
     target-branch: main
     ignore:
       - dependency-name: "nitrite"
-      - dependency-name: "nitrite_entity_generator"
+      - dependency-name: "nitrite_generator"
       - dependency-name: "nitrite_hive_adapter"
 
   - package-ecosystem: "pub"
@@ -30,10 +30,10 @@ updates:
       interval: "daily"
     target-branch: main
     ignore:
-      - dependency-name: "nitrite_entity_generator"
+      - dependency-name: "nitrite_generator"
 
   - package-ecosystem: "pub"
-    directory: "/packages/nitrite_entity_generator"
+    directory: "/packages/nitrite_generator"
     schedule:
       interval: "daily"
     target-branch: main
@@ -47,7 +47,7 @@ updates:
     target-branch: main
     ignore:
       - dependency-name: "nitrite"
-      - dependency-name: "nitrite_entity_generator"
+      - dependency-name: "nitrite_generator"
 
   - package-ecosystem: "pub"
     directory: "/packages/nitrite_spatial"
@@ -56,7 +56,7 @@ updates:
     target-branch: main
     ignore:
       - dependency-name: "nitrite"
-      - dependency-name: "nitrite_entity_generator"
+      - dependency-name: "nitrite_generator"
       - dependency-name: "nitrite_hive_adapter"
 
   - package-ecosystem: "pub"
@@ -66,5 +66,5 @@ updates:
     target-branch: main
     ignore:
       - dependency-name: "nitrite"
-      - dependency-name: "nitrite_entity_generator"
+      - dependency-name: "nitrite_generator"
       - dependency-name: "nitrite_hive_adapter"

@@ -29,7 +29,7 @@ part 'models.no2.dart';
 @Entity(name: 'todo', indices: [
   Index(fields: ['title'], type: IndexType.fullText),
 ])
-@GenerateConverter()
+@Convertable()
 class Todo with _$TodoEntityMixin {
   @Id(fieldName: 'id')
   final String id;
