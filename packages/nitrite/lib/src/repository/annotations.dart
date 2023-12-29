@@ -10,7 +10,7 @@ class Id {
   /// The name of the embedded fields
   final List<String> embeddedFields;
 
-  const Id({required this.fieldName, this.embeddedFields = const []});
+  const Id({this.fieldName = '', this.embeddedFields = const []});
 }
 
 /// Annotation to mark a field as indexed.

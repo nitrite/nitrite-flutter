@@ -465,7 +465,7 @@ class EncryptedPerson {
 ])
 @Convertable()
 class PersonEntity with _$PersonEntityEntityMixin {
-  @Id(fieldName: 'uuid')
+  @Id()
   String? uuid;
   String? name;
   String? status;

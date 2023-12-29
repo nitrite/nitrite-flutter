@@ -51,11 +51,16 @@ class IdFieldParser implements Parser<EntityId> {
   }
 
   String _getIdFieldName() {
-    return _fieldElement
-            .getAnnotation(Id)
-            ?.getField(IdField.fieldName)
-            ?.toStringValue() ??
-        _fieldElement.name;
+    var fieldName = _fieldElement
+        .getAnnotation(Id)
+        ?.getField(IdField.fieldName)
+        ?.toStringValue();
+
+    if (fieldName != null && fieldName.isNotEmpty) {
+      return fieldName;
+    } else {
+      return _fieldElement.name;
+    }
   }
 
   List<String> _getEmbeddedFields() {
