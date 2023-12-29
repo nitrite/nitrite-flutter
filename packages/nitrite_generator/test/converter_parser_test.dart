@@ -8,7 +8,7 @@ void main() {
   group(retry: 3, "Converter Parser Suite", () {
     test('Parse Ctor with All Required Params', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           String name;
           int age;
@@ -24,7 +24,7 @@ void main() {
 
     test('Parse Ctor with All Required final Params', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           final int age;
@@ -40,7 +40,7 @@ void main() {
 
     test('Parse Constant Ctor with All Required final Params', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           final int age;
@@ -56,7 +56,7 @@ void main() {
 
     test('Parse Redirecting Ctor', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           final int age;
@@ -76,7 +76,7 @@ void main() {
 
     test('Parse Named Ctor', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           final int age;
@@ -96,7 +96,7 @@ void main() {
 
     test('Parse Factory Ctor', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           final int age;
@@ -116,7 +116,7 @@ void main() {
 
     test('Parse Ctor with Some Positional Optional Param', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           int? age;
@@ -132,7 +132,7 @@ void main() {
 
     test('Parse Ctor with Some Named Optional Param', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           int? age;
@@ -149,7 +149,7 @@ void main() {
     test('Parse Ctor with Some Positional Optional Param with Default Value',
         () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           int? age;
@@ -165,7 +165,7 @@ void main() {
 
     test('Parse private Ctor', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           String? name;
           int? age;
@@ -182,7 +182,7 @@ void main() {
     test('Parse Ctor with All Positional Optional Params with Default Value',
         () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           final int age;
@@ -198,7 +198,7 @@ void main() {
 
     test("Ignored Field with Non Nullable Type", () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           @IgnoredKey()
           String name;
@@ -214,7 +214,7 @@ void main() {
 
     test('Parse Default Ctor', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           String? name;
           int? age;
@@ -238,7 +238,7 @@ void main() {
 
     test('Parse Ctor with All Named Optional Params', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           String? name;
           int? age;
@@ -264,7 +264,7 @@ void main() {
 
     test('Parse Ctor with All Positional Optional Params', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           String? name;
           int? age;
@@ -291,7 +291,7 @@ void main() {
     test('Parse Ctor with All Named Optional Params with Default Value',
         () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           final int age;
@@ -317,7 +317,7 @@ void main() {
 
     test('Parse Ctor with All Named Params', () async {
       final classElement = await createClassElement('''
-        @GenerateConverter()
+        @Convertable()
         class Customer {
           final String name;
           final int age;

@@ -3,7 +3,7 @@ import 'package:nitrite/nitrite.dart';
 part 'models.no2.dart';
 
 // Either use EntityDecorator or @Entity
-// @GenerateConverter()
+// @Convertable()
 // class Todo {
 //   @Id(fieldName: 'id')
 //   final String id;

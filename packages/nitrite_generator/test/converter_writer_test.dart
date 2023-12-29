@@ -10,7 +10,7 @@ void main() {
   group(retry: 3, "Converter Writer Test Suite", () {
     test("Test Converter Class Name", () async {
       final converterInfo = await createConverterInfo('''
-        @GenerateConverter(className: 'MyCustomConverter')
+        @Convertable(className: 'MyCustomConverter')
         class Customer {
           final String stringName;
           
