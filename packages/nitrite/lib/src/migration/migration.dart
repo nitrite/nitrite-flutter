@@ -71,7 +71,7 @@ class _NitriteInstructionSet extends InstructionSet {
 
   @override
   DatabaseInstruction forDatabase() {
-    return _DatabaseInstruction(_migrationSteps);
+    return _DatabaseInstruction(_migrationSteps, _nitriteMapper);
   }
 
   @override
@@ -92,7 +92,8 @@ class _NitriteInstructionSet extends InstructionSet {
 class _DatabaseInstruction extends DatabaseInstruction {
   final Queue<MigrationStep> _migrationSteps;
 
-  _DatabaseInstruction(this._migrationSteps);
+  _DatabaseInstruction(this._migrationSteps, NitriteMapper _nitriteMapper)
+      : super(_nitriteMapper);
 
   @override
   void addStep(MigrationStep step) {

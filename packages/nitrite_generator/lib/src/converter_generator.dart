@@ -9,17 +9,17 @@ import 'package:source_gen/source_gen.dart';
 
 import 'converter_writer.dart';
 
-// Generates codes for @GenerateConverter annotation.
+// Generates codes for @Convertable annotation.
 class ConverterGenerator extends GeneratorForAnnotation<Convertable> {
   final _dartfmt = DartFormatter();
 
   @override
   generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
-    // @GenerateConverter is class level annotation only.
+    // @Convertable is class level annotation only.
     if (element is! ClassElement) {
       throw InvalidGenerationSourceError(
-        '`@GenerateConverter` can only be used on classes.',
+        '`@Convertable` can only be used on classes.',
         element: element,
       );
     }

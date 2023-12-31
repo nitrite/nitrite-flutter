@@ -27,7 +27,7 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   NitriteCollection get documentCollection => _backingCollection;
 
   @override
-  Future<void> addProcessor(Processor processor) {
+  void addProcessor(Processor processor) {
     return _backingCollection.addProcessor(processor);
   }
 

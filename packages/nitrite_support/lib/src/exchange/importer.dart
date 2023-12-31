@@ -14,14 +14,14 @@ class Importer {
 
   Importer._(this._options);
 
-  /// Creates a new [Importer] instance with the given configuration.
-  /// 
+  /// Creates a new [Importer] instance with the given options.
+  ///
   /// Args:
-  /// 
+  ///
   ///   dbFactory (NitriteFactory): The `dbFactory` parameter is of type
   /// `NitriteFactory` and is required. It represents the factory used to
   /// create/open the Nitrite database.
-  factory Importer.withConfig({
+  factory Importer.withOptions({
     required NitriteFactory dbFactory,
   }) =>
       Importer._(ImportOptions(
@@ -31,7 +31,7 @@ class Importer {
   /// The function "registerConverter" is used to register a binary converter.
   ///
   /// Args:
-  ///   converter (Converter): The "converter" parameter is an object of type 
+  ///   converter (Converter): The "converter" parameter is an object of type
   /// [Converter].
   void registerConverter(Converter converter) {
     _options.registerConverter(converter);

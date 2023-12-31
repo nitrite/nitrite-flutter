@@ -26,6 +26,9 @@ class Session {
 
   Session(this._nitrite);
 
+  /// Checks if the session is active.
+  bool get isActive => _active;
+
   /// Begins a new transaction.
   Future<Transaction> beginTransaction() async {
     if (!_active) {
@@ -41,9 +44,9 @@ class Session {
   /// Executes a transaction with the given action.
   ///
   /// If the [action] completes successfully, the transaction is committed.
-  /// If the [action] throws an exception, the transaction is rolled back 
-  /// unless the exception is of a type specified in [rollbackFor]. 
-  /// If [rollbackFor] is empty, all exceptions will cause the transaction 
+  /// If the [action] throws an exception, the transaction is rolled back
+  /// unless the exception is of a type specified in [rollbackFor].
+  /// If [rollbackFor] is empty, all exceptions will cause the transaction
   /// to be rolled back.
   ///
   /// Example usage:
@@ -79,7 +82,7 @@ class Session {
   }
 
   /// Closes the session.
-  /// 
+  ///
   /// If the session is closed and the transaction is not committed,
   /// all opened transactions will get rolled back and all volatile
   /// data gets discarded for the session.

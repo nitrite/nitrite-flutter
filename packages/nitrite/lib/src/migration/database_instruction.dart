@@ -5,6 +5,10 @@ import 'package:nitrite/src/migration/migration.dart';
 
 /// Represents a migration instruction set for the nitrite database.
 abstract class DatabaseInstruction implements Instruction {
+  final NitriteMapper _nitriteMapper;
+
+  DatabaseInstruction(this._nitriteMapper);
+
   /// Adds an instruction to set an user authentication to the database.
   DatabaseInstruction addUser(String username, String password) {
     MigrationStep migrationStep =
@@ -32,14 +36,16 @@ abstract class DatabaseInstruction implements Instruction {
   }
 
   /// Adds an instruction to drop a keyed [ObjectRepository] from the database.
-  DatabaseInstruction dropRepository<T>(NitriteMapper nitriteMapper,
-      {EntityDecorator<T>? entityDecorator, String? key}) {
-    var entityName = entityDecorator != null
-        ? entityDecorator.entityName
-        : getEntityName<T>(nitriteMapper);
+  DatabaseInstruction dropRepository<T>(
+      {EntityDecorator<T>? entityDecorator, String? entityName, String? key}) {
+    var derivedName = entityName == null || entityName.isEmpty
+        ? entityDecorator != null
+            ? entityDecorator.entityName
+            : getEntityName<T>(_nitriteMapper)
+        : entityName;
 
     MigrationStep migrationStep =
-        MigrationStep(InstructionType.dropRepository, (entityName, key));
+        MigrationStep(InstructionType.dropRepository, (derivedName, key));
     addStep(migrationStep);
     return this;
   }

@@ -19,7 +19,7 @@ abstract class IdField {
   static const embeddedFields = "embeddedFields";
 }
 
-// Fields for @GenerateConverter annotation.
+// Fields for @Convertable annotation.
 abstract class ConverterField {
   static const className = 'className';
 }
@@ -41,7 +41,7 @@ class EntityInfo {
   EntityInfo(this.className);
 }
 
-// Metadata for @GenerateConverter annotation.
+// Metadata for @Convertable annotation.
 class ConverterInfo {
   final String className;
   final String converterName;

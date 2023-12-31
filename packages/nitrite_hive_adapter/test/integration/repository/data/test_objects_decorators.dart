@@ -121,7 +121,7 @@ class ProductDecorator extends EntityDecorator<Product> {
       EntityId('productId', false, ['uniqueId', 'productCode']);
 
   @override
-  List<EntityIndex> get indexFields => [
+  List<EntityIndex> get indexFields => const [
         EntityIndex(['manufacturer.name'], IndexType.nonUnique),
         EntityIndex(['productName', 'manufacturer.uniqueId']),
       ];

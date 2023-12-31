@@ -2,6 +2,7 @@ import 'package:dart_jts/dart_jts.dart';
 import 'package:hive/hive.dart';
 import 'package:nitrite_spatial/nitrite_spatial.dart';
 
+/// @nodoc
 class GeometryAdapter extends TypeAdapter<Geometry> {
   @override
   Geometry read(BinaryReader reader) {

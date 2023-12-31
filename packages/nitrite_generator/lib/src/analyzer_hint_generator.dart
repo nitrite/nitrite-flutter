@@ -18,7 +18,7 @@ class AnalyzerHintGenerator extends Generator {
     final values = <String>{};
     // @Entity found
     bool isEntity = library.annotatedWith(entityChecker).isNotEmpty;
-    // @GenerateConverter found
+    // @Convertable found
     bool isConverter = library.annotatedWith(converterChecker).isNotEmpty;
 
     if (isEntity || isConverter) {

@@ -1,8 +1,8 @@
 import 'dart:isolate';
 
-import 'package:test/test.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
+import 'package:test/test.dart';
 
 import '../../test_utils.dart';
 import '../collection/base_collection_test_loader.dart';
@@ -418,7 +418,7 @@ void main() {
 
         await tx.commit();
       } catch (e) {
-        // auto-comitted rollback creates UniqueConstraintViolation in insert
+        // auto-committed rollback creates UniqueConstraintViolation in insert
         await tx.rollback();
         exceptionThrown = true;
       }

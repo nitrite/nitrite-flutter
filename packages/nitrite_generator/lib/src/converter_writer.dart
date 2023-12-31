@@ -74,7 +74,7 @@ class ConverterWriter {
       _generateAllFinalFieldMapping(buffer);
     } else {
       throw InvalidGenerationSourceError(
-          '`@GenerateConverter` can only be used on classes which has at least '
+          '`@Convertable` can only be used on classes which has at least '
           'one public constructor which is either a default constructor or '
           'one with all optional arguments.');
     }

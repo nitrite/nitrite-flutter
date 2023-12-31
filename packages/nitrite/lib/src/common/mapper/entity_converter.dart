@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:nitrite/nitrite.dart';
 
 import '../util/object_utils.dart';
@@ -189,10 +190,16 @@ abstract class EntityConverter<T> extends NitritePlugin {
     return resultMap;
   }
 
+  /// Checks if the given object's runtime type is same as the entity type.
+  @internal
   bool matchesRuntimeType(dynamic value) => value.runtimeType == T;
 
+  /// Checks if the given object's type is same as the entity type.
+  @internal
   bool matchesType(dynamic value) => value is T;
 
+  /// Checks if the given object is a subtype of the entity type.
+  @internal
   bool matchesByType<R>() => isSubtype<R?, T?>();
 
   @override

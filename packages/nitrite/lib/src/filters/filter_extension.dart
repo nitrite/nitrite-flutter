@@ -22,11 +22,19 @@ extension StringFilterExtension on FieldName {
     return where(this).gt(value);
   }
 
+  /// Creates a greater than filter which matches those documents where the value
+  /// of the field is greater than the specified value.
+  NitriteFilter operator >(dynamic value) => where(this).gt(value);
+
   /// Creates a greater equal filter which matches those documents where the value
   /// of the field is greater than or equals to the specified value.
   NitriteFilter gte(dynamic value) {
     return where(this).gte(value);
   }
+
+  /// Creates a greater equal filter which matches those documents where the value
+  /// of the field is greater than or equals to the specified value.
+  NitriteFilter operator >=(dynamic value) => where(this).gte(value);
 
   /// Creates a lesser than filter which matches those documents where the value
   /// of the field is less than the specified value.
@@ -34,11 +42,19 @@ extension StringFilterExtension on FieldName {
     return where(this).lt(value);
   }
 
+  /// Creates a lesser than filter which matches those documents where the value
+  /// of the field is less than the specified value.
+  NitriteFilter operator <(dynamic value) => where(this).lt(value);
+
   /// Creates a lesser equal filter which matches those documents where the value
   /// of the field is less than or equals to the specified value.
   NitriteFilter lte(dynamic value) {
     return where(this).lte(value);
   }
+
+  /// Creates a lesser equal filter which matches those documents where the value
+  /// of the field is less than or equals to the specified value.
+  NitriteFilter operator <=(dynamic value) => where(this).lte(value);
 
   /// Creates a between filter which matches those documents where the value
   /// of the field is within the specified bound including the end values.

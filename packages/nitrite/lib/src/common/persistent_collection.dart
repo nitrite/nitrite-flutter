@@ -2,16 +2,16 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/events/event_aware.dart';
 import 'package:nitrite/src/common/initializable.dart';
 
-/// A persistent collection interface that provides methods to manage and 
-/// manipulate data in a Nitrite database. 
+/// A persistent collection interface that provides methods to manage and
+/// manipulate data in a Nitrite database.
 abstract class PersistentCollection<T>
     implements EventAware, AttributesAware, Initializable {
   /// Adds a data processor to this collection.
-  Future<void> addProcessor(Processor processor);
+  void addProcessor(Processor processor);
 
   /// Creates an index on the [fields], if not already exists.
   /// If [indexOptions] is [null], it will use default options.
-  /// 
+  ///
   /// The default indexing option is -
   ///
   /// ```dart

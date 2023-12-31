@@ -9,10 +9,10 @@ import 'package:nitrite/nitrite.dart';
 class EntityId {
   final String _fieldName;
   final bool _isNitriteId;
-  final List<String> _fields;
+  final List<String> _embeddedFields;
 
   EntityId(this._fieldName,
-      [this._isNitriteId = false, this._fields = const []]);
+      [this._isNitriteId = false, this._embeddedFields = const []]);
 
   /// Returns the name of the id field.
   String get fieldName => _fieldName;
@@ -21,17 +21,17 @@ class EntityId {
   bool get isNitriteId => _isNitriteId;
 
   /// Returns a list of embedded fields of the id field.
-  List<String> get embeddedFields => _fields;
+  List<String> get embeddedFields => _embeddedFields;
 
   /// Returns a list of encoded field names.
   List<String> get encodedFieldNames {
-    return _fields
+    return _embeddedFields
         .map((field) => "$_fieldName${NitriteConfig.fieldSeparator}$field")
         .toList();
   }
 
   /// Checks if the entity id is embedded.
-  bool get isEmbedded => _fields.isNotEmpty;
+  bool get isEmbedded => _embeddedFields.isNotEmpty;
 
   /// @nodoc
   Filter createUniqueFilter(dynamic value, NitriteMapper nitriteMapper) {
@@ -42,7 +42,7 @@ class EntityId {
       }
 
       var filters = <Filter>[];
-      for (var field in _fields) {
+      for (var field in _embeddedFields) {
         var filterField = "$_fieldName${NitriteConfig.fieldSeparator}$field";
         var fieldValue = document[field];
         filters.add(where(filterField).eq(fieldValue));
@@ -65,7 +65,7 @@ class EntityId {
       }
 
       var filters = <Filter>[];
-      for (var field in _fields) {
+      for (var field in _embeddedFields) {
         var filterField = "$_fieldName${NitriteConfig.fieldSeparator}$field";
         var fieldValue = document[field];
         filters.add(where(filterField).eq(fieldValue));
@@ -90,13 +90,13 @@ class EntityId {
           runtimeType == other.runtimeType &&
           _fieldName == other._fieldName &&
           _isNitriteId == other._isNitriteId &&
-          const ListEquality().equals(_fields, other._fields);
+          const ListEquality().equals(_embeddedFields, other._embeddedFields);
 
   @override
   int get hashCode =>
       _fieldName.hashCode ^
       _isNitriteId.hashCode ^
-      ListEquality().hash(_fields);
+      ListEquality().hash(_embeddedFields);
 }
 
 /// Represents an index for an entity in the Nitrite database.
@@ -131,9 +131,14 @@ class EntityIndex {
 
 @internal
 
-/// @nodoc
+/// Represents an entity in the Nitrite database with metadata.
 abstract class NitriteEntity {
+  /// Gets the name of the entity.
   String? get entityName;
+
+  /// Gets the list of indexes for the entity.
   List<EntityIndex>? get entityIndexes;
+
+  /// Gets the id field for the entity.
   EntityId? get entityId;
 }

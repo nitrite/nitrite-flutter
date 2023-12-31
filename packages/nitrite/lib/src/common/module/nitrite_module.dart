@@ -1,7 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 
 /// An abstract class that represents a plugin for working with Nitrite
-/// database and provides methods for initializing and closing the 
+/// database and provides methods for initializing and closing the
 /// plugin instance.
 abstract class NitritePlugin {
   /// Initializes the plugin instance.
@@ -19,7 +19,7 @@ abstract class NitriteModule {
 }
 
 /// Creates a Nitrite module with a set of [NitritePlugin]s.
-/// 
+///
 /// Args:
 ///   plugins (List<NitritePlugin>): A list of [NitritePlugin] objects.
 NitriteModule module(List<NitritePlugin> plugins) =>

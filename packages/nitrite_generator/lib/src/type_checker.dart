@@ -34,7 +34,6 @@ bool isBuiltin(DartType type) {
   if (isBool.isExactlyType(type)) return true;
   if (isDateTime.isExactlyType(type)) return true;
   if (isDuration.isExactlyType(type)) return true;
-  if (isSymbol.isExactlyType(type)) return true;
 
   return false;
 }
@@ -49,7 +48,6 @@ String defaultValue(DartType type) {
   if (isBool.isExactlyType(type)) return "false";
   if (isDateTime.isExactlyType(type)) return "DateTime.now()";
   if (isDuration.isExactlyType(type)) return "Duration.zero";
-  if (isSymbol.isExactlyType(type)) return "Symbol.empty";
 
   return "null";
 }

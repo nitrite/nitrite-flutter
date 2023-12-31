@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:meta/meta.dart';
 import 'package:nitrite/nitrite.dart';
 
 import 'hive_store.dart';
@@ -191,5 +192,5 @@ class HiveModuleBuilder {
   }
 }
 
-/// A function that registers a [TypeAdapter] with the Hive store.
+@internal
 typedef TypeAdapterRegistrar = void Function(HiveInterface);

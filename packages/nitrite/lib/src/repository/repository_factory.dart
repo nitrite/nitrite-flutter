@@ -105,7 +105,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   NitriteCollection get documentCollection => _nitriteCollection;
 
   @override
-  Future<void> addProcessor(Processor processor) {
+  void addProcessor(Processor processor) {
     return _nitriteCollection.addProcessor(processor);
   }
 

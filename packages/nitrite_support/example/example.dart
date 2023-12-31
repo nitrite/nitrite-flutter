@@ -24,7 +24,7 @@ void main(List<String> args) async {
   await exporter.exportTo('/tmp/exported.json');
 
   // import the database from the json file
-  var importer = Importer.withConfig(
+  var importer = Importer.withOptions(
     dbFactory: () async {
       var storeModule = HiveModule.withConfig()
           .crashRecovery(true)

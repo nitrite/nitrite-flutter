@@ -107,7 +107,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   Future<int> get size => _collectionOperations.getSize();
 
   @override
-  Future<void> addProcessor(Processor processor) async {
+  void addProcessor(Processor processor) {
     _checkOpened();
     return _collectionOperations.addProcessor(processor);
   }

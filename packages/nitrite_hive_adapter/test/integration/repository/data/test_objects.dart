@@ -847,3 +847,29 @@ class NewClass with _$NewClassEntityMixin {
   String? fullName;
   Literature? literature;
 }
+
+@Entity(indices: [
+  Index(fields: ['tags'], type: IndexType.nonUnique),
+  Index(fields: ['price', 'publisher']),
+])
+class LibraryBook extends BaseEntity with _$LibraryBookEntityMixin {
+  String? bookId;
+  String? publisher;
+  double? price;
+  List<String> tags = [];
+
+  LibraryBook([
+    this.bookId,
+    this.publisher,
+    this.price,
+    this.tags = const [],
+    super.description,
+  ]);
+}
+
+@Index(fields: ['description'], type: IndexType.fullText)
+abstract class BaseEntity {
+  String? description;
+
+  BaseEntity([this.description]);
+}

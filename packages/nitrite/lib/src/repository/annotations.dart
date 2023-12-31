@@ -60,7 +60,7 @@ class DocumentKey {
   /// Specifies the alias name of the key.
   final String alias;
 
-  const DocumentKey({this.alias = ""});
+  const DocumentKey({required this.alias});
 }
 
 /// Specifies nitrite code generators to ignore the marked

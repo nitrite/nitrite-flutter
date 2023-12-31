@@ -3,7 +3,6 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
 import 'package:nitrite_spatial/nitrite_spatial.dart';
 
-import 'geometry_adapter.dart';
 import 'test_data.dart';
 import 'test_utils.dart';
 

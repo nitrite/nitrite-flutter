@@ -200,7 +200,7 @@ class DefaultTransactionalCollection extends NitriteCollection {
   }
 
   @override
-  Future<void> addProcessor(Processor processor) async {
+  void addProcessor(Processor processor) {
     _checkOpened();
     return _collectionOperations.addProcessor(processor);
   }

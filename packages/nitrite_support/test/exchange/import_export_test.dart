@@ -43,7 +43,7 @@ void main() {
       );
       await exporter.exportTo(exportedPath);
 
-      var importer = Importer.withConfig(
+      var importer = Importer.withOptions(
         dbFactory: () async => createDb(getTempPath('nitrite_dest.db')),
       );
       await importer.importFrom(exportedPath);

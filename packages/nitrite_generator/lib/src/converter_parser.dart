@@ -80,13 +80,6 @@ class ConverterParser extends Parser<ConverterInfo> {
       );
     }
 
-    // if (_classElement.displayName.contains('Company')) {
-    //   var type = element.type;
-    //   if (type.isDartCoreMap) {
-    //     type.accept(GenericTypeVisitor());
-    //   }
-    // }
-
     if (element.isPrivate) return false;
     if (element.isStatic) return false;
     if (element.isSynthetic) return false;
@@ -105,7 +98,7 @@ class ConverterParser extends Parser<ConverterInfo> {
       * */
 
       throw InvalidGenerationSourceError(
-        '`@GenerateConverter` can not be used with mixins.',
+        '`@Convertable` can not be used with mixins.',
         element: _classElement,
       );
     }
@@ -120,7 +113,7 @@ class ConverterParser extends Parser<ConverterInfo> {
       * */
 
       throw InvalidGenerationSourceError(
-        '`@GenerateConverter` can not be used on abstract class.',
+        '`@Convertable` can not be used on abstract class.',
         element: _classElement,
       );
     }
@@ -166,7 +159,7 @@ class ConverterParser extends Parser<ConverterInfo> {
 
     if (validConstructors.isEmpty) {
       throw InvalidGenerationSourceError(
-        '`@GenerateConverter` can only be used on classes which has at least '
+        '`@Convertable` can only be used on class which has at least '
         'one public constructor which is either a default constructor or one '
         'with all optional/named parameters.',
         element: _classElement,
@@ -229,7 +222,7 @@ class ConverterParser extends Parser<ConverterInfo> {
     // get field details from parents
     var supertypes = _classElement.allSupertypes;
     for (var type in supertypes) {
-      // use recursion to scan the heirarchy
+      // use recursion to scan the hierarchy
       var superParser = ConverterParser(type.element as ClassElement);
       var superFieldInfos = superParser._getFieldInfoList();
       if (superFieldInfos.isNotEmpty) {
@@ -248,7 +241,7 @@ class ConverterParser extends Parser<ConverterInfo> {
       // validate valid type
       accessor.type.accept(TypeValidator(accessor));
 
-      // synthentic properties are ignored
+      // synthetic properties are ignored
       if (accessor.isSynthetic) continue;
 
       if (accessor.isSetter && accessor.correspondingGetter == null) {
@@ -335,7 +328,7 @@ class ConverterParser extends Parser<ConverterInfo> {
     // get property info from parents
     var supertypes = _classElement.allSupertypes;
     for (var type in supertypes) {
-      // use recursion to scan the heirarchy
+      // use recursion to scan the hierarchy
       var superParser = ConverterParser(type.element as ClassElement);
       var superPropInfos = superParser._getPropertyInfoList();
       if (superPropInfos.isNotEmpty) {

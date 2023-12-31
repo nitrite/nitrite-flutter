@@ -113,12 +113,16 @@ void main() {
       expect(a.notEq(null).apply(doc), isTrue);
       expect(a.gt(0).apply(doc), isTrue);
       expect((a > 0).apply(doc), isTrue);
+      expect(('a' > 0).apply(doc), isTrue);
       expect(a.gte(1).apply(doc), isTrue);
       expect((a >= 1).apply(doc), isTrue);
+      expect(('a' >= 1).apply(doc), isTrue);
       expect(a.lt(2).apply(doc), isTrue);
       expect((a < 2).apply(doc), isTrue);
+      expect(('a' < 2).apply(doc), isTrue);
       expect(a.lte(1).apply(doc), isTrue);
       expect((a <= 1).apply(doc), isTrue);
+      expect(('a' <= 1).apply(doc), isTrue);
       expect(a.between(0, 2).apply(doc), isTrue);
       expect(b.text('2').apply(doc), isTrue);
       expect(b.regex(r'^[0-9]+').apply(doc), isTrue);
@@ -223,6 +227,8 @@ void main() {
       expect(filter2.apply(doc), isTrue);
       expect((~filter).apply(doc), isFalse);
       expect((~filter2).apply(doc), isFalse);
+
+      expect((f1 & (('b' > 1) & ('c' < 4))).apply(doc), isTrue);
     });
 
     test("Test | Operator", () {
@@ -248,6 +254,8 @@ void main() {
       expect(filter2.apply(doc), isTrue);
       expect((~filter).apply(doc), isFalse);
       expect((~filter2).apply(doc), isFalse);
+
+      expect((f1 | (('b' > 1) | ('c' < 4))).apply(doc), isTrue);
     });
   });
 

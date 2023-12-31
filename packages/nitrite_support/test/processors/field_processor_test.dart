@@ -4,8 +4,6 @@ import 'package:nitrite_support/src/processors/string_field_encryption_processor
 import 'package:test/test.dart';
 
 late Nitrite db;
-late NitriteCollection collection;
-late Document doc1, doc2, doc3;
 
 void main() {
   late NitriteCollection collection;
@@ -18,7 +16,7 @@ void main() {
       cvvProcessor = StringFieldEncryptionProcessor()
         ..addFields(['cvv', 'creditCardNumber']);
       collection = await db.getCollection('encryption-test');
-      await collection.addProcessor(cvvProcessor);
+      collection.addProcessor(cvvProcessor);
 
       var document = createDocument('name', 'John Doe')
         ..put('creditCardNumber', '5548960345687452')
@@ -33,7 +31,7 @@ void main() {
       await collection.insert(document);
 
       await cvvProcessor.process(collection);
-      await collection.addProcessor(cvvProcessor);
+      collection.addProcessor(cvvProcessor);
     });
 
     tearDown(() async {
@@ -102,7 +100,7 @@ void main() {
         },
       );
 
-      await collection.addProcessor(wrongProcessor);
+      collection.addProcessor(wrongProcessor);
 
       var document = createDocument('name', 'Jane Doe')
         ..put('creditCardNumber', '5500960345687452')
@@ -143,6 +141,52 @@ void main() {
       var cursor = collection.find(filter: where('cvv').eq('008'));
       expect(await cursor.isEmpty, true);
     });
+
+    test('Test Encryption with Password', () async {
+      var password = 'password@123';
+
+      var firstNameProcessor = StringFieldEncryptionProcessor(password)
+        ..addFields(['firstName']);
+
+      collection = await db.getCollection('test');
+      collection.addProcessor(firstNameProcessor);
+
+      var document = createDocument('name', 'John Doe')
+        ..put('creditCardNumber', '5548960345687452')
+        ..put('cvv', '007')
+        ..put('expiryDate', DateTime.now());
+      await collection.insert(document);
+
+      document = createDocument('name', 'Jane Doe')
+        ..put('creditCardNumber', '5500960345687452')
+        ..put('cvv', '008')
+        ..put('expiryDate', DateTime.now());
+      await collection.insert(document);
+
+      var nitriteMap =
+          await collection.getStore().openMap<NitriteId, Document>('test');
+
+      var documents = nitriteMap.values();
+      await for (var document in documents) {
+        if (document['firstName'] == 'John Doe') {
+          fail('unencrypted secret text found');
+        }
+
+        if (document['firstName'] == 'Jane Doe') {
+          fail('unencrypted secret text found');
+        }
+      }
+
+      var cursor = collection.find(filter: where('cvv').eq('007'));
+      document = await cursor.first;
+      expect(document, isNotNull);
+      expect(document['name'], 'John Doe');
+
+      cursor = collection.find(filter: where('cvv').eq('008'));
+      document = await cursor.first;
+      expect(document, isNotNull);
+      expect(document['name'], 'Jane Doe');
+    });
   });
 }
 
@@ -150,39 +194,9 @@ Future<void> setUpNitriteTest() async {
   db = await Nitrite.builder()
       .fieldSeparator('.')
       .openOrCreate(username: 'test', password: 'test');
-
-  doc1 = emptyDocument()
-      .put("firstName", "fn1")
-      .put("lastName", "ln1")
-      .put("birthDay", DateTime.parse("2012-07-01T16:02:48.440Z"))
-      .put("data", [1, 2, 3]).put("list", ["one", "two", "three"]).put(
-          "body", "a quick brown fox jump over the lazy dog");
-
-  doc2 = emptyDocument()
-      .put("firstName", "fn2")
-      .put("lastName", "ln2")
-      .put("birthDay", DateTime.parse("2010-06-12T16:02:48.440Z"))
-      .put("data", [3, 4, 3]).put("list", ["three", "four", "five"]).put(
-          "body", "quick hello world from nitrite");
-
-  doc3 = emptyDocument()
-      .put("firstName", "fn3")
-      .put("lastName", "ln2")
-      .put("birthDay", DateTime.parse("2014-04-17T16:02:48.440Z"))
-      .put("data", [9, 4, 8]).put(
-          "body",
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nunc mi, '
-              'mattis ullamcorper dignissim vitae, condimentum non lorem.');
-
-  collection = await db.getCollection('test');
-  await collection.remove(all);
 }
 
 Future<void> cleanUp() async {
-  if (!collection.isDropped) {
-    await collection.close();
-  }
-
   if (!db.isClosed) {
     await db.close();
   }

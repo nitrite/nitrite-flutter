@@ -23,7 +23,7 @@ void main() {
       cvvProcessor = FieldEncrypterProcessor(encrypter, iv, 'cvv');
       ccProcessor = FieldEncrypterProcessor(encrypter, iv, 'creditCardNumber');
       collection = await db.getCollection('encryption-test');
-      await collection.addProcessor(ccProcessor);
+      collection.addProcessor(ccProcessor);
 
       var document = createDocument('name', 'John Doe')
         ..put('creditCardNumber', '5548960345687452')
@@ -38,7 +38,7 @@ void main() {
       await collection.insert(document);
 
       await cvvProcessor.process(collection);
-      await collection.addProcessor(cvvProcessor);
+      collection.addProcessor(cvvProcessor);
     });
 
     tearDown(() async {
@@ -106,7 +106,7 @@ void main() {
         },
       );
 
-      await collection.addProcessor(wrongProcessor);
+      collection.addProcessor(wrongProcessor);
 
       var document = createDocument('name', 'Jane Doe')
         ..put('creditCardNumber', '5500960345687452')

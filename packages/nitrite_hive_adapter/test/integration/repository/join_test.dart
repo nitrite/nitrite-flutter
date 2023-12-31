@@ -69,12 +69,12 @@ void main() {
       expect(await result.length, 10);
 
       await for (var personDetails in result) {
-        var addreses = personDetails.addresses;
+        var addresses = personDetails.addresses;
         if (personDetails.id == '5') {
-          expect(addreses?.length, 2);
+          expect(addresses?.length, 2);
         } else {
-          expect(addreses?.length, 1);
-          expect(addreses?[0].personId, personDetails.id);
+          expect(addresses?.length, 1);
+          expect(addresses?[0].personId, personDetails.id);
         }
       }
 

@@ -28,7 +28,7 @@ void main() {
       creditCardProcessor = FieldEncrypterProcessor(
           Encrypter(AES(key, padding: null)), iv, 'creditCardNumber');
 
-      await persons.addProcessor(cvvProcessor);
+      persons.addProcessor(cvvProcessor);
 
       var person = EncryptedPerson();
       person.name = 'John Doe';
@@ -38,7 +38,7 @@ void main() {
       await persons.insert(person);
 
       await creditCardProcessor.process(persons);
-      await persons.addProcessor(creditCardProcessor);
+      persons.addProcessor(creditCardProcessor);
 
       person = EncryptedPerson();
       person.name = 'Jane Doe';
@@ -115,7 +115,7 @@ void main() {
         },
       );
 
-      await testPersons.addProcessor(wrongProcessor);
+      testPersons.addProcessor(wrongProcessor);
 
       var person = EncryptedPerson();
       person.name = 'John Doe';
