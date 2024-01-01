@@ -5,7 +5,7 @@ import 'package:nitrite/nitrite.dart';
 class WriteResult extends Iterable<NitriteId> {
   final List<NitriteId> _nitriteIds;
 
-  /// Creates a [WriteResult] with the given [nitriteIds].
+  /// Creates a [WriteResult] with the given `_nitriteIds`.
   WriteResult(this._nitriteIds);
 
   /// Returns the number of [Document]s affected by the write operation.

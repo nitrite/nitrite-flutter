@@ -94,7 +94,7 @@ class SpatialFluentFilter {
 
   SpatialFluentFilter(this._field);
 
-  /// Creates a filter that matches documents whose [field] intersects the given [geometry].
+  /// Creates a filter that matches documents whose field intersects the given [geometry].
   ///
   /// Example:
   /// ```dart
@@ -104,7 +104,7 @@ class SpatialFluentFilter {
     return IntersectsFilter(_field, geometry);
   }
 
-  /// Creates a filter that matches documents whose [field] is within the given [geometry].
+  /// Creates a filter that matches documents whose field is within the given [geometry].
   ///
   /// Example:
   /// ```dart
@@ -114,7 +114,7 @@ class SpatialFluentFilter {
     return WithinFilter(_field, geometry);
   }
 
-  /// Creates a filter that matches documents whose [field] is near the given [center] within the given [radius].
+  /// Creates a filter that matches documents whose field is near the given [center] within the given [radius].
   ///
   /// Example:
   /// ```dart

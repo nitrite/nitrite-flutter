@@ -10,7 +10,7 @@ abstract class PersistentCollection<T>
   void addProcessor(Processor processor);
 
   /// Creates an index on the [fields], if not already exists.
-  /// If [indexOptions] is [null], it will use default options.
+  /// If [indexOptions] is `null`, it will use default options.
   ///
   /// The default indexing option is -
   ///

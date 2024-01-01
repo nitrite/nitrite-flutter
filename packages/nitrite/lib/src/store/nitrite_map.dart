@@ -10,7 +10,7 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
   /// specified key.
   Future<bool> containsKey(Key key);
 
-  /// Gets the value mapped with the specified key or [null] otherwise.
+  /// Gets the value mapped with the specified key or `null` otherwise.
   Future<Value?> operator [](Key key);
 
   /// Removes all entries in the map.

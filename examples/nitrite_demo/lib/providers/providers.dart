@@ -20,10 +20,8 @@ Future<Nitrite> db(DbRef ref) async {
   var db = await Nitrite.builder()
       .loadModule(storeModule)
       .fieldSeparator('.')
+      .registerEntityConverter(TodoConverter())
       .openOrCreate(username: 'demo', password: 'demo123');
-
-  var mapper = db.config.nitriteMapper as SimpleNitriteMapper;
-  mapper.registerEntityConverter(TodoConverter());
 
   return db;
 }

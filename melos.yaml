@@ -83,3 +83,9 @@ scripts:
   clean:
     run: melos exec -- flutter clean
     description: Run `flutter clean` for all packages.
+
+  publish:
+    run: |
+      melos run generate &&
+      melos exec --ignore="*demo*" -- dart pub publish --dry-run
+    description: Run `flutter pub publish` for all packages.

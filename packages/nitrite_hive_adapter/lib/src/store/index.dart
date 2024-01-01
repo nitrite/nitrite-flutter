@@ -1,1 +1,1 @@
-export 'hive_module.dart';
+export 'hive_module.dart' hide TypeAdapterRegistrar;

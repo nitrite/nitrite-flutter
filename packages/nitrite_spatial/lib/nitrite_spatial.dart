@@ -1,3 +1,4 @@
+///A library for using spatial data in Nitrite database.
 library nitrite_spatial;
 
 export 'src/converter.dart';
