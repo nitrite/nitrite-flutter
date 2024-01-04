@@ -2,21 +2,23 @@
 
 <img src="http://www.dizitart.org/nitrite-database/logo/nitrite-logo.svg" alt="Logo" width="200"/>
 
-**NO**sql **O**bject (**NO<sub>2</sub>** a.k.a Nitrite) database is an open source nosql embedded
+**NO**sql **O**bject (**NO<sub>2</sub>** a.k.a. Nitrite) database is an open source nosql embedded
 document store. It supports both in-memory and file based persistent store.
 
 Nitrite is an embedded database ideal for desktop, mobile or small web applications.
 
 **It features**:
 
+-   Embedded, serverless
+-   Simple API
+-   Document-oriented
 -   Schemaless document collection and object repository
--   In-memory / file-based store
--   Pluggable storage engines - hive
+-   Indexing and full-text search
+-   Simple query api
+-   In-memory store
 -   Transaction support
--   Schema migration
--   Indexing
--   Full text search
--   Very fast, lightweight and fluent API 
+-   Schema migration support
+-   Encryption support
 
 
 ## Getting Started with Nitrite
@@ -28,8 +30,6 @@ To use Nitrite in any Flutter application, add the below in your `pubspec.yaml` 
 ```yaml
 dependencies:
   nitrite: ^[version]
-  nitrite_hive_adapter: ^[version]
-
 
 dev_dependencies:
   build_runner: ^2.4.6
@@ -42,16 +42,8 @@ dev_dependencies:
 **Initialize Database**
 
 ```dart
-// create a hive backed storage module
-var storeModule = HiveModule.withConfig()
-    .crashRecovery(true)
-    .path('$dbDir/db')
-    .build();
-
-
-// initialization using builder
+// initialization Nitrite database with in-memory store
 var db = await Nitrite.builder()
-    .loadModule(storeModule)
     .openOrCreate(username: 'user', password: 'pass123');
 
 ```
@@ -85,7 +77,7 @@ import 'package:nitrite/nitrite.dart';
 
 part 'book.no2.dart';
 
-@GenerateConverter(className: 'MyBookConverter')
+@Convertable(className: 'MyBookConverter')
 @Entity(name: 'books', indices: [
   Index(fields: ['tags'], type: IndexType.nonUnique),
   Index(fields: ['description'], type: IndexType.fullText),
@@ -113,7 +105,7 @@ class Book with _$BookEntityMixin {
 }
 
 // composite id class
-@GenerateConverter()
+@Convertable()
 class BookId {
   String? isbn;
 
@@ -271,18 +263,4 @@ db = await Nitrite.builder()
 
 ```
 
-
-**Import/Export Data**
-
-```dart
-// Export data to a file
-var exporter = Exporter.of(db);
-await exporter.exportTo(schemaFile);
-
-//Import data from the file
-var importer = Importer.of(db);
-await importer.importFrom(schemaFile);
-
-```
-
-More details are available in the reference document.
+More details are available in the reference [document](https://nitrite.dizitart.com/flutter-sdk/getting-started/index.html).

@@ -33,4 +33,4 @@ var db = await Nitrite.builder()
 
 ## Additional information
 
-For additional information visit the reference documentation: [https://www.dizitart.org/nitrite-database](https://www.dizitart.org/nitrite-database)
+For additional information visit the Hive module [documentation](https://nitrite.dizitart.com/flutter-sdk/modules/store-modules/hive/index.html).

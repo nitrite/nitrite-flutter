@@ -1,39 +1,31 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Nitrite Spatial
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Nitrite Spatial is a spatial indexing and search module for Nitrite database. It uses JTS Topology Suite port of the dart package [dart_jts](https://pub.dev/packages/dart_jts) for spatial indexing and search.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+To use Nitrite Spatial, add the following dependency in your `pubspec.yaml` file:
+
+```yaml
+dependencies:
+  nitrite_spatial: ^[version]
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+To use Nitrite Spatial, you need to create a `SpatialModule` and pass it to Nitrite builder. 
 
 ```dart
-const like = 'sample';
+// create a spatial module
+var spatialModule = SpatialModule();
+
+// initialization using builder
+var db = await Nitrite.builder()
+    .loadModule(spatialModule)
+    .openOrCreate(username: 'user', password: 'pass123');
+
 ```
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+For additional information visit the Spatial module [documentation](https://nitrite.dizitart.com/flutter-sdk/modules/spatial/index.html).

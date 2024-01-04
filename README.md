@@ -8,22 +8,24 @@
     <img src="assets/nitrite-logo.svg" width="256" alt="nitrite logo">
 </p>
 
-**NO**sql **O**bject (**NO<sub>2</sub>** a.k.a Nitrite) database is an open source nosql embedded
+**NO**sql **O**bject (**NO<sub>2</sub>** a.k.a. Nitrite) database is an open source nosql embedded
 document store. It supports both in-memory and file based persistent store.
 
 Nitrite is an embedded database ideal for desktop, mobile or small web applications.
 
 **It features**:
 
+-   Embedded, serverless
+-   Simple API
+-   Document-oriented
 -   Schemaless document collection and object repository
--   In-memory / file-based store
--   Pluggable storage engines - hive
+-   Extensible storage engines - hive
+-   Indexing and full-text search
+-   Simple query api
+-   In-memory and file-based store
 -   Transaction support
--   Schema migration
--   Simple Index
--   Compound Index
--   Full text search
--   Very fast, lightweight and fluent API 
+-   Schema migration support
+-   Encryption support
 
 ## Java Version
 
@@ -83,7 +85,7 @@ var repository = await db.getRepository<Book>();
 
 **Code generators for Entity classes**
 
-The nitrite entity generator package can automatically generate entity classes from dart classes. It uses [source_gen](https://pub.dev/packages/source_gen) package to generate code. To use the generator, add the following to your `pubspec.yaml` file:
+The nitrite generator package can automatically generate entity classes from dart classes. It uses [source_gen](https://pub.dev/packages/source_gen) package to generate code. To use the generator, add the following to your `pubspec.yaml` file:
 
 ```yaml
 
@@ -99,7 +101,7 @@ import 'package:nitrite/nitrite.dart';
 
 part 'book.no2.dart';
 
-@GenerateConverter(className: 'MyBookConverter')
+@Convertable(className: 'MyBookConverter')
 @Entity(name: 'books', indices: [
   Index(fields: ['tags'], type: IndexType.nonUnique),
   Index(fields: ['description'], type: IndexType.fullText),
@@ -127,7 +129,7 @@ class Book with _$BookEntityMixin {
 }
 
 // composite id class
-@GenerateConverter()
+@Convertable()
 class BookId {
   String? isbn;
 
@@ -145,8 +147,7 @@ class BookId {
 And run the following command to generate necessary *.no2.dart files:
 
 ```bash
-flutter pub run build_runner build
-
+dart run build_runner build
 ```
 
 **CRUD Operations**
@@ -350,7 +351,7 @@ Release notes are available [here](https://github.com/nitrite/nitrite-flutter/re
 </thead>
 <tbody>
 <tr class="odd">
-<td><p><a href="http://www.dizitart.org/nitrite-database">Document</a></p></td>
+<td><p><a href="https://nitrite.dizitart.com/flutter-sdk/getting-started/index.html">Document</a></p></td>
 <td><p><a href="https://pub.dev/documentation/nitrite/latest">API Reference</a></p></td>
 </tr>
 </tbody>
@@ -386,4 +387,4 @@ Do you want to contribute with a PR? PRs are always welcome, just make sure to c
 <a href="https://www.macstadium.com/" style="margin-right: 30px;">
     <img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" height="32" alt="MacStadium"/>
 </a>
-</div>
+
