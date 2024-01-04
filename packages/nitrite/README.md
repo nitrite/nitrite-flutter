@@ -1,6 +1,9 @@
 # Nitrite Database
 
-<img src="http://www.dizitart.org/nitrite-database/logo/nitrite-logo.svg" alt="Logo" width="200"/>
+<p align="center">
+    <img src="https://github.com/nitrite/nitrite-flutter/raw/main/assets/nitrite-logo.svg" alt="Logo" width="200"/>
+</p>
+
 
 **NO**sql **O**bject (**NO<sub>2</sub>** a.k.a. Nitrite) database is an open source nosql embedded
 document store. It supports both in-memory and file based persistent store.

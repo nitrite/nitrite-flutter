@@ -87,5 +87,5 @@ scripts:
   publish:
     run: |
       melos run generate &&
-      melos exec --ignore="*demo*" -- dart pub publish --dry-run
+      melos exec --ignore="*demo*" -- dart pub publish --force
     description: Run `flutter pub publish` for all packages.

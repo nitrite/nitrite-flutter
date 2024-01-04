@@ -1,7 +1,6 @@
 import 'package:dart_jts/dart_jts.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_spatial/nitrite_spatial.dart';
-import 'package:nitrite_spatial/src/geom_utils.dart';
 
 part 'test_data.no2.dart';
 

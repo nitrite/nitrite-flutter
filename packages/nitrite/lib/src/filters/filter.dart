@@ -177,8 +177,13 @@ abstract class Filter {
 
 /// An abstract class representing a filter for Nitrite database.
 abstract class NitriteFilter extends Filter {
+  /// Gets the [NitriteConfig] instance.
   NitriteConfig? nitriteConfig;
+
+  /// Gets the name of the collection on which this filter is applied.
   String? collectionName;
+
+  /// Indicates if this filter is an object filter.
   bool objectFilter = false;
 
   /// Creates an and filter which performs a logical AND operation on

@@ -1,6 +1,5 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/index/compound_index.dart';
-import 'package:nitrite/src/index/nitrite_index.dart';
 import 'package:nitrite/src/index/single_field_index.dart';
 
 /// @nodoc

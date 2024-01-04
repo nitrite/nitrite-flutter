@@ -2,6 +2,7 @@ import 'package:dart_jts/dart_jts.dart' hide Type;
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_spatial/nitrite_spatial.dart';
 
+/// @nodoc
 class GeometryConverter extends EntityConverter<Geometry> {
   @override
   Geometry fromDocument(Document document, NitriteMapper nitriteMapper) {

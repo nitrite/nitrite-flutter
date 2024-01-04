@@ -1,5 +1,5 @@
 name: nitrite_spatial
-description: Spatial extension for Nitrite database.
+description: Nitrite Spatial module provides support for spatial queries. The module uses JTS port of the dart package dart_jts for spatial operations.
 version: 1.0.0
 homepage: https://nitrite.dizitart.com/
 repository: https://github.com/nitrite/nitrite-flutter

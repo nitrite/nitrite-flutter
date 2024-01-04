@@ -121,6 +121,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   @override
   Future<void> close() async {
     await _collectionOperations.close();
+    _cancelSubscriptions();
     _eventBus.destroy();
   }
 
@@ -145,6 +146,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
     _checkOpened();
     await _collectionOperations.dropCollection();
 
+    _cancelSubscriptions();
     _eventBus.destroy();
     _isDropped = true;
   }
@@ -343,5 +345,12 @@ class _DefaultNitriteCollection extends NitriteCollection {
       throw InvalidOperationException(
           'Cannot rebuild index, index is currently being built');
     }
+  }
+
+  void _cancelSubscriptions() {
+    for (var entry in _subscriptions.entries) {
+      entry.value.cancel();
+    }
+    _subscriptions.clear();
   }
 }

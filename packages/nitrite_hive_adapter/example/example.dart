@@ -38,6 +38,8 @@ Future<Nitrite> createDatabase() async {
 
   var db = await Nitrite.builder()
       .loadModule(storeModule)
+      .registerEntityConverter(MyBookConverter())
+      .registerEntityConverter(BookIdConverter())
       .openOrCreate(username: 'user', password: 'password');
 
   return db;
@@ -151,11 +153,6 @@ Future<void> collectionExample(Nitrite db) async {
 }
 
 Future<void> objectRepositoryExample(Nitrite db) async {
-  // Register converters
-  var nitriteMapper = db.config.nitriteMapper as SimpleNitriteMapper;
-  nitriteMapper.registerEntityConverter(MyBookConverter());
-  nitriteMapper.registerEntityConverter(BookIdConverter());
-
   // Get a repository
   var repo = await db.getRepository<Book>();
 

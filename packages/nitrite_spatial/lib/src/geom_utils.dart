@@ -34,15 +34,18 @@ String? geometryToString(Geometry? geometry) {
 
 /// Serializes and deserializes [Geometry] objects to and from strings.
 class GeometrySerializer {
+  /// Deserializes a [Geometry] from a string.
   static Geometry? deserialize(String? geometryValue) {
     return geometryFromString(geometryValue ?? '');
   }
 
+  /// Serializes a [Geometry] to a string.
   static String? serialize(Geometry? geometry) {
     return geometryToString(geometry);
   }
 }
 
+/// Compares two [Geometry] objects for equality.
 bool geometryEquals(Geometry? geometry1, Geometry? geometry2) {
   if (geometry1 == null) {
     return geometry2 == null;

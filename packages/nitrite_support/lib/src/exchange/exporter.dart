@@ -6,7 +6,7 @@ import 'package:nitrite_support/src/exchange/convert/converter.dart';
 import 'nitrite_json_exporter.dart';
 import 'options.dart';
 
-/// The Exporter class provides methods to export Nitrite database data to a 
+/// The Exporter class provides methods to export Nitrite database data to a
 /// file in JSON format.
 class Exporter {
   final ExportOptions _options;
@@ -17,30 +17,30 @@ class Exporter {
   /// with the specified options for exporting data from a Nitrite database.
   ///
   /// Args:
-  /// 
+  ///
   ///   dbFactory (NitriteFactory): The `dbFactory` parameter is of type
   /// `NitriteFactory` and is required. It represents the factory used to
   /// create/open the Nitrite database.
-  /// 
+  ///
   ///   exportIndices (bool): A boolean value indicating whether to export the
   /// indices of the database.
   /// If set to true, the indices will be exported. If set to false, the
   /// indices will not be exported. The default value is true. Defaults to true.
-  /// 
+  ///
   ///   exportData (bool): A boolean value indicating whether to export the data
   /// from the database. If set to true, the data will be exported; if set to
   /// false, only the database structure will be exported. Defaults to true.
-  /// 
+  ///
   ///   collections (List<String>): A list of collection names to export.
   /// If not provided, all collections will be exported. If an empty list is
   /// provided, no collections will be exported. If a list of collection names
   /// is provided, only those collections will be exported.
-  /// 
+  ///
   ///   repositories (List<String>): A list of repository names to export.
   /// If not provided, all repositories will be exported. If an empty list is
   /// provided, no repositories will be exported. If a list of repository names
   /// is provided, only those repositories will be exported.
-  /// 
+  ///
   ///   keyedRepositories (Map<String, Set<String>>): A map of keyed-repositories
   /// to export. If not provided, all keyed-repositories will be exported. If an
   /// empty map is provided, no keyed-repositories will be exported. If a map of
@@ -65,7 +65,7 @@ class Exporter {
   /// The function "registerConverter" is used to register a binary converter.
   ///
   /// Args:
-  ///   converter (Converter): The "converter" parameter is an object of type 
+  ///   converter (Converter): The "converter" parameter is an object of type
   /// [Converter].
   void registerConverter(Converter converter) {
     _options.registerConverter(converter);
