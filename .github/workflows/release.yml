@@ -36,5 +36,3 @@ jobs:
 
       - name: Publish Nitrite
         run: melos run publish
-        with:
-          environment: dizitart
