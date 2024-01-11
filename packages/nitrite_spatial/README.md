@@ -4,11 +4,10 @@ Nitrite Spatial is a spatial indexing and search module for Nitrite database. It
 
 ## Getting started
 
-To use Nitrite Spatial, add the following dependency in your `pubspec.yaml` file:
+To use Nitrite Spatial, add the following dependency in your project:
 
-```yaml
-dependencies:
-  nitrite_spatial: ^[version]
+```bash
+dart pub add nitrite_spatial
 ```
 
 ## Usage

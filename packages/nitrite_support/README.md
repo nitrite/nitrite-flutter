@@ -4,13 +4,10 @@ Nitrite provides some additional functionalities via nitrite-support library. Yo
 
 ## Getting started
 
-To use Nitrite support, add the following dependency in your `pubspec.yaml` file:
+To use Nitrite support, add the following dependency in your project:
 
-```yaml
-
-dependencies:
-  nitrite_support: ^[version]
-
+```bash
+dart pub add nitrite_support
 ```
 
 ## Additional information

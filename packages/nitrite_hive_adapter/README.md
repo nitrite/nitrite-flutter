@@ -4,14 +4,12 @@ Nitrite Hive adapter uses [Hive](https://pub.dev/packages/hive) as a file based 
 
 ## Getting started
 
-To use Hive as a storage engine for Nitrite, add the following dependency in your `pubspec.yaml` file:
+To use Hive as a storage engine for Nitrite, add the following dependency in your project:
 
-```yaml
-
-dependencies:
-  nitrite_hive_adapter: ^[version]
-
+```bash
+dart pub add nitrite_hive_adapter
 ```
+
 
 ## Usage
 

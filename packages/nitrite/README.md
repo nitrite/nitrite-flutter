@@ -28,16 +28,10 @@ Nitrite is an embedded database ideal for desktop, mobile or small web applicati
 
 ### How To Install
 
-To use Nitrite in any Flutter application, add the below in your `pubspec.yaml` file:
+To use Nitrite in any Flutter application, add the below packages in your project:
 
-```yaml
-dependencies:
-  nitrite: ^[version]
-
-dev_dependencies:
-  build_runner: ^2.4.6
-  nitrite_generator: ^[version]
-
+```bash
+dart pub add nitrite
 ```
 
 ### Quick Examples
@@ -64,13 +58,11 @@ var repository = await db.getRepository<Book>();
 
 **Code generators for Entity classes**
 
-The nitrite entity generator package can automatically generate entity classes from dart classes. It uses [source_gen](https://pub.dev/packages/source_gen) package to generate code. To use the generator, add the following to your `pubspec.yaml` file:
+The nitrite generator package can automatically generate entity classes from dart classes. It uses [source_gen](https://pub.dev/packages/source_gen) package to generate code. To use the generator, add the below packages:
 
-```yaml
-
-dev_dependencies:
-  nitrite_generator: ^[version]
-
+```bash
+dart pub add nitrite_generator --dev
+dart pub add build_runner --dev
 ```
 
 And use below annotations in your dart classes:
