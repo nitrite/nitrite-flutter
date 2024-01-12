@@ -7,9 +7,13 @@ on:
 
 jobs:
   publish:
+    name: Publish on pub.dev
+    runs-on: ubuntu-latest
+
     permissions:
       id-token: write # Required for authentication using OIDC
-    runs-on: ubuntu-latest
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,5 +44,5 @@ jobs:
         run: melos run dartdoc
 
       - name: Publish Nitrite
-        run: dart pub publish -f
+        run: flutter pub publish --force
         working-directory: packages/nitrite
