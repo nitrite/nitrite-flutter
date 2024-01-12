@@ -1,0 +1,38 @@
+name: Release Nitrite
+
+on:
+  push:
+    tags:
+      - 'nitrite-v[0-9]+.[0-9]+.[0-9]+*'
+
+jobs:
+  publish:
+    permissions:
+      id-token: write # Required for authentication using OIDC
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Setup Build System
+        shell: bash
+        run: |
+          chmod +x ./.github/workflows/scripts/install-tools.sh
+          ./.github/workflows/scripts/install-tools.sh
+
+      - name: Generate Code
+        run: melos run generate
+
+      - name: Generate Docs
+        run: melos run dartdoc
+
+      - name: Publish Nitrite
+        run: dart pub publish -f
+        working-directory: packages/nitrite

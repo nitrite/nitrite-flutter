@@ -32,7 +32,9 @@ jobs:
 
       - name: Setup Build System
         shell: bash
-        run: ./.github/workflows/scripts/install-tools.sh
+        run: |
+          chmod +x ./.github/workflows/scripts/install-tools.sh
+          ./.github/workflows/scripts/install-tools.sh
 
       - name: Build Nitrite
         run: melos run test
