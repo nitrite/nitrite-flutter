@@ -154,7 +154,7 @@ class FieldValues {
     return _fields!;
   }
 
-  /// Sets the [fields] property in the [FieldValues] class. 
+  /// Sets the [fields] property in the [FieldValues] class.
   set fields(Fields fields) {
     _fields = fields;
   }

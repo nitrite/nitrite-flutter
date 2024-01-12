@@ -1,9 +1,9 @@
-name: Release Nitrite
+name: Release Nitrite Spatial
 
 on:
   push:
     tags:
-      - 'nitrite-[0-9]+.[0-9]+.[0-9]+*'
+      - 'nitrite_spatial-[0-9]+.[0-9]+.[0-9]+*'
 
 jobs:
   publish:
@@ -46,6 +46,6 @@ jobs:
       - name: Generate Docs
         run: melos run dartdoc
 
-      - name: Publish Nitrite
+      - name: Publish Nitrite Spatial
         run: flutter pub publish --force
-        working-directory: packages/nitrite
+        working-directory: packages/nitrite_spatial

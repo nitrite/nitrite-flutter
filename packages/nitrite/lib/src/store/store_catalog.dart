@@ -15,7 +15,7 @@ class StoreCatalog {
     _catalog = await _nitriteStore.openMap<String, Document>(collectionCatalog);
   }
 
-  /// Writes a new entry for a collection with the given name to 
+  /// Writes a new entry for a collection with the given name to
   /// the store catalog.
   Future<void> writeCollectionEntry(String name) async {
     var document = await _catalog[tagCollections];
@@ -67,7 +67,6 @@ class StoreCatalog {
     return metaData.mapNames;
   }
 
-
   /// Returns a [Future] that completes with a [Set] of all
   /// repository names in the Nitrite database.
   Future<Set<String>> get repositoryNames async {
@@ -79,7 +78,6 @@ class StoreCatalog {
     var metaData = MapMetaData(doc);
     return metaData.mapNames;
   }
-
 
   /// Returns a [Future] that completes with a [Set] of all
   /// keyed repository names in the Nitrite database.
@@ -109,7 +107,6 @@ class StoreCatalog {
 
     return resultMap;
   }
-
 
   /// Removes the entry from the catalog specified by a name.
   Future<void> remove(String name) async {

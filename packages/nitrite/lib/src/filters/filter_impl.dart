@@ -41,7 +41,7 @@ class EqualsFilter extends ComparableFilter {
 
 /// @nodoc
 class OrFilter extends LogicalFilter {
-  OrFilter(List<Filter> filters) : super(filters);
+  OrFilter(super.filters);
 
   @override
   bool apply(Document doc) {
@@ -110,7 +110,7 @@ class AndFilter extends LogicalFilter {
 class TextFilter extends StringFilter {
   TextTokenizer? _tokenizer;
 
-  TextFilter(String field, String value) : super(field, value);
+  TextFilter(super.field, String super.value);
 
   set textTokenizer(TextTokenizer tokenizer) {
     _tokenizer = tokenizer;
@@ -301,7 +301,7 @@ class _Bound<T> {
 }
 
 class _GreaterEqualFilter extends ComparableFilter {
-  _GreaterEqualFilter(String field, dynamic value) : super(field, value);
+  _GreaterEqualFilter(super.field, super.value);
 
   @override
   bool apply(Document doc) {
@@ -335,7 +335,7 @@ class _GreaterEqualFilter extends ComparableFilter {
 }
 
 class _GreaterThanFilter extends ComparableFilter {
-  _GreaterThanFilter(String field, dynamic value) : super(field, value);
+  _GreaterThanFilter(super.field, super.value);
 
   @override
   bool apply(Document doc) {
@@ -369,7 +369,7 @@ class _GreaterThanFilter extends ComparableFilter {
 }
 
 class _LesserEqualFilter extends ComparableFilter {
-  _LesserEqualFilter(String field, dynamic value) : super(field, value);
+  _LesserEqualFilter(super.field, super.value);
 
   @override
   bool apply(Document doc) {
@@ -403,7 +403,7 @@ class _LesserEqualFilter extends ComparableFilter {
 }
 
 class _LesserThanFilter extends ComparableFilter {
-  _LesserThanFilter(String field, dynamic value) : super(field, value);
+  _LesserThanFilter(super.field, super.value);
 
   @override
   bool apply(Document doc) {
@@ -462,9 +462,7 @@ class _NotEqualsFilter extends ComparableFilter {
 class _RegexFilter extends FieldBasedFilter {
   final RegExp _pattern;
 
-  _RegexFilter(String field, String value)
-      : _pattern = RegExp(value),
-        super(field, value);
+  _RegexFilter(super.field, String super.value) : _pattern = RegExp(value);
 
   @override
   bool apply(Document doc) {

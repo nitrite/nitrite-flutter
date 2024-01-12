@@ -5,7 +5,7 @@ import 'package:nitrite/src/common/util/validation_utils.dart';
 /// Nitrite is a lightweight, embedded, and self-contained NoSQL database.
 /// It provides an easy-to-use API to store and retrieve data. Nitrite stores
 /// data in the form of documents and supports indexing on fields within
-/// the documents to provide efficient search capabilities. Nitrite supports 
+/// the documents to provide efficient search capabilities. Nitrite supports
 /// transactions, and provides a simple and efficient way to persist data.
 ///
 /// Nitrite is designed to be embedded within the application

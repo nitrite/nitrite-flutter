@@ -17,11 +17,11 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   /// repository names in the Nitrite database.
   Future<Set<String>> get repositoryRegistry;
 
-  /// Gets the set of all keyed-[ObjectRepository] details in 
+  /// Gets the set of all keyed-[ObjectRepository] details in
   /// the Nitrite database.
   Future<Map<String, Set<String>>> get keyedRepositoryRegistry;
 
-  /// Returns a [Future] that completes with a [bool] indicating 
+  /// Returns a [Future] that completes with a [bool] indicating
   /// whether there are unsaved changes in the Nitrite store.
   Future<bool> get hasUnsavedChanges;
 
@@ -39,14 +39,14 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   /// Returns a Future that completes with a boolean value indicating whether
   /// a [NitriteMap] with the given name exists in the store.
   Future<bool> hasMap(String mapName);
-  
-  /// Opens a [NitriteMap] with the given [mapName] and returns a [Future] 
+
+  /// Opens a [NitriteMap] with the given [mapName] and returns a [Future]
   /// that completes with the opened map.
-  /// 
-  /// The map is automatically created if it does not yet exist. 
+  ///
+  /// The map is automatically created if it does not yet exist.
   /// If a map with this name is already opened, this map is returned.
   ///
-  /// The [Key] and [Value] types are generic and should be specified 
+  /// The [Key] and [Value] types are generic and should be specified
   /// when calling this method.
   Future<NitriteMap<Key, Value>> openMap<Key, Value>(String mapName);
 
@@ -55,11 +55,11 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
 
   /// Removes a [NitriteMap] with the specified name from the store.
   Future<void> removeMap(String mapName);
-  
+
   /// Opens an [NitriteRTree] with the given key and value types. The key type must
   /// extend the [BoundingBox] class. Returns a [NitriteRTree] instance that can
   /// be used to perform R-Tree operations on the data.
-  /// 
+  ///
   /// The R-Tree is automatically created if it does not yet exist. If a R-Tree
   /// with this name is already open, this R-Tree is returned.
   ///
@@ -74,7 +74,7 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   /// Removes a [NitriteRTree] with the specified name from the store.
   Future<void> removeRTree(String rTreeName);
 
-  /// Subscribes a [StoreEventListener] to this store. The listener will be 
+  /// Subscribes a [StoreEventListener] to this store. The listener will be
   /// notified of any changes made to the store.
   void subscribe(StoreEventListener listener);
 

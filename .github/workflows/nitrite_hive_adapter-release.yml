@@ -1,9 +1,9 @@
-name: Release Nitrite
+name: Release Nitrite Hive Adapter
 
 on:
   push:
     tags:
-      - 'nitrite-[0-9]+.[0-9]+.[0-9]+*'
+      - 'nitrite_hive_adapter-[0-9]+.[0-9]+.[0-9]+*'
 
 jobs:
   publish:
@@ -46,6 +46,6 @@ jobs:
       - name: Generate Docs
         run: melos run dartdoc
 
-      - name: Publish Nitrite
+      - name: Publish Nitrite Hive Adapter
         run: flutter pub publish --force
-        working-directory: packages/nitrite
+        working-directory: packages/nitrite_hive_adapter

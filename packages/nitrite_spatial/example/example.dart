@@ -33,6 +33,7 @@ void main() async {
 
   // print the results
   await cursor.forEach((element) {
+    // ignore: avoid_print
     print(element);
   });
 }

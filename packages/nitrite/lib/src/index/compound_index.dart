@@ -1,8 +1,5 @@
 import 'package:nitrite/nitrite.dart';
-import 'package:nitrite/src/common/util/index_utils.dart';
-import 'package:nitrite/src/index/index_map.dart';
 import 'package:nitrite/src/index/index_scanner.dart';
-import 'package:nitrite/src/index/nitrite_index.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// @nodoc

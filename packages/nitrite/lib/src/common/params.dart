@@ -13,7 +13,7 @@ class LookUp {
 }
 
 /// An enum is used to specify the sort order for sorting operations.
-/// 
+///
 enum SortOrder {
   /// Represents the ascending sort order.
   ascending,
