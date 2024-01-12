@@ -16,16 +16,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
       # This action adds a token needed for pub.dev authentication
       - name: Install Dart
         uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
 
       - name: Setup Build System
         shell: bash
