@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:faker/faker.dart' as fk;
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
 import 'package:test/test.dart';
 
 import 'base_object_repository_test_loader.dart';
@@ -9,15 +13,23 @@ void main() {
   late Nitrite db;
   late ObjectRepository<Person> personRepository;
   late ObjectRepository<Address> addressRepository;
+  late String dbPath;
 
   group(retry: 3, 'Repository Join Test Suite', () {
     setUp(() async {
       setUpLog();
-      db = await Nitrite.builder().openOrCreate();
-      var mapper = db.config.nitriteMapper as SimpleNitriteMapper;
-      mapper.registerEntityConverter(PersonConverter());
-      mapper.registerEntityConverter(PersonDetailsConverter());
-      mapper.registerEntityConverter(AddressConverter());
+
+      faker = fk.Faker();
+      dbPath = '${Directory.current.path}/db/${faker.guid.guid()}';
+      var storeModule =
+          HiveModule.withConfig().crashRecovery(true).path(dbPath).build();
+
+      db = await Nitrite.builder()
+          .loadModule(storeModule)
+          .registerEntityConverter(PersonConverter())
+          .registerEntityConverter(PersonDetailsConverter())
+          .registerEntityConverter(AddressConverter())
+          .openOrCreate();
 
       personRepository = await db.getRepository<Person>();
       addressRepository = await db.getRepository<Address>();
@@ -57,6 +69,9 @@ void main() {
       if (db.isClosed) {
         await db.close();
       }
+
+      var dbFile = Directory(dbPath);
+      await dbFile.delete(recursive: true);
     });
 
     test('Test Join', () async {

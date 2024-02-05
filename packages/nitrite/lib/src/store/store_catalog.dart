@@ -15,6 +15,18 @@ class StoreCatalog {
     _catalog = await _nitriteStore.openMap<String, Document>(collectionCatalog);
   }
 
+  /// Returns a [Future] that completes with a [bool] indicating whether
+  /// the store catalog has an entry with the given name.
+  Future<bool> hasEntry(String name) async {
+    await for (var entry in _catalog.entries()) {
+      var metaData = MapMetaData(entry.$2);
+      if (metaData.mapNames.contains(name)) {
+        return Future.value(true);
+      }
+    }
+    return Future.value(false);
+  }
+
   /// Writes a new entry for a collection with the given name to
   /// the store catalog.
   Future<void> writeCollectionEntry(String name) async {

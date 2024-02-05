@@ -68,7 +68,10 @@ class CollectionFactory {
     if (writeCatalogue) {
       _collectionMap[name] = collection;
       var storeCatalog = await store.getCatalog();
-      await storeCatalog.writeCollectionEntry(name);
+      var exists = await storeCatalog.hasEntry(name);
+      if (!exists) {
+        await storeCatalog.writeCollectionEntry(name);
+      }
     }
 
     return collection;
