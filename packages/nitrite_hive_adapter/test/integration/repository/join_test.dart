@@ -66,7 +66,7 @@ void main() {
         await addressRepository.remove(all);
       }
 
-      if (db.isClosed) {
+      if (!db.isClosed) {
         await db.close();
       }
 
