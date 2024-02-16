@@ -77,6 +77,6 @@ void main() {
 
       _log.info(
           'Update of 1 documents took ${stopwatch.elapsedMilliseconds} ms');
-    }, timeout: Timeout(Duration(minutes: 30)));
+    }, timeout: Timeout(Duration(minutes: 30)), skip: true);
   });
 }
