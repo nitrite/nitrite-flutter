@@ -210,7 +210,8 @@ class WriteOperations {
             'in ${_nitriteMap.name}');
 
         try {
-          await _documentIndexWriter.updateIndexEntry(oldDoc, processed);
+          await _documentIndexWriter.updateIndexEntry(
+              oldDoc, processed, document);
 
           // if 'update' only contains id value, affected count = 0
           if (document.size > 0) {
@@ -221,7 +222,8 @@ class WriteOperations {
             _log.severe('Error while writing index entry for document with id'
                 ' : $nitriteId in ${_nitriteMap.name}');
             await _nitriteMap.put(nitriteId, oldDoc);
-            await _documentIndexWriter.updateIndexEntry(processed, oldDoc);
+            await _documentIndexWriter.updateIndexEntry(
+                processed, oldDoc, document);
           }
           rethrow;
         }

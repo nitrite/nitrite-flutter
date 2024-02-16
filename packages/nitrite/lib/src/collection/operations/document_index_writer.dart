@@ -22,14 +22,22 @@ class DocumentIndexWriter {
     }
   }
 
-  Future<void> updateIndexEntry(Document oldDoc, Document newDoc) async {
+  Future<void> updateIndexEntry(
+      Document oldDoc, Document newDoc, Document updatedFields) async {
     var indexEntries = await _indexOperations.listIndexes();
+    // filter out the index which is not affected by the update
     for (var indexDescriptor in indexEntries) {
-      var indexType = indexDescriptor.indexType;
-      var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
+      var fields = indexDescriptor.fields;
 
-      await _removeIndexEntryInternal(indexDescriptor, oldDoc, nitriteIndexer);
-      await _writeIndexEntryInternal(indexDescriptor, newDoc, nitriteIndexer);
+      // if the index is affected by the update
+      if (fields.fieldNames.any((field) => updatedFields.containsKey(field))) {
+        var indexType = indexDescriptor.indexType;
+        var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
+
+        await _removeIndexEntryInternal(
+            indexDescriptor, oldDoc, nitriteIndexer);
+        await _writeIndexEntryInternal(indexDescriptor, newDoc, nitriteIndexer);
+      }
     }
   }
 

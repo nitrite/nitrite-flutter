@@ -1,5 +1,5 @@
-import 'dart:math';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:logging/logging.dart';
 import 'package:uuid/uuid.dart';
@@ -56,7 +56,7 @@ class SnowflakeIdGenerator {
   }
 
   int _getNodeId() {
-    Uuid uuid = Uuid();
+    var uuid = Uuid();
     var uid = ascii.encode(uuid.v4());
     var rndByte = _random.nextInt(0XFFFFFFFF) & 0x000000FF;
 

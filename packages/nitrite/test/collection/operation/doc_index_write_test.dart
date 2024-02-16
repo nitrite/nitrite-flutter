@@ -79,8 +79,8 @@ void main() {
           .thenReturn(InMemoryStore(InMemoryConfig()));
 
       var indexWriter = DocumentIndexWriter(config, indexOperations);
-      await indexWriter.updateIndexEntry(
-          createDocument("a", 1), createDocument("a", 2));
+      await indexWriter.updateIndexEntry(createDocument("a", 1),
+          createDocument("a", 2), createDocument("a", 3));
       verify(indexOperations.listIndexes()).called(1);
     });
   });

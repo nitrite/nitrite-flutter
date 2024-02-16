@@ -13,7 +13,7 @@ late String dbPath;
 late Faker faker;
 
 void setUpLog() {
-  Logger.root.level = Level.OFF;
+  Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((record) {
     print('${record.time}: [${record.level.name}] ${record.loggerName} -'
         ' ${record.message}');
