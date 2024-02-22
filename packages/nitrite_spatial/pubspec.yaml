@@ -1,6 +1,6 @@
 name: nitrite_spatial
 description: Nitrite Spatial module provides support for spatial queries. The module uses JTS port of the dart package dart_jts for spatial operations.
-version: 1.0.1
+version: 1.0.2
 homepage: https://nitrite.dizitart.com/
 repository: https://github.com/nitrite/nitrite-flutter
 
@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   dart_jts: ^0.3.0+1
-  nitrite: ^1.0.1
+  nitrite: ^1.0.2
   hive: ^2.2.3
 
 dev_dependencies:
@@ -19,8 +19,8 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.1
   build_runner: ^2.4.7
-  nitrite_hive_adapter: ^1.0.1
-  nitrite_generator: ^1.0.1
+  nitrite_hive_adapter: ^1.0.2
+  nitrite_generator: ^1.0.2
   path: ^1.8.3
   path_provider: ^2.1.1
   logging: ^1.0.2
