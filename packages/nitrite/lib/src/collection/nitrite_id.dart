@@ -67,7 +67,7 @@ class NitriteId implements Comparable<NitriteId> {
   String toString() => idPrefix + _idValue + idSuffix;
 
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       other is NitriteId && other._idValue == _idValue;
 
   @override

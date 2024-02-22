@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 import 'collection/base_collection_test_loader.dart';
 
 void main() {
-  final Logger _log = Logger('StressTest Suite');
+  final Logger log = Logger('StressTest Suite');
 
   group(retry: 3, 'Document Index Write Test Suite', () {
     setUp(() async {
@@ -42,7 +42,7 @@ void main() {
           .createIndex(['index'], indexOptions(IndexType.nonUnique));
 
       var uuid = Uuid();
-      _log.info('Inserting 300000 documents');
+      log.info('Inserting 300000 documents');
       for (var i = 0; i < 10; i++) {
         var stopwatch = Stopwatch()..start();
         for (var j = 0; j < 30000; j++) {
@@ -61,7 +61,7 @@ void main() {
           }));
         }
         stopwatch.stop();
-        _log.info(
+        log.info(
             'Insertion of 30000 documents took ${stopwatch.elapsedMilliseconds} ms');
       }
 
@@ -75,7 +75,7 @@ void main() {
           updateOptions(insertIfAbsent: false));
       stopwatch.stop();
 
-      _log.info(
+      log.info(
           'Update of 1 documents took ${stopwatch.elapsedMilliseconds} ms');
     }, timeout: Timeout(Duration(minutes: 30)), skip: true);
   });

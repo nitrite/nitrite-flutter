@@ -75,7 +75,7 @@ class _Employee {
   _Employee? boss;
 
   @override
-  operator ==(Object? other) =>
+  operator ==(Object other) =>
       identical(this, other) ||
       other is _Employee &&
           runtimeType == other.runtimeType &&
@@ -95,7 +95,7 @@ class _Department {
   List<_Employee> employees = [];
 
   @override
-  operator ==(Object? other) =>
+  operator ==(Object other) =>
       identical(this, other) ||
       other is _Department &&
           runtimeType == other.runtimeType &&
