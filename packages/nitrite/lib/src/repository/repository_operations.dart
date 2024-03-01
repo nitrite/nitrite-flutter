@@ -28,13 +28,23 @@ class RepositoryOperations<T> {
     }
   }
 
-  Future<void> createIndices() async {
+  void scanIndexes() {
     if (_entityDecoratorReader != null) {
-      await _entityDecoratorReader!.readAndExecute();
+      _entityDecoratorReader!.performScan();
       _objectIdField = _entityDecoratorReader!.objectIdField;
     } else if (isSubtype<T, NitriteEntity>()) {
-      await _nitriteEntityReader!.readAndExecute();
+      _nitriteEntityReader!.performScan();
       _objectIdField = _nitriteEntityReader!.objectIdField;
+    }
+  }
+
+  Future<void> createIndices() async {
+    if (_entityDecoratorReader != null) {
+      await _entityDecoratorReader!.createIndices();
+      await _entityDecoratorReader!.createIdIndex();
+    } else if (isSubtype<T, NitriteEntity>()) {
+      await _nitriteEntityReader!.createIndices();
+      await _nitriteEntityReader!.createIdIndex();
     }
   }
 

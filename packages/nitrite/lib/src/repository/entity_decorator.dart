@@ -28,28 +28,28 @@ class EntityDecoratorReader<T> {
 
   EntityId? get objectIdField => _objectIdField;
 
-  Future<void> readAndExecute() async {
+  void performScan() {
     if (_entityDecorator.idField != null) {
       _objectIdField = _entityDecorator.idField;
+    }
+  }
 
+  Future<void> createIdIndex() async {
+    if (_entityDecorator.idField != null) {
       var idFieldNames = _entityDecorator.idField!.isEmbedded
           ? _entityDecorator.idField!.encodedFieldNames
           : [_entityDecorator.idField!.fieldName];
 
-      var hasIndex = await _collection.hasIndex(idFieldNames);
-      if (!hasIndex) {
-        await _collection.createIndex(
-            idFieldNames, indexOptions(IndexType.unique));
-      }
+      await _collection.createIndex(
+          idFieldNames, indexOptions(IndexType.unique));
     }
+  }
 
+  Future<void> createIndices() async {
     var indexes = _entityDecorator.indexFields;
     for (var index in indexes) {
       var fields = index.fieldNames;
-      var hasIndex = await _collection.hasIndex(fields);
-      if (!hasIndex) {
-        await _collection.createIndex(fields, indexOptions(index.indexType));
-      }
+      await _collection.createIndex(fields, indexOptions(index.indexType));
     }
   }
 }

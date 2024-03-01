@@ -258,6 +258,7 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   Future<void> initialize() {
     _operations = RepositoryOperations<T>(
         _entityDecorator, _nitriteCollection, _nitriteConfig);
+    _operations.scanIndexes();
     return _operations.createIndices();
   }
 }

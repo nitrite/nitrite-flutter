@@ -33,8 +33,15 @@ class IndexOperations {
       indexDescriptor =
           await _indexManager.createIndexDescriptor(fields, indexType);
     } else {
-      // if index already there throw
-      throw IndexingException('Index already exists on fields: $fields');
+      // if index already there check if it is of same type, if not throw exception
+      if (indexDescriptor.indexType != indexType) {
+        throw IndexingException(
+            'Index already exists on fields: $fields with type '
+            '${indexDescriptor.indexType}');
+      } else {
+        // if index is of same type, return
+        return;
+      }
     }
 
     await buildIndex(indexDescriptor, false);

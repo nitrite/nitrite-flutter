@@ -85,7 +85,7 @@ class TextIndex extends NitriteIndex {
       textFilter.textTokenizer = _textTokenizer;
       yield* textFilter.applyOnTextIndex(indexMap).distinct();
     } else {
-      throw FilterException("Text index only supports a single TextFilter");
+      throw FilterException("TextFilter can only be applied on text index.");
     }
   }
 

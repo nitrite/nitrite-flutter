@@ -137,6 +137,7 @@ Future<void> _openDb() async {
       .registerEntityConverter(ManufacturerConverter())
       .registerEntityConverter(MiniProductConverter())
       .registerEntityConverter(WithNullIdConverter())
+      .registerEntityConverter(WrongIndexEntityConverter())
       .fieldSeparator('.')
       .openOrCreate(username: 'test-user', password: 'test-password');
 }

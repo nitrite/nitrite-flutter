@@ -1,3 +1,4 @@
+import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 import 'base_object_repository_test_loader.dart';
@@ -36,6 +37,15 @@ void main() {
       // author is ignored for test, so setting back the author manually
       bookById?.bookId?.author = 'John Doe';
       expect(bookById, book);
+    });
+
+    test('Test Duplicate Index on Same Field', () async {
+      expect(
+          () async => await db.getRepository<WrongIndexEntity>(),
+          throwsA(predicate((e) =>
+              e is IndexingException &&
+              e.message.contains('Index already exists on fields: '
+                  '[name] with type Fulltext'))));
     });
   });
 }

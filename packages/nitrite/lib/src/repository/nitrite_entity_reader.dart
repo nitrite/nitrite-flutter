@@ -12,34 +12,36 @@ class NitriteEntityReader<T> {
 
   EntityId? get objectIdField => _objectIdField;
 
-  Future<void> readAndExecute() async {
+  void performScan() {
     var entity = newInstance<T>(_nitriteMapper) as NitriteEntity;
 
     if (entity.entityId != null) {
       _objectIdField = entity.entityId;
-
-      var idFieldNames = _objectIdField!.isEmbedded
-          ? _objectIdField!.encodedFieldNames
-          : [_objectIdField!.fieldName];
-
-      var hasIndex = await _nitriteCollection.hasIndex(idFieldNames);
-
-      if (!hasIndex) {
-        await _nitriteCollection.createIndex(
-            idFieldNames, indexOptions(IndexType.unique));
-      }
     }
+  }
+
+  Future<void> createIdIndex() async {
+    var entity = newInstance<T>(_nitriteMapper) as NitriteEntity;
+
+    if (entity.entityId != null) {
+      var idFieldNames = entity.entityId!.isEmbedded
+          ? entity.entityId!.encodedFieldNames
+          : [entity.entityId!.fieldName];
+      await _nitriteCollection.createIndex(
+          idFieldNames, indexOptions(IndexType.unique));
+    }
+  }
+
+  Future<void> createIndices() async {
+    var entity = newInstance<T>(_nitriteMapper) as NitriteEntity;
 
     if (entity.entityIndexes != null) {
       var indexes = entity.entityIndexes;
 
       if (indexes != null) {
         for (var index in indexes) {
-          var hasIndex = await _nitriteCollection.hasIndex(index.fieldNames);
-          if (!hasIndex) {
-            await _nitriteCollection.createIndex(
-                index.fieldNames, indexOptions(index.indexType));
-          }
+          await _nitriteCollection.createIndex(
+              index.fieldNames, indexOptions(index.indexType));
         }
       }
     }

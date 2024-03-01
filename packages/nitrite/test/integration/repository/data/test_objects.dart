@@ -800,3 +800,12 @@ class EmployeeForCustomSeparator with _$EmployeeForCustomSeparatorEntityMixin {
         'employeeNote: $employeeNote}';
   }
 }
+
+@Entity()
+@Convertable()
+@Index(fields: ['name'], type: IndexType.fullText)
+class WrongIndexEntity with _$WrongIndexEntityEntityMixin {
+  @Id()
+  String? name;
+  int? age;
+}

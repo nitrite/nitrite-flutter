@@ -1,3 +1,8 @@
+## 1.0.3
+
+- Updated some dependencies.
+- Issue fix for restricting multiple indexes on same field(s) in an ObjectRepository.
+
 ## 1.0.2
 
 - Updated some dependencies.

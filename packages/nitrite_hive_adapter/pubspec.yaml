@@ -1,6 +1,6 @@
 name: nitrite_hive_adapter
 description: A persistent storage module for Nitrite database based on Hive.
-version: 1.0.2
+version: 1.0.3
 homepage: https://nitrite.dizitart.com/
 repository: https://github.com/nitrite/nitrite-flutter
 
@@ -10,7 +10,7 @@ environment:
 dependencies:
   hive: ^2.2.3
   path: ^1.8.3
-  nitrite: ^1.0.2
+  nitrite: ^1.0.3
   path_provider: ^2.1.1
   logging: ^1.0.2
   meta: ^1.10.0
@@ -23,7 +23,7 @@ dev_dependencies:
   flutter_lints: ^3.0.1
   build_runner: ^2.4.7
   hive_generator: ^2.0.1
-  nitrite_generator: ^1.0.2
+  nitrite_generator: ^1.0.3
   test: any
   encrypt: ^5.0.3
   faker: ^2.0.0

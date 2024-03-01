@@ -18,6 +18,8 @@ command:
     branch: release
     # Additionally build a changelog at the root of the workspace.
     workspaceChangelog: true
+  bootstrap:
+    runPubGetInParallel: false
 
 scripts:
   generate:

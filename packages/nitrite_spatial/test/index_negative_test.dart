@@ -43,8 +43,8 @@ void main() {
       try {
         await collection
             .createIndex(["location"], no2.indexOptions(spatialIndex));
-        await collection
-            .createIndex(["location"], no2.indexOptions(spatialIndex));
+        await collection.createIndex(
+            ["location"], no2.indexOptions(no2.IndexType.nonUnique));
       } catch (e) {
         error = true;
         expect(e, isA<no2.IndexingException>());

@@ -176,6 +176,6 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   Future<void> initialize() async {
     _operations = RepositoryOperations<T>(
         _entityDecorator, _backingCollection, _nitriteConfig);
-    await _operations.createIndices();
+    _operations.scanIndexes();
   }
 }
