@@ -2,6 +2,7 @@
 
 - Updated some dependencies.
 - Issue fix for restricting multiple indexes on same field(s) in an ObjectRepository.
+- Issue fix for sorting on indexed field.
 
 ## 1.0.2
 

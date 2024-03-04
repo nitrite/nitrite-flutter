@@ -305,6 +305,13 @@ abstract class ComparableFilter extends FieldBasedFilter {
   Stream<dynamic> applyOnIndex(IndexMap indexMap);
 }
 
+abstract class SortingAwareFilter extends ComparableFilter {
+  SortingAwareFilter(super.field, super.value);
+
+  /// Indicates if the filter should scan the index in reverse order.
+  bool isReverseScan = false;
+}
+
 /// An abstract class representing a filter for string values.
 abstract class StringFilter extends ComparableFilter {
   StringFilter(super.field, super.value);

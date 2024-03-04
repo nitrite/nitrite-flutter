@@ -96,6 +96,18 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   }
 
   @override
+  Future<Key?> firstKey() async {
+    _checkOpened();
+    return _backingMap.isEmpty ? null : _backingMap.firstKey();
+  }
+
+  @override
+  Future<Key?> lastKey() async {
+    _checkOpened();
+    return _backingMap.isEmpty ? null : _backingMap.lastKey();
+  }
+
+  @override
   Future<Key?> higherKey(Key key) async {
     _checkOpened();
     if (key == null) return null;

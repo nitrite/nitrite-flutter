@@ -388,5 +388,181 @@ void main() {
       cursor = collection.find(filter: where('notes').text('lazy'));
       expect(await cursor.length, 3);
     });
+
+    test('Test Sort By Index Descending Less Than Equal', () async {
+      var collection =
+          await db.getCollection('testSortByIndexDescendingLessThanEqual');
+      for (var i in [1, 2, 3, 4, 5]) {
+        await collection.insert(createDocument('name', i));
+      }
+
+      var cursor = collection.find(
+          filter: where("name").lte(3),
+          findOptions: orderBy('name', SortOrder.descending));
+      var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      await collection.createIndex(['name']);
+
+      cursor = collection.find(
+          filter: where("name").lte(3),
+          findOptions: orderBy('name', SortOrder.descending));
+      var indexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      expect(nonIndexedResult, indexedResult);
+    });
+
+    test('Test Sort By Index Ascending Less Than Equal', () async {
+      var collection =
+          await db.getCollection('testSortByIndexAscendingLessThanEqual');
+      for (var i in [1, 2, 3, 4, 5]) {
+        await collection.insert(createDocument('name', i));
+      }
+
+      var cursor = collection.find(
+          filter: where("name").lte(3),
+          findOptions: orderBy('name', SortOrder.ascending));
+      var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      await collection.createIndex(['name']);
+
+      cursor = collection.find(
+          filter: where("name").lte(3),
+          findOptions: orderBy('name', SortOrder.ascending));
+      var indexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      expect(nonIndexedResult, indexedResult);
+    });
+
+    test('Test Sort By Index Descending Greater Than Equal', () async {
+      var collection =
+          await db.getCollection('testSortByIndexDescendingGreaterThanEqual');
+      for (var i in [1, 2, 3, 4, 5]) {
+        await collection.insert(createDocument('name', i));
+      }
+
+      var cursor = collection.find(
+          filter: where("name").gte(3),
+          findOptions: orderBy('name', SortOrder.descending));
+      var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      await collection.createIndex(['name']);
+
+      cursor = collection.find(
+          filter: where("name").gte(3),
+          findOptions: orderBy('name', SortOrder.descending));
+      var indexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      expect(nonIndexedResult, indexedResult);
+    });
+
+    test('Test Sort By Index Ascending Greater Than Equal', () async {
+      var collection =
+          await db.getCollection('testSortByIndexAscendingGreaterThanEqual');
+      for (var i in [1, 2, 3, 4, 5]) {
+        await collection.insert(createDocument('name', i));
+      }
+
+      var cursor = collection.find(
+          filter: where("name").gte(3),
+          findOptions: orderBy('name', SortOrder.ascending));
+      var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      await collection.createIndex(['name']);
+
+      cursor = collection.find(
+          filter: where("name").gte(3),
+          findOptions: orderBy('name', SortOrder.ascending));
+      var indexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      expect(nonIndexedResult, indexedResult);
+    });
+
+    test('Test Sort By Index Descending Greater Than', () async {
+      var collection =
+          await db.getCollection('testSortByIndexDescendingGreaterThan');
+      for (var i in [1, 2, 3, 4, 5]) {
+        await collection.insert(createDocument('name', i));
+      }
+
+      var cursor = collection.find(
+          filter: where("name").gt(3),
+          findOptions: orderBy('name', SortOrder.descending));
+      var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      await collection.createIndex(['name']);
+
+      cursor = collection.find(
+          filter: where("name").gt(3),
+          findOptions: orderBy('name', SortOrder.descending));
+      var indexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      expect(nonIndexedResult, indexedResult);
+    });
+
+    test('Test Sort By Index Ascending Greater Than', () async {
+      var collection =
+          await db.getCollection('testSortByIndexAscendingGreaterThan');
+      for (var i in [1, 2, 3, 4, 5]) {
+        await collection.insert(createDocument('name', i));
+      }
+
+      var cursor = collection.find(
+          filter: where("name").gt(3),
+          findOptions: orderBy('name', SortOrder.ascending));
+      var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      await collection.createIndex(['name']);
+
+      cursor = collection.find(
+          filter: where("name").gt(3),
+          findOptions: orderBy('name', SortOrder.ascending));
+      var indexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      expect(nonIndexedResult, indexedResult);
+    });
+
+    test('Test Sort By Index Descending Less Than', () async {
+      var collection =
+          await db.getCollection('testSortByIndexDescendingLessThan');
+      for (var i in [1, 2, 3, 4, 5]) {
+        await collection.insert(createDocument('name', i));
+      }
+
+      var cursor = collection.find(
+          filter: where("name").lt(3),
+          findOptions: orderBy('name', SortOrder.descending));
+      var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      await collection.createIndex(['name']);
+
+      cursor = collection.find(
+          filter: where("name").lt(3),
+          findOptions: orderBy('name', SortOrder.descending));
+      var indexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      expect(nonIndexedResult, indexedResult);
+    });
+
+    test('Test Sort By Index Ascending Less Than', () async {
+      var collection =
+          await db.getCollection('testSortByIndexAscendingLessThan');
+      for (var i in [1, 2, 3, 4, 5]) {
+        await collection.insert(createDocument('name', i));
+      }
+
+      var cursor = collection.find(
+          filter: where("name").lt(3),
+          findOptions: orderBy('name', SortOrder.ascending));
+      var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      await collection.createIndex(['name']);
+
+      cursor = collection.find(
+          filter: where("name").lt(3),
+          findOptions: orderBy('name', SortOrder.ascending));
+      var indexedResult = await cursor.map((e) => e['name'] as int).toList();
+
+      expect(nonIndexedResult, indexedResult);
+    });
   });
 }

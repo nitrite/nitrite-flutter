@@ -300,7 +300,7 @@ class _Bound<T> {
       {this.upperInclusive = true, this.lowerInclusive = true});
 }
 
-class _GreaterEqualFilter extends ComparableFilter {
+class _GreaterEqualFilter extends SortingAwareFilter {
   _GreaterEqualFilter(super.field, super.value);
 
   @override
@@ -320,13 +320,25 @@ class _GreaterEqualFilter extends ComparableFilter {
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    var ceilingKey = await indexMap.ceilingKey(comparable);
-    while (ceilingKey != null) {
-      // get the starting value, it can be a navigable-map (compound index)
-      // or list (single field index)
-      var val = await indexMap.get(ceilingKey);
-      yield* yieldValues(val);
-      ceilingKey = await indexMap.higherKey(ceilingKey);
+    if (isReverseScan) {
+      // if reverse scan is required, then start from the last key
+      var lastKey = await indexMap.lastKey();
+      while (lastKey != null && compare(lastKey, comparable) >= 0) {
+        // get the starting value, it can be a navigable-map (compound index)
+        // or list (single field index)
+        var val = await indexMap.get(lastKey);
+        yield* yieldValues(val);
+        lastKey = await indexMap.lowerKey(lastKey);
+      }
+    } else {
+      var ceilingKey = await indexMap.ceilingKey(comparable);
+      while (ceilingKey != null) {
+        // get the starting value, it can be a navigable-map (compound index)
+        // or list (single field index)
+        var val = await indexMap.get(ceilingKey);
+        yield* yieldValues(val);
+        ceilingKey = await indexMap.higherKey(ceilingKey);
+      }
     }
   }
 
@@ -334,7 +346,7 @@ class _GreaterEqualFilter extends ComparableFilter {
   toString() => "($field >= $value)";
 }
 
-class _GreaterThanFilter extends ComparableFilter {
+class _GreaterThanFilter extends SortingAwareFilter {
   _GreaterThanFilter(super.field, super.value);
 
   @override
@@ -354,13 +366,24 @@ class _GreaterThanFilter extends ComparableFilter {
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    var higherKey = await indexMap.higherKey(comparable);
-    while (higherKey != null) {
-      // get the starting value, it can be a navigable-map (compound index)
-      // or list (single field index)
-      var val = await indexMap.get(higherKey);
-      yield* yieldValues(val);
-      higherKey = await indexMap.higherKey(higherKey);
+    if (isReverseScan) {
+      var lastKey = await indexMap.lastKey();
+      while (lastKey != null && compare(lastKey, comparable) > 0) {
+        // get the starting value, it can be a navigable-map (compound index)
+        // or list (single field index)
+        var val = await indexMap.get(lastKey);
+        yield* yieldValues(val);
+        lastKey = await indexMap.lowerKey(lastKey);
+      }
+    } else {
+      var higherKey = await indexMap.higherKey(comparable);
+      while (higherKey != null) {
+        // get the starting value, it can be a navigable-map (compound index)
+        // or list (single field index)
+        var val = await indexMap.get(higherKey);
+        yield* yieldValues(val);
+        higherKey = await indexMap.higherKey(higherKey);
+      }
     }
   }
 
@@ -368,7 +391,7 @@ class _GreaterThanFilter extends ComparableFilter {
   toString() => "($field > $value)";
 }
 
-class _LesserEqualFilter extends ComparableFilter {
+class _LesserEqualFilter extends SortingAwareFilter {
   _LesserEqualFilter(super.field, super.value);
 
   @override
@@ -388,13 +411,24 @@ class _LesserEqualFilter extends ComparableFilter {
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    var floorKey = await indexMap.floorKey(comparable);
-    while (floorKey != null) {
-      // get the starting value, it can be a navigable-map (compound index)
-      // or list (single field index)
-      var val = await indexMap.get(floorKey);
-      yield* yieldValues(val);
-      floorKey = await indexMap.lowerKey(floorKey);
+    if (isReverseScan) {
+      var floorKey = await indexMap.floorKey(comparable);
+      while (floorKey != null) {
+        // get the starting value, it can be a navigable-map (compound index)
+        // or list (single field index)
+        var val = await indexMap.get(floorKey);
+        yield* yieldValues(val);
+        floorKey = await indexMap.lowerKey(floorKey);
+      }
+    } else {
+      var firstKey = await indexMap.firstKey();
+      while (firstKey != null && compare(firstKey, comparable) <= 0) {
+        // get the starting value, it can be a navigable-map (compound index)
+        // or list (single field index)
+        var val = await indexMap.get(firstKey);
+        yield* yieldValues(val);
+        firstKey = await indexMap.higherKey(firstKey);
+      }
     }
   }
 
@@ -402,7 +436,7 @@ class _LesserEqualFilter extends ComparableFilter {
   toString() => "($field <= $value)";
 }
 
-class _LesserThanFilter extends ComparableFilter {
+class _LesserThanFilter extends SortingAwareFilter {
   _LesserThanFilter(super.field, super.value);
 
   @override
@@ -422,13 +456,24 @@ class _LesserThanFilter extends ComparableFilter {
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    var lowerKey = await indexMap.lowerKey(comparable);
-    while (lowerKey != null) {
-      // get the starting value, it can be a navigable-map (compound index)
-      // or list (single field index)
-      var val = await indexMap.get(lowerKey);
-      yield* yieldValues(val);
-      lowerKey = await indexMap.lowerKey(lowerKey);
+    if (isReverseScan) {
+      var lowerKey = await indexMap.lowerKey(comparable);
+      while (lowerKey != null) {
+        // get the starting value, it can be a navigable-map (compound index)
+        // or list (single field index)
+        var val = await indexMap.get(lowerKey);
+        yield* yieldValues(val);
+        lowerKey = await indexMap.lowerKey(lowerKey);
+      }
+    } else {
+      var firstKey = await indexMap.firstKey();
+      while (firstKey != null && compare(firstKey, comparable) < 0) {
+        // get the starting value, it can be a navigable-map (compound index)
+        // or list (single field index)
+        var val = await indexMap.get(firstKey);
+        yield* yieldValues(val);
+        firstKey = await indexMap.higherKey(firstKey);
+      }
     }
   }
 

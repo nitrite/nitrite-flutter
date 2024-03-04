@@ -33,23 +33,41 @@ class IndexMap {
     return null;
   }
 
+  Future<dynamic> firstKey() async {
+    DBValue? dbKey;
+    if (_nitriteMap != null) {
+      dbKey = await _nitriteMap.firstKey();
+    } else if (_navigableMap != null) {
+      dbKey = _navigableMap.firstKey();
+    } else {
+      return null;
+    }
+
+    return dbKey == null || dbKey == DBNull.instance ? null : dbKey.value;
+  }
+
+  Future<dynamic> lastKey() async {
+    DBValue? dbKey;
+    if (_nitriteMap != null) {
+      dbKey = await _nitriteMap.lastKey();
+    } else if (_navigableMap != null) {
+      dbKey = _navigableMap.lastKey();
+    } else {
+      return null;
+    }
+
+    return dbKey == null || dbKey == DBNull.instance ? null : dbKey.value;
+  }
+
   Future<dynamic> ceilingKey(Comparable? comparable) async {
     DBValue? dbKey = comparable is DBNull
         ? comparable
         : (comparable == null ? DBNull.instance : DBValue(comparable));
 
-    if (!_reverseScan) {
-      if (_nitriteMap != null) {
-        dbKey = await _nitriteMap.ceilingKey(dbKey);
-      } else if (_navigableMap != null) {
-        dbKey = _navigableMap.ceilingKey(dbKey);
-      }
-    } else {
-      if (_nitriteMap != null) {
-        dbKey = await _nitriteMap.floorKey(dbKey);
-      } else if (_navigableMap != null) {
-        dbKey = _navigableMap.floorKey(dbKey);
-      }
+    if (_nitriteMap != null) {
+      dbKey = await _nitriteMap.ceilingKey(dbKey);
+    } else if (_navigableMap != null) {
+      dbKey = _navigableMap.ceilingKey(dbKey);
     }
 
     return dbKey == null || dbKey == DBNull.instance ? null : dbKey.value;
@@ -60,18 +78,10 @@ class IndexMap {
         ? comparable
         : (comparable == null ? DBNull.instance : DBValue(comparable));
 
-    if (!_reverseScan) {
-      if (_nitriteMap != null) {
-        dbKey = await _nitriteMap.higherKey(dbKey);
-      } else if (_navigableMap != null) {
-        dbKey = _navigableMap.higherKey(dbKey);
-      }
-    } else {
-      if (_nitriteMap != null) {
-        dbKey = await _nitriteMap.lowerKey(dbKey);
-      } else if (_navigableMap != null) {
-        dbKey = _navigableMap.lowerKey(dbKey);
-      }
+    if (_nitriteMap != null) {
+      dbKey = await _nitriteMap.higherKey(dbKey);
+    } else if (_navigableMap != null) {
+      dbKey = _navigableMap.higherKey(dbKey);
     }
 
     return dbKey == null || dbKey == DBNull.instance ? null : dbKey.value;
@@ -82,18 +92,10 @@ class IndexMap {
         ? comparable
         : (comparable == null ? DBNull.instance : DBValue(comparable));
 
-    if (!_reverseScan) {
-      if (_nitriteMap != null) {
-        dbKey = await _nitriteMap.floorKey(dbKey);
-      } else if (_navigableMap != null) {
-        dbKey = _navigableMap.floorKey(dbKey);
-      }
-    } else {
-      if (_nitriteMap != null) {
-        dbKey = await _nitriteMap.ceilingKey(dbKey);
-      } else if (_navigableMap != null) {
-        dbKey = _navigableMap.ceilingKey(dbKey);
-      }
+    if (_nitriteMap != null) {
+      dbKey = await _nitriteMap.floorKey(dbKey);
+    } else if (_navigableMap != null) {
+      dbKey = _navigableMap.floorKey(dbKey);
     }
 
     return dbKey == null || dbKey == DBNull.instance ? null : dbKey.value;
@@ -104,18 +106,10 @@ class IndexMap {
         ? comparable
         : (comparable == null ? DBNull.instance : DBValue(comparable));
 
-    if (!_reverseScan) {
-      if (_nitriteMap != null) {
-        dbKey = await _nitriteMap.lowerKey(dbKey);
-      } else if (_navigableMap != null) {
-        dbKey = _navigableMap.lowerKey(dbKey);
-      }
-    } else {
-      if (_nitriteMap != null) {
-        dbKey = await _nitriteMap.higherKey(dbKey);
-      } else if (_navigableMap != null) {
-        dbKey = _navigableMap.higherKey(dbKey);
-      }
+    if (_nitriteMap != null) {
+      dbKey = await _nitriteMap.lowerKey(dbKey);
+    } else if (_navigableMap != null) {
+      dbKey = _navigableMap.lowerKey(dbKey);
     }
 
     return dbKey == null || dbKey is DBNull ? null : dbKey.value;

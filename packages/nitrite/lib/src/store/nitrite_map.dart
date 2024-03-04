@@ -44,6 +44,12 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
   /// Add a key-value pair if it does not yet exist.
   Future<Value?> putIfAbsent(Key key, Value value);
 
+  /// Get the first key in the map, or null if the map is empty.
+  Future<Key?> firstKey();
+
+  /// Get the last key in the map, or null if the map is empty.
+  Future<Key?> lastKey();
+
   /// Get the lest key that is greater than the given key, or null if no
   /// such key exists.
   Future<Key?> higherKey(Key key);

@@ -166,14 +166,8 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     var primaryKey = await _primaryMap.higherKey(key);
     var backingKey = await _backingMap.higherKey(key);
 
-    if (primaryKey == null) return backingKey;
-    if (backingKey == null) return primaryKey;
-
-    var keyMap = SplayTreeMap<K, K>();
-    keyMap[backingKey] = backingKey;
-    keyMap[primaryKey] = primaryKey;
-
-    return keyMap.higherKey(key);
+    return _computeKey(
+        primaryKey, backingKey, (keyMap) => keyMap.higherKey(key));
   }
 
   @override
@@ -183,14 +177,8 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     var primaryKey = await _primaryMap.ceilingKey(key);
     var backingKey = await _backingMap.ceilingKey(key);
 
-    if (primaryKey == null) return backingKey;
-    if (backingKey == null) return primaryKey;
-
-    var keyMap = SplayTreeMap<K, K>();
-    keyMap[backingKey] = backingKey;
-    keyMap[primaryKey] = primaryKey;
-
-    return keyMap.ceilingKey(key);
+    return _computeKey(
+        primaryKey, backingKey, (keyMap) => keyMap.ceilingKey(key));
   }
 
   @override
@@ -200,14 +188,8 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     var primaryKey = await _primaryMap.lowerKey(key);
     var backingKey = await _backingMap.lowerKey(key);
 
-    if (primaryKey == null) return backingKey;
-    if (backingKey == null) return primaryKey;
-
-    var keyMap = SplayTreeMap<K, K>();
-    keyMap[backingKey] = backingKey;
-    keyMap[primaryKey] = primaryKey;
-
-    return keyMap.lowerKey(key);
+    return _computeKey(
+        primaryKey, backingKey, (keyMap) => keyMap.lowerKey(key));
   }
 
   @override
@@ -217,14 +199,8 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     var primaryKey = await _primaryMap.floorKey(key);
     var backingKey = await _backingMap.floorKey(key);
 
-    if (primaryKey == null) return backingKey;
-    if (backingKey == null) return primaryKey;
-
-    var keyMap = SplayTreeMap<K, K>();
-    keyMap[backingKey] = backingKey;
-    keyMap[primaryKey] = primaryKey;
-
-    return keyMap.floorKey(key);
+    return _computeKey(
+        primaryKey, backingKey, (keyMap) => keyMap.floorKey(key));
   }
 
   @override
@@ -261,4 +237,36 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
 
   @override
   Future<void> initialize() async {}
+
+  @override
+  Future<K?> firstKey() async {
+    if (_cleared) return null;
+
+    var primaryKey = await _primaryMap.firstKey();
+    var backingKey = await _backingMap.firstKey();
+
+    return _computeKey(primaryKey, backingKey, (keyMap) => keyMap.firstKey());
+  }
+
+  @override
+  Future<K?> lastKey() async {
+    if (_cleared) return null;
+
+    var primaryKey = await _primaryMap.lastKey();
+    var backingKey = await _backingMap.lastKey();
+
+    return _computeKey(primaryKey, backingKey, (keyMap) => keyMap.lastKey());
+  }
+
+  K? _computeKey(K? primaryKey, K? backingKey,
+      K? Function(SplayTreeMap<K, K>) computeFunction) {
+    if (primaryKey == null) return backingKey;
+    if (backingKey == null) return primaryKey;
+
+    var keyMap = SplayTreeMap<K, K>();
+    keyMap[backingKey] = backingKey;
+    keyMap[primaryKey] = primaryKey;
+
+    return computeFunction(keyMap);
+  }
 }

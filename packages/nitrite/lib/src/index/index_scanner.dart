@@ -22,6 +22,11 @@ class IndexScanner {
           : false;
       _indexMap.reverseScan = reverseScan!;
 
+      if (comparableFilter is SortingAwareFilter) {
+        // if the filter is sorting aware, then set the scan order
+        comparableFilter.isReverseScan = reverseScan;
+      }
+
       // apply the filter on the index map
       // result can be list of nitrite ids or list of navigable maps
       var scanResult =

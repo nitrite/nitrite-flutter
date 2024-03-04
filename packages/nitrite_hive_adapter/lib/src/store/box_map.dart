@@ -191,6 +191,16 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
     }
   }
 
+  @override
+  Future<Key?> firstKey() async {
+    return _sortedKeys().first;
+  }
+
+  @override
+  Future<Key?> lastKey() async {
+    return _sortedKeys().last;
+  }
+
   // Keys need to be Strings or integers
   dynamic _wrapKey(Key key) {
     return _keyCodec.encode(key);
