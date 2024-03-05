@@ -1,3 +1,5 @@
+## 1.0.4
+
 ## 1.0.3
 
 - Updated Nitrite to 1.0.3.

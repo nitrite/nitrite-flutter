@@ -41,11 +41,12 @@ jobs:
         run: melos run generate
 
       - name: Format Nitrite
-        run: melos run format
-
-      - name: Generate Docs
-        run: melos run dartdoc
+        run: melos run lint:all
 
       - name: Publish Nitrite Generator
-        run: flutter pub publish --force
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 10
+          timeout_minutes: 60
+          command: flutter pub publish --force
         working-directory: packages/nitrite_generator
