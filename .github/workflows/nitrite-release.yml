@@ -27,7 +27,7 @@ jobs:
 
       # This action adds a token needed for pub.dev authentication
       - name: Install Dart
-        uses: dart-lang/setup-dart@v1.6.3
+        uses: dart-lang/setup-dart@v1.6.4
         with:
           sdk: stable
 
