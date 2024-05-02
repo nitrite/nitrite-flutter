@@ -48,5 +48,6 @@ jobs:
         with:
           max_attempts: 10
           timeout_minutes: 60
-          command: flutter pub publish --force
-        working-directory: packages/nitrite
+          command: |
+            cd packages/nitrite
+            flutter pub publish --force
