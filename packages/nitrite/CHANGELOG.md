@@ -1,4 +1,7 @@
-## 1.0.4
+## 1.1.0
+
+- Enum is supported now for automatic `EntityConverter` generation.
+- Issue fix for `getById()` method in `ObjectRepository` for embedded id.
 
 ## 1.0.3
 
