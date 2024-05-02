@@ -42,7 +42,7 @@ class Entity {
 /// Specifies nitrite code generators to generate
 /// the code for [EntityConverter] implementation of
 /// the marked class.
-@Target({TargetKind.classType})
+@Target({TargetKind.classType, TargetKind.enumType})
 class Convertable {
   /// Specifies the generated class name, default is empty.
   /// If empty, it will generate the class with name

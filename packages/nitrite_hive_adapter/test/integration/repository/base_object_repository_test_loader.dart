@@ -156,6 +156,9 @@ Future<void> _openDb() async {
       .registerEntityConverter(NewClassConverter())
       .registerEntityConverter(OldClassConverter())
       .registerEntityConverter(LiteratureConverter())
+      .registerEntityConverter(TodoConverter())
+      .registerEntityConverter(TodoTypeConverter())
+      .registerEntityConverter(PropertiesConverter())
       .fieldSeparator('.')
       .openOrCreate();
 }

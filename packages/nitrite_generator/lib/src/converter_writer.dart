@@ -66,6 +66,12 @@ class ConverterWriter {
   String _generateFromDocumentBody() {
     StringBuffer buffer = StringBuffer();
 
+    if (_converterInfo.isEnum) {
+      buffer.writeln(
+          'return ${_converterInfo.className}.values[document[\'index\']];');
+      return buffer.toString();
+    }
+
     var ctorInfo = _converterInfo.constructorInfo;
 
     if (ctorInfo.hasDefaultCtor || ctorInfo.hasAllOptionalPositionalCtor) {
@@ -249,6 +255,12 @@ class ConverterWriter {
     StringBuffer buffer = StringBuffer();
 
     buffer.writeln('var document = emptyDocument();');
+
+    if (_converterInfo.isEnum) {
+      buffer.writeln('document.put(\'index\', entity.index);');
+      buffer.writeln('return document;');
+      return buffer.toString();
+    }
 
     // field mapping
     for (var fieldInfo in _converterInfo.fieldInfoList) {

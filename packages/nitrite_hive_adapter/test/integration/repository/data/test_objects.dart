@@ -873,3 +873,62 @@ abstract class BaseEntity {
 
   BaseEntity([this.description]);
 }
+
+@Entity()
+@Convertable()
+class Todo with _$TodoEntityMixin {
+  @Id(fieldName: 'properties', embeddedFields: ['id'])
+  final Properties? properties;
+
+  Todo({
+    this.properties,
+  });
+
+  @override
+  String toString() {
+    return 'Todo{properties: $properties}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Todo &&
+          runtimeType == other.runtimeType &&
+          properties == other.properties;
+
+  @override
+  int get hashCode => properties.hashCode;
+}
+
+@Convertable()
+class Properties {
+  final String id;
+  final TodoType type;
+  final Map<String, dynamic> locations;
+
+  Properties({
+    required this.id,
+    required this.type,
+    required this.locations,
+  });
+
+  @override
+  String toString() {
+    return 'Properties{id: $id, type: $type, locations: $locations}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Properties &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          type == other.type &&
+          MapEquality().equals(locations, other.locations);
+
+  @override
+  int get hashCode => id.hashCode ^ type.hashCode ^ locations.hashCode;
+}
+
+@Convertable()
+enum TodoType { personal, work }

@@ -585,6 +585,30 @@ void main() {
       var cursor = bookRepo.find(filter: where('price').eq(100.0));
       expect(await cursor.length, 1);
     });
+
+    test('Test Find By Embedded Id', () async {
+      var todoRepository = await db.getRepository<Todo>();
+      var id = Uuid().v4();
+
+      var todo = Todo(
+        properties: Properties(
+          id: id,
+          type: TodoType.personal,
+          locations: {
+            'location1': 'location1',
+            'location2': 'location2',
+          },
+        ),
+      );
+
+      await todoRepository.insert(todo);
+
+      var cursor = todoRepository.find(filter: where('properties.id').eq(id));
+      expect(await cursor.length, 1);
+
+      var byId = await todoRepository.getById(id);
+      expect(byId, todo);
+    });
   });
 }
 

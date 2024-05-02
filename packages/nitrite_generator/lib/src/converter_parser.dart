@@ -9,41 +9,68 @@ import 'package:nitrite_generator/src/type_validator.dart';
 import 'package:source_gen/source_gen.dart';
 
 class ConverterParser extends Parser<ConverterInfo> {
-  final ClassElement _classElement;
+  final InterfaceElement _element;
 
-  ConverterParser(this._classElement);
+  ConverterParser(this._element);
 
   @override
   ConverterInfo parse() {
-    var className = _getClassName();
+    if (_element is ClassElement) {
+      var className = _getClassName();
 
-    // generated class name
-    var converterName = _getConverterName();
+      // generated class name
+      var converterName = _getConverterName();
 
-    // constructor information
-    var ctorInfo = _getConstructorInfo();
+      // constructor information
+      var ctorInfo = _getConstructorInfo();
 
-    // field information
-    var fieldInfoList = _getFieldInfoList();
+      // field information
+      var fieldInfoList = _getFieldInfoList();
 
-    // property information
-    var propertyInfoList = _getPropertyInfoList();
+      // property information
+      var propertyInfoList = _getPropertyInfoList();
 
-    // validate the class and filter out duplicate information
-    _validateConverter(ctorInfo, propertyInfoList, fieldInfoList);
+      // validate the class and filter out duplicate information
+      _validateConverter(ctorInfo, propertyInfoList, fieldInfoList);
 
-    return ConverterInfo(
-        className, converterName, fieldInfoList, propertyInfoList, ctorInfo);
+      return ConverterInfo(
+        className,
+        converterName,
+        false,
+        fieldInfoList,
+        propertyInfoList,
+        ctorInfo,
+      );
+    } else if (_element is EnumElement) {
+      // enum class name
+      var className = _getClassName();
+
+      // generated class name
+      var converterName = _getConverterName();
+
+      return ConverterInfo(
+        className,
+        converterName,
+        true,
+        [],
+        [],
+      );
+    } else {
+      throw InvalidGenerationSourceError(
+        '`@Convertable` can only be used on classes or enums.',
+        element: _element,
+      );
+    }
   }
 
   String _getConverterName() {
-    var converterName = _classElement
+    var converterName = _element
         .getAnnotation(Convertable)
         ?.getField(ConverterField.className)
         ?.toStringValue();
 
     if (converterName == null || converterName.isEmpty) {
-      return '${_classElement.displayName}Converter';
+      return '${_element.displayName}Converter';
     } else {
       return converterName;
     }
@@ -87,9 +114,10 @@ class ConverterParser extends Parser<ConverterInfo> {
   }
 
   String _getClassName() {
-    // check mixin
-    if (_classElement.mixins.isNotEmpty) {
-      /*
+    if (_element is ClassElement) {
+      // check mixin
+      if (_element.isMixinClass) {
+        /*
       * mixin A {
       *   String? a;
       * }
@@ -97,14 +125,14 @@ class ConverterParser extends Parser<ConverterInfo> {
       * 1. mixins can not be instantiated
       * */
 
-      throw InvalidGenerationSourceError(
-        '`@Convertable` can not be used with mixins.',
-        element: _classElement,
-      );
-    }
+        throw InvalidGenerationSourceError(
+          '`@Convertable` can not be used with mixins.',
+          element: _element,
+        );
+      }
 
-    if (_classElement.isAbstract) {
-      /*
+      if (_element.isAbstract) {
+        /*
       * abstract class A {
       *   String? a;
       * }
@@ -112,18 +140,26 @@ class ConverterParser extends Parser<ConverterInfo> {
       * 1. abstract class can not be instantiated
       * */
 
+        throw InvalidGenerationSourceError(
+          '`@Convertable` can not be used on abstract class.',
+          element: _element,
+        );
+      }
+
+      return _element.displayName;
+    } else if (_element is EnumElement) {
+      return _element.displayName;
+    } else {
       throw InvalidGenerationSourceError(
-        '`@Convertable` can not be used on abstract class.',
-        element: _classElement,
+        '`@Convertable` can only be used on classes or enums.',
+        element: _element,
       );
     }
-
-    return _classElement.displayName;
   }
 
   ConstructorInfo _getConstructorInfo() {
     // check for valid constructors
-    var constructors = _classElement.constructors;
+    var constructors = _element.constructors;
     var validConstructors = constructors.where((ctor) =>
         ctor.isPublic &&
         ctor.name.isEmpty &&
@@ -162,7 +198,7 @@ class ConverterParser extends Parser<ConverterInfo> {
         '`@Convertable` can only be used on class which has at least '
         'one public constructor which is either a default constructor or one '
         'with all optional/named parameters.',
-        element: _classElement,
+        element: _element,
       );
     }
 
@@ -201,7 +237,7 @@ class ConverterParser extends Parser<ConverterInfo> {
 
   List<FieldInfo> _getFieldInfoList() {
     var fieldInfos = <FieldInfo>{};
-    var fieldElements = _classElement.fields;
+    var fieldElements = _element.fields;
     for (var element in fieldElements) {
       if (_isValidField(element)) {
         // find out if alias is provided
@@ -220,7 +256,7 @@ class ConverterParser extends Parser<ConverterInfo> {
     }
 
     // get field details from parents
-    var supertypes = _classElement.allSupertypes;
+    var supertypes = _element.allSupertypes;
     for (var type in supertypes) {
       // use recursion to scan the hierarchy
       var superParser = ConverterParser(type.element as ClassElement);
@@ -235,7 +271,7 @@ class ConverterParser extends Parser<ConverterInfo> {
 
   List<PropertyInfo> _getPropertyInfoList() {
     var propInfos = <PropertyInfo>{};
-    var accessors = _classElement.accessors;
+    var accessors = _element.accessors;
 
     for (var accessor in accessors) {
       // validate valid type
@@ -261,7 +297,7 @@ class ConverterParser extends Parser<ConverterInfo> {
         throw InvalidGenerationSourceError(
             'A getter accessor must be defined for corresponding setter '
             '${accessor.displayName}',
-            element: _classElement);
+            element: _element);
       }
 
       if (accessor.isGetter) {
@@ -326,7 +362,7 @@ class ConverterParser extends Parser<ConverterInfo> {
     }
 
     // get property info from parents
-    var supertypes = _classElement.allSupertypes;
+    var supertypes = _element.allSupertypes;
     for (var type in supertypes) {
       // use recursion to scan the hierarchy
       var superParser = ConverterParser(type.element as ClassElement);
@@ -363,7 +399,7 @@ class ConverterParser extends Parser<ConverterInfo> {
         throw InvalidGenerationSourceError(
             'A class with a constructor having all positional optional '
             'parameters should not have a final field.',
-            element: _classElement);
+            element: _element);
       }
     }
 
@@ -385,7 +421,7 @@ class ConverterParser extends Parser<ConverterInfo> {
             'A class with a constructor having all named parameters '
             'should have all the fields\' names matching with the name of the '
             'constructor parameters.',
-            element: _classElement);
+            element: _element);
       }
     }
 
@@ -397,10 +433,10 @@ class ConverterParser extends Parser<ConverterInfo> {
 
       throw InvalidGenerationSourceError(
           'No suitable constructor found for the class '
-          '${_classElement.displayName}. A class should have at least one public '
+          '${_element.displayName}. A class should have at least one public '
           'constructor which is either a default constructor or one with all '
           'optional/named parameters.',
-          element: _classElement);
+          element: _element);
     }
 
     for (var fieldInfo in fieldInfoList) {
@@ -430,7 +466,7 @@ class ConverterParser extends Parser<ConverterInfo> {
             throw InvalidGenerationSourceError(
                 'A required named constructor parameter ${ctorParam.paramName} '
                 'with non-nullable type cannot be ignored',
-                element: _classElement);
+                element: _element);
           } else {
             // if nullable set null during constructor call
             fieldInfo.setNull = true;
@@ -466,7 +502,7 @@ class ConverterParser extends Parser<ConverterInfo> {
 
         throw InvalidGenerationSourceError(
             'Getter accessor is not defined for ${propInfo.setterFieldName}',
-            element: _classElement);
+            element: _element);
       }
 
       if (propInfo.setterFieldName.isEmpty) {
@@ -480,7 +516,7 @@ class ConverterParser extends Parser<ConverterInfo> {
 
         throw InvalidGenerationSourceError(
             'Setter accessor is not defined for ${propInfo.getterFieldName}',
-            element: _classElement);
+            element: _element);
       }
     }
   }

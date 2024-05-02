@@ -17,15 +17,15 @@ class ConverterGenerator extends GeneratorForAnnotation<Convertable> {
   generateForAnnotatedElement(
       Element element, ConstantReader annotation, BuildStep buildStep) {
     // @Convertable is class level annotation only.
-    if (element is! ClassElement) {
+    if (element is! ClassElement && element is! EnumElement) {
       throw InvalidGenerationSourceError(
-        '`@Convertable` can only be used on classes.',
+        '`@Convertable` can only be used on classes or enums.',
         element: element,
       );
     }
 
     // parse the metadata from the annotation
-    var converterParser = ConverterParser(element);
+    var converterParser = ConverterParser(element as InterfaceElement);
     var converter = converterParser.parse();
 
     final library = Library((builder) {

@@ -42,15 +42,26 @@ class EntityId {
       }
 
       var filters = <Filter>[];
-      for (var field in _embeddedFields) {
-        var filterField = "$_fieldName${NitriteConfig.fieldSeparator}$field";
-        var fieldValue = document[field];
-        filters.add(where(filterField).eq(fieldValue));
-      }
+      if (_embeddedFields.length == 1 && document is! Document) {
+        // in case of single embedded field, the value is directly passed
+        // as the value of the field
+        var filterField =
+            "$_fieldName${NitriteConfig.fieldSeparator}${_embeddedFields[0]}";
 
-      var nitriteFilter = and(filters) as NitriteFilter;
-      nitriteFilter.objectFilter = true;
-      return nitriteFilter;
+        var nitriteFilter = where(filterField).eq(document);
+        nitriteFilter.objectFilter = true;
+        return nitriteFilter;
+      } else {
+        for (var field in _embeddedFields) {
+          var filterField = "$_fieldName${NitriteConfig.fieldSeparator}$field";
+          var fieldValue = document[field];
+          filters.add(where(filterField).eq(fieldValue));
+        }
+
+        var nitriteFilter = and(filters) as NitriteFilter;
+        nitriteFilter.objectFilter = true;
+        return nitriteFilter;
+      }
     } else {
       return where(_fieldName).eq(value);
     }
@@ -65,15 +76,26 @@ class EntityId {
       }
 
       var filters = <Filter>[];
-      for (var field in _embeddedFields) {
-        var filterField = "$_fieldName${NitriteConfig.fieldSeparator}$field";
-        var fieldValue = document[field];
-        filters.add(where(filterField).eq(fieldValue));
-      }
+      if (_embeddedFields.length == 1 && document is! Document) {
+        // in case of single embedded field, the value is directly passed
+        // as the value of the field
+        var filterField =
+            "$_fieldName${NitriteConfig.fieldSeparator}${_embeddedFields[0]}";
 
-      var nitriteFilter = and(filters) as NitriteFilter;
-      nitriteFilter.objectFilter = true;
-      return nitriteFilter;
+        var nitriteFilter = where(filterField).eq(document);
+        nitriteFilter.objectFilter = true;
+        return nitriteFilter;
+      } else {
+        for (var field in _embeddedFields) {
+          var filterField = "$_fieldName${NitriteConfig.fieldSeparator}$field";
+          var fieldValue = document[field];
+          filters.add(where(filterField).eq(fieldValue));
+        }
+
+        var nitriteFilter = and(filters) as NitriteFilter;
+        nitriteFilter.objectFilter = true;
+        return nitriteFilter;
+      }
     } else {
       if (isNitriteId) {
         return where(docId).eq(id.idValue);
