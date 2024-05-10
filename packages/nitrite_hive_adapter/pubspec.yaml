@@ -20,7 +20,7 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  flutter_lints: ">=3.0.1 <5.0.0"
   build_runner: ^2.4.7
   hive_generator: ^2.0.1
   nitrite_generator: ^1.1.0
