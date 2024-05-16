@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Updated Nitrite to 1.1.1.
+
 ## 1.1.0
 
 - Enum is supported now for automatic `EntityConverter` generation.
