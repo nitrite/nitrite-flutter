@@ -2,7 +2,7 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group(retry: 3, 'Nitrite Builder Test Suite', () {
+  group(retry: 0, 'Nitrite Builder Test Suite', () {
     Nitrite? db;
 
     tearDown(() async {
@@ -31,6 +31,20 @@ void main() {
 
       var color = document['colorCodes::1::color'];
       expect(color, 'Green');
+    });
+
+    test('Test Disable Repository Type Validation', () async {
+      db = await Nitrite.builder().openOrCreate();
+
+      await expectLater(() => db!.getRepository<DateTime>(), throwsException);
+      await db!.close();
+
+      db = await Nitrite.builder()
+          .disableRepositoryTypeValidation()
+          .openOrCreate();
+
+      await expectLater(() => db!.getRepository<DateTime>(), returnsNormally);
+      await db!.commit();
     });
   });
 }
