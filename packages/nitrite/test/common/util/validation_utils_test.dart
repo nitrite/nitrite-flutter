@@ -127,20 +127,21 @@ void main() {
           throwsValidationException);
     });
 
-    test("Test ValidateRepositoryType", () {
-      var nitriteMapper = SimpleNitriteMapper();
-      nitriteMapper.registerEntityConverter(_AConverter());
-      nitriteMapper.registerEntityConverter(_CConverter());
+    test("Test ValidateRepositoryType", () async {
+      var nitriteConfig = NitriteConfig();
+      nitriteConfig.registerEntityConverter(_AConverter());
+      nitriteConfig.registerEntityConverter(_CConverter());
+      await nitriteConfig.autoConfigure();
 
-      validateRepositoryType<_A>(nitriteMapper);
+      validateRepositoryType<_A>(nitriteConfig);
 
-      expect(() => validateRepositoryType<_C>(nitriteMapper),
+      expect(() => validateRepositoryType<_C>(nitriteConfig),
           throwsValidationException);
-      expect(() => validateRepositoryType<String>(nitriteMapper),
+      expect(() => validateRepositoryType<String>(nitriteConfig),
           throwsValidationException);
-      expect(() => validateRepositoryType<num>(nitriteMapper),
+      expect(() => validateRepositoryType<num>(nitriteConfig),
           throwsValidationException);
-      expect(() => validateRepositoryType(nitriteMapper),
+      expect(() => validateRepositoryType(nitriteConfig),
           throwsValidationException);
     });
   });

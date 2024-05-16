@@ -1,3 +1,7 @@
+## 1.1.1
+
+- New options added for `NitriteBuilder` to disable check for repository type.
+
 ## 1.1.0
 
 - Enum is supported now for automatic `EntityConverter` generation.

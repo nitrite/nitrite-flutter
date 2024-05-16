@@ -15,6 +15,7 @@ class NitriteConfig {
   final List<NitriteModule> _modules = <NitriteModule>[];
   late PluginManager _pluginManager;
   final List<EntityConverter> _entityConverters = <EntityConverter>[];
+  bool _repositoryTypeValidationDisabled = false;
 
   /// A map of migrations to be applied to the database.
   Map<int, SplayTreeMap<int, Migration>> get migrations => _migrations;
@@ -27,6 +28,9 @@ class NitriteConfig {
 
   /// The schema version of the Nitrite database.
   int get schemaVersion => _schemaVersion;
+
+  bool get repositoryTypeValidationDisabled =>
+      _repositoryTypeValidationDisabled;
 
   /// Instantiates a new [NitriteConfig].
   NitriteConfig() {
@@ -42,6 +46,18 @@ class NitriteConfig {
           "database initialization");
     }
     NitriteConfig.fieldSeparator = fieldSeparator;
+  }
+
+  /// Disables the validation of repository types.
+  ///
+  /// Throws [InvalidOperationException] if the database is already initialized.
+  void disableRepositoryTypeValidation() {
+    if (_configured) {
+      throw InvalidOperationException(
+          "Cannot disable repository type validation "
+          "after database initialization");
+    }
+    _repositoryTypeValidationDisabled = true;
   }
 
   /// Loads [NitritePlugin] instances defined in the [NitriteModule]

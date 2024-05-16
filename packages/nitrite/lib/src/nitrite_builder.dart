@@ -23,6 +23,20 @@ class NitriteBuilder {
     return this;
   }
 
+  /// Disables the repository type validation for the Nitrite database.
+  ///
+  /// Repository type validation is a feature in Nitrite that ensures the type
+  /// of the objects stored in the repository can be converted to and from
+  /// [Document].
+  ///
+  /// By default, the repository type validation is enabled. If you disable it,
+  /// , and if you try to store an object that cannot be converted to a
+  /// [Document], Nitrite will throw an exception during the operation.
+  NitriteBuilder disableRepositoryTypeValidation() {
+    nitriteConfig.disableRepositoryTypeValidation();
+    return this;
+  }
+
   /// Registers an [EntityConverter] with Nitrite. The converter is used to
   /// convert between an entity and a [Document]. This method allows you to
   /// register a custom converter for a specific entity.

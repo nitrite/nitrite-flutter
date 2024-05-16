@@ -69,8 +69,14 @@ void validateProjectionType<T>(NitriteMapper nitriteMapper) {
 }
 
 /// @nodoc
-void validateRepositoryType<T>(NitriteMapper nitriteMapper) {
+void validateRepositoryType<T>(NitriteConfig nitriteConfig) {
   dynamic value;
+
+  if (nitriteConfig.repositoryTypeValidationDisabled) {
+    return;
+  }
+
+  NitriteMapper nitriteMapper = nitriteConfig.nitriteMapper;
   try {
     value = newInstance<T>(nitriteMapper);
     if (value == null) {

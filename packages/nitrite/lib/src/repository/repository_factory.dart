@@ -47,10 +47,9 @@ class RepositoryFactory {
   Future<ObjectRepository<T>> _createRepository<T>(
       NitriteConfig nitriteConfig, String collectionName,
       [EntityDecorator<T>? entityDecorator, String? key]) async {
-    var nitriteMapper = nitriteConfig.nitriteMapper;
     var store = nitriteConfig.getNitriteStore();
 
-    validateRepositoryType<T>(nitriteMapper);
+    validateRepositoryType<T>(nitriteConfig);
 
     var collectionNames = await store.collectionNames;
     if (collectionNames.contains(collectionName)) {
