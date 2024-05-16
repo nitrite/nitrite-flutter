@@ -17,7 +17,7 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   bool get isClosed => _closed;
 
   @override
-  Future<bool> get hasUnsavedChanges async => false;
+  Future<bool> get hasUnsavedChanges async => true;
 
   @override
   bool get isReadOnly => false;

@@ -44,7 +44,6 @@ void main() {
           .openOrCreate();
 
       await expectLater(() => db!.getRepository<DateTime>(), returnsNormally);
-      await db!.commit();
     });
   });
 }

@@ -103,7 +103,9 @@ class NitriteDatabase extends Nitrite {
     checkOpened();
     try {
       await _nitriteStore.beforeClose();
-      if (await hasUnsavedChanges) {
+      var shouldAutoCommit =
+          !_nitriteStore.isReadOnly && await hasUnsavedChanges;
+      if (shouldAutoCommit) {
         _log.fine('Unsaved changes detected, committing the changes.');
         await _nitriteStore.commit();
       }
@@ -127,7 +129,11 @@ class NitriteDatabase extends Nitrite {
   Future<void> commit() async {
     checkOpened();
     try {
-      await _nitriteStore.commit();
+      if (!_nitriteStore.isReadOnly) {
+        await _nitriteStore.commit();
+      } else {
+        _log.warning('Cannot commit on read-only database.');
+      }
     } catch (e, stackTrace) {
       throw NitriteIOException('Error occurred while committing the database',
           stackTrace: stackTrace, cause: e);

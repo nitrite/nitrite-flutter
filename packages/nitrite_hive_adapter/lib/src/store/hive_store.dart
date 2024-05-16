@@ -67,7 +67,7 @@ class HiveStore extends AbstractNitriteStore<HiveConfig> {
   }
 
   @override
-  Future<bool> get hasUnsavedChanges async => false;
+  Future<bool> get hasUnsavedChanges async => true;
 
   @override
   bool get isClosed => _closed;
