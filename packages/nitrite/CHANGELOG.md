@@ -1,6 +1,8 @@
 ## 1.1.1
 
 - New options added for `NitriteBuilder` to disable check for repository type.
+- Fix for updating values where the value was previously null
+- Fix for `Document.fields` not returning iterable fields.
 
 ## 1.1.0
 

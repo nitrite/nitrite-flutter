@@ -234,12 +234,15 @@ void main() {
 
     test("Get Fields", () {
       var fields = doc.fields;
-      expect(fields.length, 5);
+      expect(fields.length, 8);
       expect(fields.contains("score"), true);
+      expect(fields.contains("objArray"), true);
+      expect(fields.contains("category"), true);
       expect(fields.contains("location.city"), true);
       expect(fields.contains("location.state"), true);
       expect(fields.contains("location.address.line1"), true);
       expect(fields.contains("location.address.line2"), true);
+      expect(fields.contains("location.address.house"), true);
     });
 
     test("Get Embedded Array Fields", () {

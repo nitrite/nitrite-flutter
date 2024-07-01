@@ -241,6 +241,9 @@ class _NitriteDocument extends Document {
             var existingValue = this[key];
             if (existingValue is _NitriteDocument) {
               existingValue.merge(value);
+            } else {
+              // otherwise, just set the value to whatever was provided
+              put(key, value);
             }
           } else {
             // if the current document does not contain the key,
@@ -312,6 +315,8 @@ class _NitriteDocument extends Document {
       // ignore the reserved fields
       if (_reservedFields.contains(pair.key)) continue;
 
+      if (pair.key.isEmpty) continue;
+
       var value = pair.value;
       if (value is _NitriteDocument) {
         // if the value is a document, traverse its fields recursively,
@@ -324,7 +329,7 @@ class _NitriteDocument extends Document {
           fields.addAll(value._getFieldsInternal("$prefix"
               "${NitriteConfig.fieldSeparator}${pair.key}"));
         }
-      } else if (value is! Iterable) {
+      } else {
         // if there is no more embedded document, add the field to the list
         // and if this is an embedded document then prefix its name by parent fields,
         // separated by field separator

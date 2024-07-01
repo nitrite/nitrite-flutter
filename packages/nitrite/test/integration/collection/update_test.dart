@@ -275,5 +275,24 @@ void main() {
       cursor = coll.find(filter: where('conversation.unread.me').gt(5));
       expect(await cursor.length, 0);
     });
+
+    test('Test Update Previously Null Object', () async {
+      var doc1 = createDocument("fruitType", null);
+      var coll = await db.getCollection('test_updatePreviouslyNullObject');
+
+      await coll.insert(doc1);
+      var doc = await coll.find().first;
+      expect(doc, isNotNull);
+
+      var id = doc.id;
+      var update = doc.put("fruitType", "citric");
+      var updateResult = await coll.updateOne(update);
+
+      expect(updateResult.getAffectedCount(), 1);
+      var updatedDoc =
+          await coll.find(filter: where("_id").eq(id.idValue)).first;
+      expect(updatedDoc, isNotNull);
+      expect(updatedDoc["fruitType"], "citric");
+    });
   });
 }
