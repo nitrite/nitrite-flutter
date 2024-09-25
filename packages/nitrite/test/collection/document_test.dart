@@ -228,8 +228,8 @@ void main() {
 
       expect(doc["objArray"].length, 2);
       doc.remove("objArray:0:value");
-      expect(doc["objArray"].length, 2);
-      expect(doc["objArray:0"].size, 0);
+      expect(doc["objArray"].length, 1);
+      expect(doc["objArray:0"].size, 1);
     });
 
     test("Get Fields", () {

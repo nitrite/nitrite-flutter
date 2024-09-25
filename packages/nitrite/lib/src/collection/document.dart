@@ -416,6 +416,12 @@ class _NitriteDocument extends Document {
             // if there are more splits, then this is an embedded document
             // so remove the element at the next level
             item._deepRemove(remainingSplits.sublist(1));
+            if (item.isEmpty) {
+              // if the next level document is an empty one
+              // remove the current level document also
+              value.removeAt(index);
+              _documentMap[key] = value;
+            }
           } else {
             // if there are no more splits, then this is a primitive value
             // so remove the element at the next level
