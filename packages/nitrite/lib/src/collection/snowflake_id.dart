@@ -58,7 +58,7 @@ class SnowflakeIdGenerator {
   int _getNodeId() {
     var uuid = Uuid();
     var uid = ascii.encode(uuid.v4());
-    var rndByte = _random.nextInt(0XFFFFFFFF) & 0x000000FF;
+    var rndByte = _random.nextInt(0xFFFFFFFF) & 0x000000FF;
 
     return ((0x000000FF & uid[uid.length - 1]) |
             (0x0000FF00 & (rndByte << 8))) >>
