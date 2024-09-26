@@ -357,6 +357,10 @@ class _NitriteDocument extends Document {
     }
 
     var key = splits[0];
+    if (key.isNullOrEmpty) {
+      throw ValidationException("Invalid key provided");
+    }
+
     if (splits.length == 1) {
       // if last key, simply put in the current document
       put(key, value);
