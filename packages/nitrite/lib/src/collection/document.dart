@@ -392,6 +392,10 @@ class _NitriteDocument extends Document {
     }
 
     var key = splits[0];
+    if (key.isNullOrEmpty) {
+      throw ValidationException("Invalid key provided");
+    }
+
     if (splits.length == 1) {
       // if last key, simply remove from the current document
       remove(key);
@@ -448,8 +452,13 @@ class _NitriteDocument extends Document {
       return null;
     }
 
+    var key = path[0];
+    if (key.isNullOrEmpty) {
+      throw ValidationException("Invalid key provided");
+    }
+
     // get current level value and scan to next level using remaining keys
-    return _recursiveGet(this[path[0]], path.sublist(1));
+    return _recursiveGet(this[key], path.sublist(1));
   }
 
   dynamic _recursiveGet(dynamic value, List<String> splits) {
@@ -463,6 +472,11 @@ class _NitriteDocument extends Document {
 
     if (value is _NitriteDocument) {
       // if the current level value is document, scan to the next level with remaining keys
+      var key = splits[0];
+      if (key.isNullOrEmpty) {
+        throw ValidationException("Invalid key provided");
+      }
+
       return _recursiveGet(value[splits[0]], splits.sublist(1));
     }
 
@@ -471,6 +485,10 @@ class _NitriteDocument extends Document {
 
       // get the first key
       var key = splits[0];
+      if (key.isNullOrEmpty) {
+        throw ValidationException("Invalid key provided");
+      }
+
       if (_isInteger(key)) {
         // if the current key is an integer
         int index = _asInteger(key);
