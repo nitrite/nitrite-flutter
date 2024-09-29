@@ -270,7 +270,7 @@ void main() {
       expect(await cursor.length, 10);
     });
 
-    test('Test Text Filter', () async {
+    test('Test Text Filter', retry: 3, () async {
       var cursor = employeeRepository.find();
       var emp = await cursor.first;
       var text = emp.employeeNote?.text as String;

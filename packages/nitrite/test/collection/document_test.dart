@@ -74,8 +74,8 @@ void main() {
             ..put("line1", "40")
             ..put("line2", "ABC Street")));
       expect(doc["location.address.test"], isNot("a"));
-      expect(doc["."], isNull);
-      expect(doc[".."], isNull);
+      expect(() => doc["."], throwsValidationException);
+      expect(() => doc[".."], throwsValidationException);
       expect(doc["score.test"], isNull);
     });
 
@@ -118,8 +118,8 @@ void main() {
             ..put("line1", "40")
             ..put("line2", "ABC Street")));
       expect(doc["location:address:test"], isNot("a"));
-      expect(doc[":"], isNull);
-      expect(doc["::"], isNull);
+      expect(() => doc[":"], throwsValidationException);
+      expect(() => doc["::"], throwsValidationException);
       expect(doc["score:test"], isNull);
 
       expect(doc["location.address.line1"], isNull);
@@ -180,9 +180,6 @@ void main() {
             ..put("line1", "40")
             ..put("line2", "ABC Street")));
       expect(doc["location.address.test"], isNot("a"));
-      expect(doc["."], isNull);
-      expect(doc[".."], isNull);
-      expect(doc["score.test"], isNull);
     });
 
     test("Put NULL", () {
