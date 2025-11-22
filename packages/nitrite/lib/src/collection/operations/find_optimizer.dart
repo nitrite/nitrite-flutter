@@ -241,6 +241,13 @@ class FindOptimizer {
         if (filter != findPlan.byIdFilter) {
           columnScanFilters.add(filter);
         }
+      } else if (filter is IndexOnlyFilter &&
+          filter.needsPostIndexValidation()) {
+        // Some index-only filters (like spatial filters) need post-index validation
+        // because the index can return false positives. For example, R-Tree spatial
+        // indexes store only bounding boxes, so they may return documents whose
+        // bounding boxes overlap but actual geometries don't intersect.
+        columnScanFilters.add(filter);
       }
     }
 

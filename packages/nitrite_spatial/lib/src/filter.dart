@@ -17,8 +17,40 @@ abstract class SpatialFilter extends IndexOnlyFilter {
 
   @override
   bool apply(Document doc) {
-    return false;
+    // This method validates the actual geometry intersection/containment
+    // after the R-Tree index has filtered candidates based on bounding boxes.
+    // The R-Tree only stores bounding boxes, so it can return false positives.
+    // This second-stage check ensures we only return documents whose geometries
+    // actually satisfy the spatial relationship.
+    var fieldValue = doc.get(field);
+    if (fieldValue == null) {
+      return false;
+    }
+
+    Geometry? documentGeometry;
+    if (fieldValue is Geometry) {
+      documentGeometry = fieldValue;
+    } else if (fieldValue is String) {
+      // Try to parse WKT string
+      try {
+        var reader = WKTReader();
+        documentGeometry = reader.read(fieldValue);
+      } catch (e) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    if (documentGeometry == null) {
+      return false;
+    }
+
+    return applyGeometryFilter(documentGeometry);
   }
+
+  /// Subclasses must implement this to define the specific spatial relationship check
+  bool applyGeometryFilter(Geometry documentGeometry);
 
   @override
   String supportedIndexType() {
@@ -29,6 +61,9 @@ abstract class SpatialFilter extends IndexOnlyFilter {
   bool canBeGrouped(IndexOnlyFilter other) {
     return other is SpatialFilter && other.field == field;
   }
+
+  @override
+  bool needsPostIndexValidation() => true;
 }
 
 ///@nodoc
@@ -39,6 +74,12 @@ class WithinFilter extends SpatialFilter {
   Stream<dynamic> applyOnIndex(IndexMap indexMap) {
     // calculated from SpatialIndex
     return const Stream.empty();
+  }
+
+  @override
+  bool applyGeometryFilter(Geometry documentGeometry) {
+    // Check if the document geometry is within the filter geometry
+    return documentGeometry.within(value);
   }
 
   @override
@@ -55,6 +96,12 @@ class IntersectsFilter extends SpatialFilter {
   Stream<dynamic> applyOnIndex(IndexMap indexMap) {
     // calculated from SpatialIndex
     return const Stream.empty();
+  }
+
+  @override
+  bool applyGeometryFilter(Geometry documentGeometry) {
+    // Check if the document geometry intersects the filter geometry
+    return documentGeometry.intersects(value);
   }
 
   @override

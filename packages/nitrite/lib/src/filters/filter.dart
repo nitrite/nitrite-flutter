@@ -330,6 +330,17 @@ abstract class IndexOnlyFilter extends ComparableFilter {
 
   /// Checks if `other` filter can be grouped together with this filter.
   bool canBeGrouped(IndexOnlyFilter other);
+
+  /// Indicates whether this filter requires post-index validation.
+  /// 
+  /// Some index-only filters (like spatial filters) use the index for
+  /// preliminary filtering but need a second pass to validate the actual
+  /// condition. For example, R-Tree spatial indexes store only bounding boxes,
+  /// so they may return false positives that need to be filtered out.
+  /// 
+  /// Returns `true` if this filter needs to be applied again after index scan
+  /// to validate results. Defaults to `false`.
+  bool needsPostIndexValidation() => false;
 }
 
 /// @nodoc
