@@ -43,14 +43,7 @@ void main() {
     });
 
     test('Test Intersects - Polygon and Point inside bounding box but outside geometry', () async {
-      // Create a polygon and a point that is inside the bounding box
-      // but outside the actual polygon
-      var polygon = reader.read('POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))') as Polygon;
-      var pointOutside = reader.read('POINT (15 15)') as Point; // Outside bounding box
-      var pointInsideBBoxButOutsidePolygon = reader.read('POINT (12 5)') as Point; // Would be in bbox if expanded
-
-      // Actually, let's use a non-convex polygon to make this clearer
-      // L-shaped polygon
+      // Create a non-convex L-shaped polygon to test bbox vs geometry
       var lShapedPolygon = reader.read('POLYGON ((0 0, 10 0, 10 5, 5 5, 5 10, 0 10, 0 0))') as Polygon;
       var pointInBBoxButOutsidePolygon = reader.read('POINT (7 7)') as Point; // In bbox but outside L-shape
 

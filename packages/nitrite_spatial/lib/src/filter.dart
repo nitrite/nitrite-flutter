@@ -42,11 +42,7 @@ abstract class SpatialFilter extends IndexOnlyFilter {
       return false;
     }
 
-    if (documentGeometry == null) {
-      return false;
-    }
-
-    return applyGeometryFilter(documentGeometry);
+    return applyGeometryFilter(documentGeometry!);
   }
 
   /// Subclasses must implement this to define the specific spatial relationship check
