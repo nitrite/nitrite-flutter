@@ -3,6 +3,15 @@ import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_spatial/src/geom_utils.dart';
 import 'package:nitrite_spatial/src/indexer.dart';
 
+/// Copies NitriteFilter context (nitriteConfig, collectionName, objectFilter) from source to target
+void _copyFilterContext(NitriteFilter source, NitriteFilter target) {
+  if (source.nitriteConfig != null) {
+    target.nitriteConfig = source.nitriteConfig;
+    target.collectionName = source.collectionName;
+    target.objectFilter = source.objectFilter;
+  }
+}
+
 /// The abstract base class for all spatial filters in Nitrite.
 ///
 /// A spatial filter is used to query Nitrite database for
@@ -63,7 +72,10 @@ class _GeometryValidationFilter extends FieldBasedFilter {
       try {
         var geometryString = fieldValue['geometry'] as String?;
         if (geometryString != null) {
-          documentGeometry = GeometrySerializer.deserialize(geometryString);
+          var deserialized = GeometrySerializer.deserialize(geometryString);
+          if (deserialized != null) {
+            documentGeometry = deserialized;
+          }
         }
       } catch (e) {
         return false;
@@ -129,12 +141,7 @@ class WithinFilter extends NitriteFilter implements FlattenableFilter {
       geometry,
       (docGeom, filterGeom) => docGeom.within(filterGeom),
     );
-    // Copy context if available
-    if (nitriteConfig != null) {
-      validationFilter.nitriteConfig = nitriteConfig;
-      validationFilter.collectionName = collectionName;
-      validationFilter.objectFilter = objectFilter;
-    }
+    _copyFilterContext(this, validationFilter);
     return validationFilter.apply(doc);
   }
 
@@ -172,12 +179,7 @@ class IntersectsFilter extends NitriteFilter implements FlattenableFilter {
       geometry,
       (docGeom, filterGeom) => docGeom.intersects(filterGeom),
     );
-    // Copy context if available
-    if (nitriteConfig != null) {
-      validationFilter.nitriteConfig = nitriteConfig;
-      validationFilter.collectionName = collectionName;
-      validationFilter.objectFilter = objectFilter;
-    }
+    _copyFilterContext(this, validationFilter);
     return validationFilter.apply(doc);
   }
 
@@ -224,12 +226,7 @@ class NearFilter extends NitriteFilter implements FlattenableFilter {
   bool apply(Document doc) {
     // For non-indexed queries, apply the validation filter directly
     var validationFilter = _NearValidationFilter(field, center, radius);
-    // Copy context if available
-    if (nitriteConfig != null) {
-      validationFilter.nitriteConfig = nitriteConfig;
-      validationFilter.collectionName = collectionName;
-      validationFilter.objectFilter = objectFilter;
-    }
+    _copyFilterContext(this, validationFilter);
     return validationFilter.apply(doc);
   }
 
@@ -278,7 +275,10 @@ class _NearValidationFilter extends NitriteFilter {
       try {
         var geometryString = fieldValue['geometry'] as String?;
         if (geometryString != null) {
-          documentGeometry = GeometrySerializer.deserialize(geometryString);
+          var deserialized = GeometrySerializer.deserialize(geometryString);
+          if (deserialized != null) {
+            documentGeometry = deserialized;
+          }
         }
       } catch (e) {
         return false;
