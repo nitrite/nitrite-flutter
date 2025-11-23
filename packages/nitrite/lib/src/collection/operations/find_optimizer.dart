@@ -17,8 +17,8 @@ class FindOptimizer {
 
   FindPlan _createFilterPlan(
       Iterable<IndexDescriptor> indexDescriptors, Filter filter) {
-    if (filter is AndFilter) {
-      var filters = _flattenAndFilter(filter);
+    if (filter is FlattenableFilter) {
+      var filters = _flattenFilter(filter);
       return _createAndPlan(indexDescriptors, filters);
     } else if (filter is OrFilter) {
       return _createOrPlan(indexDescriptors, filter.filters);
@@ -28,11 +28,11 @@ class FindOptimizer {
     }
   }
 
-  List<Filter> _flattenAndFilter(AndFilter andFilter) {
+  List<Filter> _flattenFilter(FlattenableFilter flattenableFilter) {
     var flattenedFilters = <Filter>[];
-    for (var filter in andFilter.filters) {
-      if (filter is AndFilter) {
-        flattenedFilters.addAll(_flattenAndFilter(filter));
+    for (var filter in flattenableFilter.getFilters()) {
+      if (filter is FlattenableFilter) {
+        flattenedFilters.addAll(_flattenFilter(filter));
       } else {
         flattenedFilters.add(filter);
       }
@@ -241,13 +241,6 @@ class FindOptimizer {
         if (filter != findPlan.byIdFilter) {
           columnScanFilters.add(filter);
         }
-      } else if (filter is IndexOnlyFilter &&
-          filter.needsPostIndexValidation()) {
-        // Some index-only filters (like spatial filters) need post-index validation
-        // because the index can return false positives. For example, R-Tree spatial
-        // indexes store only bounding boxes, so they may return documents whose
-        // bounding boxes overlap but actual geometries don't intersect.
-        columnScanFilters.add(filter);
       }
     }
 

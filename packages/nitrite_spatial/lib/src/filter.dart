@@ -17,11 +17,30 @@ abstract class SpatialFilter extends IndexOnlyFilter {
 
   @override
   bool apply(Document doc) {
-    // This method validates the actual geometry intersection/containment
-    // after the R-Tree index has filtered candidates based on bounding boxes.
-    // The R-Tree only stores bounding boxes, so it can return false positives.
-    // This second-stage check ensures we only return documents whose geometries
-    // actually satisfy the spatial relationship.
+    return false;
+  }
+
+  @override
+  String supportedIndexType() {
+    return spatialIndex;
+  }
+
+  @override
+  bool canBeGrouped(IndexOnlyFilter other) {
+    return other is SpatialFilter && other.field == field;
+  }
+}
+
+/// A non-index filter that validates actual geometry relationships.
+/// This filter is used as the second stage of spatial filtering after
+/// the R-Tree index has filtered candidates based on bounding boxes.
+class _GeometryValidationFilter extends FieldBasedFilter {
+  final bool Function(Geometry, Geometry) _validator;
+
+  _GeometryValidationFilter(super.field, super.value, this._validator);
+
+  @override
+  bool apply(Document doc) {
     var fieldValue = doc.get(field);
     if (fieldValue == null) {
       return false;
@@ -42,28 +61,12 @@ abstract class SpatialFilter extends IndexOnlyFilter {
       return false;
     }
 
-    return applyGeometryFilter(documentGeometry!);
+    return _validator(documentGeometry!, value as Geometry);
   }
-
-  /// Subclasses must implement this to define the specific spatial relationship check
-  bool applyGeometryFilter(Geometry documentGeometry);
-
-  @override
-  String supportedIndexType() {
-    return spatialIndex;
-  }
-
-  @override
-  bool canBeGrouped(IndexOnlyFilter other) {
-    return other is SpatialFilter && other.field == field;
-  }
-
-  @override
-  bool needsPostIndexValidation() => true;
 }
 
 ///@nodoc
-class WithinFilter extends SpatialFilter {
+class WithinFilter extends SpatialFilter implements FlattenableFilter {
   WithinFilter(super.field, super.value);
 
   @override
@@ -73,9 +76,16 @@ class WithinFilter extends SpatialFilter {
   }
 
   @override
-  bool applyGeometryFilter(Geometry documentGeometry) {
-    // Check if the document geometry is within the filter geometry
-    return documentGeometry.within(value);
+  List<Filter> getFilters() {
+    // Return two filters: one for index scan (this), one for validation
+    return [
+      this,
+      _GeometryValidationFilter(
+        field,
+        value,
+        (docGeom, filterGeom) => docGeom.within(filterGeom),
+      ),
+    ];
   }
 
   @override
@@ -85,7 +95,7 @@ class WithinFilter extends SpatialFilter {
 }
 
 ///@nodoc
-class IntersectsFilter extends SpatialFilter {
+class IntersectsFilter extends SpatialFilter implements FlattenableFilter {
   IntersectsFilter(super.field, super.value);
 
   @override
@@ -95,9 +105,16 @@ class IntersectsFilter extends SpatialFilter {
   }
 
   @override
-  bool applyGeometryFilter(Geometry documentGeometry) {
-    // Check if the document geometry intersects the filter geometry
-    return documentGeometry.intersects(value);
+  List<Filter> getFilters() {
+    // Return two filters: one for index scan (this), one for validation
+    return [
+      this,
+      _GeometryValidationFilter(
+        field,
+        value,
+        (docGeom, filterGeom) => docGeom.intersects(filterGeom),
+      ),
+    ];
   }
 
   @override

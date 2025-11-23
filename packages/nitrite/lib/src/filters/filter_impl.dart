@@ -70,7 +70,7 @@ class OrFilter extends LogicalFilter {
 }
 
 /// @nodoc
-class AndFilter extends LogicalFilter {
+class AndFilter extends LogicalFilter implements FlattenableFilter {
   AndFilter(List<Filter> filters) : super(filters) {
     for (int i = 1; i < filters.length; i++) {
       if (filters[i] is TextFilter) {
@@ -90,6 +90,9 @@ class AndFilter extends LogicalFilter {
 
     return true;
   }
+
+  @override
+  List<Filter> getFilters() => filters;
 
   @override
   String toString() {

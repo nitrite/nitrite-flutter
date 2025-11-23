@@ -175,6 +175,16 @@ abstract class Filter {
   }
 }
 
+/// Represents a filter which can be flattened or consists of multiple constituent filters.
+///
+/// This interface allows filters to be decomposed into multiple sub-filters during query
+/// optimization. For example, spatial filters can be split into an index scan filter 
+/// (for bounding box checks) and a validation filter (for actual geometry checks).
+abstract class FlattenableFilter {
+  /// Returns the list of constituent filters that make up this filter.
+  List<Filter> getFilters();
+}
+
 /// An abstract class representing a filter for Nitrite database.
 abstract class NitriteFilter extends Filter {
   /// Gets the [NitriteConfig] instance.
@@ -330,17 +340,6 @@ abstract class IndexOnlyFilter extends ComparableFilter {
 
   /// Checks if `other` filter can be grouped together with this filter.
   bool canBeGrouped(IndexOnlyFilter other);
-
-  /// Indicates whether this filter requires post-index validation.
-  /// 
-  /// Some index-only filters (like spatial filters) use the index for
-  /// preliminary filtering but need a second pass to validate the actual
-  /// condition. For example, R-Tree spatial indexes store only bounding boxes,
-  /// so they may return false positives that need to be filtered out.
-  /// 
-  /// Returns `true` if this filter needs to be applied again after index scan
-  /// to validate results. Defaults to `false`.
-  bool needsPostIndexValidation() => false;
 }
 
 /// @nodoc
