@@ -65,27 +65,15 @@ class _GeometryValidationFilter extends FieldBasedFilter {
   }
 }
 
-///@nodoc
-class WithinFilter extends SpatialFilter implements FlattenableFilter {
-  WithinFilter(super.field, super.value);
+/// Internal implementation of WithinFilter for index scanning only.
+/// Does not implement FlattenableFilter to avoid infinite recursion.
+class WithinIndexFilter extends SpatialFilter {
+  WithinIndexFilter(super.field, super.value);
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) {
     // calculated from SpatialIndex
     return const Stream.empty();
-  }
-
-  @override
-  List<Filter> getFilters() {
-    // Return two filters: one for index scan (this), one for validation
-    return [
-      this,
-      _GeometryValidationFilter(
-        field,
-        value,
-        (docGeom, filterGeom) => docGeom.within(filterGeom),
-      ),
-    ];
   }
 
   @override
@@ -94,27 +82,15 @@ class WithinFilter extends SpatialFilter implements FlattenableFilter {
   }
 }
 
-///@nodoc
-class IntersectsFilter extends SpatialFilter implements FlattenableFilter {
-  IntersectsFilter(super.field, super.value);
+/// Internal implementation of IntersectsFilter for index scanning only.
+/// Does not implement FlattenableFilter to avoid infinite recursion.
+class IntersectsIndexFilter extends SpatialFilter {
+  IntersectsIndexFilter(super.field, super.value);
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) {
     // calculated from SpatialIndex
     return const Stream.empty();
-  }
-
-  @override
-  List<Filter> getFilters() {
-    // Return two filters: one for index scan (this), one for validation
-    return [
-      this,
-      _GeometryValidationFilter(
-        field,
-        value,
-        (docGeom, filterGeom) => docGeom.intersects(filterGeom),
-      ),
-    ];
   }
 
   @override
@@ -124,17 +100,152 @@ class IntersectsFilter extends SpatialFilter implements FlattenableFilter {
 }
 
 ///@nodoc
-class NearFilter extends WithinFilter {
+class WithinFilter extends Filter implements FlattenableFilter {
+  final String field;
+  final Geometry geometry;
+
+  WithinFilter(this.field, this.geometry);
+
+  @override
+  bool apply(Document doc) {
+    // This should not be called directly as the filter is flattened
+    return false;
+  }
+
+  @override
+  List<Filter> getFilters() {
+    // Return two filters: one for index scan, one for validation
+    return [
+      WithinIndexFilter(field, geometry),
+      _GeometryValidationFilter(
+        field,
+        geometry,
+        (docGeom, filterGeom) => docGeom.within(filterGeom),
+      ),
+    ];
+  }
+
+  @override
+  String toString() {
+    return '($field within $geometry)';
+  }
+}
+
+///@nodoc
+class IntersectsFilter extends Filter implements FlattenableFilter {
+  final String field;
+  final Geometry geometry;
+
+  IntersectsFilter(this.field, this.geometry);
+
+  @override
+  bool apply(Document doc) {
+    // This should not be called directly as the filter is flattened
+    return false;
+  }
+
+  @override
+  List<Filter> getFilters() {
+    // Return two filters: one for index scan, one for validation
+    return [
+      IntersectsIndexFilter(field, geometry),
+      _GeometryValidationFilter(
+        field,
+        geometry,
+        (docGeom, filterGeom) => docGeom.intersects(filterGeom),
+      ),
+    ];
+  }
+
+  @override
+  String toString() {
+    return '($field intersects $geometry)';
+  }
+}
+
+///@nodoc
+class NearFilter extends Filter implements FlattenableFilter {
+  final String field;
+  final Geometry circle;
+  final Coordinate center;
+  final double radius;
+
   factory NearFilter(String field, Coordinate center, double radius) {
-    var geometry = _createCircle(center, radius);
-    return NearFilter._(field, geometry);
+    var circle = _createCircle(center, radius);
+    return NearFilter._(field, circle, center, radius);
   }
 
   factory NearFilter.fromPoint(String field, Point point, double radius) {
-    return NearFilter._(field, _createCircle(point.getCoordinate(), radius));
+    var center = point.getCoordinate();
+    var circle = _createCircle(center, radius);
+    return NearFilter._(field, circle, center!, radius);
   }
 
-  NearFilter._(super.field, super.geometry);
+  NearFilter._(this.field, this.circle, this.center, this.radius);
+
+  @override
+  bool apply(Document doc) {
+    // This should not be called directly as the filter is flattened
+    return false;
+  }
+
+  @override
+  List<Filter> getFilters() {
+    // Return two filters: one for index scan (using within), one for distance validation
+    return [
+      WithinIndexFilter(field, circle),
+      _NearValidationFilter(field, center, radius),
+    ];
+  }
+
+  @override
+  String toString() {
+    return '($field near $center within $radius)';
+  }
+}
+
+/// Validation filter for near queries that checks actual distance.
+class _NearValidationFilter extends Filter {
+  final String field;
+  final Coordinate center;
+  final double radius;
+
+  _NearValidationFilter(this.field, this.center, this.radius);
+
+  @override
+  bool apply(Document doc) {
+    var fieldValue = doc.get(field);
+    if (fieldValue == null) {
+      return false;
+    }
+
+    Geometry? documentGeometry;
+    if (fieldValue is Geometry) {
+      documentGeometry = fieldValue;
+    } else if (fieldValue is String) {
+      try {
+        var reader = WKTReader();
+        documentGeometry = reader.read(fieldValue);
+      } catch (e) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    // For near queries, check if the geometry is within the distance
+    // For points, check direct distance. For other geometries, check if they intersect the circle.
+    if (documentGeometry is Point) {
+      var coord = documentGeometry.getCoordinate();
+      if (coord == null) return false;
+      var distance = center.distance(coord);
+      return distance <= radius;
+    } else {
+      // For non-point geometries, check if they intersect the circle
+      var circle = _createCircle(center, radius);
+      return documentGeometry!.intersects(circle);
+    }
+  }
 }
 
 Geometry _createCircle(Coordinate? center, double radius) {

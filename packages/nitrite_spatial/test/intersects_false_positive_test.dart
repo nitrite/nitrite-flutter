@@ -28,7 +28,7 @@ void main() {
 
       // Insert the multipoint into the collection
       final doc = createDocument("geometry", multipoint);
-      await collection.insert([doc]);
+      await collection.insert(doc);
 
       // Create spatial index
       await collection.createIndex(["geometry"], indexOptions(spatialIndex));
@@ -49,7 +49,7 @@ void main() {
 
       // Insert the point
       final doc = createDocument("geometry", pointInBBoxButOutsidePolygon);
-      await collection.insert([doc]);
+      await collection.insert(doc);
 
       // Create spatial index
       await collection.createIndex(["geometry"], indexOptions(spatialIndex));
@@ -70,7 +70,7 @@ void main() {
       var lineIntersecting = reader.read('LINESTRING (-5 5, 15 5)') as LineString;
 
       // Insert the geometries
-      await collection.insert([
+      await collection.insertMany([
         createDocument("id", 1).put("geometry", pointInside),
         createDocument("id", 2).put("geometry", lineIntersecting),
       ]);
@@ -94,7 +94,7 @@ void main() {
 
       // Insert the point
       final doc = createDocument("geometry", pointInBBoxButOutsidePolygon);
-      await collection.insert([doc]);
+      await collection.insert(doc);
 
       // Create spatial index
       await collection.createIndex(["geometry"], indexOptions(spatialIndex));
