@@ -1,7 +1,6 @@
 import 'package:dart_jts/dart_jts.dart';
 import 'package:nitrite/nitrite.dart' as no2;
 import 'package:nitrite/nitrite.dart' hide where;
-import 'package:nitrite/src/filters/filter.dart' as filter;
 import 'package:nitrite_spatial/nitrite_spatial.dart';
 import 'package:nitrite_spatial/src/filter.dart';
 import 'package:test/test.dart';

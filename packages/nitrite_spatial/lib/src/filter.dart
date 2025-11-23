@@ -100,7 +100,7 @@ class IntersectsIndexFilter extends SpatialFilter {
 }
 
 ///@nodoc
-class WithinFilter extends Filter implements FlattenableFilter {
+class WithinFilter extends NitriteFilter implements FlattenableFilter {
   final String field;
   final Geometry geometry;
 
@@ -108,8 +108,19 @@ class WithinFilter extends Filter implements FlattenableFilter {
 
   @override
   bool apply(Document doc) {
-    // This should not be called directly as the filter is flattened
-    return false;
+    // For non-indexed queries, apply the validation filter directly
+    var validationFilter = _GeometryValidationFilter(
+      field,
+      geometry,
+      (docGeom, filterGeom) => docGeom.within(filterGeom),
+    );
+    // Copy context if available
+    if (nitriteConfig != null) {
+      validationFilter.nitriteConfig = nitriteConfig;
+      validationFilter.collectionName = collectionName;
+      validationFilter.objectFilter = objectFilter;
+    }
+    return validationFilter.apply(doc);
   }
 
   @override
@@ -132,7 +143,7 @@ class WithinFilter extends Filter implements FlattenableFilter {
 }
 
 ///@nodoc
-class IntersectsFilter extends Filter implements FlattenableFilter {
+class IntersectsFilter extends NitriteFilter implements FlattenableFilter {
   final String field;
   final Geometry geometry;
 
@@ -140,8 +151,19 @@ class IntersectsFilter extends Filter implements FlattenableFilter {
 
   @override
   bool apply(Document doc) {
-    // This should not be called directly as the filter is flattened
-    return false;
+    // For non-indexed queries, apply the validation filter directly
+    var validationFilter = _GeometryValidationFilter(
+      field,
+      geometry,
+      (docGeom, filterGeom) => docGeom.intersects(filterGeom),
+    );
+    // Copy context if available
+    if (nitriteConfig != null) {
+      validationFilter.nitriteConfig = nitriteConfig;
+      validationFilter.collectionName = collectionName;
+      validationFilter.objectFilter = objectFilter;
+    }
+    return validationFilter.apply(doc);
   }
 
   @override
@@ -164,7 +186,7 @@ class IntersectsFilter extends Filter implements FlattenableFilter {
 }
 
 ///@nodoc
-class NearFilter extends Filter implements FlattenableFilter {
+class NearFilter extends NitriteFilter implements FlattenableFilter {
   final String field;
   final Geometry circle;
   final Coordinate center;
@@ -185,8 +207,15 @@ class NearFilter extends Filter implements FlattenableFilter {
 
   @override
   bool apply(Document doc) {
-    // This should not be called directly as the filter is flattened
-    return false;
+    // For non-indexed queries, apply the validation filter directly
+    var validationFilter = _NearValidationFilter(field, center, radius);
+    // Copy context if available
+    if (nitriteConfig != null) {
+      validationFilter.nitriteConfig = nitriteConfig;
+      validationFilter.collectionName = collectionName;
+      validationFilter.objectFilter = objectFilter;
+    }
+    return validationFilter.apply(doc);
   }
 
   @override
@@ -205,7 +234,7 @@ class NearFilter extends Filter implements FlattenableFilter {
 }
 
 /// Validation filter for near queries that checks actual distance.
-class _NearValidationFilter extends Filter {
+class _NearValidationFilter extends NitriteFilter {
   final String field;
   final Coordinate center;
   final double radius;
