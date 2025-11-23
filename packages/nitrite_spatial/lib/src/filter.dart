@@ -1,5 +1,6 @@
 import 'package:dart_jts/dart_jts.dart';
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite_spatial/src/geom_utils.dart';
 import 'package:nitrite_spatial/src/indexer.dart';
 
 /// The abstract base class for all spatial filters in Nitrite.
@@ -57,11 +58,25 @@ class _GeometryValidationFilter extends FieldBasedFilter {
       } catch (e) {
         return false;
       }
+    } else if (fieldValue is Document) {
+      // For entity repositories, geometry is stored as a Document with serialized string
+      try {
+        var geometryString = fieldValue['geometry'] as String?;
+        if (geometryString != null) {
+          documentGeometry = GeometrySerializer.deserialize(geometryString);
+        }
+      } catch (e) {
+        return false;
+      }
     } else {
       return false;
     }
 
-    return _validator(documentGeometry!, value as Geometry);
+    if (documentGeometry == null) {
+      return false;
+    }
+
+    return _validator(documentGeometry, value as Geometry);
   }
 }
 
@@ -258,7 +273,21 @@ class _NearValidationFilter extends NitriteFilter {
       } catch (e) {
         return false;
       }
+    } else if (fieldValue is Document) {
+      // For entity repositories, geometry is stored as a Document with serialized string
+      try {
+        var geometryString = fieldValue['geometry'] as String?;
+        if (geometryString != null) {
+          documentGeometry = GeometrySerializer.deserialize(geometryString);
+        }
+      } catch (e) {
+        return false;
+      }
     } else {
+      return false;
+    }
+
+    if (documentGeometry == null) {
       return false;
     }
 
@@ -272,7 +301,7 @@ class _NearValidationFilter extends NitriteFilter {
     } else {
       // For non-point geometries, check if they intersect the circle
       var circle = _createCircle(center, radius);
-      return documentGeometry!.intersects(circle);
+      return documentGeometry.intersects(circle);
     }
   }
 }
