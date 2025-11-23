@@ -17,8 +17,8 @@ class FindOptimizer {
 
   FindPlan _createFilterPlan(
       Iterable<IndexDescriptor> indexDescriptors, Filter filter) {
-    if (filter is AndFilter) {
-      var filters = _flattenAndFilter(filter);
+    if (filter is FlattenableFilter) {
+      var filters = _flattenFilter(filter as FlattenableFilter);
       return _createAndPlan(indexDescriptors, filters);
     } else if (filter is OrFilter) {
       return _createOrPlan(indexDescriptors, filter.filters);
@@ -28,11 +28,12 @@ class FindOptimizer {
     }
   }
 
-  List<Filter> _flattenAndFilter(AndFilter andFilter) {
+  List<Filter> _flattenFilter(FlattenableFilter flattenableFilter) {
     var flattenedFilters = <Filter>[];
-    for (var filter in andFilter.filters) {
-      if (filter is AndFilter) {
-        flattenedFilters.addAll(_flattenAndFilter(filter));
+    for (var filter in flattenableFilter.getFilters()) {
+      if (filter is FlattenableFilter) {
+        // Type is narrowed to FlattenableFilter here
+        flattenedFilters.addAll(_flattenFilter(filter as FlattenableFilter));
       } else {
         flattenedFilters.add(filter);
       }

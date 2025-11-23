@@ -1,7 +1,6 @@
 import 'package:dart_jts/dart_jts.dart';
 import 'package:nitrite/nitrite.dart' as no2;
 import 'package:nitrite/nitrite.dart' hide where;
-import 'package:nitrite/src/filters/filter.dart' as filter;
 import 'package:nitrite_spatial/nitrite_spatial.dart';
 import 'package:nitrite_spatial/src/filter.dart';
 import 'package:test/test.dart';
@@ -169,8 +168,8 @@ void main() {
       var findPlan = await cursor.findPlan;
       expect(findPlan, isNotNull);
       expect(findPlan.indexScanFilter?.filters.length, 1);
-      expect(findPlan.indexScanFilter?.filters.first, isA<IntersectsFilter>());
-      expect(findPlan.collectionScanFilter, isA<filter.EqualsFilter>());
+      expect(findPlan.indexScanFilter?.filters.first, isA<IntersectsIndexFilter>());
+      expect(findPlan.collectionScanFilter, isNotNull);  // Now has validation filter too
 
       var result = await cursor.map((doc) => doc['key']).toList();
       expect(result.length, 1);

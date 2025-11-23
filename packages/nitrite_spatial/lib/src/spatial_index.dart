@@ -37,9 +37,9 @@ class SpatialIndex extends NitriteIndex {
     var boundingBox = _fromGeometry(geometry);
 
     Stream<NitriteId> keys;
-    if (filter is WithinFilter) {
+    if (filter is WithinIndexFilter) {
       keys = indexMap.findContainedKeys(boundingBox);
-    } else if (filter is IntersectsFilter) {
+    } else if (filter is IntersectsIndexFilter) {
       keys = indexMap.findIntersectingKeys(boundingBox);
     } else {
       throw FilterException('Unsupported spatial filter: $filter');

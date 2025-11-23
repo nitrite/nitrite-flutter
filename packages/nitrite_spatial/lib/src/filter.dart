@@ -1,6 +1,16 @@
 import 'package:dart_jts/dart_jts.dart';
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite_spatial/src/geom_utils.dart';
 import 'package:nitrite_spatial/src/indexer.dart';
+
+/// Copies NitriteFilter context (nitriteConfig, collectionName, objectFilter) from source to target
+void _copyFilterContext(NitriteFilter source, NitriteFilter target) {
+  if (source.nitriteConfig != null) {
+    target.nitriteConfig = source.nitriteConfig;
+    target.collectionName = source.collectionName;
+    target.objectFilter = source.objectFilter;
+  }
+}
 
 /// The abstract base class for all spatial filters in Nitrite.
 ///
@@ -31,9 +41,61 @@ abstract class SpatialFilter extends IndexOnlyFilter {
   }
 }
 
-///@nodoc
-class WithinFilter extends SpatialFilter {
-  WithinFilter(super.field, super.value);
+/// A non-index filter that validates actual geometry relationships.
+/// This filter is used as the second stage of spatial filtering after
+/// the R-Tree index has filtered candidates based on bounding boxes.
+class _GeometryValidationFilter extends FieldBasedFilter {
+  final bool Function(Geometry, Geometry) _validator;
+
+  _GeometryValidationFilter(super.field, super.value, this._validator);
+
+  @override
+  bool apply(Document doc) {
+    var fieldValue = doc.get(field);
+    if (fieldValue == null) {
+      return false;
+    }
+
+    Geometry? documentGeometry;
+    if (fieldValue is Geometry) {
+      documentGeometry = fieldValue;
+    } else if (fieldValue is String) {
+      // Try to parse WKT string
+      try {
+        var reader = WKTReader();
+        documentGeometry = reader.read(fieldValue);
+      } catch (e) {
+        return false;
+      }
+    } else if (fieldValue is Document) {
+      // For entity repositories, geometry is stored as a Document with serialized string
+      try {
+        var geometryString = fieldValue['geometry'] as String?;
+        if (geometryString != null) {
+          var deserialized = GeometrySerializer.deserialize(geometryString);
+          if (deserialized != null) {
+            documentGeometry = deserialized;
+          }
+        }
+      } catch (e) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    if (documentGeometry == null) {
+      return false;
+    }
+
+    return _validator(documentGeometry, value as Geometry);
+  }
+}
+
+/// Internal implementation of WithinFilter for index scanning only.
+/// Does not implement FlattenableFilter to avoid infinite recursion.
+class WithinIndexFilter extends SpatialFilter {
+  WithinIndexFilter(super.field, super.value);
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) {
@@ -47,9 +109,10 @@ class WithinFilter extends SpatialFilter {
   }
 }
 
-///@nodoc
-class IntersectsFilter extends SpatialFilter {
-  IntersectsFilter(super.field, super.value);
+/// Internal implementation of IntersectsFilter for index scanning only.
+/// Does not implement FlattenableFilter to avoid infinite recursion.
+class IntersectsIndexFilter extends SpatialFilter {
+  IntersectsIndexFilter(super.field, super.value);
 
   @override
   Stream<dynamic> applyOnIndex(IndexMap indexMap) {
@@ -64,17 +127,183 @@ class IntersectsFilter extends SpatialFilter {
 }
 
 ///@nodoc
-class NearFilter extends WithinFilter {
+class WithinFilter extends NitriteFilter implements FlattenableFilter {
+  final String field;
+  final Geometry geometry;
+
+  WithinFilter(this.field, this.geometry);
+
+  @override
+  bool apply(Document doc) {
+    // For non-indexed queries, apply the validation filter directly
+    var validationFilter = _GeometryValidationFilter(
+      field,
+      geometry,
+      (docGeom, filterGeom) => docGeom.within(filterGeom),
+    );
+    _copyFilterContext(this, validationFilter);
+    return validationFilter.apply(doc);
+  }
+
+  @override
+  List<Filter> getFilters() {
+    // Return two filters: one for index scan, one for validation
+    return [
+      WithinIndexFilter(field, geometry),
+      _GeometryValidationFilter(
+        field,
+        geometry,
+        (docGeom, filterGeom) => docGeom.within(filterGeom),
+      ),
+    ];
+  }
+
+  @override
+  String toString() {
+    return '($field within $geometry)';
+  }
+}
+
+///@nodoc
+class IntersectsFilter extends NitriteFilter implements FlattenableFilter {
+  final String field;
+  final Geometry geometry;
+
+  IntersectsFilter(this.field, this.geometry);
+
+  @override
+  bool apply(Document doc) {
+    // For non-indexed queries, apply the validation filter directly
+    var validationFilter = _GeometryValidationFilter(
+      field,
+      geometry,
+      (docGeom, filterGeom) => docGeom.intersects(filterGeom),
+    );
+    _copyFilterContext(this, validationFilter);
+    return validationFilter.apply(doc);
+  }
+
+  @override
+  List<Filter> getFilters() {
+    // Return two filters: one for index scan, one for validation
+    return [
+      IntersectsIndexFilter(field, geometry),
+      _GeometryValidationFilter(
+        field,
+        geometry,
+        (docGeom, filterGeom) => docGeom.intersects(filterGeom),
+      ),
+    ];
+  }
+
+  @override
+  String toString() {
+    return '($field intersects $geometry)';
+  }
+}
+
+///@nodoc
+class NearFilter extends NitriteFilter implements FlattenableFilter {
+  final String field;
+  final Geometry circle;
+  final Coordinate center;
+  final double radius;
+
   factory NearFilter(String field, Coordinate center, double radius) {
-    var geometry = _createCircle(center, radius);
-    return NearFilter._(field, geometry);
+    var circle = _createCircle(center, radius);
+    return NearFilter._(field, circle, center, radius);
   }
 
   factory NearFilter.fromPoint(String field, Point point, double radius) {
-    return NearFilter._(field, _createCircle(point.getCoordinate(), radius));
+    var center = point.getCoordinate();
+    var circle = _createCircle(center, radius);
+    return NearFilter._(field, circle, center!, radius);
   }
 
-  NearFilter._(super.field, super.geometry);
+  NearFilter._(this.field, this.circle, this.center, this.radius);
+
+  @override
+  bool apply(Document doc) {
+    // For non-indexed queries, apply the validation filter directly
+    var validationFilter = _NearValidationFilter(field, center, radius);
+    _copyFilterContext(this, validationFilter);
+    return validationFilter.apply(doc);
+  }
+
+  @override
+  List<Filter> getFilters() {
+    // Return two filters: one for index scan (using within), one for distance validation
+    return [
+      WithinIndexFilter(field, circle),
+      _NearValidationFilter(field, center, radius),
+    ];
+  }
+
+  @override
+  String toString() {
+    return '($field near $center within $radius)';
+  }
+}
+
+/// Validation filter for near queries that checks actual distance.
+class _NearValidationFilter extends NitriteFilter {
+  final String field;
+  final Coordinate center;
+  final double radius;
+
+  _NearValidationFilter(this.field, this.center, this.radius);
+
+  @override
+  bool apply(Document doc) {
+    var fieldValue = doc.get(field);
+    if (fieldValue == null) {
+      return false;
+    }
+
+    Geometry? documentGeometry;
+    if (fieldValue is Geometry) {
+      documentGeometry = fieldValue;
+    } else if (fieldValue is String) {
+      try {
+        var reader = WKTReader();
+        documentGeometry = reader.read(fieldValue);
+      } catch (e) {
+        return false;
+      }
+    } else if (fieldValue is Document) {
+      // For entity repositories, geometry is stored as a Document with serialized string
+      try {
+        var geometryString = fieldValue['geometry'] as String?;
+        if (geometryString != null) {
+          var deserialized = GeometrySerializer.deserialize(geometryString);
+          if (deserialized != null) {
+            documentGeometry = deserialized;
+          }
+        }
+      } catch (e) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    if (documentGeometry == null) {
+      return false;
+    }
+
+    // For near queries, check if the geometry is within the distance
+    // For points, check direct distance. For other geometries, check if they intersect the circle.
+    if (documentGeometry is Point) {
+      var coord = documentGeometry.getCoordinate();
+      if (coord == null) return false;
+      var distance = center.distance(coord);
+      return distance <= radius;
+    } else {
+      // For non-point geometries, check if they intersect the circle
+      var circle = _createCircle(center, radius);
+      return documentGeometry.intersects(circle);
+    }
+  }
 }
 
 Geometry _createCircle(Coordinate? center, double radius) {

@@ -175,6 +175,16 @@ abstract class Filter {
   }
 }
 
+/// Represents a filter which can be flattened or consists of multiple constituent filters.
+///
+/// This interface allows filters to be decomposed into multiple sub-filters during query
+/// optimization. For example, spatial filters can be split into an index scan filter 
+/// (for bounding box checks) and a validation filter (for actual geometry checks).
+abstract class FlattenableFilter {
+  /// Returns the list of constituent filters that make up this filter.
+  List<Filter> getFilters();
+}
+
 /// An abstract class representing a filter for Nitrite database.
 abstract class NitriteFilter extends Filter {
   /// Gets the [NitriteConfig] instance.
