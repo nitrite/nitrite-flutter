@@ -1,4 +1,3 @@
-import 'package:dart_numerics/dart_numerics.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/document_cursor.dart';
 import 'package:nitrite/src/collection/operations/find_optimizer.dart';
@@ -9,6 +8,10 @@ import 'package:nitrite/src/common/stream/indexed_stream.dart';
 import 'package:nitrite/src/common/stream/processed_document_stream.dart';
 import 'package:nitrite/src/common/stream/sorted_document_stream.dart';
 import 'package:rxdart/rxdart.dart';
+
+/// Maximum safe integer value for JavaScript (2^53 - 1).
+/// This is used instead of int64MaxValue to ensure compatibility with Flutter web.
+const int _maxSafeInteger = 9007199254740991;
 
 /// @nodoc
 class ReadOperations {
@@ -137,7 +140,7 @@ class ReadOperations {
 
       if (findPlan.limit != null || findPlan.skip != null) {
         rawStream = rawStream.skip(findPlan.skip ?? 0);
-        rawStream = rawStream.take(findPlan.limit ?? int64MaxValue);
+        rawStream = rawStream.take(findPlan.limit ?? _maxSafeInteger);
       }
     }
 

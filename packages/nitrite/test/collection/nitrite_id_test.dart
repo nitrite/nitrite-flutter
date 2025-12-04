@@ -1,4 +1,3 @@
-import 'package:dart_numerics/dart_numerics.dart' as num;
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
@@ -11,8 +10,9 @@ void main() async {
     });
 
     test('Test Limit', () {
-      var one = NitriteId.createId(num.int64MaxValue.toString());
-      var two = NitriteId.createId(num.int64MinValue.toString());
+      // Using max safe integer for JavaScript (2^53 - 1) to ensure web compatibility
+      var one = NitriteId.createId('9007199254740991');
+      var two = NitriteId.createId('-9007199254740991');
       expect(one.compareTo(two), 1);
     });
 
