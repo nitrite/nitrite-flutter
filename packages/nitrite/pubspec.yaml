@@ -5,7 +5,8 @@ homepage: https://nitrite.dizitart.com/
 repository: https://github.com/nitrite/nitrite-flutter
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: '^3.11.4'
+
 
 dependencies:
   logging: ^1.2.0

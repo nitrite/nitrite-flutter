@@ -1,4 +1,4 @@
-# melos_managed_dependency_overrides: nitrite,nitrite_generator
+# melos_managed_dependency_overrides: nitrite,nitrite_generator,nitrite_hive_adapter
 dependency_overrides:
   nitrite:
     path: ../nitrite

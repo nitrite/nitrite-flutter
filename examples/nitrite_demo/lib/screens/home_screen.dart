@@ -45,8 +45,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 constraints: const BoxConstraints(
                   maxHeight: 50,
                 ),
-                elevation: MaterialStateProperty.all(1),
-                shape: MaterialStateProperty.all(
+                elevation: WidgetStateProperty.all(1),
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),

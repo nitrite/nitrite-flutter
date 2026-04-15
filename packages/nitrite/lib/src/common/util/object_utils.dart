@@ -4,7 +4,7 @@ import 'package:nitrite/src/common/util/number_utils.dart' as numbers;
 import 'package:nitrite/src/common/util/validation_utils.dart';
 
 /// @nodoc
-bool isSubtype<Subtype, Type>() => <Subtype>[] is List<Type>;
+bool isSubtype<Subtype, SuperType>() => <Subtype>[] is List<SuperType>;
 
 /// @nodoc
 String getKeyName(String collectionName) {

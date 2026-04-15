@@ -13,7 +13,7 @@ dependencies:
   code_builder: ^4.9.0
   dart_style: ^2.3.4
   source_gen: ^1.5.0
-  analyzer: ^6.2.0
+  analyzer: ">=6.2.0 <13.0.0"
   nitrite: ^1.1.1
   collection: ^1.17.1
 
