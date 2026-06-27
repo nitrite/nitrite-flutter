@@ -5,6 +5,7 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 import 'package:nitrite_hive_adapter/src/adapters/datetime_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/dbvalue_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/document_adapter.dart';
+import 'package:nitrite_hive_adapter/src/adapters/index_key_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/fields_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/nitrite_id_adapter.dart';
 import 'package:nitrite_hive_adapter/src/adapters/set_adapter.dart';
@@ -35,6 +36,7 @@ void _registerBuiltinTypeAdapters(HiveImpl hive) {
   hive.registerAdapter(SetAdapter());
   hive.registerAdapter(DBValueAdapter());
   hive.registerAdapter(DBNullAdapter());
+  hive.registerAdapter(IndexKeyAdapter());
   hive.registerAdapter(FieldsAdapter());
   hive.registerAdapter(DateTimeAdapter(), internal: true);
   hive.registerAdapter(SpatialKeyAdapter());

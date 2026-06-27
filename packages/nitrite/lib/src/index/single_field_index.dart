@@ -14,100 +14,105 @@ class SingleFieldIndex extends NitriteIndex {
 
   @override
   Future<void> drop() async {
-    var indexMap = await _findIndexMap();
-    await indexMap.clear();
-    await indexMap.drop();
+    if (isUnique) {
+      var indexMap = await _findUniqueMap();
+      await indexMap.clear();
+      await indexMap.drop();
+    } else {
+      var indexMap = await _findCompositeMap();
+      await indexMap.clear();
+      await indexMap.drop();
+    }
   }
 
   @override
   Stream<NitriteId> findNitriteIds(FindPlan findPlan) async* {
     if (findPlan.indexScanFilter == null) return;
 
-    var indexMap = await _findIndexMap();
-    yield* _scanIndex(findPlan, indexMap);
+    var filters = findPlan.indexScanFilter?.filters;
+    IndexMap iMap;
+    if (isUnique) {
+      iMap = IndexMap(nitriteMap: await _findUniqueMap());
+    } else {
+      iMap = IndexMap(compositeMap: await _findCompositeMap());
+    }
+    yield* IndexScanner(iMap)
+        .doScan(filters, findPlan.indexScanOrder)
+        .distinctUnique();
   }
 
   @override
   Future<void> remove(FieldValues fieldValues) async {
-    var fields = fieldValues.fields;
-    var fieldNames = fields.fieldNames;
-
-    var firstField = fieldNames.first;
+    var firstField = fieldValues.fields.fieldNames.first;
     var element = fieldValues.get(firstField);
 
-    var indexMap = await _findIndexMap();
-    if (element == null) {
-      await _removeIndexElement(indexMap, fieldValues, DBNull.instance);
-    } else if (element is Comparable) {
-      // wrap around db value
-      var dbValue = DBValue(element);
-      await _removeIndexElement(indexMap, fieldValues, dbValue);
-    } else if (element is Iterable) {
-      for (var item in element) {
-        // wrap around db value
-        var dbValue = item == null ? DBNull.instance : DBValue(item);
-        await _removeIndexElement(indexMap, fieldValues, dbValue);
-      }
+    if (isUnique) {
+      var indexMap = await _findUniqueMap();
+      await _forEachElement(element, (dbValue) async {
+        var nitriteIds = await indexMap[dbValue];
+        if (nitriteIds != null) {
+          nitriteIds.remove(fieldValues.nitriteId);
+          if (nitriteIds.isEmpty) {
+            await indexMap.remove(dbValue);
+          } else {
+            await indexMap.put(dbValue, nitriteIds);
+          }
+        }
+      });
+    } else {
+      var indexMap = await _findCompositeMap();
+      var id = fieldValues.nitriteId!;
+      await _forEachElement(element, (dbValue) async {
+        await indexMap.remove(IndexKey(dbValue, id));
+      });
     }
   }
 
   @override
   Future<void> write(FieldValues fieldValues) async {
-    var fields = fieldValues.fields;
-    var fieldNames = fields.fieldNames;
-
-    var firstField = fieldNames.first;
+    var firstField = fieldValues.fields.fieldNames.first;
     var element = fieldValues.get(firstField);
 
-    var indexMap = await _findIndexMap();
+    if (isUnique) {
+      var indexMap = await _findUniqueMap();
+      await _forEachElement(element, (dbValue) async {
+        var nitriteIds = await indexMap[dbValue];
+        nitriteIds = addNitriteIds(nitriteIds, fieldValues);
+        await indexMap.put(dbValue, nitriteIds);
+      });
+    } else {
+      // one `(value, id)` row per entry: O(1) point insert, no read-modify-write
+      var indexMap = await _findCompositeMap();
+      var id = fieldValues.nitriteId!;
+      await _forEachElement(element, (dbValue) async {
+        await indexMap.put(IndexKey(dbValue, id), true);
+      });
+    }
+  }
 
+  /// Invokes [action] once per indexed element. A `null` element maps to a
+  /// [DBNull] key, a single comparable to one key, and an iterable (multikey
+  /// index) to one key per item.
+  Future<void> _forEachElement(
+      dynamic element, Future<void> Function(DBValue) action) async {
     if (element == null) {
-      await _addIndexElement(indexMap, fieldValues, DBNull.instance);
+      await action(DBNull.instance);
     } else if (element is Comparable) {
-      // wrap around db value
-      var dbValue = DBValue(element);
-      await _addIndexElement(indexMap, fieldValues, dbValue);
+      await action(DBValue(element));
     } else if (element is Iterable) {
       for (var item in element) {
-        // wrap around db value
-        var dbValue = item == null ? DBNull.instance : DBValue(item);
-        await _addIndexElement(indexMap, fieldValues, dbValue);
+        await action(item == null ? DBNull.instance : DBValue(item));
       }
     }
   }
 
-  Future<NitriteMap<DBValue, List<dynamic>>> _findIndexMap() {
+  Future<NitriteMap<DBValue, List<dynamic>>> _findUniqueMap() {
     var mapName = deriveIndexMapName(_indexDescriptor);
     return _nitriteStore.openMap<DBValue, List<dynamic>>(mapName);
   }
 
-  Future<void> _addIndexElement(NitriteMap<DBValue, List<dynamic>> indexMap,
-      FieldValues fieldValues, DBValue element) async {
-    var nitriteIds = await indexMap[element];
-    nitriteIds = addNitriteIds(nitriteIds, fieldValues);
-    return indexMap.put(element, nitriteIds);
-  }
-
-  Future<void> _removeIndexElement(NitriteMap<DBValue, List<dynamic>> indexMap,
-      FieldValues fieldValues, DBValue element) async {
-    var nitriteIds = await indexMap[element];
-    if (nitriteIds != null) {
-      nitriteIds.remove(fieldValues.nitriteId);
-      if (nitriteIds.isEmpty) {
-        await indexMap.remove(element);
-      } else {
-        await indexMap.put(element, nitriteIds);
-      }
-    }
-  }
-
-  Stream<NitriteId> _scanIndex(
-      FindPlan findPlan, NitriteMap<DBValue, List<dynamic>> indexMap) async* {
-    var filters = findPlan.indexScanFilter?.filters;
-    var iMap = IndexMap(nitriteMap: indexMap);
-    var indexScanner = IndexScanner(iMap);
-    yield* indexScanner
-        .doScan(filters, findPlan.indexScanOrder)
-        .distinctUnique();
+  Future<NitriteMap<IndexKey, bool>> _findCompositeMap() {
+    var mapName = deriveIndexMapName(_indexDescriptor);
+    return _nitriteStore.openMap<IndexKey, bool>(mapName);
   }
 }

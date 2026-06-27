@@ -1,5 +1,10 @@
+// ignore_for_file: implementation_imports
+
+import 'dart:collection';
+
 import 'package:hive/hive.dart';
 import 'package:nitrite/nitrite.dart';
+import 'package:nitrite/src/common/util/splay_tree_extensions.dart';
 import 'package:nitrite_hive_adapter/src/store/hive_store.dart';
 import 'package:nitrite_hive_adapter/src/store/key_encoder.dart';
 
@@ -13,8 +18,26 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   bool _dropped = false;
   bool _closed = false;
 
+  /// Decoded keys kept sorted by [_keyComparator] so ordered navigation
+  /// (`ceilingKey`, range scans, sorted `entries`) is O(log n) per lookup
+  /// instead of decoding and re-sorting every key on each call. Built lazily
+  /// and maintained incrementally on put/remove/clear.
+  SplayTreeMap<Key, bool>? _sortedKeys;
+
   BoxMap(this._mapName, this._lazyBox, this._store, this._keyCodec,
       this._keyComparator);
+
+  SplayTreeMap<Key, bool> _keyIndex() {
+    var index = _sortedKeys;
+    if (index == null) {
+      index = SplayTreeMap<Key, bool>(_keyComparator);
+      for (var encoded in _lazyBox.keys) {
+        index[_unWrapKey(encoded) as Key] = true;
+      }
+      _sortedKeys = index;
+    }
+    return index;
+  }
 
   @override
   Future<Value?> operator [](Key key) async {
@@ -24,19 +47,13 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<Key?> ceilingKey(Key key) async {
-    var keys = _sortedKeys();
-    for (var item in keys) {
-      var result = _keyComparator(item, key);
-      if (result >= 0) {
-        return item;
-      }
-    }
-    return null;
+    return _keyIndex().ceilingKey(key) as Key?;
   }
 
   @override
   Future<void> clear() async {
     await _lazyBox.clear();
+    _sortedKeys?.clear();
     await updateLastModifiedTime();
   }
 
@@ -65,22 +82,16 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Stream<(Key, Value)> entries() async* {
-    for (var key in _lazyBox.keys) {
-      var val = await _lazyBox.get(key);
-      yield (_unWrapKey(key), val);
+    // iterate in sorted key order so ordered/grouped index scans are correct
+    for (var key in _keyIndex().keys.toList()) {
+      var val = await _lazyBox.get(_wrapKey(key));
+      yield (key, val);
     }
   }
 
   @override
   Future<Key?> floorKey(Key key) async {
-    var keys = _sortedKeys().reversed;
-    for (var item in keys) {
-      var result = _keyComparator(item, key);
-      if (result <= 0) {
-        return item;
-      }
-    }
-    return null;
+    return _keyIndex().floorKey(key) as Key?;
   }
 
   @override
@@ -89,14 +100,7 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<Key?> higherKey(Key key) async {
-    var keys = _sortedKeys();
-    for (var item in keys) {
-      var result = _keyComparator(item, key);
-      if (result > 0) {
-        return item;
-      }
-    }
-    return null;
+    return _keyIndex().higherKey(key) as Key?;
   }
 
   @override
@@ -122,14 +126,7 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<Key?> lowerKey(Key key) async {
-    var keys = _sortedKeys().reversed;
-    for (var item in keys) {
-      var result = _keyComparator(item, key);
-      if (result < 0) {
-        return item;
-      }
-    }
-    return null;
+    return _keyIndex().lowerKey(key) as Key?;
   }
 
   @override
@@ -139,6 +136,7 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   Future<void> put(Key key, Value value) async {
     try {
       await _lazyBox.put(_wrapKey(key), value);
+      _sortedKeys?[key] = true;
       await updateLastModifiedTime();
     } catch (e, s) {
       throw NitriteException('Failed to put $key: $value pair in $_mapName',
@@ -165,16 +163,17 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
     var val = await _lazyBox.get(wrappedKey);
     await _lazyBox.delete(wrappedKey);
+    _sortedKeys?.remove(key);
     await updateLastModifiedTime();
     return val;
   }
 
   @override
   Stream<(Key, Value)> reversedEntries() async* {
-    var reversedKeys = _lazyBox.keys.toList().reversed;
-    for (var key in reversedKeys) {
-      var val = await _lazyBox.get(key);
-      yield (_unWrapKey(key), val);
+    // iterate in descending sorted key order
+    for (var key in _keyIndex().keys.toList().reversed) {
+      var val = await _lazyBox.get(_wrapKey(key));
+      yield (key, val);
     }
   }
 
@@ -193,12 +192,14 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
 
   @override
   Future<Key?> firstKey() async {
-    return _sortedKeys().first;
+    var index = _keyIndex();
+    return index.isEmpty ? null : index.firstKey();
   }
 
   @override
   Future<Key?> lastKey() async {
-    return _sortedKeys().last;
+    var index = _keyIndex();
+    return index.isEmpty ? null : index.lastKey();
   }
 
   // Keys need to be Strings or integers
@@ -209,11 +210,5 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   // Keys need to be Strings or integers
   dynamic _unWrapKey(dynamic key) {
     return _keyCodec.decode(key);
-  }
-
-  List<Key> _sortedKeys() {
-    var list = _lazyBox.keys.map((e) => _unWrapKey(e) as Key).toList();
-    list.sort(_keyComparator);
-    return list;
   }
 }
