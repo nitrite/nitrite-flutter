@@ -6,7 +6,7 @@ import 'package:nitrite/nitrite.dart';
 /// Opens a [Nitrite] database. Must be a top-level or static function (it is
 /// sent to the owner isolate), and is the place to build the store module,
 /// register entity converters, etc.
-typedef NitriteFactory = Future<Nitrite> Function();
+typedef NitriteOpener = Future<Nitrite> Function();
 
 /// Runs a [Nitrite] database inside a dedicated *owner* isolate and lets any
 /// number of other isolates read and write the same database concurrently.
@@ -43,7 +43,7 @@ class NitriteIsolate {
 
   /// Spawns the owner isolate, opens the database with [factory] there, and
   /// returns a sendable handle to it.
-  static Future<NitriteIsolate> spawn(NitriteFactory factory) async {
+  static Future<NitriteIsolate> spawn(NitriteOpener factory) async {
     var init = ReceivePort();
     await Isolate.spawn(_ownerMain, (init.sendPort, factory),
         debugName: 'nitrite-owner');
@@ -113,7 +113,7 @@ class IsolateCollection {
 /// Owner-isolate entry point: opens the database, then serves commands from a
 /// single [ReceivePort] strictly one at a time (each is fully awaited before
 /// the next), which serialises all access to the underlying store.
-Future<void> _ownerMain((SendPort, NitriteFactory) init) async {
+Future<void> _ownerMain((SendPort, NitriteOpener) init) async {
   var (mainPort, factory) = init;
 
   Nitrite db;

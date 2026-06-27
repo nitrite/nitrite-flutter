@@ -1,5 +1,6 @@
 ## 1.1.1
 
+- Added support for composite indexing via `IndexKey`.
 - Updated Nitrite to 1.1.1.
 
 ## 1.1.0

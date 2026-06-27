@@ -1,5 +1,7 @@
 ## 1.1.1
 
+- Added `geoNear` and `kNearest` spatial filters.
+- Fixed false positives in the `intersects` filter by adding post-index validation.
 - Updated Nitrite to 1.1.1.
 
 ## 1.1.0

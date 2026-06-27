@@ -1,7 +1,12 @@
 ## 1.1.1
 
-- New options added for `NitriteBuilder` to disable check for repository type.
-- Fix for updating values where the value was previously null
+- Added `NitriteIsolate` for concurrent database access across multiple isolates.
+- Added composite (compound) indexing support via `IndexKey`.
+- Added `count()` method to `DocumentCursor` and `Cursor` for efficient document counting.
+- Added web support by using a web-safe maximum integer value.
+- New option added for `NitriteBuilder` to disable repository type validation.
+- Database is now auto committed before close.
+- Fix for updating values where the value was previously null.
 - Fix for `Document.fields` not returning iterable fields.
 
 ## 1.1.0
