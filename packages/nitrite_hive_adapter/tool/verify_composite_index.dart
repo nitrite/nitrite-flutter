@@ -111,6 +111,59 @@ Future<void> main() async {
     print('bulk-load 3000 low-cardinality inserts: ${sw.elapsedMilliseconds} ms');
     await db4.close();
 
+    // compound non-unique composite index (first field low-cardinality)
+    var db5 = await _open('${dir.path}/db4');
+    var cc = await db5.getCollection('cc');
+    await cc.createIndex(['dept', 'age'], indexOptions(IndexType.nonUnique));
+    for (var i = 0; i < 120; i++) {
+      await cc.insert(emptyDocument()
+          .put('dept', i % 3)
+          .put('age', 20 + (i % 4))
+          .put('n', i));
+    }
+    // eq on first field
+    var d1 = await cc.find(filter: where('dept').eq(1)).count();
+    check(d1 == 40, 'compound eq(dept=1) == 40 (got $d1)');
+    // eq on both fields
+    var d1a = await cc
+        .find(filter: where('dept').eq(1).and(where('age').eq(20)))
+        .count();
+    check(d1a == 10, 'compound eq(dept=1,age=20) == 10 (got $d1a)');
+    // range on second field within first
+    var d1r = await cc
+        .find(filter: where('dept').eq(0).and(where('age').gte(22)))
+        .length;
+    check(d1r == 20, 'compound dept=0 & age>=22 == 20 (got $d1r)');
+    await db5.close();
+
+    // reopen: compound composite index persists
+    var db6 = await _open('${dir.path}/db4');
+    var cc2 = await db6.getCollection('cc');
+    var d1b = await cc2
+        .find(filter: where('dept').eq(1).and(where('age').eq(20)))
+        .count();
+    check(d1b == 10, 'compound after reopen == 10 (got $d1b)');
+    await db6.close();
+
+    // unique compound index (composite + prefix probe)
+    var db7 = await _open('${dir.path}/db5');
+    var ucol = await db7.getCollection('uc');
+    await ucol.createIndex(['first', 'last']); // unique by default
+    await ucol.insert(emptyDocument().put('first', 'a').put('last', 'b'));
+    await ucol.insert(emptyDocument().put('first', 'a').put('last', 'c')); // ok
+    var ucViolation = false;
+    try {
+      await ucol.insert(emptyDocument().put('first', 'a').put('last', 'b'));
+    } on UniqueConstraintException {
+      ucViolation = true;
+    }
+    check(ucViolation, 'unique compound rejects duplicate (a,b)');
+    var ucq = await ucol
+        .find(filter: where('first').eq('a').and(where('last').eq('c')))
+        .count();
+    check(ucq == 1, 'unique compound eq(a,c) == 1 (got $ucq)');
+    await db7.close();
+
     print('ALL COMPOSITE INDEX CHECKS PASSED');
   } finally {
     try {

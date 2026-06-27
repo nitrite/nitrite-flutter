@@ -10,19 +10,26 @@ class IndexMap {
   final NitriteMap<DBValue, dynamic>? _nitriteMap;
   final SplayTreeMap<dynamic, dynamic>? _navigableMap;
 
-  /// Backing for a non-unique index stored as composite `(value, id)` keys.
-  /// When set, this [IndexMap] presents the same `value -> [ids]` view as the
-  /// legacy layout, reconstructing each id-list by a prefix range scan.
+  /// Backing for a non-unique index stored as composite `(values…, id)` keys.
+  /// When set, this [IndexMap] presents the same view as the legacy layout
+  /// (single field: `value -> [ids]`; compound: `value -> nested sub-map`),
+  /// reconstructing it by a prefix range scan on the first field's value.
   final NitriteMap<IndexKey, bool>? _compositeMap;
+
+  /// Number of indexed fields for [_compositeMap]: 1 means each first-field
+  /// value maps to a terminal id-list, >1 means a nested sub-map.
+  final int _compositeFieldCount;
 
   bool _reverseScan = false;
 
   IndexMap(
       {NitriteMap<DBValue, dynamic>? nitriteMap,
       Map<dynamic, dynamic>? subMap,
-      NitriteMap<IndexKey, bool>? compositeMap})
+      NitriteMap<IndexKey, bool>? compositeMap,
+      int compositeFieldCount = 1})
       : _nitriteMap = nitriteMap,
         _compositeMap = compositeMap,
+        _compositeFieldCount = compositeFieldCount,
         _navigableMap = SplayTreeMapEx.fromMap(subMap);
 
   set reverseScan(bool reverseScan) {
@@ -37,7 +44,11 @@ class IndexMap {
     DBValue dbKey = _toDbValue(comparable);
 
     if (_compositeMap != null) {
-      return _collectIds(dbKey);
+      var keys = await _collectKeys(dbKey);
+      if (keys.isEmpty) return null;
+      return _compositeFieldCount == 1
+          ? [for (var k in keys) k.id!]
+          : _buildNested(keys);
     }
     if (_nitriteMap != null) {
       return _nitriteMap[dbKey];
@@ -47,16 +58,33 @@ class IndexMap {
     return null;
   }
 
-  /// Collects all ids stored for [dbKey] in the composite map by scanning the
-  /// `[lowerBound, upperBound]` range for that value.
-  Future<List<NitriteId>?> _collectIds(DBValue dbKey) async {
-    var ids = <NitriteId>[];
-    var key = await _compositeMap!.ceilingKey(IndexKey.lowerBound(dbKey));
+  /// Collects every composite entry whose first-field value equals [dbKey] by
+  /// scanning the `[lowerBound, upperBound]` range for that value.
+  Future<List<IndexKey>> _collectKeys(DBValue dbKey) async {
+    var result = <IndexKey>[];
+    var key = await _compositeMap!.ceilingKey(IndexKey.lowerBound([dbKey]));
     while (key != null && key.value.compareTo(dbKey) == 0) {
-      if (key.id != null) ids.add(key.id!);
+      result.add(key);
       key = await _compositeMap.higherKey(key);
     }
-    return ids.isEmpty ? null : ids;
+    return result;
+  }
+
+  /// Rebuilds the legacy nested sub-map (keyed by the 2nd..last field values,
+  /// terminal id-lists) for a group of compound entries sharing a first value.
+  Map<DBValue, dynamic> _buildNested(List<IndexKey> keys) {
+    var root = <DBValue, dynamic>{};
+    for (var key in keys) {
+      var vals = key.values;
+      Map node = root;
+      for (var i = 1; i < vals.length - 1; i++) {
+        node = (node[vals[i]] ??= <DBValue, dynamic>{}) as Map;
+      }
+      var terminal = vals[vals.length - 1];
+      var list = (node[terminal] ??= <NitriteId>[]) as List;
+      list.add(key.id!);
+    }
+    return root;
   }
 
   Future<dynamic> firstKey() async {
@@ -100,7 +128,7 @@ class IndexMap {
 
     if (_compositeMap != null) {
       // smallest distinct value >= comparable
-      var k = await _compositeMap.ceilingKey(IndexKey.lowerBound(dbKey));
+      var k = await _compositeMap.ceilingKey(IndexKey.lowerBound([dbKey]));
       return _unwrap(k?.value);
     }
     if (_nitriteMap != null) {
@@ -116,7 +144,7 @@ class IndexMap {
 
     if (_compositeMap != null) {
       // smallest distinct value > comparable
-      var k = await _compositeMap.ceilingKey(IndexKey.upperBound(dbKey));
+      var k = await _compositeMap.ceilingKey(IndexKey.upperBound([dbKey]));
       return _unwrap(k?.value);
     }
     if (_nitriteMap != null) {
@@ -132,7 +160,7 @@ class IndexMap {
 
     if (_compositeMap != null) {
       // largest distinct value <= comparable
-      var k = await _compositeMap.floorKey(IndexKey.upperBound(dbKey));
+      var k = await _compositeMap.floorKey(IndexKey.upperBound([dbKey]));
       return _unwrap(k?.value);
     }
     if (_nitriteMap != null) {
@@ -148,7 +176,7 @@ class IndexMap {
 
     if (_compositeMap != null) {
       // largest distinct value < comparable
-      var k = await _compositeMap.floorKey(IndexKey.lowerBound(dbKey));
+      var k = await _compositeMap.floorKey(IndexKey.lowerBound([dbKey]));
       return _unwrap(k?.value);
     }
     if (_nitriteMap != null) {
@@ -213,20 +241,21 @@ class IndexMap {
   }
 
   /// Walks the composite map in order, grouping consecutive entries with the
-  /// same value into a `(value, [ids])` pair to match the legacy view.
+  /// same first-field value into a `(value, idsOrSubMap)` pair to match the
+  /// legacy view (id-list for single field, nested sub-map for compound).
   Stream<(Comparable?, dynamic)> _compositeEntries() async* {
-    var groups = <(DBValue, List<NitriteId>)>[];
+    var groups = <(DBValue, List<IndexKey>)>[];
     DBValue? current;
-    List<NitriteId>? bucket;
+    List<IndexKey>? bucket;
 
     await for (var entry in _compositeMap!.entries()) {
       var key = entry.$1;
       if (current == null || current.compareTo(key.value) != 0) {
         current = key.value;
-        bucket = <NitriteId>[];
+        bucket = <IndexKey>[];
         groups.add((current, bucket));
       }
-      if (key.id != null) bucket!.add(key.id!);
+      bucket!.add(key);
     }
 
     if (_reverseScan) {
@@ -235,7 +264,10 @@ class IndexMap {
 
     for (var g in groups) {
       var dbKey = g.$1;
-      yield (dbKey is DBNull ? null : dbKey.value, g.$2);
+      var value = _compositeFieldCount == 1
+          ? [for (var k in g.$2) k.id!]
+          : _buildNested(g.$2);
+      yield (dbKey is DBNull ? null : dbKey.value, value);
     }
   }
 

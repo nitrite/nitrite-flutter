@@ -49,10 +49,35 @@ final count = await Isolate.run(() async {
 });
 ```
 
-Construct the `HiveModule` and open the database **inside** the isolate, and
-let a single isolate own a given database path at a time (Hive boxes are not
-safe for concurrent access to the same file from multiple isolates). Data
+Construct the `HiveModule` and open the database **inside** the isolate. Data
 written on a background isolate persists and can be reopened on any isolate.
+
+### Sharing one database across many isolates
+
+A Hive file must not be opened by more than one isolate at the same time —
+independent in-memory state would diverge and concurrent writes would corrupt
+the file. To let several isolates read and write the **same** database, run it
+on a single *owner* isolate with `NitriteIsolate` (from the core package) and
+share the handle; every operation is serialised through the owner:
+
+```dart
+// open once on an owner isolate (openMyDb is a top-level function)
+final db = await NitriteIsolate.spawn(openMyDb);
+
+// the handle is sendable — hand it to as many workers as you like
+await Future.wait([
+  Isolate.run(() => db.getCollection('events').insert([doc])),
+  Isolate.run(() => db.getCollection('events').find(filter: where('type').eq('click'))),
+]);
+
+await db.close();
+```
+
+`IsolateCollection` proxies `insert`, `find`, `getById`, `size`, `update`,
+`remove` and `createIndex`; documents, filters and ids cross the isolate
+boundary by value, so `find` returns a materialised list rather than a live
+cursor. Typed repositories are not proxied (their converters live in the owner
+isolate) — use document collections.
 
 ## Additional information
 

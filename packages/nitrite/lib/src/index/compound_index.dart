@@ -3,6 +3,11 @@ import 'package:nitrite/src/index/index_scanner.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// @nodoc
+///
+/// Compound index over two or more fields. Both unique and non-unique variants
+/// store one flat composite key `(values…, id)` per document, so writes and
+/// removals are O(1) point operations. Uniqueness is enforced with an O(log n)
+/// prefix probe rather than a separate nested-map layout.
 class CompoundIndex extends NitriteIndex {
   final IndexDescriptor _indexDescriptor;
   final NitriteStore _nitriteStore;
@@ -12,9 +17,11 @@ class CompoundIndex extends NitriteIndex {
   @override
   IndexDescriptor get indexDescriptor => _indexDescriptor;
 
+  int get _fieldCount => _indexDescriptor.fields.fieldNames.length;
+
   @override
   Future<void> drop() async {
-    var indexMap = await _findIndexMap();
+    var indexMap = await _findCompositeMap();
     await indexMap.clear();
     await indexMap.drop();
   }
@@ -23,162 +30,103 @@ class CompoundIndex extends NitriteIndex {
   Stream<NitriteId> findNitriteIds(FindPlan findPlan) async* {
     if (findPlan.indexScanFilter == null) return;
 
-    var indexMap = await _findIndexMap();
-    yield* _scanIndex(findPlan, indexMap);
-  }
-
-  @override
-  Future<void> remove(FieldValues fieldValues) async {
-    var fields = fieldValues.fields;
-    var fieldNames = fields.fieldNames;
-
-    var firstField = fieldNames.first;
-    var firstValue = fieldValues.get(firstField);
-
-    // NOTE: only first field can have iterable value, subsequent fields can not
-    validateIndexField(firstValue, firstField);
-    var indexMap = await _findIndexMap();
-
-    if (firstValue == null) {
-      await _removeIndexElement(indexMap, fieldValues, DBNull.instance);
-    } else if (firstValue is Comparable) {
-      // wrap around db value
-      var dbValue = DBValue(firstValue);
-      await _removeIndexElement(indexMap, fieldValues, dbValue);
-    } else if (firstValue is Iterable) {
-      for (var item in firstValue) {
-        // wrap around db value
-        var dbValue = item != null ? DBValue(item) : DBNull.instance;
-        await _removeIndexElement(indexMap, fieldValues, dbValue);
-      }
-    }
-  }
-
-  @override
-  Future<void> write(FieldValues fieldValues) async {
-    var fields = fieldValues.fields;
-    var fieldNames = fields.fieldNames;
-
-    var firstField = fieldNames.first;
-    var firstValue = fieldValues.get(firstField);
-
-    // NOTE: only first field can have iterable value, subsequent fields can not
-    validateIndexField(firstValue, firstField);
-
-    var indexMap = await _findIndexMap();
-    if (firstValue == null) {
-      await _addIndexElement(indexMap, fieldValues, DBNull.instance);
-    } else if (firstValue is Comparable) {
-      //wrap around a db value
-      var dbValue = DBValue(firstValue);
-      await _addIndexElement(indexMap, fieldValues, dbValue);
-    } else if (firstValue is Iterable) {
-      for (var item in firstValue) {
-        // wrap around db value
-        var dbValue = item != null ? DBValue(item) : DBNull.instance;
-        await _addIndexElement(indexMap, fieldValues, dbValue);
-      }
-    }
-  }
-
-  Future<NitriteMap<DBValue, Map>> _findIndexMap() {
-    var mapName = deriveIndexMapName(_indexDescriptor);
-    return _nitriteStore.openMap<DBValue, Map>(mapName);
-  }
-
-  Stream<NitriteId> _scanIndex(
-      FindPlan findPlan, NitriteMap<DBValue, Map> indexMap) {
     var filters = findPlan.indexScanFilter?.filters;
-    var iMap = IndexMap(nitriteMap: indexMap);
-    var indexScanner = IndexScanner(iMap);
-    return indexScanner
+    var iMap = IndexMap(
+        compositeMap: await _findCompositeMap(),
+        compositeFieldCount: _fieldCount);
+    yield* IndexScanner(iMap)
         .doScan(filters, findPlan.indexScanOrder)
         .distinctUnique();
   }
 
-  Future<void> _addIndexElement(NitriteMap<DBValue, Map> indexMap,
-      FieldValues fieldValues, DBValue element) async {
-    var subMap = await indexMap[element];
-    subMap ??= <DBValue, dynamic>{};
-
-    _populateSubMap(subMap, fieldValues, 1);
-    await indexMap.put(element, subMap);
-  }
-
-  Future<void> _removeIndexElement(NitriteMap<DBValue, Map> indexMap,
-      FieldValues fieldValues, DBValue element) async {
-    var subMap = await indexMap[element];
-
-    if (subMap != null && subMap.isNotEmpty) {
-      _deleteFromSubMap(subMap, fieldValues, 1);
-      return indexMap.put(element, subMap);
+  @override
+  Future<void> write(FieldValues fieldValues) async {
+    var indexMap = await _findCompositeMap();
+    var id = fieldValues.nitriteId!;
+    var unique = isUnique;
+    for (var tuple in _buildTuples(fieldValues)) {
+      if (unique) {
+        await _checkUnique(indexMap, tuple, id);
+      }
+      await indexMap.put(IndexKey.compound(tuple, id), true);
     }
   }
 
-  void _populateSubMap(Map subMap, FieldValues fieldValues, int depth) {
-    if (depth >= fieldValues.values.length) return;
+  @override
+  Future<void> remove(FieldValues fieldValues) async {
+    var indexMap = await _findCompositeMap();
+    var id = fieldValues.nitriteId!;
+    for (var tuple in _buildTuples(fieldValues)) {
+      await indexMap.remove(IndexKey.compound(tuple, id));
+    }
+  }
 
-    var pair = fieldValues.values[depth];
-    var value = pair.$2;
-    DBValue dbValue;
-    if (value == null) {
-      dbValue = DBNull.instance;
-    } else {
-      if (value is Iterable) {
+  /// Enforces a unique compound constraint: the field-value [tuple] must not
+  /// already map to a different id. `lowerBound(tuple)` sorts immediately before
+  /// every stored row for that tuple, so the ceiling lands on the first such
+  /// row (if any) in O(log n).
+  Future<void> _checkUnique(
+      NitriteMap<IndexKey, bool> indexMap, List<DBValue> tuple, NitriteId id) async {
+    var ceiling = await indexMap.ceilingKey(IndexKey.lowerBound(tuple));
+    if (ceiling != null &&
+        ceiling.id != null &&
+        ceiling.id != id &&
+        _tupleEquals(ceiling.values, tuple)) {
+      throw UniqueConstraintException(
+          'Unique key constraint violation for ${_indexDescriptor.fields}');
+    }
+  }
+
+  bool _tupleEquals(List<DBValue> a, List<DBValue> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].compareTo(b[i]) != 0) return false;
+    }
+    return true;
+  }
+
+  /// Builds the `(values…)` tuples for a document. Only the first field may be
+  /// an iterable (multikey), yielding one tuple per item; the remaining fields
+  /// must each be a single comparable (or null).
+  List<List<DBValue>> _buildTuples(FieldValues fieldValues) {
+    var fieldNames = _indexDescriptor.fields.fieldNames;
+    var firstField = fieldNames.first;
+    var firstValue = fieldValues.get(firstField);
+    validateIndexField(firstValue, firstField);
+
+    var tail = <DBValue>[];
+    for (var i = 1; i < fieldNames.length; i++) {
+      var value = fieldValues.get(fieldNames[i]);
+      if (value == null) {
+        tail.add(DBNull.instance);
+      } else if (value is Iterable) {
         throw IndexingException('Compound multikey index is supported on the '
             'first field of the index only');
-      }
-
-      if (value is! Comparable) {
+      } else if (value is Comparable) {
+        tail.add(DBValue(value));
+      } else {
         throw IndexingException('$value is not a comparable type');
       }
-      dbValue = DBValue(value);
     }
 
-    if (depth == fieldValues.values.length - 1) {
-      // terminal field
-      var nitriteIds = subMap[dbValue];
-      nitriteIds = addNitriteIds(nitriteIds, fieldValues);
-      subMap[dbValue] = nitriteIds;
+    if (firstValue == null) {
+      return [
+        [DBNull.instance, ...tail]
+      ];
+    } else if (firstValue is Iterable) {
+      return [
+        for (var item in firstValue)
+          [item == null ? DBNull.instance : DBValue(item), ...tail]
+      ];
     } else {
-      // intermediate fields
-      var subMap2 = subMap[dbValue];
-      subMap2 ??= <DBValue, dynamic>{};
-
-      subMap[dbValue] = subMap2;
-      _populateSubMap(subMap2, fieldValues, depth + 1);
+      return [
+        [DBValue(firstValue as Comparable), ...tail]
+      ];
     }
   }
 
-  void _deleteFromSubMap(Map subMap, FieldValues fieldValues, int depth) {
-    var pair = fieldValues.values[depth];
-    var value = pair.$2;
-    DBValue dbValue;
-    if (value == null) {
-      dbValue = DBNull.instance;
-    } else {
-      if (value is! Comparable) {
-        return;
-      }
-      dbValue = DBValue(value);
-    }
-
-    if (depth == fieldValues.values.length - 1) {
-      // terminal field
-      var nitriteIds = subMap[dbValue] as List;
-      nitriteIds = removeNitriteIds(nitriteIds, fieldValues);
-      if (nitriteIds.isEmpty) {
-        subMap.remove(dbValue);
-      } else {
-        subMap[dbValue] = nitriteIds;
-      }
-    } else {
-      // intermediate fields
-      var subMap2 = subMap[dbValue];
-      if (subMap2 == null) return;
-
-      _deleteFromSubMap(subMap2, fieldValues, depth + 1);
-      subMap[dbValue] = subMap2;
-    }
+  Future<NitriteMap<IndexKey, bool>> _findCompositeMap() {
+    var mapName = deriveIndexMapName(_indexDescriptor);
+    return _nitriteStore.openMap<IndexKey, bool>(mapName);
   }
 }
