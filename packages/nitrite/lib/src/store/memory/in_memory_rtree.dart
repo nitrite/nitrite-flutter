@@ -61,6 +61,17 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   }
 
   @override
+  Stream<NitriteId> findNearestNeighbors(double x, double y, int k,
+      [double? maxDistance]) async* {
+    _checkOpened();
+    if (k <= 0) return;
+    for (var id
+        in nearestNeighborIds(_backingMap.keys, x, y, k, maxDistance)) {
+      yield NitriteId.createId(id.toString());
+    }
+  }
+
+  @override
   Future<void> clear() async {
     _checkOpened();
     _backingMap.clear();

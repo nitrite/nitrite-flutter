@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:dart_jts/dart_jts.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_spatial/src/geom_utils.dart';
@@ -245,6 +247,37 @@ class NearFilter extends NitriteFilter implements FlattenableFilter {
   }
 }
 
+/// Internal index-scan marker for a K-nearest query. The actual K selection is
+/// performed by the spatial index (it queries the R-tree's nearest-neighbour
+/// search), so this filter just carries the query parameters.
+class KNearestFilter extends SpatialFilter {
+  final Coordinate center;
+  final int k;
+  final double? maxDistance;
+
+  KNearestFilter(String field, this.center, this.k, {this.maxDistance})
+      : super(field, _pointGeometry(center)) {
+    if (k <= 0) {
+      throw ValidationException('k must be greater than 0, got $k');
+    }
+    if (maxDistance != null && maxDistance! < 0) {
+      throw ValidationException(
+          'maxDistance must be non-negative, got $maxDistance');
+    }
+  }
+
+  static Geometry _pointGeometry(Coordinate center) {
+    var factory = GeometryFactory.defaultPrecision();
+    return factory.createPoint(center);
+  }
+
+  @override
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) => const Stream.empty();
+
+  @override
+  String toString() => '($field nearest $k to (${center.x}, ${center.y}))';
+}
+
 /// Validation filter for near queries that checks actual distance.
 class _NearValidationFilter extends NitriteFilter {
   final String field;
@@ -312,6 +345,162 @@ Geometry _createCircle(Coordinate? center, double radius) {
   return point.buffer(radius);
 }
 
+/// Earth's mean radius in meters (WGS84).
+const double _earthRadiusMeters = 6371008.8;
+
+/// Great-circle distance between two lat/lon points (in meters), Haversine.
+double _haversineMeters(double lat1, double lon1, double lat2, double lon2) {
+  double toRad(double d) => d * (3.141592653589793 / 180.0);
+  var lat1Rad = toRad(lat1);
+  var lat2Rad = toRad(lat2);
+  var deltaLat = toRad(lat2 - lat1);
+  var deltaLon = toRad(lon2 - lon1);
+
+  var sinLat = math.sin(deltaLat / 2);
+  var sinLon = math.sin(deltaLon / 2);
+  var a = sinLat * sinLat +
+      math.cos(lat1Rad) * math.cos(lat2Rad) * sinLon * sinLon;
+  var c = 2 * math.asin(math.min(1.0, math.sqrt(a)));
+  return _earthRadiusMeters * c;
+}
+
+/// Converts a distance in meters to an approximate distance in degrees at the
+/// given latitude. Used only to size the R-tree bounding-box query; the precise
+/// containment check uses the Haversine distance.
+double _metersToDegrees(double meters, double latitude) {
+  const metersPerDegreeLat = 111320.0;
+  var metersPerDegreeLon =
+      111320.0 * math.cos(latitude * (3.141592653589793 / 180.0));
+  var avgMetersPerDegree = (metersPerDegreeLat + metersPerDegreeLon) / 2.0;
+  if (avgMetersPerDegree > 0.0) {
+    return meters / avgMetersPerDegree;
+  }
+  return meters / metersPerDegreeLat;
+}
+
+/// A geographic point expressed as latitude/longitude (WGS84 degrees).
+///
+/// Used with [SpatialFluentFilter.geoNear] to query by geodesic (great-circle)
+/// distance rather than planar Euclidean distance.
+class GeoPoint {
+  /// The latitude in degrees, in the range [-90, 90].
+  final double latitude;
+
+  /// The longitude in degrees, in the range [-180, 180].
+  final double longitude;
+
+  GeoPoint(this.latitude, this.longitude) {
+    if (latitude < -90 || latitude > 90) {
+      throw ValidationException(
+          'latitude must be between -90 and 90, got $latitude');
+    }
+    if (longitude < -180 || longitude > 180) {
+      throw ValidationException(
+          'longitude must be between -180 and 180, got $longitude');
+    }
+  }
+
+  /// The geodesic distance in meters from this point to [other] (Haversine).
+  double distanceMeters(GeoPoint other) =>
+      _haversineMeters(latitude, longitude, other.latitude, other.longitude);
+
+  @override
+  String toString() => 'GeoPoint(lat=$latitude, lon=$longitude)';
+}
+
+///@nodoc
+class GeoNearFilter extends NitriteFilter implements FlattenableFilter {
+  final String field;
+  final GeoPoint center;
+  final double distanceMeters;
+
+  GeoNearFilter(this.field, this.center, this.distanceMeters);
+
+  @override
+  bool apply(Document doc) {
+    var validationFilter =
+        _GeoNearValidationFilter(field, center, distanceMeters);
+    _copyFilterContext(this, validationFilter);
+    return validationFilter.apply(doc);
+  }
+
+  @override
+  List<Filter> getFilters() {
+    // R-tree bounding box query (a circle sized in degrees), then a precise
+    // geodesic-distance validation to eliminate false positives.
+    var radiusDegrees = _metersToDegrees(distanceMeters, center.latitude);
+    // Geometry uses x = longitude, y = latitude.
+    var circle =
+        _createCircle(Coordinate(center.longitude, center.latitude), radiusDegrees);
+    return [
+      WithinIndexFilter(field, circle),
+      _GeoNearValidationFilter(field, center, distanceMeters),
+    ];
+  }
+
+  @override
+  String toString() =>
+      '($field geoNear $center within $distanceMeters meters)';
+}
+
+/// Validation filter for geodesic near queries that checks Haversine distance.
+class _GeoNearValidationFilter extends NitriteFilter {
+  final String field;
+  final GeoPoint center;
+  final double distanceMeters;
+
+  _GeoNearValidationFilter(this.field, this.center, this.distanceMeters);
+
+  @override
+  bool apply(Document doc) {
+    var fieldValue = doc.get(field);
+    if (fieldValue == null) {
+      return false;
+    }
+
+    Geometry? documentGeometry;
+    if (fieldValue is Geometry) {
+      documentGeometry = fieldValue;
+    } else if (fieldValue is String) {
+      try {
+        documentGeometry = WKTReader().read(fieldValue);
+      } catch (e) {
+        return false;
+      }
+    } else if (fieldValue is Document) {
+      try {
+        var geometryString = fieldValue['geometry'] as String?;
+        if (geometryString != null) {
+          documentGeometry = GeometrySerializer.deserialize(geometryString);
+        }
+      } catch (e) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    if (documentGeometry == null) {
+      return false;
+    }
+
+    // For points, use precise geodesic distance. For other geometries, fall
+    // back to a containment check against the query circle (in degree space).
+    if (documentGeometry is Point) {
+      var coord = documentGeometry.getCoordinate();
+      if (coord == null) return false;
+      // Geometry uses x = longitude, y = latitude.
+      var storedPoint = GeoPoint(coord.y, coord.x);
+      return center.distanceMeters(storedPoint) <= distanceMeters;
+    } else {
+      var radiusDegrees = _metersToDegrees(distanceMeters, center.latitude);
+      var circle = _createCircle(
+          Coordinate(center.longitude, center.latitude), radiusDegrees);
+      return circle.contains(documentGeometry);
+    }
+  }
+}
+
 /// A fluent API for creating spatial filters.
 ///
 /// Example:
@@ -354,6 +543,32 @@ class SpatialFluentFilter {
       CenterCoordinate() => NearFilter(_field, center.coordinate, radius),
       CenterPoint() => NearFilter.fromPoint(_field, center.point, radius),
     };
+  }
+
+  /// Creates a filter that matches documents whose geographic field lies within
+  /// [distanceMeters] (geodesic, great-circle distance) of [center].
+  ///
+  /// Use this instead of [near] for latitude/longitude data, where planar
+  /// Euclidean distance is inaccurate.
+  ///
+  /// Example:
+  /// ```dart
+  /// var filter = where('location').geoNear(GeoPoint(45.0, -93.265), 5000);
+  /// ```
+  Filter geoNear(GeoPoint center, double distanceMeters) {
+    return GeoNearFilter(_field, center, distanceMeters);
+  }
+
+  /// Creates a filter that matches the [k] documents whose field is nearest to
+  /// [center], ordered by ascending distance. If [maxDistance] is given, only
+  /// entries within that distance are considered.
+  ///
+  /// Example:
+  /// ```dart
+  /// var filter = where('location').kNearest(Coordinate(1.5, 1.5), 5);
+  /// ```
+  Filter kNearest(Coordinate center, int k, {double? maxDistance}) {
+    return KNearestFilter(_field, center, k, maxDistance: maxDistance);
   }
 }
 

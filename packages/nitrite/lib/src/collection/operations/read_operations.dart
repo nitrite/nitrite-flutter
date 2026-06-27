@@ -79,7 +79,33 @@ class ReadOperations {
     // a defer stream is used so that we can defer the
     // calculation till the subscription.
     return DocumentStream(() => _findSuitableStream(findPlanFunction),
-        _processorChain, findPlanFunction);
+        _processorChain, findPlanFunction, () => _count(findPlanFunction));
+  }
+
+  Future<int> _count(FutureFactory<FindPlan> findPlanFunction) async {
+    var findPlan = await findPlanFunction();
+
+    // The id count is the exact match count only when nothing downstream drops
+    // or changes cardinality (a post-filter, skip, or limit). Sort does not
+    // change the count.
+    if (findPlan.collectionScanFilter != null ||
+        findPlan.skip != null ||
+        findPlan.limit != null ||
+        findPlan.subPlans.isNotEmpty ||
+        findPlan.byIdFilter != null) {
+      // fall back to streaming the documents and counting
+      return _findSuitableStream(() async => findPlan).length;
+    }
+
+    var indexDescriptor = findPlan.indexDescriptor;
+    if (indexDescriptor != null) {
+      // index supplies the exact matching id set; count it without fetching docs
+      var indexer = await _nitriteConfig.findIndexer(indexDescriptor.indexType);
+      return indexer.findByFilter(findPlan, _nitriteConfig).length;
+    }
+
+    // unfiltered whole-collection scan: answer from the map size
+    return _nitriteMap.size();
   }
 
   Stream<Document> _findSuitableStream(

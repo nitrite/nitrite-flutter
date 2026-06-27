@@ -15,6 +15,14 @@ abstract class NitriteRTree<Key, Value> implements Initializable {
   /// Finds the contained keys from the rtree.
   Stream<NitriteId> findContainedKeys(Key? key);
 
+  /// Finds the [k] nearest neighbours of the point ([x], [y]), ordered by
+  /// ascending distance from the point to each stored bounding box.
+  ///
+  /// If [maxDistance] is given, entries whose bounding box is farther than
+  /// that distance are excluded.
+  Stream<NitriteId> findNearestNeighbors(double x, double y, int k,
+      [double? maxDistance]);
+
   /// Gets the size of the rtree.
   Future<int> size();
 

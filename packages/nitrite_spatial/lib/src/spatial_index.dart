@@ -33,10 +33,21 @@ class SpatialIndex extends NitriteIndex {
     }
 
     var indexMap = await _findIndexMap();
+
+    Stream<NitriteId> keys;
+    if (filter is KNearestFilter) {
+      // K-nearest selection is performed by the R-tree directly.
+      keys = indexMap.findNearestNeighbors(
+          filter.center.x, filter.center.y, filter.k, filter.maxDistance);
+      await for (var key in keys) {
+        yield key;
+      }
+      return;
+    }
+
     var geometry = filter.value;
     var boundingBox = _fromGeometry(geometry);
 
-    Stream<NitriteId> keys;
     if (filter is WithinIndexFilter) {
       keys = indexMap.findContainedKeys(boundingBox);
     } else if (filter is IntersectsIndexFilter) {

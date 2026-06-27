@@ -31,6 +31,13 @@ abstract class DocumentCursor extends Stream<Document> {
   /// Gets a filter plan for the query.
   Future<FindPlan> get findPlan;
 
+  /// Counts the number of documents matching this cursor's query.
+  ///
+  /// When the query is fully answered by an index (or is an unfiltered scan
+  /// of the whole collection), the count is computed without fetching any
+  /// document. Otherwise it falls back to iterating the result stream.
+  Future<int> count();
+
   /// Gets a stream of all the selected keys of the result documents.
   Stream<Document> project(Document projection);
 
@@ -48,13 +55,23 @@ abstract class DocumentCursor extends Stream<Document> {
 class DocumentStream extends DocumentCursor {
   final Stream<Document> _stream;
   final FutureFactory<FindPlan> _findPlanFactory;
+  final Future<int> Function()? _countFactory;
 
   DocumentStream(StreamFactory<Document> streamFactory,
-      ProcessorChain processorChain, this._findPlanFactory)
+      ProcessorChain processorChain, this._findPlanFactory,
+      [this._countFactory])
       : _stream = ProcessedDocumentStream(streamFactory, processorChain);
 
   @override
   Future<FindPlan> get findPlan async => await _findPlanFactory();
+
+  @override
+  Future<int> count() async {
+    if (_countFactory != null) {
+      return _countFactory();
+    }
+    return length;
+  }
 
   @override
   Stream<Document> project(Document projection) {

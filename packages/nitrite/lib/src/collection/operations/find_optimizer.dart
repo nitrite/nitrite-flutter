@@ -194,22 +194,32 @@ class FindOptimizer {
       var fieldNames = indexDescriptor.fields.fieldNames;
       var indexFilters = <ComparableFilter>[];
       for (var fieldName in fieldNames) {
-        var matchFound = false;
+        // collect every comparable filter on this field
+        var fieldFilters = <ComparableFilter>[];
         for (var filter in filters) {
-          if (filter is ComparableFilter) {
-            var filterFieldName = filter.field;
-            if (filterFieldName == fieldName) {
-              indexFilters.add(filter);
-              matchFound = true;
-              break;
-            }
+          if (filter is ComparableFilter && filter.field == fieldName) {
+            fieldFilters.add(filter);
           }
         }
 
-        if (!matchFound) {
+        if (fieldFilters.isEmpty) {
           // match not found, so can't consider this index
           break;
         }
+
+        // A pair of complementary range bounds on the same field
+        // (e.g. `between`, or `x >= a AND x <= b`) is driven by a single
+        // bounded index scan instead of a one-sided scan plus post-filter.
+        if (fieldFilters.length == 2) {
+          var combined = combineRangeBounds(fieldFilters[0], fieldFilters[1]);
+          if (combined != null) {
+            indexFilters.add(combined);
+            // a range is terminal: no further compound field can be scanned
+            break;
+          }
+        }
+
+        indexFilters.add(fieldFilters.first);
       }
 
       if (indexFilters.isNotEmpty) {
@@ -233,13 +243,23 @@ class FindOptimizer {
       Set<ComparableFilter> indexScanFilters,
       Set<Filter> columnScanFilters,
       List<Filter> filters) {
+    // bound filters absorbed into a bounded range index scan are already
+    // enforced by that scan, so they must not be re-applied as column scans.
+    var absorbed = <Filter>{};
+    for (var filter in indexScanFilters) {
+      if (filter is BoundedRangeFilter) {
+        absorbed.add(filter.lowerBound);
+        absorbed.add(filter.upperBound);
+      }
+    }
+
     for (var filter in filters) {
       // ignore the elected filters for index scan and
       // insert rest of the filters for column scan
       // NOTE: for byId filter, index scan filters will always be empty
       if (filter is! ComparableFilter || !indexScanFilters.contains(filter)) {
         // ignore the byId filter (if any) for column scan
-        if (filter != findPlan.byIdFilter) {
+        if (filter != findPlan.byIdFilter && !absorbed.contains(filter)) {
           columnScanFilters.add(filter);
         }
       }

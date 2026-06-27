@@ -70,6 +70,26 @@ class TransactionalRTree<Key extends BoundingBox, Value>
   }
 
   @override
+  Stream<NitriteId> findNearestNeighbors(double x, double y, int k,
+      [double? maxDistance]) async* {
+    if (k <= 0) return;
+    var localIds = nearestNeighborIds(_map.keys, x, y, k, maxDistance)
+        .map((id) => NitriteId.createId(id.toString()));
+    var primary = _primaryRTree.findNearestNeighbors(x, y, k, maxDistance);
+
+    var seen = <NitriteId>{};
+    var count = 0;
+    await for (var id
+        in ConcatStream([primary, Stream.fromIterable(localIds)])) {
+      if (count >= k) break;
+      if (seen.add(id)) {
+        count++;
+        yield id;
+      }
+    }
+  }
+
+  @override
   Future<void> clear() async {
     _map.clear();
     await _store.closeRTree(_mapName);

@@ -30,6 +30,13 @@ abstract class Cursor<T> extends StreamView<T> {
   /// Gets a filter plan for the query.
   Future<FindPlan> get findPlan;
 
+  /// Counts the number of objects matching this cursor's query.
+  ///
+  /// When the query is fully answered by an index (or is an unfiltered scan
+  /// of the whole repository), the count is computed without fetching any
+  /// object. Otherwise it falls back to iterating the result stream.
+  Future<int> count();
+
   /// Projects the result of one type into an [Stream] of another type.
   Stream<Projection> project<Projection>();
 
@@ -54,6 +61,9 @@ class ObjectCursor<T> extends Cursor<T> {
 
   @override
   Future<FindPlan> get findPlan => _documentCursor.findPlan;
+
+  @override
+  Future<int> count() => _documentCursor.count();
 
   @override
   Stream<Projection> project<Projection>() {

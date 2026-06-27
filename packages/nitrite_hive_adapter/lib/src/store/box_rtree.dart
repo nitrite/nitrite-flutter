@@ -65,6 +65,20 @@ class BoxRTree<Key extends BoundingBox, Value>
   }
 
   @override
+  Stream<NitriteId> findNearestNeighbors(double x, double y, int k,
+      [double? maxDistance]) async* {
+    _checkOpened();
+    if (k <= 0) return;
+    var keys = <SpatialKey>[];
+    await for (var sk in _backingMap.keys()) {
+      keys.add(sk);
+    }
+    for (var id in nearestNeighborIds(keys, x, y, k, maxDistance)) {
+      yield NitriteId.createId(id.toString());
+    }
+  }
+
+  @override
   Future<void> initialize() async {}
 
   @override

@@ -307,6 +307,12 @@ class _GreaterEqualFilter extends SortingAwareFilter {
   _GreaterEqualFilter(super.field, super.value);
 
   @override
+  RangeBoundType get boundType => RangeBoundType.lower;
+
+  @override
+  bool get boundInclusive => true;
+
+  @override
   bool apply(Document doc) {
     var fieldValue = doc.get(field);
     if (fieldValue != null) {
@@ -351,6 +357,9 @@ class _GreaterEqualFilter extends SortingAwareFilter {
 
 class _GreaterThanFilter extends SortingAwareFilter {
   _GreaterThanFilter(super.field, super.value);
+
+  @override
+  RangeBoundType get boundType => RangeBoundType.lower;
 
   @override
   bool apply(Document doc) {
@@ -398,6 +407,12 @@ class _LesserEqualFilter extends SortingAwareFilter {
   _LesserEqualFilter(super.field, super.value);
 
   @override
+  RangeBoundType get boundType => RangeBoundType.upper;
+
+  @override
+  bool get boundInclusive => true;
+
+  @override
   bool apply(Document doc) {
     var fieldValue = doc.get(field);
     if (fieldValue != null) {
@@ -441,6 +456,9 @@ class _LesserEqualFilter extends SortingAwareFilter {
 
 class _LesserThanFilter extends SortingAwareFilter {
   _LesserThanFilter(super.field, super.value);
+
+  @override
+  RangeBoundType get boundType => RangeBoundType.upper;
 
   @override
   bool apply(Document doc) {
@@ -806,6 +824,83 @@ class _ElementMatchFilter extends NitriteFilter {
       throw FilterException("$element is not a string");
     }
   }
+}
+
+/// A range filter constrained by both a lower and an upper bound. Instead of a
+/// one-sided index scan plus a post-fetch filter for the other bound, it drives
+/// a single bounded index scan from the lower bound to the upper bound.
+class BoundedRangeFilter extends SortingAwareFilter {
+  final SortingAwareFilter _lower;
+  final SortingAwareFilter _upper;
+
+  BoundedRangeFilter(String field, this._lower, this._upper)
+      : super(field, _lower.value);
+
+  /// The original lower-bound filter absorbed into this range.
+  SortingAwareFilter get lowerBound => _lower;
+
+  /// The original upper-bound filter absorbed into this range.
+  SortingAwareFilter get upperBound => _upper;
+
+  @override
+  bool apply(Document doc) => _lower.apply(doc) && _upper.apply(doc);
+
+  @override
+  Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
+    var lowerVal = _lower.comparable;
+    var upperVal = _upper.comparable;
+    var lowerInclusive = _lower.boundInclusive;
+    var upperInclusive = _upper.boundInclusive;
+
+    if (!isReverseScan) {
+      var key = lowerInclusive
+          ? await indexMap.ceilingKey(lowerVal)
+          : await indexMap.higherKey(lowerVal);
+      while (key != null) {
+        var c = compare(key, upperVal);
+        if (c > 0 || (c == 0 && !upperInclusive)) break;
+        var val = await indexMap.get(key);
+        yield* yieldValues(val);
+        key = await indexMap.higherKey(key);
+      }
+    } else {
+      var key = upperInclusive
+          ? await indexMap.floorKey(upperVal)
+          : await indexMap.lowerKey(upperVal);
+      while (key != null) {
+        var c = compare(key, lowerVal);
+        if (c < 0 || (c == 0 && !lowerInclusive)) break;
+        var val = await indexMap.get(key);
+        yield* yieldValues(val);
+        key = await indexMap.lowerKey(key);
+      }
+    }
+  }
+
+  @override
+  String toString() => "($_lower && $_upper)";
+}
+
+/// If [a] and [b] are a lower-bound and an upper-bound range filter on the same
+/// field, combines them into a single [BoundedRangeFilter] for one bounded index
+/// scan. Returns `null` when they are not a complementary bound pair.
+ComparableFilter? combineRangeBounds(ComparableFilter a, ComparableFilter b) {
+  if (a is! SortingAwareFilter || b is! SortingAwareFilter) return null;
+  if (a.field != b.field) return null;
+
+  SortingAwareFilter? lower, upper;
+  for (var f in [a, b]) {
+    if (f.boundType == RangeBoundType.lower) {
+      lower = f;
+    } else if (f.boundType == RangeBoundType.upper) {
+      upper = f;
+    }
+  }
+
+  if (lower != null && upper != null) {
+    return BoundedRangeFilter(a.field, lower, upper);
+  }
+  return null;
 }
 
 dynamic _wrapNull(dynamic value) => value ?? DBNull.instance;

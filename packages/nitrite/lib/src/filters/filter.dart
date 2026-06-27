@@ -315,11 +315,22 @@ abstract class ComparableFilter extends FieldBasedFilter {
   Stream<dynamic> applyOnIndex(IndexMap indexMap);
 }
 
+/// Whether a [SortingAwareFilter] constrains the lower or upper end of a range.
+enum RangeBoundType { none, lower, upper }
+
 abstract class SortingAwareFilter extends ComparableFilter {
   SortingAwareFilter(super.field, super.value);
 
   /// Indicates if the filter should scan the index in reverse order.
   bool isReverseScan = false;
+
+  /// For range filters, whether this constrains the lower bound
+  /// (`>`, `>=`), the upper bound (`<`, `<=`), or neither.
+  RangeBoundType get boundType => RangeBoundType.none;
+
+  /// Whether this range bound is inclusive (`>=`, `<=`) rather than
+  /// exclusive (`>`, `<`).
+  bool get boundInclusive => false;
 }
 
 /// An abstract class representing a filter for string values.
