@@ -1,3 +1,7 @@
+## 1.1.3
+
+- Added the `test` dev dependency so the package test suite compiles and runs in CI.
+
 ## 1.1.2
 
 - Reformatted the source with the latest Dart formatter.
