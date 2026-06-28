@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
-// ignore: implementation_imports
-import 'package:build/src/builder/build_step.dart';
+import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:nitrite/nitrite.dart';
@@ -11,7 +10,8 @@ import 'converter_writer.dart';
 
 // Generates codes for @Convertable annotation.
 class ConverterGenerator extends GeneratorForAnnotation<Convertable> {
-  final _dartfmt = DartFormatter();
+  final _dartfmt =
+      DartFormatter(languageVersion: DartFormatter.latestLanguageVersion);
 
   @override
   generateForAnnotatedElement(

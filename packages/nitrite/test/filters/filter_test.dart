@@ -64,8 +64,10 @@ void main() {
 
       expect(() => and([]), throwsValidationException);
       expect(() => and([where('a').eq(1)]), throwsFilterException);
-      expect(() => and([where('a').eq(1), where('b').text('b')]),
-          throwsFilterException);
+      expect(
+        () => and([where('a').eq(1), where('b').text('b')]),
+        throwsFilterException,
+      );
 
       expect(filter1.toString(), '((a == 1) && (b > 1))');
     });
@@ -168,11 +170,12 @@ void main() {
       var filter2 = and([f1, f2, f3]);
 
       expect(
-          filter,
-          and([
-            f1,
-            and([f2, f3])
-          ]));
+        filter,
+        and([
+          f1,
+          and([f2, f3]),
+        ]),
+      );
       expect(filter.apply(doc), isTrue);
       expect(filter2.apply(doc), isTrue);
       expect((~filter).apply(doc), isFalse);
@@ -193,11 +196,12 @@ void main() {
       var filter2 = or([f1, f2, f3]);
 
       expect(
-          filter,
-          or([
-            f1,
-            or([f2, f3])
-          ]));
+        filter,
+        or([
+          f1,
+          or([f2, f3]),
+        ]),
+      );
       expect(filter.apply(doc), isTrue);
       expect(filter2.apply(doc), isTrue);
       expect((~filter).apply(doc), isFalse);
@@ -218,11 +222,12 @@ void main() {
       var filter2 = and([f1, f2, f3]);
 
       expect(
-          filter,
-          and([
-            f1,
-            and([f2, f3])
-          ]));
+        filter,
+        and([
+          f1,
+          and([f2, f3]),
+        ]),
+      );
       expect(filter.apply(doc), isTrue);
       expect(filter2.apply(doc), isTrue);
       expect((~filter).apply(doc), isFalse);
@@ -245,11 +250,12 @@ void main() {
       var filter2 = or([f1, f2, f3]);
 
       expect(
-          filter,
-          or([
-            f1,
-            or([f2, f3])
-          ]));
+        filter,
+        or([
+          f1,
+          or([f2, f3]),
+        ]),
+      );
       expect(filter.apply(doc), isTrue);
       expect(filter2.apply(doc), isTrue);
       expect((~filter).apply(doc), isFalse);
@@ -268,8 +274,9 @@ void main() {
       var config = MockNitriteConfig();
       var nitriteMapper = MockNitriteMapper();
       when(config.nitriteMapper).thenReturn(nitriteMapper);
-      when(nitriteMapper.tryConvert<dynamic, Comparable>(any))
-          .thenAnswer((invocation) => invocation.positionalArguments.first);
+      when(
+        nitriteMapper.tryConvert<dynamic, Comparable>(any),
+      ).thenAnswer((invocation) => invocation.positionalArguments.first);
 
       regex.objectFilter = true;
       regex.nitriteConfig = config;
@@ -287,8 +294,9 @@ void main() {
       var config = MockNitriteConfig();
       var nitriteMapper = MockNitriteMapper();
       when(config.nitriteMapper).thenReturn(nitriteMapper);
-      when(nitriteMapper.tryConvert<dynamic, Comparable>(any))
-          .thenAnswer((invocation) => invocation.positionalArguments.first);
+      when(
+        nitriteMapper.tryConvert<dynamic, Comparable>(any),
+      ).thenAnswer((invocation) => invocation.positionalArguments.first);
 
       var filter = where('').eq('') as FieldBasedFilter;
       filter.objectFilter = true;
@@ -338,8 +346,9 @@ void main() {
       var config = MockNitriteConfig();
       var nitriteMapper = MockNitriteMapper();
       when(config.nitriteMapper).thenReturn(nitriteMapper);
-      when(nitriteMapper.tryConvert<dynamic, Comparable>(any))
-          .thenAnswer((invocation) => invocation.positionalArguments.first);
+      when(
+        nitriteMapper.tryConvert<dynamic, Comparable>(any),
+      ).thenAnswer((invocation) => invocation.positionalArguments.first);
 
       filter.objectFilter = true;
       filter.nitriteConfig = config;

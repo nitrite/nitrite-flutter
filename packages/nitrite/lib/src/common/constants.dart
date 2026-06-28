@@ -37,7 +37,7 @@ const List<String> reservedNames = <String>[
   metaMapName,
   storeInfo,
   collectionCatalog,
-  keyObjSeparator
+  keyObjSeparator,
 ];
 
 /// The initial schema version of Nitrite database.

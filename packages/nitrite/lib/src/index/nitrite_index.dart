@@ -35,13 +35,16 @@ abstract class NitriteIndex {
 
   /// Adds the given [NitriteId]s to the index for the given field values.
   List<dynamic> addNitriteIds(
-      List<dynamic>? nitriteIds, FieldValues fieldValues) {
+    List<dynamic>? nitriteIds,
+    FieldValues fieldValues,
+  ) {
     nitriteIds = nitriteIds ?? <NitriteId>[];
 
     if (isUnique && nitriteIds.length == 1) {
       // if key is already exists for unique type, throw error
       throw UniqueConstraintException(
-          'Unique key constraint violation for ${fieldValues.fields}');
+        'Unique key constraint violation for ${fieldValues.fields}',
+      );
     }
 
     // index always are in ascending format
@@ -52,7 +55,9 @@ abstract class NitriteIndex {
   /// Removes the [NitriteId] of the [FieldValues] from the existing indexed
   /// list of [NitriteId]s.
   List<dynamic> removeNitriteIds(
-      List<dynamic> nitriteIds, FieldValues fieldValues) {
+    List<dynamic> nitriteIds,
+    FieldValues fieldValues,
+  ) {
     nitriteIds.remove(fieldValues.nitriteId!);
     return nitriteIds;
   }

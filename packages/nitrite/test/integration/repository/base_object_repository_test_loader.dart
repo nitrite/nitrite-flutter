@@ -18,8 +18,10 @@ late ObjectRepository<Product> upcomingProductRepository;
 void setUpLog() {
   Logger.root.level = Level.OFF;
   Logger.root.onRecord.listen((record) {
-    print('${record.time}: [${record.level.name}] ${record.loggerName} -'
-        ' ${record.message}');
+    print(
+      '${record.time}: [${record.level.name}] ${record.loggerName} -'
+      ' ${record.message}',
+    );
     if (record.error != null) {
       print('ERROR: ${record.error}');
     }
@@ -35,10 +37,13 @@ Future<void> setUpNitriteTest() async {
   cObjectRepository = await db.getRepository<ClassC>();
   bookRepository = await db.getRepository<Book>();
 
-  productRepository =
-      await db.getRepository<Product>(entityDecorator: ProductDecorator());
+  productRepository = await db.getRepository<Product>(
+    entityDecorator: ProductDecorator(),
+  );
   upcomingProductRepository = await db.getRepository<Product>(
-      entityDecorator: ProductDecorator(), key: "upcoming");
+    entityDecorator: ProductDecorator(),
+    key: "upcoming",
+  );
 
   for (var i = 0; i < 10; i++) {
     var company = generateCompanyRecord();

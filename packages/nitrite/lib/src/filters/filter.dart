@@ -101,12 +101,20 @@ class FluentFilter {
   /// ```dart
   /// collection.find(where("age").between(30, 40));
   /// ```
-  NitriteFilter between(Comparable lowerBound, Comparable upperBound,
-          {upperInclusive = true, lowerInclusive = true}) =>
-      _BetweenFilter(
-          _field,
-          _Bound(upperBound, lowerBound,
-              upperInclusive: upperInclusive, lowerInclusive: lowerInclusive));
+  NitriteFilter between(
+    Comparable lowerBound,
+    Comparable upperBound, {
+    upperInclusive = true,
+    lowerInclusive = true,
+  }) => _BetweenFilter(
+    _field,
+    _Bound(
+      upperBound,
+      lowerBound,
+      upperInclusive: upperInclusive,
+      lowerInclusive: lowerInclusive,
+    ),
+  );
 
   /// Returns a filter which performs a text search on the content of
   /// the field indexed with a full-text index.
@@ -178,7 +186,7 @@ abstract class Filter {
 /// Represents a filter which can be flattened or consists of multiple constituent filters.
 ///
 /// This interface allows filters to be decomposed into multiple sub-filters during query
-/// optimization. For example, spatial filters can be split into an index scan filter 
+/// optimization. For example, spatial filters can be split into an index scan filter
 /// (for bounding box checks) and a validation filter (for actual geometry checks).
 abstract class FlattenableFilter {
   /// Returns the list of constituent filters that make up this filter.
@@ -283,7 +291,10 @@ abstract class FieldBasedFilter extends NitriteFilter {
 
   /// Validates the search term for a given field and value.
   void validateSearchTerm(
-      NitriteMapper nitriteMapper, String field, dynamic value) {
+    NitriteMapper nitriteMapper,
+    String field,
+    dynamic value,
+  ) {
     field.notNullOrEmpty("field cannot be empty");
   }
 
@@ -375,7 +386,8 @@ abstract class ComparableArrayFilter extends FieldBasedFilter {
 
       if (item is! Comparable) {
         throw InvalidOperationException(
-            "Each value for the iterable field '$field' must be comparable");
+          "Each value for the iterable field '$field' must be comparable",
+        );
       }
     }
   }

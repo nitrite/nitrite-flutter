@@ -9,7 +9,8 @@ class IndexScanFilter extends Filter {
   @override
   bool apply(Document doc) {
     throw InvalidOperationException(
-        "Index scan filter cannot be applied on collection");
+      "Index scan filter cannot be applied on collection",
+    );
   }
 }
 
@@ -75,7 +76,8 @@ class AndFilter extends LogicalFilter implements FlattenableFilter {
     for (int i = 1; i < filters.length; i++) {
       if (filters[i] is TextFilter) {
         throw FilterException(
-            "Text filter must be the first filter in AND operation");
+          "Text filter must be the first filter in AND operation",
+        );
       }
     }
   }
@@ -127,8 +129,10 @@ class TextFilter extends StringFilter {
     var fieldValue = doc.get(field);
 
     if (fieldValue is! String) {
-      throw FilterException("Text filter can not be applied on "
-          "non string field $field");
+      throw FilterException(
+        "Text filter can not be applied on "
+        "non string field $field",
+      );
     }
 
     var searchString = stringValue;
@@ -159,7 +163,9 @@ class TextFilter extends StringFilter {
   }
 
   Stream<NitriteId> _searchExactByIndex(
-      NitriteMap<String, List> indexMap, String searchString) async* {
+    NitriteMap<String, List> indexMap,
+    String searchString,
+  ) async* {
     if (_tokenizer != null) {
       var words = _tokenizer!.tokenize(searchString);
       var scoreMap = <NitriteId, int>{};
@@ -182,7 +188,9 @@ class TextFilter extends StringFilter {
   }
 
   Stream<NitriteId> _searchByWildCard(
-      NitriteMap<String, List> indexMap, String searchString) async* {
+    NitriteMap<String, List> indexMap,
+    String searchString,
+  ) async* {
     if (searchString == "*") {
       throw FilterException("* is not a valid search term");
     }
@@ -190,8 +198,10 @@ class TextFilter extends StringFilter {
     if (_tokenizer != null) {
       var words = _tokenizer!.tokenize(searchString);
       if (words.length > 1) {
-        throw FilterException("Wild card search can not be applied on "
-            "multiple words");
+        throw FilterException(
+          "Wild card search can not be applied on "
+          "multiple words",
+        );
       }
 
       if (searchString.startsWith("*") && !searchString.endsWith("*")) {
@@ -206,7 +216,9 @@ class TextFilter extends StringFilter {
   }
 
   Stream<NitriteId> _searchByLeadingWildCard(
-      NitriteMap<String, List> indexMap, String searchString) async* {
+    NitriteMap<String, List> indexMap,
+    String searchString,
+  ) async* {
     if (searchString == "*") {
       throw FilterException("* is not a valid search term");
     }
@@ -222,7 +234,9 @@ class TextFilter extends StringFilter {
   }
 
   Stream<NitriteId> _searchByTrailingWildCard(
-      NitriteMap<String, List> indexMap, String searchString) async* {
+    NitriteMap<String, List> indexMap,
+    String searchString,
+  ) async* {
     if (searchString == "*") {
       throw FilterException("* is not a valid search term");
     }
@@ -238,7 +252,9 @@ class TextFilter extends StringFilter {
   }
 
   Stream<NitriteId> _searchContains(
-      NitriteMap<String, List> indexMap, String term) async* {
+    NitriteMap<String, List> indexMap,
+    String term,
+  ) async* {
     await for (var entry in indexMap.entries()) {
       var key = entry.$1;
       if (key.contains(term.toLowerCase())) {
@@ -254,8 +270,11 @@ class TextFilter extends StringFilter {
         var score2 = unsortedMap[b]!;
         return score1.compareTo(score2);
       });
-    var sortedMap = LinkedHashMap<NitriteId, int>.fromIterable(sortedKeys,
-        key: (k) => k, value: (k) => unsortedMap[k]!);
+    var sortedMap = LinkedHashMap<NitriteId, int>.fromIterable(
+      sortedKeys,
+      key: (k) => k,
+      value: (k) => unsortedMap[k]!,
+    );
 
     return sortedMap.keys.toSet();
   }
@@ -263,7 +282,7 @@ class TextFilter extends StringFilter {
 
 class _BetweenFilter<T> extends AndFilter {
   _BetweenFilter(String field, _Bound<T> bound)
-      : super(<Filter>[_rhs(field, bound), _lhs(field, bound)]);
+    : super(<Filter>[_rhs(field, bound), _lhs(field, bound)]);
 
   static Filter _rhs<R>(String field, _Bound<R> bound) {
     _validateBound(bound);
@@ -287,8 +306,10 @@ class _BetweenFilter<T> extends AndFilter {
 
   static void _validateBound<R>(_Bound<R> bound) {
     if (bound.upperBound is! Comparable || bound.lowerBound is! Comparable) {
-      throw FilterException("Upper bound or lower bound value "
-          "must be comparable");
+      throw FilterException(
+        "Upper bound or lower bound value "
+        "must be comparable",
+      );
     }
   }
 }
@@ -299,8 +320,12 @@ class _Bound<T> {
   bool upperInclusive = true;
   bool lowerInclusive = true;
 
-  _Bound(this.upperBound, this.lowerBound,
-      {this.upperInclusive = true, this.lowerInclusive = true});
+  _Bound(
+    this.upperBound,
+    this.lowerBound, {
+    this.upperInclusive = true,
+    this.lowerInclusive = true,
+  });
 }
 
 class _GreaterEqualFilter extends SortingAwareFilter {
@@ -504,7 +529,7 @@ class _LesserThanFilter extends SortingAwareFilter {
 
 class _NotEqualsFilter extends ComparableFilter {
   _NotEqualsFilter(String field, dynamic value)
-      : super(field, _wrapNull(value));
+    : super(field, _wrapNull(value));
 
   @override
   bool apply(Document doc) {
@@ -535,8 +560,10 @@ class _RegexFilter extends FieldBasedFilter {
     var fieldValue = doc.get(field);
 
     if (fieldValue is! String) {
-      throw FilterException("Regex filter can not be applied on "
-          "non string field $field");
+      throw FilterException(
+        "Regex filter can not be applied on "
+        "non string field $field",
+      );
     }
 
     return _pattern.hasMatch(fieldValue);
@@ -690,8 +717,10 @@ class _ElementMatchFilter extends NitriteFilter {
     } else if (filter is _RegexFilter) {
       return _matchRegex(element, filter);
     } else {
-      throw FilterException("Unsupported filter type in elemMatch: "
-          "${filter.runtimeType}");
+      throw FilterException(
+        "Unsupported filter type in elemMatch: "
+        "${filter.runtimeType}",
+      );
     }
   }
 
@@ -834,7 +863,7 @@ class BoundedRangeFilter extends SortingAwareFilter {
   final SortingAwareFilter _upper;
 
   BoundedRangeFilter(String field, this._lower, this._upper)
-      : super(field, _lower.value);
+    : super(field, _lower.value);
 
   /// The original lower-bound filter absorbed into this range.
   SortingAwareFilter get lowerBound => _lower;

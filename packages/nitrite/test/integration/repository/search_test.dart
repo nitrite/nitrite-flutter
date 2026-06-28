@@ -26,8 +26,9 @@ void main() {
 
     test('Test Employee Projection', () async {
       var employeeList = await (employeeRepository.find()).toList();
-      var subEmployeeList =
-          await (employeeRepository.find()).project<SubEmployee>().toList();
+      var subEmployeeList = await (employeeRepository.find())
+          .project<SubEmployee>()
+          .toList();
       expect(employeeList, isNotEmpty);
       expect(subEmployeeList, isNotEmpty);
       expect(employeeList.length, subEmployeeList.length);
@@ -90,8 +91,10 @@ void main() {
       );
 
       await repository.insertMany([n1, n2, n3]);
-      expect(() async => await repository.getById(20000),
-          throwsInvalidIdException);
+      expect(
+        () async => await repository.getById(20000),
+        throwsInvalidIdException,
+      );
     });
 
     test('Test Get by Id Null Id', () async {
@@ -123,8 +126,10 @@ void main() {
       e4.empId = 40000;
 
       await empRepo.insertMany([e1, e2, e3, e4]);
-      expect(() async => await empRepo.getById('employee'),
-          throwsInvalidIdException);
+      expect(
+        () async => await empRepo.getById('employee'),
+        throwsInvalidIdException,
+      );
     });
 
     test('Test Equal Filter by Id', () async {
@@ -142,7 +147,8 @@ void main() {
       var employee = await cursor.first;
 
       cursor = employeeRepository.find(
-          filter: where('joinDate').eq(employee.joinDate));
+        filter: where('joinDate').eq(employee.joinDate),
+      );
       var emp = await cursor.project<Employee>().first;
       expect(employee, emp);
     });
@@ -177,11 +183,12 @@ void main() {
       var joinDate = emp.joinDate;
 
       cursor = employeeRepository.find(
-          filter: and([
-        where('empId').eq(id),
-        where('address').regex(address),
-        where('joinDate').eq(joinDate),
-      ]));
+        filter: and([
+          where('empId').eq(id),
+          where('address').regex(address),
+          where('joinDate').eq(joinDate),
+        ]),
+      );
       var employee = await cursor.first;
       expect(emp, employee);
     });
@@ -193,11 +200,12 @@ void main() {
       var id = emp.empId;
 
       cursor = employeeRepository.find(
-          filter: or([
-        where('empId').eq(id),
-        where('address').text('n/a'),
-        where('joinDate').eq(null),
-      ]));
+        filter: or([
+          where('empId').eq(id),
+          where('address').text('n/a'),
+          where('joinDate').eq(null),
+        ]),
+      );
       var employee = await cursor.first;
       expect(emp, employee);
     });
@@ -207,22 +215,19 @@ void main() {
       var emp = await cursor.first;
       var id = emp.empId;
 
-      cursor = employeeRepository.find(
-        filter: where('empId').eq(id).not(),
-      );
+      cursor = employeeRepository.find(filter: where('empId').eq(id).not());
       var employee = await cursor.first;
       expect(emp, isNot(employee));
     });
 
     test('Test Greater Filter', () async {
       var cursor = employeeRepository.find(
-          findOptions: orderBy('empId', SortOrder.ascending));
+        findOptions: orderBy('empId', SortOrder.ascending),
+      );
       var emp = await cursor.first;
       var id = emp.empId;
 
-      cursor = employeeRepository.find(
-        filter: where('empId').gt(id),
-      );
+      cursor = employeeRepository.find(filter: where('empId').gt(id));
 
       expect(await cursor.toList(), isNot(contains(emp)));
       expect(await cursor.length, 9);
@@ -230,13 +235,12 @@ void main() {
 
     test('Test Greater Equal Filter', () async {
       var cursor = employeeRepository.find(
-          findOptions: orderBy('empId', SortOrder.ascending));
+        findOptions: orderBy('empId', SortOrder.ascending),
+      );
       var emp = await cursor.first;
       var id = emp.empId;
 
-      cursor = employeeRepository.find(
-        filter: where('empId').gte(id),
-      );
+      cursor = employeeRepository.find(filter: where('empId').gte(id));
 
       expect(await cursor.toList(), contains(emp));
       expect(await cursor.length, 10);
@@ -244,13 +248,12 @@ void main() {
 
     test('Test Lesser Filter', () async {
       var cursor = employeeRepository.find(
-          findOptions: orderBy('empId', SortOrder.descending));
+        findOptions: orderBy('empId', SortOrder.descending),
+      );
       var emp = await cursor.first;
       var id = emp.empId;
 
-      cursor = employeeRepository.find(
-        filter: where('empId').lt(id),
-      );
+      cursor = employeeRepository.find(filter: where('empId').lt(id));
 
       expect(await cursor.toList(), isNot(contains(emp)));
       expect(await cursor.length, 9);
@@ -258,13 +261,12 @@ void main() {
 
     test('Test Lesser Equal Filter', () async {
       var cursor = employeeRepository.find(
-          findOptions: orderBy('empId', SortOrder.descending));
+        findOptions: orderBy('empId', SortOrder.descending),
+      );
       var emp = await cursor.first;
       var id = emp.empId;
 
-      cursor = employeeRepository.find(
-        filter: where('empId').lte(id),
-      );
+      cursor = employeeRepository.find(filter: where('empId').lte(id));
 
       expect(await cursor.toList(), contains(emp));
       expect(await cursor.length, 10);
@@ -276,7 +278,8 @@ void main() {
       var text = emp.employeeNote?.text as String;
 
       cursor = employeeRepository.find(
-          filter: where('employeeNote.text').text(text));
+        filter: where('employeeNote.text').text(text),
+      );
       expect(await cursor.toList(), contains(emp));
     });
 
@@ -285,42 +288,50 @@ void main() {
       var count = await cursor.length;
 
       cursor = employeeRepository.find(
-          filter: where('emailAddress')
-              .regex('^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\$'));
+        filter: where(
+          'emailAddress',
+        ).regex('^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\$'),
+      );
       expect(await cursor.length, count);
     });
 
     test('Test In Filter', () async {
       var cursor = employeeRepository.find(
-          findOptions: orderBy('empId', SortOrder.descending));
+        findOptions: orderBy('empId', SortOrder.descending),
+      );
       var emp = await cursor.first;
       var id = emp.empId as int;
 
       cursor = employeeRepository.find(
-          filter: where('empId').within([id, id - 1, id - 2]));
+        filter: where('empId').within([id, id - 1, id - 2]),
+      );
 
       expect(await cursor.toList(), contains(emp));
       expect(await cursor.length, 3);
 
       cursor = employeeRepository.find(
-          filter: where('empId').within([id - 1, id - 2]));
+        filter: where('empId').within([id - 1, id - 2]),
+      );
       expect(await cursor.length, 2);
     });
 
     test('Test Not In Filter', () async {
       var cursor = employeeRepository.find(
-          findOptions: orderBy('empId', SortOrder.descending));
+        findOptions: orderBy('empId', SortOrder.descending),
+      );
       var emp = await cursor.first;
       var id = emp.empId as int;
 
       cursor = employeeRepository.find(
-          filter: where('empId').notIn([id, id - 1, id - 2]));
+        filter: where('empId').notIn([id, id - 1, id - 2]),
+      );
 
       expect(await cursor.toList(), isNot(contains(emp)));
       expect(await cursor.length, 7);
 
       cursor = employeeRepository.find(
-          filter: where('empId').notIn([id - 1, id - 2]));
+        filter: where('empId').notIn([id - 1, id - 2]),
+      );
       expect(await cursor.length, 8);
     });
 
@@ -363,61 +374,72 @@ void main() {
       await repository.insertMany([e1, e2, e3]);
 
       var cursor = repository.find(
-          filter: where('productScores').elemMatch(
-              where('product').eq('xyz').and(where('score').gte(8))));
+        filter: where(
+          'productScores',
+        ).elemMatch(where('product').eq('xyz').and(where('score').gte(8))),
+      );
       expect(await cursor.length, 1);
 
       cursor = repository.find(
-          filter:
-              where('productScores').elemMatch(where('score').lte(8).not()));
+        filter: where('productScores').elemMatch(where('score').lte(8).not()),
+      );
       expect(await cursor.length, 1);
 
       cursor = repository.find(
-          filter: where('productScores')
-              .elemMatch(where('product').eq('xyz').or(where('score').gte(8))));
+        filter: where(
+          'productScores',
+        ).elemMatch(where('product').eq('xyz').or(where('score').gte(8))),
+      );
       expect(await cursor.length, 3);
 
       cursor = repository.find(
-          filter: where('productScores').elemMatch(where('product').eq('xyz')));
+        filter: where('productScores').elemMatch(where('product').eq('xyz')),
+      );
       expect(await cursor.length, 3);
 
       cursor = repository.find(
-          filter: where('productScores').elemMatch(where('score').gte(10)));
+        filter: where('productScores').elemMatch(where('score').gte(10)),
+      );
       expect(await cursor.length, 1);
 
       cursor = repository.find(
-          filter: where('productScores').elemMatch(where('score').gt(8)));
+        filter: where('productScores').elemMatch(where('score').gt(8)),
+      );
       expect(await cursor.length, 1);
 
       cursor = repository.find(
-          filter: where('productScores').elemMatch(where('score').lt(7)));
+        filter: where('productScores').elemMatch(where('score').lt(7)),
+      );
       expect(await cursor.length, 1);
 
       cursor = repository.find(
-          filter: where('productScores').elemMatch(where('score').lte(7)));
+        filter: where('productScores').elemMatch(where('score').lte(7)),
+      );
       expect(await cursor.length, 3);
 
       cursor = repository.find(
-          filter:
-              where('productScores').elemMatch(where('score').within([7, 8])));
+        filter: where('productScores').elemMatch(where('score').within([7, 8])),
+      );
       expect(await cursor.length, 2);
 
       cursor = repository.find(
-          filter:
-              where('productScores').elemMatch(where('score').notIn([7, 8])));
+        filter: where('productScores').elemMatch(where('score').notIn([7, 8])),
+      );
       expect(await cursor.length, 1);
 
       cursor = repository.find(
-          filter:
-              where('productScores').elemMatch(where('product').regex('xyz')));
+        filter: where('productScores').elemMatch(where('product').regex('xyz')),
+      );
       expect(await cursor.length, 3);
 
       cursor = repository.find(filter: where('strArray').elemMatch($.eq('a')));
       expect(await cursor.length, 2);
 
       cursor = repository.find(
-          filter: where('strArray')
-              .elemMatch($.eq('a').or($.eq('f').or($.eq('b'))).not()));
+        filter: where(
+          'strArray',
+        ).elemMatch($.eq('a').or($.eq('f').or($.eq('b'))).not()),
+      );
       expect(await cursor.length, 1);
 
       cursor = repository.find(filter: where('strArray').elemMatch($.gt('e')));
@@ -433,11 +455,13 @@ void main() {
       expect(await cursor.length, 0);
 
       cursor = repository.find(
-          filter: where('strArray').elemMatch($.within(['a', 'f'])));
+        filter: where('strArray').elemMatch($.within(['a', 'f'])),
+      );
       expect(await cursor.length, 2);
 
-      cursor =
-          repository.find(filter: where('strArray').elemMatch($.regex('a')));
+      cursor = repository.find(
+        filter: where('strArray').elemMatch($.regex('a')),
+      );
       expect(await cursor.length, 2);
     });
 
@@ -500,20 +524,24 @@ void main() {
       expect(await cursor.length, 2);
 
       cursor = repository.find(
-          filter: marriedFilter,
-          findOptions: orderBy('status', SortOrder.descending));
+        filter: marriedFilter,
+        findOptions: orderBy('status', SortOrder.descending),
+      );
       expect(await cursor.length, 2);
 
-      cursor =
-          repository.find(findOptions: orderBy('status', SortOrder.descending));
+      cursor = repository.find(
+        findOptions: orderBy('status', SortOrder.descending),
+      );
       expect((await cursor.first).status, 'Un-Married');
 
-      cursor =
-          repository.find(findOptions: orderBy('status', SortOrder.ascending));
+      cursor = repository.find(
+        findOptions: orderBy('status', SortOrder.ascending),
+      );
       expect(await cursor.length, 3);
 
-      cursor =
-          repository.find(findOptions: orderBy('status', SortOrder.ascending));
+      cursor = repository.find(
+        findOptions: orderBy('status', SortOrder.ascending),
+      );
       expect((await cursor.first).status, 'Married');
     });
 
@@ -535,7 +563,8 @@ void main() {
 
     test('Test Id Set', () async {
       var cursor = employeeRepository.find(
-          findOptions: orderBy('empId', SortOrder.ascending));
+        findOptions: orderBy('empId', SortOrder.ascending),
+      );
       expect(await cursor.length, 10);
     });
 
@@ -554,20 +583,30 @@ void main() {
       await repository.insertMany([data1, data2, data3, data4, data5, data6]);
 
       var cursor = repository.find(
-          filter: where('age').between(
-              DateTime.parse('2020-01-11'), DateTime.parse('2025-06-16')));
+        filter: where(
+          'age',
+        ).between(DateTime.parse('2020-01-11'), DateTime.parse('2025-06-16')),
+      );
       expect(await cursor.length, 6);
 
       cursor = repository.find(
-          filter: where('age').between(
-              DateTime.parse('2020-01-11'), DateTime.parse('2025-06-16'),
-              lowerInclusive: false, upperInclusive: false));
+        filter: where('age').between(
+          DateTime.parse('2020-01-11'),
+          DateTime.parse('2025-06-16'),
+          lowerInclusive: false,
+          upperInclusive: false,
+        ),
+      );
       expect(await cursor.length, 4);
 
       cursor = repository.find(
-          filter: where('age').between(
-              DateTime.parse('2020-01-11'), DateTime.parse('2025-06-16'),
-              lowerInclusive: false, upperInclusive: true));
+        filter: where('age').between(
+          DateTime.parse('2020-01-11'),
+          DateTime.parse('2025-06-16'),
+          lowerInclusive: false,
+          upperInclusive: true,
+        ),
+      );
       expect(await cursor.length, 5);
     });
 
@@ -577,7 +616,9 @@ void main() {
       await bookRepo.insert(book);
 
       var result = await bookRepo.updateDocument(
-          where('book_id').eq(book.bookId), createDocument('price', 100.0));
+        where('book_id').eq(book.bookId),
+        createDocument('price', 100.0),
+      );
       expect(result.getAffectedCount(), 1);
 
       var cursor = bookRepo.find(filter: where('price').eq(100.0));

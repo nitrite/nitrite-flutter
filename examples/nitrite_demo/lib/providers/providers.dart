@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite_demo/models/models.dart';
 import 'package:nitrite_hive_adapter/nitrite_hive_adapter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'providers.g.dart';
 
 @riverpod
-Future<Nitrite> db(DbRef ref) async {
+Future<Nitrite> db(Ref ref) async {
   var docPath = await getApplicationDocumentsDirectory();
   var dbDir = await Directory('${docPath.path}${Platform.pathSeparator}db')
       .create(recursive: true);
@@ -27,7 +27,7 @@ Future<Nitrite> db(DbRef ref) async {
 }
 
 @riverpod
-Future<ObjectRepository<Todo>> todoRepository(TodoRepositoryRef ref) async {
+Future<ObjectRepository<Todo>> todoRepository(Ref ref) async {
   var db = await ref.read(dbProvider.future);
   return await db.getRepository<Todo>();
 }
@@ -101,7 +101,7 @@ final filterProvider = StateProvider<Filter>((ref) => all);
 final todoTextProvider = StateProvider<String>((ref) => '');
 
 @riverpod
-int pendingCounter(PendingCounterRef ref) {
+int pendingCounter(Ref ref) {
   var todos = ref.watch(todosProvider);
   return todos.when(
     data: (todoList) => todoList.where((todo) => !todo.completed).length,
@@ -111,7 +111,7 @@ int pendingCounter(PendingCounterRef ref) {
 }
 
 @riverpod
-int completedCounter(CompletedCounterRef ref) {
+int completedCounter(Ref ref) {
   var todos = ref.watch(todosProvider);
   return todos.when(
     data: (todoList) => todoList.where((todo) => todo.completed).length,

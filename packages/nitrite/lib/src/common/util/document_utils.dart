@@ -22,7 +22,8 @@ Document skeletonDocument<T>(NitriteMapper nitriteMapper) {
   if (document != null) {
     if (document is! Document) {
       throw ObjectMappingException(
-          'Cannot convert ${T.runtimeType} to document');
+        'Cannot convert ${T.runtimeType} to document',
+      );
     }
 
     return _removeValues(document);

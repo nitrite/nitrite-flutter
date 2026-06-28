@@ -43,98 +43,139 @@ void main() {
       // circular reference
       parent.parent = child;
 
-      expect(() async => await repository.insert(child),
-          throwsObjectMappingException);
+      expect(
+        () async => await repository.insert(child),
+        throwsObjectMappingException,
+      );
     });
 
     test('Test With Empty String Id', () async {
       var repository = await db.getRepository<WithEmptyStringId>(
-          entityDecorator: WithEmptyStringIdEntityDecorator());
+        entityDecorator: WithEmptyStringIdEntityDecorator(),
+      );
       var object = WithEmptyStringId(name: '');
 
-      expect(() async => await repository.insert(object),
-          throwsInvalidIdException);
+      expect(
+        () async => await repository.insert(object),
+        throwsInvalidIdException,
+      );
     });
 
     test('Test With Null Id', () async {
       var repository = await db.getRepository<WithNullId>();
       var object = WithNullId();
 
-      expect(() async => await repository.insert(object),
-          throwsInvalidIdException);
+      expect(
+        () async => await repository.insert(object),
+        throwsInvalidIdException,
+      );
     });
 
     test('Test With Built-in Type Repository', () async {
-      expect(() async => await db.getRepository<String>(),
-          throwsValidationException);
+      expect(
+        () async => await db.getRepository<String>(),
+        throwsValidationException,
+      );
 
       expect(
-          () async => await db.getRepository<num>(), throwsValidationException);
+        () async => await db.getRepository<num>(),
+        throwsValidationException,
+      );
 
       expect(
-          () async => await db.getRepository<int>(), throwsValidationException);
+        () async => await db.getRepository<int>(),
+        throwsValidationException,
+      );
 
-      expect(() async => await db.getRepository<double>(),
-          throwsValidationException);
+      expect(
+        () async => await db.getRepository<double>(),
+        throwsValidationException,
+      );
 
-      expect(() async => await db.getRepository<DateTime>(),
-          throwsValidationException);
+      expect(
+        () async => await db.getRepository<DateTime>(),
+        throwsValidationException,
+      );
 
-      expect(() async => await db.getRepository<Duration>(),
-          throwsValidationException);
+      expect(
+        () async => await db.getRepository<Duration>(),
+        throwsValidationException,
+      );
 
-      expect(() async => await db.getRepository<Runes>(),
-          throwsValidationException);
+      expect(
+        () async => await db.getRepository<Runes>(),
+        throwsValidationException,
+      );
 
-      expect(() async => await db.getRepository<Symbol>(),
-          throwsValidationException);
+      expect(
+        () async => await db.getRepository<Symbol>(),
+        throwsValidationException,
+      );
 
-      expect(() async => await db.getRepository<void>(),
-          throwsValidationException);
+      expect(
+        () async => await db.getRepository<void>(),
+        throwsValidationException,
+      );
 
-      expect(() async => await db.getRepository<Void>(),
-          throwsValidationException);
+      expect(
+        () async => await db.getRepository<Void>(),
+        throwsValidationException,
+      );
 
-      expect(() async => await db.getRepository<NitriteId>(),
-          throwsValidationException);
+      expect(
+        () async => await db.getRepository<NitriteId>(),
+        throwsValidationException,
+      );
     });
 
     test('Test Update No Id', () async {
       var repository = await db.getRepository<WithOutId>(
-          entityDecorator: WithOutIdEntityDecorator());
+        entityDecorator: WithOutIdEntityDecorator(),
+      );
 
       var object = WithOutId(name: 'name', number: 1);
-      expect(() async => await repository.updateOne(object),
-          throwsNotIdentifiableException);
+      expect(
+        () async => await repository.updateOne(object),
+        throwsNotIdentifiableException,
+      );
     });
 
     test('Test Remove No Id', () async {
       var repository = await db.getRepository<WithOutId>(
-          entityDecorator: WithOutIdEntityDecorator());
+        entityDecorator: WithOutIdEntityDecorator(),
+      );
 
       var object = WithOutId(name: 'name', number: 1);
-      expect(() async => await repository.removeOne(object),
-          throwsNotIdentifiableException);
+      expect(
+        () async => await repository.removeOne(object),
+        throwsNotIdentifiableException,
+      );
     });
 
     test('Test Projection Failed Instantiate', () async {
       var repository = await db.getRepository<WithOutId>(
-          entityDecorator: WithOutIdEntityDecorator());
+        entityDecorator: WithOutIdEntityDecorator(),
+      );
 
       var object = WithOutId(name: 'name', number: 1);
       await repository.insert(object);
 
       var cursor = repository.find();
-      expect(() async => await cursor.project<NitriteId>().toList(),
-          throwsValidationException);
+      expect(
+        () async => await cursor.project<NitriteId>().toList(),
+        throwsValidationException,
+      );
     });
 
     test('Test Null Insert', () async {
       var repository = await db.getRepository<WithOutId?>(
-          entityDecorator: WithOutIdEntityDecorator());
+        entityDecorator: WithOutIdEntityDecorator(),
+      );
 
       expect(
-          () async => await repository.insert(null), throwsValidationException);
+        () async => await repository.insert(null),
+        throwsValidationException,
+      );
     });
 
     test('Test Get By Null Id', () async {
@@ -144,7 +185,9 @@ void main() {
 
       await repository.insert(object);
       expect(
-          () async => await repository.getById(null), throwsInvalidIdException);
+        () async => await repository.getById(null),
+        throwsInvalidIdException,
+      );
     });
 
     test('Test External Nitrite Id', () async {
@@ -172,7 +215,9 @@ void main() {
 
       expect(result.getAffectedCount(), 1);
       expect(
-          () async => await repository.getById("1"), throwsInvalidIdException);
+        () async => await repository.getById("1"),
+        throwsInvalidIdException,
+      );
     });
   });
 }

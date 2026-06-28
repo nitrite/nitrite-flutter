@@ -35,12 +35,17 @@ class MigrationManager {
         try {
           await _database.close();
         } catch (e, stackTrace) {
-          throw NitriteIOException('Failed to close database',
-              stackTrace: stackTrace, cause: e);
+          throw NitriteIOException(
+            'Failed to close database',
+            stackTrace: stackTrace,
+            cause: e,
+          );
         }
 
-        throw MigrationException('Schema version mismatch, no migration path'
-            ' found from version $existingVersion to $incomingVersion');
+        throw MigrationException(
+          'Schema version mismatch, no migration path'
+          ' found from version $existingVersion to $incomingVersion',
+        );
       }
 
       var length = migrationPath.length;
@@ -58,7 +63,8 @@ class MigrationManager {
 
     if (existingVersion == null) {
       throw MigrationException(
-          'Corrupted database, no version information found');
+        'Corrupted database, no version information found',
+      );
     }
 
     return existingVersion != incomingVersion;
@@ -116,7 +122,8 @@ class MigrationManager {
   }
 
   Future<void> _executeMigrationSteps(
-      Queue<MigrationStep> migrationSteps) async {
+    Queue<MigrationStep> migrationSteps,
+  ) async {
     if (migrationSteps.isNotEmpty) {
       var length = migrationSteps.length;
       for (var i = 0; i < length; i++) {
@@ -140,8 +147,9 @@ class MigrationManager {
           command = AddPasswordCommand(step.arguments as (String, String));
           break;
         case InstructionType.changePassword:
-          command =
-              ChangePasswordCommand(step.arguments as (String, String, String));
+          command = ChangePasswordCommand(
+            step.arguments as (String, String, String),
+          );
           break;
         case InstructionType.dropCollection:
           command = DropCollectionCommand(step.arguments as String);
@@ -156,12 +164,14 @@ class MigrationManager {
           command = CollectionRenameCommand(step.arguments as (String, String));
           break;
         case InstructionType.collectionAddField:
-          command =
-              AddFieldCommand(step.arguments as (String, String, dynamic));
+          command = AddFieldCommand(
+            step.arguments as (String, String, dynamic),
+          );
           break;
         case InstructionType.collectionRenameField:
-          command =
-              RenameFieldCommand(step.arguments as (String, String, String));
+          command = RenameFieldCommand(
+            step.arguments as (String, String, String),
+          );
           break;
         case InstructionType.collectionDeleteField:
           command = DeleteFieldCommand(step.arguments as (String, String));
@@ -173,12 +183,14 @@ class MigrationManager {
           command = DropIndexCommand((step.arguments as String, null));
           break;
         case InstructionType.collectionCreateIndex:
-          command =
-              CreateIndexCommand(step.arguments as (String, Fields, String));
+          command = CreateIndexCommand(
+            step.arguments as (String, Fields, String),
+          );
           break;
         case InstructionType.renameRepository:
           command = RepositoryRenameCommand(
-              step.arguments as (String, String?, String, String?));
+            step.arguments as (String, String?, String, String?),
+          );
           break;
         case InstructionType.repositoryAddField:
           var args = step.arguments as (String, String?, String, dynamic);
@@ -197,11 +209,13 @@ class MigrationManager {
           break;
         case InstructionType.repositoryChangeDataType:
           command = ChangeDataTypeCommand(
-              step.arguments as (String, String?, String, TypeConverter));
+            step.arguments as (String, String?, String, TypeConverter),
+          );
           break;
         case InstructionType.repositoryChangeIdField:
           command = ChangeIdFieldCommand(
-              step.arguments as (String, String?, Fields, Fields));
+            step.arguments as (String, String?, Fields, Fields),
+          );
           break;
         case InstructionType.repositoryDropIndex:
           var args = step.arguments as (String, String?, Fields);
@@ -224,9 +238,10 @@ class MigrationManager {
       await command.close();
     } catch (e, s) {
       throw MigrationException(
-          'Migration failed during ${step.instructionType.name} stage.',
-          cause: e,
-          stackTrace: s);
+        'Migration failed during ${step.instructionType.name} stage.',
+        cause: e,
+        stackTrace: s,
+      );
     }
   }
 }

@@ -12,8 +12,10 @@ String getKeyName(String collectionName) {
     var split = collectionName.split(keyObjSeparator);
     return split[1];
   }
-  throw ValidationException("$collectionName is not a valid keyed "
-      "object repository");
+  throw ValidationException(
+    "$collectionName is not a valid keyed "
+    "object repository",
+  );
 }
 
 /// @nodoc
@@ -22,12 +24,14 @@ String getKeyedRepositoryType(String collectionName) {
     var split = collectionName.split(keyObjSeparator);
     return split[0];
   }
-  throw ValidationException("$collectionName is not a valid keyed "
-      "object repository");
+  throw ValidationException(
+    "$collectionName is not a valid keyed "
+    "object repository",
+  );
 }
 
 /// @nodoc
-bool deepEquals(o1, o2) {
+bool deepEquals(dynamic o1, dynamic o2) {
   if (o1 == null && o2 == null) {
     return true;
   } else if (o1 == null || o2 == null) {
@@ -72,7 +76,8 @@ int compare(Comparable first, Comparable second) {
     return first.compareTo(second);
   } on TypeError {
     throw InvalidOperationException(
-        'Could not compare type ${first.runtimeType} to ${second.runtimeType}');
+      'Could not compare type ${first.runtimeType} to ${second.runtimeType}',
+    );
   }
 }
 
@@ -102,8 +107,10 @@ String getEntityName<T>(NitriteMapper nitriteMapper) {
 }
 
 /// @nodoc
-String findRepositoryNameByDecorator<T>(EntityDecorator<T> entityDecorator,
-    [String? key]) {
+String findRepositoryNameByDecorator<T>(
+  EntityDecorator<T> entityDecorator, [
+  String? key,
+]) {
   var entityName = entityDecorator.entityName;
   if (entityName.contains(keyObjSeparator)) {
     throw ValidationException('$entityName is not a valid entity name');
@@ -120,8 +127,11 @@ T? newInstance<T>(NitriteMapper nitriteMapper) {
 
     return nitriteMapper.tryConvert<T, Document>(emptyDocument());
   } catch (e, s) {
-    throw ObjectMappingException("Failed to instantiate type ${T.toString()}",
-        cause: e, stackTrace: s);
+    throw ObjectMappingException(
+      "Failed to instantiate type ${T.toString()}",
+      cause: e,
+      stackTrace: s,
+    );
   }
 }
 
@@ -137,7 +147,7 @@ List<Type> builtInTypes() {
     Null,
     DateTime,
     Duration,
-    Symbol
+    Symbol,
   ];
 }
 

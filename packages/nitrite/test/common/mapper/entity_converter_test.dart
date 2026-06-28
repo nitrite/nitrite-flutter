@@ -19,7 +19,7 @@ void main() {
       var m = {
         _K(d: 1.2): _V(s: "aaa"),
         _K(d: 2.5): _V(s: "bbb"),
-        _K(d: 0.2): _V(s: "ccc")
+        _K(d: 0.2): _V(s: "ccc"),
       };
       var s = {_C(i: 1), _C(i: 2), _C(i: 3)};
       var l = [_B(s: "aaa"), _B(s: "bbb"), _B(s: "ccc")];

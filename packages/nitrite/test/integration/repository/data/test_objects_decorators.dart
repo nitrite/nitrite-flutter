@@ -64,11 +64,12 @@ class Product {
   final String productName;
   final double price;
 
-  Product(
-      {required this.productId,
-      required this.manufacturer,
-      required this.productName,
-      required this.price});
+  Product({
+    required this.productId,
+    required this.manufacturer,
+    required this.productName,
+    required this.price,
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -120,9 +121,9 @@ class ProductDecorator extends EntityDecorator<Product> {
 
   @override
   List<EntityIndex> get indexFields => [
-        EntityIndex(['manufacturer.name'], IndexType.nonUnique),
-        EntityIndex(['productName', 'manufacturer.uniqueId']),
-      ];
+    EntityIndex(['manufacturer.name'], IndexType.nonUnique),
+    EntityIndex(['productName', 'manufacturer.uniqueId']),
+  ];
 
   @override
   String get entityName => 'product';

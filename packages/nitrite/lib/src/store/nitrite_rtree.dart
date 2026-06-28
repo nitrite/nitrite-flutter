@@ -20,8 +20,12 @@ abstract class NitriteRTree<Key, Value> implements Initializable {
   ///
   /// If [maxDistance] is given, entries whose bounding box is farther than
   /// that distance are excluded.
-  Stream<NitriteId> findNearestNeighbors(double x, double y, int k,
-      [double? maxDistance]);
+  Stream<NitriteId> findNearestNeighbors(
+    double x,
+    double y,
+    int k, [
+    double? maxDistance,
+  ]);
 
   /// Gets the size of the rtree.
   Future<int> size();

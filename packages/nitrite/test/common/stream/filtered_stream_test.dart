@@ -13,12 +13,13 @@ void main() {
       var filter = MockFilter();
 
       Stream<Document> stream = FilteredStream(
-          Stream.fromIterable([
-            documentFromMap({"id": 1, "name": "John"}),
-            documentFromMap({"id": 2, "name": "Jane"}),
-            documentFromMap({"id": 3, "name": "Joe"}),
-          ]),
-          filter);
+        Stream.fromIterable([
+          documentFromMap({"id": 1, "name": "John"}),
+          documentFromMap({"id": 2, "name": "Jane"}),
+          documentFromMap({"id": 3, "name": "Joe"}),
+        ]),
+        filter,
+      );
 
       when(filter.apply(any)).thenReturn(true);
       expect(await stream.toList(), [
@@ -33,12 +34,13 @@ void main() {
       var filter = MockFilter();
 
       Stream<Document> stream = FilteredStream(
-          Stream.fromIterable([
-            documentFromMap({"id": 1, "name": "John"}),
-            documentFromMap({"id": 2, "name": "Jane"}),
-            documentFromMap({"id": 3, "name": "Joe"}),
-          ]),
-          filter);
+        Stream.fromIterable([
+          documentFromMap({"id": 1, "name": "John"}),
+          documentFromMap({"id": 2, "name": "Jane"}),
+          documentFromMap({"id": 3, "name": "Joe"}),
+        ]),
+        filter,
+      );
 
       when(filter.apply(any)).thenReturn(false);
       expect(await stream.toList(), []);
@@ -47,12 +49,13 @@ void main() {
 
     test("Test Stream with ALL Filter", () async {
       Stream<Document> stream = FilteredStream(
-          Stream.fromIterable([
-            documentFromMap({"id": 1, "name": "John"}),
-            documentFromMap({"id": 2, "name": "Jane"}),
-            documentFromMap({"id": 3, "name": "Joe"}),
-          ]),
-          all);
+        Stream.fromIterable([
+          documentFromMap({"id": 1, "name": "John"}),
+          documentFromMap({"id": 2, "name": "Jane"}),
+          documentFromMap({"id": 3, "name": "Joe"}),
+        ]),
+        all,
+      );
 
       expect(await stream.toList(), [
         documentFromMap({"id": 1, "name": "John"}),

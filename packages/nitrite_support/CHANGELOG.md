@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Corrected doc comments to satisfy the latest analysis rules.
+
 ## 1.1.1
 
 - Updated Nitrite to 1.1.1.

@@ -36,9 +36,9 @@ class SingleFieldIndex extends NitriteIndex {
     } else {
       iMap = IndexMap(compositeMap: await _findCompositeMap());
     }
-    yield* IndexScanner(iMap)
-        .doScan(filters, findPlan.indexScanOrder)
-        .distinctUnique();
+    yield* IndexScanner(
+      iMap,
+    ).doScan(filters, findPlan.indexScanOrder).distinctUnique();
   }
 
   @override
@@ -94,7 +94,9 @@ class SingleFieldIndex extends NitriteIndex {
   /// [DBNull] key, a single comparable to one key, and an iterable (multikey
   /// index) to one key per item.
   Future<void> _forEachElement(
-      dynamic element, Future<void> Function(DBValue) action) async {
+    dynamic element,
+    Future<void> Function(DBValue) action,
+  ) async {
     if (element == null) {
       await action(DBNull.instance);
     } else if (element is Comparable) {

@@ -119,7 +119,8 @@ class TransactionStore<T extends StoreConfig> extends AbstractNitriteStore<T> {
 
   @override
   Future<NitriteRTree<Key, Value>> openRTree<Key extends BoundingBox, Value>(
-      String rTreeName) async {
+    String rTreeName,
+  ) async {
     if (_rTreeRegistry.containsKey(rTreeName)) {
       return _rTreeRegistry[rTreeName] as NitriteRTree<Key, Value>;
     }

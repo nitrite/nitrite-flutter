@@ -30,23 +30,31 @@ void main() {
       await collection.createIndex(['birthDay']);
 
       cursor = collection.find(
-          filter:
-              where("birthDay").gt(DateTime.parse("2012-07-01T16:02:48.440Z")));
+        filter: where(
+          "birthDay",
+        ).gt(DateTime.parse("2012-07-01T16:02:48.440Z")),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where("birthDay")
-              .gte(DateTime.parse("2012-07-01T16:02:48.440Z")));
+        filter: where(
+          "birthDay",
+        ).gte(DateTime.parse("2012-07-01T16:02:48.440Z")),
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(
-          filter:
-              where("birthDay").lt(DateTime.parse("2012-07-01T16:02:48.440Z")));
+        filter: where(
+          "birthDay",
+        ).lt(DateTime.parse("2012-07-01T16:02:48.440Z")),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where("birthDay")
-              .lte(DateTime.parse("2012-07-01T16:02:48.440Z")));
+        filter: where(
+          "birthDay",
+        ).lte(DateTime.parse("2012-07-01T16:02:48.440Z")),
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(filter: where("birthDay").lte(DateTime.now()));
@@ -62,35 +70,39 @@ void main() {
       expect(await cursor.length, 0);
 
       cursor = collection.find(
-          filter: where("birthDay")
-              .lte(DateTime.now())
-              .and(where('firstName').eq('fn1')));
+        filter: where(
+          "birthDay",
+        ).lte(DateTime.now()).and(where('firstName').eq('fn1')),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where("birthDay")
-              .lte(DateTime.now())
-              .or(where('firstName').eq('fn12')));
+        filter: where(
+          "birthDay",
+        ).lte(DateTime.now()).or(where('firstName').eq('fn12')),
+      );
       expect(await cursor.length, 3);
 
       cursor = collection.find(
-          filter: and([
-        or([
-          where("birthDay").lte(DateTime.now()),
-          where("firstName").eq("fn12")
+        filter: and([
+          or([
+            where("birthDay").lte(DateTime.now()),
+            where("firstName").eq("fn12"),
+          ]),
+          where('lastName').eq('ln1'),
         ]),
-        where('lastName').eq('ln1'),
-      ]));
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: ~and([
-        or([
-          where("birthDay").lte(DateTime.now()),
-          where("firstName").eq("fn12")
+        filter: ~and([
+          or([
+            where("birthDay").lte(DateTime.now()),
+            where("firstName").eq("fn12"),
+          ]),
+          where('lastName').eq('ln1'),
         ]),
-        where('lastName').eq('ln1'),
-      ]));
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(filter: where('data.1').eq(4));
@@ -100,20 +112,24 @@ void main() {
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where('lastName').within(['ln1', 'ln2', 'ln10']));
+        filter: where('lastName').within(['ln1', 'ln2', 'ln10']),
+      );
       expect(await cursor.length, 3);
 
-      cursor =
-          collection.find(filter: where('firstName').notIn(['fn1', 'fn2']));
+      cursor = collection.find(
+        filter: where('firstName').notIn(['fn1', 'fn2']),
+      );
       expect(await cursor.length, 1);
     });
 
     test('Test Find by Non Unique Index', () async {
       await insert();
-      await collection
-          .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
-      await collection
-          .createIndex(['birthDay'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+      ], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'birthDay',
+      ], indexOptions(IndexType.nonUnique));
 
       var cursor = collection.find(filter: where("lastName").eq("ln2"));
       expect(await cursor.length, 2);
@@ -122,23 +138,31 @@ void main() {
       expect(await cursor.length, 0);
 
       cursor = collection.find(
-          filter:
-              where("birthDay").gt(DateTime.parse('2012-07-01T16:02:48.440Z')));
+        filter: where(
+          "birthDay",
+        ).gt(DateTime.parse('2012-07-01T16:02:48.440Z')),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where("birthDay")
-              .gte(DateTime.parse('2012-07-01T16:02:48.440Z')));
+        filter: where(
+          "birthDay",
+        ).gte(DateTime.parse('2012-07-01T16:02:48.440Z')),
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(
-          filter:
-              where("birthDay").lt(DateTime.parse('2012-07-01T16:02:48.440Z')));
+        filter: where(
+          "birthDay",
+        ).lt(DateTime.parse('2012-07-01T16:02:48.440Z')),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where("birthDay")
-              .lte(DateTime.parse('2012-07-01T16:02:48.440Z')));
+        filter: where(
+          "birthDay",
+        ).lte(DateTime.parse('2012-07-01T16:02:48.440Z')),
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(filter: where("birthDay").lte(DateTime.now()));
@@ -154,35 +178,39 @@ void main() {
       expect(await cursor.length, 0);
 
       cursor = collection.find(
-          filter: where("birthDay")
-              .lte(DateTime.now())
-              .and(where('firstName').eq('fn1')));
+        filter: where(
+          "birthDay",
+        ).lte(DateTime.now()).and(where('firstName').eq('fn1')),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where("birthDay")
-              .lte(DateTime.now())
-              .or(where('firstName').eq('fn12')));
+        filter: where(
+          "birthDay",
+        ).lte(DateTime.now()).or(where('firstName').eq('fn12')),
+      );
       expect(await cursor.length, 3);
 
       cursor = collection.find(
-          filter: and([
-        or([
-          where("birthDay").lte(DateTime.now()),
-          where("firstName").eq("fn12")
+        filter: and([
+          or([
+            where("birthDay").lte(DateTime.now()),
+            where("firstName").eq("fn12"),
+          ]),
+          where('lastName').eq('ln1'),
         ]),
-        where('lastName').eq('ln1'),
-      ]));
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: ~and([
-        or([
-          where("birthDay").lte(DateTime.now()),
-          where("firstName").eq("fn12")
+        filter: ~and([
+          or([
+            where("birthDay").lte(DateTime.now()),
+            where("firstName").eq("fn12"),
+          ]),
+          where('lastName').eq('ln1'),
         ]),
-        where('lastName').eq('ln1'),
-      ]));
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(filter: where('data.1').eq(4));
@@ -192,11 +220,13 @@ void main() {
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where('lastName').within(['ln1', 'ln2', 'ln10']));
+        filter: where('lastName').within(['ln1', 'ln2', 'ln10']),
+      );
       expect(await cursor.length, 3);
 
-      cursor =
-          collection.find(filter: where('firstName').notIn(['fn1', 'fn2']));
+      cursor = collection.find(
+        filter: where('firstName').notIn(['fn1', 'fn2']),
+      );
       expect(await cursor.length, 1);
     });
 
@@ -256,8 +286,9 @@ void main() {
 
       var cursor = collection.find(findOptions: orderBy('birthDay'));
       expect(await cursor.length, 3);
-      var dateList =
-          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
+      var dateList = await cursor
+          .map((doc) => doc['birthDay'] as DateTime)
+          .toList();
       expect(isSorted(dateList, true), isTrue);
     });
 
@@ -266,10 +297,12 @@ void main() {
       await collection.createIndex(['birthDay']);
 
       var cursor = collection.find(
-          findOptions: orderBy('birthDay', SortOrder.descending));
+        findOptions: orderBy('birthDay', SortOrder.descending),
+      );
       expect(await cursor.length, 3);
-      var dateList =
-          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
+      var dateList = await cursor
+          .map((doc) => doc['birthDay'] as DateTime)
+          .toList();
       expect(isSorted(dateList, false), isTrue);
     });
 
@@ -278,25 +311,33 @@ void main() {
       await collection.createIndex(['birthDay']);
 
       var cursor = collection.find(
-          findOptions:
-              orderBy('birthDay', SortOrder.descending).setSkip(1).setLimit(2));
+        findOptions: orderBy(
+          'birthDay',
+          SortOrder.descending,
+        ).setSkip(1).setLimit(2),
+      );
       expect(await cursor.length, 2);
-      var dateList =
-          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
+      var dateList = await cursor
+          .map((doc) => doc['birthDay'] as DateTime)
+          .toList();
       expect(isSorted(dateList, false), isTrue);
 
       cursor = collection.find(
-          findOptions: orderBy('birthDay').setSkip(1).setLimit(2));
+        findOptions: orderBy('birthDay').setSkip(1).setLimit(2),
+      );
       expect(await cursor.length, 2);
-      dateList =
-          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
+      dateList = await cursor
+          .map((doc) => doc['birthDay'] as DateTime)
+          .toList();
       expect(isSorted(dateList, true), isTrue);
 
       cursor = collection.find(
-          findOptions: orderBy('firstName').setSkip(0).setLimit(30));
+        findOptions: orderBy('firstName').setSkip(0).setLimit(30),
+      );
       expect(await cursor.length, 3);
-      var nameList =
-          await cursor.map((doc) => doc['firstName'] as String).toList();
+      var nameList = await cursor
+          .map((doc) => doc['firstName'] as String)
+          .toList();
       expect(isSorted(nameList, true), isTrue);
     });
 
@@ -344,16 +385,18 @@ void main() {
       var doc3 = createDocument('firstName', 'Jonas').put('lastName', 'Doe');
       var doc4 = createDocument('firstName', 'Johan').put('lastName', 'Day');
 
-      await collection
-          .createIndex(['firstName'], indexOptions(IndexType.unique));
+      await collection.createIndex([
+        'firstName',
+      ], indexOptions(IndexType.unique));
 
-      await collection
-          .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+      ], indexOptions(IndexType.nonUnique));
 
       await collection.insertMany([doc1, doc2, doc3, doc4]);
       var cursor = collection.find(
-          filter:
-              where('firstName').eq('John').or(where('lastName').eq('Day')));
+        filter: where('firstName').eq('John').or(where('lastName').eq('Day')),
+      );
       expect(await cursor.length, 2);
     });
 
@@ -390,176 +433,200 @@ void main() {
     });
 
     test('Test Sort By Index Descending Less Than Equal', () async {
-      var collection =
-          await db.getCollection('testSortByIndexDescendingLessThanEqual');
+      var collection = await db.getCollection(
+        'testSortByIndexDescendingLessThanEqual',
+      );
       for (var i in [1, 2, 3, 4, 5]) {
         await collection.insert(createDocument('name', i));
       }
 
       var cursor = collection.find(
-          filter: where("name").lte(3),
-          findOptions: orderBy('name', SortOrder.descending));
+        filter: where("name").lte(3),
+        findOptions: orderBy('name', SortOrder.descending),
+      );
       var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       await collection.createIndex(['name']);
 
       cursor = collection.find(
-          filter: where("name").lte(3),
-          findOptions: orderBy('name', SortOrder.descending));
+        filter: where("name").lte(3),
+        findOptions: orderBy('name', SortOrder.descending),
+      );
       var indexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       expect(nonIndexedResult, indexedResult);
     });
 
     test('Test Sort By Index Ascending Less Than Equal', () async {
-      var collection =
-          await db.getCollection('testSortByIndexAscendingLessThanEqual');
+      var collection = await db.getCollection(
+        'testSortByIndexAscendingLessThanEqual',
+      );
       for (var i in [1, 2, 3, 4, 5]) {
         await collection.insert(createDocument('name', i));
       }
 
       var cursor = collection.find(
-          filter: where("name").lte(3),
-          findOptions: orderBy('name', SortOrder.ascending));
+        filter: where("name").lte(3),
+        findOptions: orderBy('name', SortOrder.ascending),
+      );
       var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       await collection.createIndex(['name']);
 
       cursor = collection.find(
-          filter: where("name").lte(3),
-          findOptions: orderBy('name', SortOrder.ascending));
+        filter: where("name").lte(3),
+        findOptions: orderBy('name', SortOrder.ascending),
+      );
       var indexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       expect(nonIndexedResult, indexedResult);
     });
 
     test('Test Sort By Index Descending Greater Than Equal', () async {
-      var collection =
-          await db.getCollection('testSortByIndexDescendingGreaterThanEqual');
+      var collection = await db.getCollection(
+        'testSortByIndexDescendingGreaterThanEqual',
+      );
       for (var i in [1, 2, 3, 4, 5]) {
         await collection.insert(createDocument('name', i));
       }
 
       var cursor = collection.find(
-          filter: where("name").gte(3),
-          findOptions: orderBy('name', SortOrder.descending));
+        filter: where("name").gte(3),
+        findOptions: orderBy('name', SortOrder.descending),
+      );
       var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       await collection.createIndex(['name']);
 
       cursor = collection.find(
-          filter: where("name").gte(3),
-          findOptions: orderBy('name', SortOrder.descending));
+        filter: where("name").gte(3),
+        findOptions: orderBy('name', SortOrder.descending),
+      );
       var indexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       expect(nonIndexedResult, indexedResult);
     });
 
     test('Test Sort By Index Ascending Greater Than Equal', () async {
-      var collection =
-          await db.getCollection('testSortByIndexAscendingGreaterThanEqual');
+      var collection = await db.getCollection(
+        'testSortByIndexAscendingGreaterThanEqual',
+      );
       for (var i in [1, 2, 3, 4, 5]) {
         await collection.insert(createDocument('name', i));
       }
 
       var cursor = collection.find(
-          filter: where("name").gte(3),
-          findOptions: orderBy('name', SortOrder.ascending));
+        filter: where("name").gte(3),
+        findOptions: orderBy('name', SortOrder.ascending),
+      );
       var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       await collection.createIndex(['name']);
 
       cursor = collection.find(
-          filter: where("name").gte(3),
-          findOptions: orderBy('name', SortOrder.ascending));
+        filter: where("name").gte(3),
+        findOptions: orderBy('name', SortOrder.ascending),
+      );
       var indexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       expect(nonIndexedResult, indexedResult);
     });
 
     test('Test Sort By Index Descending Greater Than', () async {
-      var collection =
-          await db.getCollection('testSortByIndexDescendingGreaterThan');
+      var collection = await db.getCollection(
+        'testSortByIndexDescendingGreaterThan',
+      );
       for (var i in [1, 2, 3, 4, 5]) {
         await collection.insert(createDocument('name', i));
       }
 
       var cursor = collection.find(
-          filter: where("name").gt(3),
-          findOptions: orderBy('name', SortOrder.descending));
+        filter: where("name").gt(3),
+        findOptions: orderBy('name', SortOrder.descending),
+      );
       var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       await collection.createIndex(['name']);
 
       cursor = collection.find(
-          filter: where("name").gt(3),
-          findOptions: orderBy('name', SortOrder.descending));
+        filter: where("name").gt(3),
+        findOptions: orderBy('name', SortOrder.descending),
+      );
       var indexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       expect(nonIndexedResult, indexedResult);
     });
 
     test('Test Sort By Index Ascending Greater Than', () async {
-      var collection =
-          await db.getCollection('testSortByIndexAscendingGreaterThan');
+      var collection = await db.getCollection(
+        'testSortByIndexAscendingGreaterThan',
+      );
       for (var i in [1, 2, 3, 4, 5]) {
         await collection.insert(createDocument('name', i));
       }
 
       var cursor = collection.find(
-          filter: where("name").gt(3),
-          findOptions: orderBy('name', SortOrder.ascending));
+        filter: where("name").gt(3),
+        findOptions: orderBy('name', SortOrder.ascending),
+      );
       var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       await collection.createIndex(['name']);
 
       cursor = collection.find(
-          filter: where("name").gt(3),
-          findOptions: orderBy('name', SortOrder.ascending));
+        filter: where("name").gt(3),
+        findOptions: orderBy('name', SortOrder.ascending),
+      );
       var indexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       expect(nonIndexedResult, indexedResult);
     });
 
     test('Test Sort By Index Descending Less Than', () async {
-      var collection =
-          await db.getCollection('testSortByIndexDescendingLessThan');
+      var collection = await db.getCollection(
+        'testSortByIndexDescendingLessThan',
+      );
       for (var i in [1, 2, 3, 4, 5]) {
         await collection.insert(createDocument('name', i));
       }
 
       var cursor = collection.find(
-          filter: where("name").lt(3),
-          findOptions: orderBy('name', SortOrder.descending));
+        filter: where("name").lt(3),
+        findOptions: orderBy('name', SortOrder.descending),
+      );
       var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       await collection.createIndex(['name']);
 
       cursor = collection.find(
-          filter: where("name").lt(3),
-          findOptions: orderBy('name', SortOrder.descending));
+        filter: where("name").lt(3),
+        findOptions: orderBy('name', SortOrder.descending),
+      );
       var indexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       expect(nonIndexedResult, indexedResult);
     });
 
     test('Test Sort By Index Ascending Less Than', () async {
-      var collection =
-          await db.getCollection('testSortByIndexAscendingLessThan');
+      var collection = await db.getCollection(
+        'testSortByIndexAscendingLessThan',
+      );
       for (var i in [1, 2, 3, 4, 5]) {
         await collection.insert(createDocument('name', i));
       }
 
       var cursor = collection.find(
-          filter: where("name").lt(3),
-          findOptions: orderBy('name', SortOrder.ascending));
+        filter: where("name").lt(3),
+        findOptions: orderBy('name', SortOrder.ascending),
+      );
       var nonIndexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       await collection.createIndex(['name']);
 
       cursor = collection.find(
-          filter: where("name").lt(3),
-          findOptions: orderBy('name', SortOrder.ascending));
+        filter: where("name").lt(3),
+        findOptions: orderBy('name', SortOrder.ascending),
+      );
       var indexedResult = await cursor.map((e) => e['name'] as int).toList();
 
       expect(nonIndexedResult, indexedResult);

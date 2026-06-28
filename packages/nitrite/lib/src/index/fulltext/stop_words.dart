@@ -56,7 +56,7 @@ class Afrikaans implements Language {
       "vir",
       "was",
       "wat",
-      "ŉ"
+      "ŉ",
     };
   }
 }
@@ -544,7 +544,7 @@ class Arabic implements Language {
       "يكون",
       "يمكن",
       "يوم",
-      "ّأيّان"
+      "ّأيّان",
     };
   }
 }
@@ -597,7 +597,7 @@ class Armenian implements Language {
       "ում",
       "պիտի",
       "վրա",
-      "և"
+      "և",
     };
   }
 }
@@ -703,7 +703,7 @@ class Basque implements Language {
       "zu",
       "zuek",
       "zuen",
-      "zuten"
+      "zuten",
     };
   }
 }
@@ -1109,7 +1109,7 @@ class Bengali implements Language {
       "হিসাবে",
       "হৈলে",
       "হোক",
-      "হয়"
+      "হয়",
     };
   }
 }
@@ -1243,7 +1243,7 @@ class BrazilianPortuguese implements Language {
       "um",
       "uma",
       "umas",
-      "uns"
+      "uns",
     };
   }
 }
@@ -2454,7 +2454,7 @@ class Breton implements Language {
       "zouesk",
       "zouez",
       "zro",
-      "zu"
+      "zu",
     };
   }
 }
@@ -2980,7 +2980,7 @@ class Bulgarian implements Language {
       "щом",
       "юмрук",
       "я",
-      "як"
+      "як",
     };
   }
 }
@@ -3266,7 +3266,7 @@ class Catalan implements Language {
       "és",
       "éssent",
       "últim",
-      "ús"
+      "ús",
     };
   }
 }
@@ -4062,7 +4062,7 @@ class Chinese implements Language {
       "｜",
       "｝",
       "～",
-      "￥"
+      "￥",
     };
   }
 }
@@ -4249,7 +4249,7 @@ class Croatian implements Language {
       "ćete",
       "ćeš",
       "ću",
-      "što"
+      "što",
     };
   }
 }
@@ -4807,7 +4807,7 @@ class Czech implements Language {
       "čtyři",
       "šest",
       "šestnáct",
-      "že"
+      "že",
     };
   }
 }
@@ -4985,7 +4985,7 @@ class Danish implements Language {
       "vor",
       "vores",
       "være",
-      "været"
+      "været",
     };
   }
 }
@@ -5406,7 +5406,7 @@ class Dutch implements Language {
       "zulk",
       "zulke",
       "zullen",
-      "zult"
+      "zult",
     };
   }
 }
@@ -5984,7 +5984,7 @@ class English implements Language {
       "yourself",
       "yourselves",
       "z",
-      "zero"
+      "zero",
     };
   }
 }
@@ -6165,7 +6165,7 @@ class Esperanto implements Language {
       "ĵus",
       "ŝi",
       "ŝia",
-      "ŝin"
+      "ŝin",
     };
   }
 }
@@ -6208,7 +6208,7 @@ class Estonian implements Language {
       "siis",
       "ta",
       "te",
-      "ära"
+      "ära",
     };
   }
 }
@@ -7063,7 +7063,7 @@ class Finnish implements Language {
       "ylös",
       "ympäri",
       "älköön",
-      "älä"
+      "älä",
     };
   }
 }
@@ -7760,7 +7760,7 @@ class French implements Language {
       "étés",
       "êtes",
       "être",
-      "ô"
+      "ô",
     };
   }
 }
@@ -7928,7 +7928,7 @@ class Galician implements Language {
       "á",
       "é",
       "ó",
-      "ós"
+      "ós",
     };
   }
 }
@@ -8557,7 +8557,7 @@ class German implements Language {
       "zwölf",
       "über",
       "überhaupt",
-      "übrigens"
+      "übrigens",
     };
   }
 }
@@ -8830,7 +8830,7 @@ class Greek implements Language {
       "ὥς",
       "ὥστε",
       "ὦ",
-      "ᾧ"
+      "ᾧ",
     };
   }
 }
@@ -8877,7 +8877,7 @@ class Hausa implements Language {
       "yake",
       "yana",
       "yi",
-      "za"
+      "za",
     };
   }
 }
@@ -9079,7 +9079,7 @@ class Hebrew implements Language {
       "שלנו",
       "שם",
       "תהיה",
-      "תחת"
+      "תחת",
     };
   }
 }
@@ -9312,7 +9312,7 @@ class Hindi implements Language {
       "होती",
       "होते",
       "होना",
-      "होने"
+      "होने",
     };
   }
 }
@@ -10505,7 +10505,7 @@ class Hungarian implements Language {
       "ő",
       "ők",
       "őket",
-      "őt"
+      "őt",
     };
   }
 }
@@ -11271,7 +11271,7 @@ class Indonesian implements Language {
       "yaitu",
       "yakin",
       "yakni",
-      "yang"
+      "yang",
     };
   }
 }
@@ -11388,7 +11388,7 @@ class Irish implements Language {
       "ó",
       "ón",
       "óna",
-      "ónár"
+      "ónár",
     };
   }
 }
@@ -12056,7 +12056,7 @@ class Italian implements Language {
       "vostri",
       "vostro",
       "ã¨",
-      "è"
+      "è",
     };
   }
 }
@@ -12198,7 +12198,7 @@ class Japanese implements Language {
       "私",
       "私達",
       "貴方",
-      "貴方方"
+      "貴方方",
     };
   }
 }
@@ -12885,7 +12885,7 @@ class Korean implements Language {
       "｜",
       "｝",
       "～",
-      "￥"
+      "￥",
     };
   }
 }
@@ -12955,7 +12955,7 @@ class Kurdish implements Language {
       "چەند",
       "کرد",
       "کە",
-      "ی"
+      "ی",
     };
   }
 }
@@ -13012,7 +13012,7 @@ class Latin implements Language {
       "tandem",
       "te",
       "ut",
-      "vel"
+      "vel",
     };
   }
 }
@@ -13181,7 +13181,7 @@ class Latvian implements Language {
       "viņpus",
       "zem",
       "ārpus",
-      "šaipus"
+      "šaipus",
     };
   }
 }
@@ -13663,7 +13663,7 @@ class Lithuanian implements Language {
       "ðiøjø",
       "ðtai",
       "ðájá",
-      "þemiau"
+      "þemiau",
     };
   }
 }
@@ -14146,7 +14146,7 @@ class Malay implements Language {
       "wang",
       "wanita",
       "wilayah",
-      "yang"
+      "yang",
     };
   }
 }
@@ -14253,7 +14253,7 @@ class Marathi implements Language {
       "होत",
       "होता",
       "होती",
-      "होते"
+      "होते",
     };
   }
 }
@@ -14482,7 +14482,7 @@ class Norwegian implements Language {
       "vært",
       "vöre",
       "vört",
-      "å"
+      "å",
     };
   }
 }
@@ -15289,7 +15289,7 @@ class Persian implements Language {
       "۶",
       "۷",
       "۸",
-      "۹"
+      "۹",
     };
   }
 }
@@ -15653,7 +15653,7 @@ class Polish implements Language {
       "żadne",
       "żadnych",
       "że",
-      "żeby"
+      "żeby",
     };
   }
 }
@@ -16221,7 +16221,7 @@ class Portuguese implements Language {
       "é",
       "éramos",
       "és",
-      "último"
+      "último",
     };
   }
 }
@@ -16663,7 +16663,7 @@ class Romanian implements Language {
       "şi",
       "ştiu",
       "ţi",
-      "ţie"
+      "ţie",
     };
   }
 }
@@ -17230,7 +17230,7 @@ class Russian implements Language {
       "этот",
       "эту",
       "я",
-      "являюсь"
+      "являюсь",
     };
   }
 }
@@ -17269,7 +17269,7 @@ class Sesotho implements Language {
       "se",
       "tloha",
       "tsa",
-      "tse"
+      "tse",
     };
   }
 }
@@ -17498,7 +17498,7 @@ class Slovak implements Language {
       "ďalšia",
       "ďalšie",
       "ďalší",
-      "že"
+      "že",
     };
   }
 }
@@ -17952,7 +17952,7 @@ class Slovenian implements Language {
       "šesto",
       "štiri",
       "ž",
-      "že"
+      "že",
     };
   }
 }
@@ -17990,7 +17990,7 @@ class Somali implements Language {
       "uu",
       "waa",
       "waxa",
-      "waxuu"
+      "waxuu",
     };
   }
 }
@@ -18730,7 +18730,7 @@ class Spanish implements Language {
       "última",
       "últimas",
       "último",
-      "últimos"
+      "últimos",
     };
   }
 }
@@ -18812,7 +18812,7 @@ class Swahili implements Language {
       "yule",
       "za",
       "zaidi",
-      "zake"
+      "zake",
     };
   }
 }
@@ -19238,7 +19238,7 @@ class Swedish implements Language {
       "över",
       "övermorgon",
       "överst",
-      "övre"
+      "övre",
     };
   }
 }
@@ -19393,7 +19393,7 @@ class Tagalog implements Language {
       "tulad",
       "tungkol",
       "una",
-      "walang"
+      "walang",
     };
   }
 }
@@ -19517,7 +19517,7 @@ class Thai implements Language {
       "ไป",
       "ไม่",
       "ไว้",
-      "้ง"
+      "้ง",
     };
   }
 }
@@ -20029,7 +20029,7 @@ class Turkish implements Language {
       "ţayet",
       "ţimdi",
       "ţu",
-      "ţöyle"
+      "ţöyle",
     };
   }
 }
@@ -20065,7 +20065,7 @@ class Ukrainian implements Language {
       "інших",
       "╙",
       "╞х",
-      "╡"
+      "╡",
     };
   }
 }
@@ -20590,7 +20590,7 @@ class Urdu implements Language {
       "ی",
       "یقیٌی",
       "یہ",
-      "یہبں"
+      "یہبں",
     };
   }
 }
@@ -21243,7 +21243,7 @@ class Vietnamese implements Language {
       "ứ hự",
       "ứ ừ",
       "ừ",
-      "ử"
+      "ử",
     };
   }
 }
@@ -21311,7 +21311,7 @@ class Yoruba implements Language {
       "ṣùgbọ́n",
       "ẹmọ́",
       "ọjọ́",
-      "ọ̀pọ̀lọpọ̀"
+      "ọ̀pọ̀lọpọ̀",
     };
   }
 }
@@ -21348,7 +21348,7 @@ class Zulu implements Language {
       "wathi",
       "yakhe",
       "zakhe",
-      "zonke"
+      "zonke",
     };
   }
 }

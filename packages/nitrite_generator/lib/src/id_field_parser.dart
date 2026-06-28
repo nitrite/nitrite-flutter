@@ -59,7 +59,7 @@ class IdFieldParser implements Parser<EntityId> {
     if (fieldName != null && fieldName.isNotEmpty) {
       return fieldName;
     } else {
-      return _fieldElement.name;
+      return _fieldElement.displayName;
     }
   }
 

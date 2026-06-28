@@ -43,8 +43,9 @@ void main() {
       }
 
       {
-        var value =
-            mapper.tryConvert<NitriteId, NitriteId>(NitriteId.createId('1'));
+        var value = mapper.tryConvert<NitriteId, NitriteId>(
+          NitriteId.createId('1'),
+        );
         expect(value, NitriteId.createId('1'));
       }
     });
@@ -52,8 +53,9 @@ void main() {
     test('Test Convert From Document', () {
       var mapper = SimpleNitriteMapper();
       {
-        var value = mapper
-            .tryConvert<Document, Document>(createDocument("key", "value"));
+        var value = mapper.tryConvert<Document, Document>(
+          createDocument("key", "value"),
+        );
         expect(value, createDocument("key", "value"));
       }
     });
@@ -61,15 +63,18 @@ void main() {
     test("Test Convert To Document without EntityConverter", () {
       var mapper = SimpleNitriteMapper();
       var a = _A("test");
-      expect(() => mapper.tryConvert<Document, _A>(a),
-          throwsObjectMappingException);
+      expect(
+        () => mapper.tryConvert<Document, _A>(a),
+        throwsObjectMappingException,
+      );
     });
 
     test("Test Convert Document To Entity without EntityConverter", () {
       var mapper = SimpleNitriteMapper();
       expect(
-          () => mapper.tryConvert<_A, Document>(createDocument("key", "value")),
-          throwsObjectMappingException);
+        () => mapper.tryConvert<_A, Document>(createDocument("key", "value")),
+        throwsObjectMappingException,
+      );
     });
 
     test("Test Convert Document To Entity with EntityConverter", () {

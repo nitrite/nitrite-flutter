@@ -9,16 +9,13 @@ void main() {
     late NitriteCollection col;
 
     setUp(() async {
-      db = await Nitrite.builder()
-          .loadModule(SpatialModule())
-          .openOrCreate();
+      db = await Nitrite.builder().loadModule(SpatialModule()).openOrCreate();
       col = await db.getCollection('geo');
       await col.createIndex(['location'], indexOptions(spatialIndex));
 
       // Geometry uses x=lon, y=lat
       var gf = GeometryFactory.defaultPrecision();
-      Point pt(double lat, double lon) =>
-          gf.createPoint(Coordinate(lon, lat));
+      Point pt(double lat, double lon) => gf.createPoint(Coordinate(lon, lat));
 
       // Minneapolis ~ (45.0, -93.265)
       await col.insert(emptyDocument()

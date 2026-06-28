@@ -358,8 +358,8 @@ double _haversineMeters(double lat1, double lon1, double lat2, double lon2) {
 
   var sinLat = math.sin(deltaLat / 2);
   var sinLon = math.sin(deltaLon / 2);
-  var a = sinLat * sinLat +
-      math.cos(lat1Rad) * math.cos(lat2Rad) * sinLon * sinLon;
+  var a =
+      sinLat * sinLat + math.cos(lat1Rad) * math.cos(lat2Rad) * sinLon * sinLon;
   var c = 2 * math.asin(math.min(1.0, math.sqrt(a)));
   return _earthRadiusMeters * c;
 }
@@ -430,8 +430,8 @@ class GeoNearFilter extends NitriteFilter implements FlattenableFilter {
     // geodesic-distance validation to eliminate false positives.
     var radiusDegrees = _metersToDegrees(distanceMeters, center.latitude);
     // Geometry uses x = longitude, y = latitude.
-    var circle =
-        _createCircle(Coordinate(center.longitude, center.latitude), radiusDegrees);
+    var circle = _createCircle(
+        Coordinate(center.longitude, center.latitude), radiusDegrees);
     return [
       WithinIndexFilter(field, circle),
       _GeoNearValidationFilter(field, center, distanceMeters),
@@ -439,8 +439,7 @@ class GeoNearFilter extends NitriteFilter implements FlattenableFilter {
   }
 
   @override
-  String toString() =>
-      '($field geoNear $center within $distanceMeters meters)';
+  String toString() => '($field geoNear $center within $distanceMeters meters)';
 }
 
 /// Validation filter for geodesic near queries that checks Haversine distance.

@@ -41,8 +41,10 @@ abstract class Transaction {
   Future<NitriteCollection> getCollection(String name);
 
   /// Gets an [ObjectRepository] to perform transactional operations on it.
-  Future<ObjectRepository<T>> getRepository<T>(
-      {EntityDecorator<T>? entityDecorator, String? key});
+  Future<ObjectRepository<T>> getRepository<T>({
+    EntityDecorator<T>? entityDecorator,
+    String? key,
+  });
 
   /// Completes the transaction and commits the data to the underlying store.
   Future<void> commit();
@@ -73,7 +75,7 @@ enum TransactionState {
   failed,
 
   /// The transaction is aborted.
-  aborted
+  aborted,
 }
 
 /// @nodoc
@@ -111,13 +113,13 @@ class JournalEntry {
   final TxAction _commit;
   final TxAction _rollback;
 
-  JournalEntry(
-      {required ChangeType changeType,
-      required TxAction commit,
-      required TxAction rollback})
-      : _changeType = changeType,
-        _commit = commit,
-        _rollback = rollback;
+  JournalEntry({
+    required ChangeType changeType,
+    required TxAction commit,
+    required TxAction rollback,
+  }) : _changeType = changeType,
+       _commit = commit,
+       _rollback = rollback;
 
   ChangeType get changeType => _changeType;
   TxAction get commit => _commit;

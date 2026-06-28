@@ -41,7 +41,8 @@ class NitriteBuilder {
   /// convert between an entity and a [Document]. This method allows you to
   /// register a custom converter for a specific entity.
   NitriteBuilder registerEntityConverter(
-      EntityConverter<dynamic> entityConverter) {
+    EntityConverter<dynamic> entityConverter,
+  ) {
     nitriteConfig.registerEntityConverter(entityConverter);
     return this;
   }

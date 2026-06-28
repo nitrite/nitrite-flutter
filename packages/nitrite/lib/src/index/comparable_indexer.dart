@@ -16,35 +16,49 @@ abstract class ComparableIndexer extends NitriteIndexer {
 
   @override
   Stream<NitriteId> findByFilter(
-      FindPlan findPlan, NitriteConfig nitriteConfig) {
-    var nitriteIndex =
-        _findNitriteIndex(findPlan.indexDescriptor, nitriteConfig);
+    FindPlan findPlan,
+    NitriteConfig nitriteConfig,
+  ) {
+    var nitriteIndex = _findNitriteIndex(
+      findPlan.indexDescriptor,
+      nitriteConfig,
+    );
     return nitriteIndex.findNitriteIds(findPlan);
   }
 
   @override
-  Future<void> writeIndexEntry(FieldValues fieldValues,
-      IndexDescriptor indexDescriptor, NitriteConfig nitriteConfig) async {
+  Future<void> writeIndexEntry(
+    FieldValues fieldValues,
+    IndexDescriptor indexDescriptor,
+    NitriteConfig nitriteConfig,
+  ) async {
     var nitriteIndex = _findNitriteIndex(indexDescriptor, nitriteConfig);
     return nitriteIndex.write(fieldValues);
   }
 
   @override
-  Future<void> removeIndexEntry(FieldValues fieldValues,
-      IndexDescriptor indexDescriptor, NitriteConfig nitriteConfig) async {
+  Future<void> removeIndexEntry(
+    FieldValues fieldValues,
+    IndexDescriptor indexDescriptor,
+    NitriteConfig nitriteConfig,
+  ) async {
     var nitriteIndex = _findNitriteIndex(indexDescriptor, nitriteConfig);
     return nitriteIndex.remove(fieldValues);
   }
 
   @override
   Future<void> dropIndex(
-      IndexDescriptor indexDescriptor, NitriteConfig nitriteConfig) async {
+    IndexDescriptor indexDescriptor,
+    NitriteConfig nitriteConfig,
+  ) async {
     var nitriteIndex = _findNitriteIndex(indexDescriptor, nitriteConfig);
     return nitriteIndex.drop();
   }
 
   NitriteIndex _findNitriteIndex(
-      IndexDescriptor? indexDescriptor, NitriteConfig nitriteConfig) {
+    IndexDescriptor? indexDescriptor,
+    NitriteConfig nitriteConfig,
+  ) {
     if (indexDescriptor == null) {
       throw IndexingException('Index descriptor cannot be null');
     }
@@ -55,11 +69,15 @@ abstract class ComparableIndexer extends NitriteIndexer {
 
     NitriteIndex nitriteIndex;
     if (indexDescriptor.isCompoundIndex) {
-      nitriteIndex =
-          CompoundIndex(indexDescriptor, nitriteConfig.getNitriteStore());
+      nitriteIndex = CompoundIndex(
+        indexDescriptor,
+        nitriteConfig.getNitriteStore(),
+      );
     } else {
-      nitriteIndex =
-          SingleFieldIndex(indexDescriptor, nitriteConfig.getNitriteStore());
+      nitriteIndex = SingleFieldIndex(
+        indexDescriptor,
+        nitriteConfig.getNitriteStore(),
+      );
     }
 
     _indexRegistry[indexDescriptor] = nitriteIndex;

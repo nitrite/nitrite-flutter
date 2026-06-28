@@ -24,10 +24,15 @@ abstract class BaseCommand implements Command {
 
   Future<void> initialize(Nitrite nitrite, String collectionName) async {
     nitriteStore = nitrite.getStore();
-    nitriteMap =
-        await nitriteStore?.openMap<NitriteId, Document>(collectionName);
+    nitriteMap = await nitriteStore?.openMap<NitriteId, Document>(
+      collectionName,
+    );
     operations = CollectionOperations(
-        collectionName, nitriteMap!, nitrite.config, EventBus());
+      collectionName,
+      nitriteMap!,
+      nitrite.config,
+      EventBus(),
+    );
     await operations?.initialize();
   }
 }

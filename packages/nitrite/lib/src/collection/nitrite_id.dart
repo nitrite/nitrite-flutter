@@ -52,10 +52,11 @@ class NitriteId implements Comparable<NitriteId> {
       return true;
     } on FormatException catch (e, stackTrace) {
       throw InvalidIdException(
-          "Id must be a string representation "
-          "of 64bit integer number $value",
-          stackTrace: stackTrace,
-          cause: e);
+        "Id must be a string representation "
+        "of 64bit integer number $value",
+        stackTrace: stackTrace,
+        cause: e,
+      );
     }
   }
 

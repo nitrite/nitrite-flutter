@@ -34,16 +34,18 @@ void main() {
         var doc = emptyDocument()
           ..put('empId', faker.randomGenerator.integer(100))
           ..put(
-              'employeeNote',
-              emptyDocument()
-                ..put('noteId', faker.guid.toString())
-                ..put('text', faker.lorem.sentence()));
+            'employeeNote',
+            emptyDocument()
+              ..put('noteId', faker.guid.toString())
+              ..put('text', faker.lorem.sentence()),
+          );
 
         await collection.insert(doc);
       }
 
-      var cursor =
-          collection.find(filter: where('employeeNote.text').notEq(null));
+      var cursor = collection.find(
+        filter: where('employeeNote.text').notEq(null),
+      );
       expect(await cursor.toList(), isEmpty);
 
       cursor = collection.find(filter: where('employeeNote:text').notEq(null));

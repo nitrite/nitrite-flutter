@@ -46,7 +46,7 @@ class Entity {
 class Convertable {
   /// Specifies the generated class name, default is empty.
   /// If empty, it will generate the class with name
-  /// <marked class name>Converter
+  /// `<marked class name>`Converter
   final String className;
 
   const Convertable({this.className = ""});

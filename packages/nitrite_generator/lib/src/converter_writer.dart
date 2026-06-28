@@ -131,7 +131,7 @@ class ConverterWriter {
         } else {
           buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
-              fieldInfo.fieldType.getDisplayString(withNullability: false));
+              fieldInfo.fieldType.getDisplayString().replaceAll('?', ''));
           buffer.write(', Document>(');
           buffer.write("document['$keyName'])");
 
@@ -189,7 +189,7 @@ class ConverterWriter {
         } else {
           buffer.write('nitriteMapper.tryConvert<');
           buffer.write(
-              fieldInfo.fieldType.getDisplayString(withNullability: false));
+              fieldInfo.fieldType.getDisplayString().replaceAll('?', ''));
           buffer.write(', Document>(');
           buffer.write("document['$keyName'])");
 
@@ -236,8 +236,8 @@ class ConverterWriter {
               "toMap(document['$keyName'], nitriteMapper);");
         } else {
           buffer.write('nitriteMapper.tryConvert<');
-          buffer.write(
-              propInfo.fieldType.getDisplayString(withNullability: false));
+          buffer
+              .write(propInfo.fieldType.getDisplayString().replaceAll('?', ''));
           buffer.write(', Document>(');
           buffer.write("document['$keyName'])");
 
@@ -297,7 +297,7 @@ class ConverterWriter {
           buffer.write("document.put('$keyName', ");
           buffer.write('nitriteMapper.tryConvert<Document, ');
           buffer.write(
-              fieldInfo.fieldType.getDisplayString(withNullability: false));
+              fieldInfo.fieldType.getDisplayString().replaceAll('?', ''));
           buffer.writeln('>(entity.${fieldInfo.fieldName}));');
         }
       }
@@ -337,8 +337,8 @@ class ConverterWriter {
         } else {
           buffer.write("document.put('$keyName', ");
           buffer.write('nitriteMapper.tryConvert<Document, ');
-          buffer.write(
-              propInfo.fieldType.getDisplayString(withNullability: false));
+          buffer
+              .write(propInfo.fieldType.getDisplayString().replaceAll('?', ''));
           buffer.writeln('>(entity.${propInfo.getterFieldName}));');
         }
       }

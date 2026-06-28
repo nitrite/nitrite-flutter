@@ -1,7 +1,7 @@
 import 'package:nitrite/nitrite.dart';
 import 'package:test/test.dart';
 
-main() {
+void main() {
   group(retry: 3, "Update Options Test Suite", () {
     setUp(() {});
 

@@ -23,7 +23,10 @@ class DocumentIndexWriter {
   }
 
   Future<void> updateIndexEntry(
-      Document oldDoc, Document newDoc, Document updatedFields) async {
+    Document oldDoc,
+    Document newDoc,
+    Document updatedFields,
+  ) async {
     var indexEntries = await _indexOperations.listIndexes();
     // filter out the index which is not affected by the update
     for (var indexDescriptor in indexEntries) {
@@ -35,7 +38,10 @@ class DocumentIndexWriter {
         var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
         await _removeIndexEntryInternal(
-            indexDescriptor, oldDoc, nitriteIndexer);
+          indexDescriptor,
+          oldDoc,
+          nitriteIndexer,
+        );
         await _writeIndexEntryInternal(indexDescriptor, newDoc, nitriteIndexer);
       }
     }
@@ -48,12 +54,18 @@ class DocumentIndexWriter {
       var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
       await _removeIndexEntryInternal(
-          indexDescriptor, document, nitriteIndexer);
+        indexDescriptor,
+        document,
+        nitriteIndexer,
+      );
     }
   }
 
-  Future<void> _writeIndexEntryInternal(IndexDescriptor indexDescriptor,
-      Document document, NitriteIndexer nitriteIndexer) async {
+  Future<void> _writeIndexEntryInternal(
+    IndexDescriptor indexDescriptor,
+    Document document,
+    NitriteIndexer nitriteIndexer,
+  ) async {
     var fields = indexDescriptor.fields;
     var fieldValues = getDocumentValues(document, fields);
 
@@ -65,12 +77,18 @@ class DocumentIndexWriter {
     } else {
       // write to nitrite indexer
       return nitriteIndexer.writeIndexEntry(
-          fieldValues, indexDescriptor, _nitriteConfig);
+        fieldValues,
+        indexDescriptor,
+        _nitriteConfig,
+      );
     }
   }
 
-  Future<void> _removeIndexEntryInternal(IndexDescriptor indexDescriptor,
-      Document document, NitriteIndexer nitriteIndexer) async {
+  Future<void> _removeIndexEntryInternal(
+    IndexDescriptor indexDescriptor,
+    Document document,
+    NitriteIndexer nitriteIndexer,
+  ) async {
     var fields = indexDescriptor.fields;
     var fieldValues = getDocumentValues(document, fields);
 
@@ -82,7 +100,10 @@ class DocumentIndexWriter {
     } else {
       // remove via nitrite indexer
       return nitriteIndexer.removeIndexEntry(
-          fieldValues, indexDescriptor, _nitriteConfig);
+        fieldValues,
+        indexDescriptor,
+        _nitriteConfig,
+      );
     }
   }
 }

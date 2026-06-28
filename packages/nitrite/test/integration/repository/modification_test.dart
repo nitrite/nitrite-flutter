@@ -21,8 +21,9 @@ void main() {
       expect(await companyRepository.hasIndex(['companyName']), true);
       expect(await companyRepository.hasIndex(['dateCreated']), false);
 
-      await companyRepository
-          .createIndex(['dateCreated'], indexOptions(IndexType.nonUnique));
+      await companyRepository.createIndex([
+        'dateCreated',
+      ], indexOptions(IndexType.nonUnique));
       expect(await companyRepository.hasIndex(['dateCreated']), true);
     });
 
@@ -37,8 +38,9 @@ void main() {
         expect(error, true);
       }
 
-      await companyRepository
-          .createIndex(['dateCreated'], indexOptions(IndexType.nonUnique));
+      await companyRepository.createIndex([
+        'dateCreated',
+      ], indexOptions(IndexType.nonUnique));
       expect(await companyRepository.hasIndex(['dateCreated']), true);
       await companyRepository.rebuildIndex(['dateCreated']);
     });
@@ -47,8 +49,9 @@ void main() {
       var indexes = await companyRepository.listIndexes();
       expect(indexes, hasLength(2));
 
-      await companyRepository
-          .createIndex(['dateCreated'], indexOptions(IndexType.nonUnique));
+      await companyRepository.createIndex([
+        'dateCreated',
+      ], indexOptions(IndexType.nonUnique));
       indexes = await companyRepository.listIndexes();
       expect(indexes, hasLength(3));
     });
@@ -57,8 +60,9 @@ void main() {
       var indexes = await companyRepository.listIndexes();
       expect(indexes, hasLength(2));
 
-      await companyRepository
-          .createIndex(['dateCreated'], indexOptions(IndexType.nonUnique));
+      await companyRepository.createIndex([
+        'dateCreated',
+      ], indexOptions(IndexType.nonUnique));
       indexes = await companyRepository.listIndexes();
       expect(indexes, hasLength(3));
 
@@ -71,8 +75,9 @@ void main() {
       var indexes = await companyRepository.listIndexes();
       expect(indexes, hasLength(2));
 
-      await companyRepository
-          .createIndex(['dateCreated'], indexOptions(IndexType.nonUnique));
+      await companyRepository.createIndex([
+        'dateCreated',
+      ], indexOptions(IndexType.nonUnique));
       indexes = await companyRepository.listIndexes();
       expect(indexes, hasLength(3));
 
@@ -132,8 +137,10 @@ void main() {
         employeeNote: employee.employeeNote,
       );
       updated.address = 'xyz road';
-      var writeResult =
-          await employeeRepository.update(where('empId').eq(12), updated);
+      var writeResult = await employeeRepository.update(
+        where('empId').eq(12),
+        updated,
+      );
       expect(writeResult.getAffectedCount(), 1);
       result = employeeRepository.find();
       expect(await result.length, 1);
@@ -150,15 +157,20 @@ void main() {
       var newJoiningDate = DateTime.parse('2012-07-01T16:02:48.440Z');
       var updated1 = createDocument('joinDate', newJoiningDate);
 
-      var writeResult = await employeeRepository
-          .updateDocument(where('empId').eq(12), updated1, justOnce: false);
+      var writeResult = await employeeRepository.updateDocument(
+        where('empId').eq(12),
+        updated1,
+        justOnce: false,
+      );
       expect(writeResult.getAffectedCount(), 1);
 
-      var result =
-          employeeRepository.find(filter: where('joinDate').eq(joiningDate));
+      var result = employeeRepository.find(
+        filter: where('joinDate').eq(joiningDate),
+      );
       expect(await result.length, 1);
-      result =
-          employeeRepository.find(filter: where('joinDate').eq(newJoiningDate));
+      result = employeeRepository.find(
+        filter: where('joinDate').eq(newJoiningDate),
+      );
       expect(await result.length, 1);
 
       await employeeRepository.remove(all);
@@ -168,23 +180,28 @@ void main() {
 
       var update = createDocument('joinDate', newJoiningDate);
       writeResult = await employeeRepository.updateDocument(
-          where('joinDate').eq(joiningDate), update,
-          justOnce: false);
+        where('joinDate').eq(joiningDate),
+        update,
+        justOnce: false,
+      );
       expect(writeResult.getAffectedCount(), 2);
 
-      result =
-          employeeRepository.find(filter: where('joinDate').eq(joiningDate));
+      result = employeeRepository.find(
+        filter: where('joinDate').eq(joiningDate),
+      );
       expect(await result.length, 0);
 
-      result =
-          employeeRepository.find(filter: where('joinDate').eq(newJoiningDate));
+      result = employeeRepository.find(
+        filter: where('joinDate').eq(newJoiningDate),
+      );
       expect(await result.length, 2);
     });
 
     test('Test Upsert True', () async {
       var joiningDate = DateTime.now();
-      var result =
-          employeeRepository.find(filter: where('joinDate').eq(joiningDate));
+      var result = employeeRepository.find(
+        filter: where('joinDate').eq(joiningDate),
+      );
       expect(await result.length, 0);
 
       var employee = Employee();
@@ -196,18 +213,23 @@ void main() {
       employee.employeeNote = Note(noteId: 23, text: 'sample text note');
 
       var writeResult = await employeeRepository.update(
-          where('empId').eq(12), employee, UpdateOptions(insertIfAbsent: true));
+        where('empId').eq(12),
+        employee,
+        UpdateOptions(insertIfAbsent: true),
+      );
       expect(writeResult.getAffectedCount(), 1);
 
-      result =
-          employeeRepository.find(filter: where('joinDate').eq(joiningDate));
+      result = employeeRepository.find(
+        filter: where('joinDate').eq(joiningDate),
+      );
       expect(await result.length, 1);
     });
 
     test('Test Upsert False', () async {
       var joiningDate = DateTime.now();
-      var result =
-          employeeRepository.find(filter: where('joinDate').eq(joiningDate));
+      var result = employeeRepository.find(
+        filter: where('joinDate').eq(joiningDate),
+      );
       expect(await result.length, 0);
 
       var employee = Employee();
@@ -218,12 +240,16 @@ void main() {
       employee.joinDate = joiningDate;
       employee.employeeNote = Note(noteId: 23, text: 'sample text note');
 
-      var writeResult = await employeeRepository.update(where('empId').eq(12),
-          employee, UpdateOptions(insertIfAbsent: false));
+      var writeResult = await employeeRepository.update(
+        where('empId').eq(12),
+        employee,
+        UpdateOptions(insertIfAbsent: false),
+      );
       expect(writeResult.getAffectedCount(), 0);
 
-      result =
-          employeeRepository.find(filter: where('joinDate').eq(joiningDate));
+      result = employeeRepository.find(
+        filter: where('joinDate').eq(joiningDate),
+      );
       expect(await result.length, 0);
     });
 
@@ -231,16 +257,20 @@ void main() {
       var joiningDate = DateTime.now();
       await _prepareUpdateWithOptions(joiningDate);
 
-      var result =
-          employeeRepository.find(filter: where('joinDate').eq(joiningDate));
+      var result = employeeRepository.find(
+        filter: where('joinDate').eq(joiningDate),
+      );
       expect(await result.length, 2);
 
-      var writeResult = await employeeRepository
-          .remove(where('joinDate').eq(joiningDate), justOne: true);
+      var writeResult = await employeeRepository.remove(
+        where('joinDate').eq(joiningDate),
+        justOne: true,
+      );
       expect(writeResult.getAffectedCount(), 1);
 
-      result =
-          employeeRepository.find(filter: where('joinDate').eq(joiningDate));
+      result = employeeRepository.find(
+        filter: where('joinDate').eq(joiningDate),
+      );
       expect(await result.length, 1);
     });
 
@@ -251,8 +281,10 @@ void main() {
       var update = createDocument('address', 'new address');
 
       var writeResult = await employeeRepository.updateDocument(
-          where('empId').eq(employee.empId), update,
-          justOnce: false);
+        where('empId').eq(employee.empId),
+        update,
+        justOnce: false,
+      );
       expect(writeResult.getAffectedCount(), 1);
 
       var byId = await employeeRepository.getById(employee.empId);
@@ -261,8 +293,10 @@ void main() {
 
       update.put('address', 'another address');
       writeResult = await employeeRepository.updateDocument(
-          where('empId').eq(employee.empId), update,
-          justOnce: false);
+        where('empId').eq(employee.empId),
+        update,
+        justOnce: false,
+      );
       expect(writeResult.getAffectedCount(), 1);
 
       byId = await employeeRepository.getById(employee.empId);
@@ -288,9 +322,13 @@ void main() {
       var update = Employee(address: 'new address');
 
       expect(
-          () async => await employeeRepository.update(where('joinDate').eq(now),
-              update, updateOptions(insertIfAbsent: false)),
-          throwsInvalidIdException);
+        () async => await employeeRepository.update(
+          where('joinDate').eq(now),
+          update,
+          updateOptions(insertIfAbsent: false),
+        ),
+        throwsInvalidIdException,
+      );
     });
 
     test('Test Update Null', () async {
@@ -300,16 +338,18 @@ void main() {
       var newEmployee = Employee.clone(employee);
       newEmployee.joinDate = null;
 
-      cursor =
-          employeeRepository.find(filter: where('empId').eq(employee.empId));
+      cursor = employeeRepository.find(
+        filter: where('empId').eq(employee.empId),
+      );
       var result = await cursor.first;
       expect(result.joinDate, isNotNull);
 
       var writeResult = await employeeRepository.updateOne(newEmployee);
       expect(writeResult.getAffectedCount(), 1);
 
-      cursor =
-          employeeRepository.find(filter: where('empId').eq(employee.empId));
+      cursor = employeeRepository.find(
+        filter: where('empId').eq(employee.empId),
+      );
       result = await cursor.first;
       expect(result.joinDate, isNull);
     });
@@ -328,9 +368,10 @@ void main() {
       expect(employee.joinDate, isNotNull);
 
       var writeResult = await employeeRepository.update(
-          where('empId').eq(oldId),
-          newEmployee,
-          UpdateOptions(insertIfAbsent: false));
+        where('empId').eq(oldId),
+        newEmployee,
+        UpdateOptions(insertIfAbsent: false),
+      );
       expect(writeResult.getAffectedCount(), 1);
 
       expect(await employeeRepository.size, count);
@@ -351,9 +392,13 @@ void main() {
       expect(employee.joinDate, isNotNull);
 
       expect(
-          () async => await employeeRepository.update(where('empId').eq(oldId),
-              newEmployee, UpdateOptions(insertIfAbsent: false)),
-          throwsInvalidIdException);
+        () async => await employeeRepository.update(
+          where('empId').eq(oldId),
+          newEmployee,
+          UpdateOptions(insertIfAbsent: false),
+        ),
+        throwsInvalidIdException,
+      );
     });
 
     test('Test Update with Duplicate Id', () async {
@@ -369,9 +414,13 @@ void main() {
       expect(employee.joinDate, isNotNull);
 
       expect(
-          () async => await employeeRepository.update(where('empId').eq(oldId),
-              newEmployee, UpdateOptions(insertIfAbsent: false)),
-          throwsUniqueConstraintException);
+        () async => await employeeRepository.update(
+          where('empId').eq(oldId),
+          newEmployee,
+          UpdateOptions(insertIfAbsent: false),
+        ),
+        throwsUniqueConstraintException,
+      );
     });
 
     test('Test Update with Object', () async {
@@ -394,16 +443,19 @@ void main() {
 
     test('Test Upsert with Object', () async {
       var employee = Employee(
-          address: 'some road',
-          blob: [1, 2, 125],
-          empId: 12,
-          joinDate: DateTime.now(),
-          employeeNote: Note(noteId: 23, text: 'sample text note'));
+        address: 'some road',
+        blob: [1, 2, 125],
+        empId: 12,
+        joinDate: DateTime.now(),
+        employeeNote: Note(noteId: 23, text: 'sample text note'),
+      );
 
       var writeResult = await employeeRepository.updateOne(employee);
       expect(writeResult.getAffectedCount(), 0);
-      writeResult =
-          await employeeRepository.updateOne(employee, insertIfAbsent: true);
+      writeResult = await employeeRepository.updateOne(
+        employee,
+        insertIfAbsent: true,
+      );
       expect(writeResult.getAffectedCount(), 1);
 
       var cursor = employeeRepository.find(filter: where('empId').eq(12));
@@ -413,11 +465,12 @@ void main() {
 
     test('Test Remove Object', () async {
       var employee = Employee(
-          address: 'some road',
-          blob: [1, 2, 125],
-          empId: 12,
-          joinDate: DateTime.now(),
-          employeeNote: Note(noteId: 23, text: 'sample text note'));
+        address: 'some road',
+        blob: [1, 2, 125],
+        empId: 12,
+        joinDate: DateTime.now(),
+        employeeNote: Note(noteId: 23, text: 'sample text note'),
+      );
 
       var size = await employeeRepository.size;
       var result = await employeeRepository.insert(employee);
@@ -433,8 +486,10 @@ void main() {
 
     test('Test Update with Doc', () async {
       var note = Note(noteId: 10, text: 'Some note text');
-      var document =
-          createDocument('address', 'some address').put('employeeNote', note);
+      var document = createDocument(
+        'address',
+        'some address',
+      ).put('employeeNote', note);
 
       var result = await employeeRepository.updateDocument(all, document);
       expect(result.getAffectedCount(), 10);
@@ -460,8 +515,10 @@ void main() {
       var item = await cursor.first;
       await repo.removeOne(item);
 
-      expect(() async => await repo.getById(item.idField),
-          throwsInvalidIdException);
+      expect(
+        () async => await repo.getById(item.idField),
+        throwsInvalidIdException,
+      );
     });
 
     test('Test Update Object not exists Upsert True', () async {
@@ -539,8 +596,11 @@ void main() {
       expect(text, isNotNull);
 
       var update = createDocument('employeeNote.text', 'some updated text');
-      var writeResult = await employeeRepository
-          .updateDocument(where("empId").eq(1), update, justOnce: false);
+      var writeResult = await employeeRepository.updateDocument(
+        where("empId").eq(1),
+        update,
+        justOnce: false,
+      );
       expect(writeResult.getAffectedCount(), 1);
 
       employee = await employeeRepository.getById(1);
@@ -554,7 +614,7 @@ void main() {
   });
 }
 
-_prepareUpdateWithOptions(DateTime joiningDate) async {
+Future<void> _prepareUpdateWithOptions(DateTime joiningDate) async {
   await employeeRepository.remove(all);
 
   var employee1 = Employee();

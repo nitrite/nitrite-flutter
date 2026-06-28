@@ -5,10 +5,12 @@ import 'package:nitrite/nitrite.dart';
 /// @nodoc
 class ProjectedDocumentStream extends StreamView<Document> {
   ProjectedDocumentStream(Stream<Document> stream, Document projection)
-      : super(_project(stream, projection));
+    : super(_project(stream, projection));
 
   static Stream<Document> _project(
-      Stream<Document> stream, Document projection) {
+    Stream<Document> stream,
+    Document projection,
+  ) {
     return stream.map((doc) {
       var newDoc = emptyDocument();
       for (var field in projection.fields) {

@@ -62,10 +62,18 @@ extension StringFilterExtension on FieldName {
   /// ```dart
   /// collection.find(where("age").between(40, 30));
   /// ```
-  NitriteFilter between(Comparable lowerBound, Comparable upperBound,
-      {upperInclusive = true, lowerInclusive = true}) {
-    return where(this).between(lowerBound, upperBound,
-        upperInclusive: upperInclusive, lowerInclusive: lowerInclusive);
+  NitriteFilter between(
+    Comparable lowerBound,
+    Comparable upperBound, {
+    upperInclusive = true,
+    lowerInclusive = true,
+  }) {
+    return where(this).between(
+      lowerBound,
+      upperBound,
+      upperInclusive: upperInclusive,
+      lowerInclusive: lowerInclusive,
+    );
   }
 
   /// Creates an in filter which matches the documents where

@@ -23,8 +23,13 @@ class ReadOperations {
 
   late FindOptimizer _findOptimizer;
 
-  ReadOperations(this._collectionName, this._indexOperations,
-      this._nitriteConfig, this._nitriteMap, this._processorChain) {
+  ReadOperations(
+    this._collectionName,
+    this._indexOperations,
+    this._nitriteConfig,
+    this._nitriteMap,
+    this._processorChain,
+  ) {
     _findOptimizer = FindOptimizer();
   }
 
@@ -33,11 +38,14 @@ class ReadOperations {
     _prepareFilter(filter);
 
     return _createCursor(() async {
-      Iterable<IndexDescriptor> indexDescriptors =
-          await _indexOperations.listIndexes();
+      Iterable<IndexDescriptor> indexDescriptors = await _indexOperations
+          .listIndexes();
 
-      var findPlan =
-          _findOptimizer.optimize(filter!, findOptions, indexDescriptors);
+      var findPlan = _findOptimizer.optimize(
+        filter!,
+        findOptions,
+        indexDescriptors,
+      );
       return findPlan;
     });
   }
@@ -78,8 +86,12 @@ class ReadOperations {
   DocumentCursor _createCursor(FutureFactory<FindPlan> findPlanFunction) {
     // a defer stream is used so that we can defer the
     // calculation till the subscription.
-    return DocumentStream(() => _findSuitableStream(findPlanFunction),
-        _processorChain, findPlanFunction, () => _count(findPlanFunction));
+    return DocumentStream(
+      () => _findSuitableStream(findPlanFunction),
+      _processorChain,
+      findPlanFunction,
+      () => _count(findPlanFunction),
+    );
   }
 
   Future<int> _count(FutureFactory<FindPlan> findPlanFunction) async {
@@ -109,7 +121,8 @@ class ReadOperations {
   }
 
   Stream<Document> _findSuitableStream(
-      FutureFactory<FindPlan> findPlanFunction) async* {
+    FutureFactory<FindPlan> findPlanFunction,
+  ) async* {
     Stream<Document> rawStream;
     var findPlan = await findPlanFunction();
 
@@ -126,10 +139,11 @@ class ReadOperations {
       // return only distinct items
       if (findPlan.distinct) {
         rawStream = rawStream.distinctUnique(
-            equals: (a, b) {
-              return a.id == b.id;
-            },
-            hashCode: (doc) => doc.id.hashCode);
+          equals: (a, b) {
+            return a.id == b.id;
+          },
+          hashCode: (doc) => doc.id.hashCode,
+        );
       }
     } else {
       // and or single filter
@@ -145,8 +159,9 @@ class ReadOperations {
         var indexDescriptor = findPlan.indexDescriptor;
         if (indexDescriptor != null) {
           // get optimized filter
-          var indexer =
-              await _nitriteConfig.findIndexer(indexDescriptor.indexType);
+          var indexer = await _nitriteConfig.findIndexer(
+            indexDescriptor.indexType,
+          );
           var nitriteIdStream = indexer.findByFilter(findPlan, _nitriteConfig);
 
           // create indexed stream from optimized filter

@@ -18,11 +18,17 @@ void main() {
       var dbValue = DBValue(DBValue('a'));
 
       expect(
-          () => dbValue.compareTo(DBValue(2)), throwsInvalidOperationException);
-      expect(() => dbValue.compareTo(DBValue('c')),
-          throwsInvalidOperationException);
-      expect(() => dbValue.compareTo(DBValue(DateTime.now())),
-          throwsInvalidOperationException);
+        () => dbValue.compareTo(DBValue(2)),
+        throwsInvalidOperationException,
+      );
+      expect(
+        () => dbValue.compareTo(DBValue('c')),
+        throwsInvalidOperationException,
+      );
+      expect(
+        () => dbValue.compareTo(DBValue(DateTime.now())),
+        throwsInvalidOperationException,
+      );
       expect(dbValue.compareTo(DBValue(DBValue('a'))), 0);
     });
 
@@ -30,7 +36,9 @@ void main() {
       var dbValue = DBValue(DBNull.instance);
 
       expect(
-          () => dbValue.compareTo(DBValue(2)), throwsInvalidOperationException);
+        () => dbValue.compareTo(DBValue(2)),
+        throwsInvalidOperationException,
+      );
       expect(dbValue.compareTo(DBValue(DBNull.instance)), 0);
     });
 
@@ -38,9 +46,13 @@ void main() {
       var dbValue = DBValue(UnknownType());
 
       expect(
-          () => dbValue.compareTo(DBValue(2)), throwsInvalidOperationException);
-      expect(() => dbValue.compareTo(DBValue(DBNull.instance)),
-          throwsInvalidOperationException);
+        () => dbValue.compareTo(DBValue(2)),
+        throwsInvalidOperationException,
+      );
+      expect(
+        () => dbValue.compareTo(DBValue(DBNull.instance)),
+        throwsInvalidOperationException,
+      );
       expect(dbValue.compareTo(DBValue(UnknownType())), 0);
     });
 
@@ -48,16 +60,20 @@ void main() {
       var list = [DBValue(10), DBValue(1), DBValue(5)];
       list.sort();
 
-      expect(ListEquality().equals(list, [DBValue(1), DBValue(5), DBValue(10)]),
-          isTrue);
+      expect(
+        ListEquality().equals(list, [DBValue(1), DBValue(5), DBValue(10)]),
+        isTrue,
+      );
     });
 
     test("Test Sort Descending", () {
       var list = [DBValue(10), DBValue(1), DBValue(5)];
       list.sort((a, b) => -1 * a.compareTo(b));
 
-      expect(ListEquality().equals(list, [DBValue(10), DBValue(5), DBValue(1)]),
-          isTrue);
+      expect(
+        ListEquality().equals(list, [DBValue(10), DBValue(5), DBValue(1)]),
+        isTrue,
+      );
     });
 
     test("Test Invalid Comparison", () {

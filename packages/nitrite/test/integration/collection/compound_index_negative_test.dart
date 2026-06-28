@@ -50,8 +50,10 @@ void main() {
 
       bool noError = true;
       try {
-        await collection.createIndex(
-            ['my-value', 'lastName'], indexOptions(IndexType.nonUnique));
+        await collection.createIndex([
+          'my-value',
+          'lastName',
+        ], indexOptions(IndexType.nonUnique));
       } catch (e) {
         noError = false;
       }
@@ -59,23 +61,29 @@ void main() {
     });
 
     test('Test Drop Index on NonIndexed Field', () async {
-      expect(() async => await collection.dropIndex(['data', 'firstName']),
-          throwsIndexingException);
+      expect(
+        () async => await collection.dropIndex(['data', 'firstName']),
+        throwsIndexingException,
+      );
     });
 
     test('Test Rebuild Invalid Index', () async {
       expect(
-          () async => await collection.rebuildIndex(['unknown', 'firstName']),
-          throwsIndexingException);
+        () async => await collection.rebuildIndex(['unknown', 'firstName']),
+        throwsIndexingException,
+      );
     });
 
     test('Test Create Multiple Index Type on Same Fields', () async {
       await collection.createIndex(['lastName', 'firstName']);
 
       expect(
-          () async => await collection.createIndex(
-              ['lastName', 'firstName'], indexOptions(IndexType.nonUnique)),
-          throwsIndexingException);
+        () async => await collection.createIndex([
+          'lastName',
+          'firstName',
+        ], indexOptions(IndexType.nonUnique)),
+        throwsIndexingException,
+      );
     });
 
     test('Test Index Already Exists', () async {
@@ -83,21 +91,29 @@ void main() {
       expect(await collection.hasIndex(['firstName']), isTrue);
 
       expect(
-          () async => await collection.createIndex(
-              ['firstName', 'lastName'], indexOptions(IndexType.nonUnique)),
-          throwsIndexingException);
+        () async => await collection.createIndex([
+          'firstName',
+          'lastName',
+        ], indexOptions(IndexType.nonUnique)),
+        throwsIndexingException,
+      );
     });
 
     test('Test Create Compound Text Index', () async {
       expect(
-          () async => await collection.createIndex(
-              ['body', 'lastName'], indexOptions(IndexType.fullText)),
-          throwsIndexingException);
+        () async => await collection.createIndex([
+          'body',
+          'lastName',
+        ], indexOptions(IndexType.fullText)),
+        throwsIndexingException,
+      );
     });
 
     test('Test Create Multikey Index in Second Field', () async {
-      await collection
-          .createIndex(['lastName', 'data'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+        'data',
+      ], indexOptions(IndexType.nonUnique));
       expect(await collection.hasIndex(['lastName']), isTrue);
       expect(() async => await insert(), throwsIndexingException);
     });

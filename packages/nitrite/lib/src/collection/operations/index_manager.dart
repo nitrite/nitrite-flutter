@@ -11,7 +11,7 @@ class IndexManager {
   late NitriteMap<Fields, Document> _indexMetaMap;
 
   IndexManager(this._collectionName, this._nitriteConfig)
-      : _nitriteStore = _nitriteConfig.getNitriteStore();
+    : _nitriteStore = _nitriteConfig.getNitriteStore();
 
   Future<void> initialize() async {
     var mapName = deriveIndexMetaMapName(_collectionName);
@@ -30,7 +30,8 @@ class IndexManager {
   }
 
   Future<Iterable<IndexDescriptor>> findMatchingIndexDescriptors(
-      Fields fields) async {
+    Fields fields,
+  ) async {
     var list = <IndexDescriptor>[];
     var indexDescriptors = await getIndexDescriptors();
     for (var indexDescriptor in indexDescriptors) {
@@ -59,8 +60,9 @@ class IndexManager {
           var indexMapName = indexMeta.indexMap;
 
           if (indexMapName != null) {
-            var indexMap =
-                await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
+            var indexMap = await _nitriteStore.openMap<dynamic, dynamic>(
+              indexMapName,
+            );
             await indexMap.close();
           }
         }
@@ -99,7 +101,9 @@ class IndexManager {
   }
 
   Future<IndexDescriptor> createIndexDescriptor(
-      Fields fields, String indexType) async {
+    Fields fields,
+    String indexType,
+  ) async {
     await _validateIndexRequest(fields, indexType);
     var index = IndexDescriptor(indexType, fields, _collectionName);
 
@@ -115,13 +119,15 @@ class IndexManager {
 
   Future<void> dropIndexDescriptor(Fields fields) async {
     var indexMetaDoc = await _indexMetaMap[fields];
-    var indexMeta =
-        indexMetaDoc == null ? null : IndexMeta.fromDocument(indexMetaDoc);
+    var indexMeta = indexMetaDoc == null
+        ? null
+        : IndexMeta.fromDocument(indexMetaDoc);
     if (indexMeta != null) {
       var indexMapName = indexMeta.indexMap;
       if (indexMapName != null) {
-        var indexMap =
-            await _nitriteStore.openMap<dynamic, dynamic>(indexMapName);
+        var indexMap = await _nitriteStore.openMap<dynamic, dynamic>(
+          indexMapName,
+        );
         await indexMap.drop();
       }
 

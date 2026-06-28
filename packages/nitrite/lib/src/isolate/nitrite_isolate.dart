@@ -45,8 +45,10 @@ class NitriteIsolate {
   /// returns a sendable handle to it.
   static Future<NitriteIsolate> spawn(NitriteOpener factory) async {
     var init = ReceivePort();
-    await Isolate.spawn(_ownerMain, (init.sendPort, factory),
-        debugName: 'nitrite-owner');
+    await Isolate.spawn(_ownerMain, (
+      init.sendPort,
+      factory,
+    ), debugName: 'nitrite-owner');
     var first = await init.first;
     init.close();
     if (first is SendPort) {
@@ -87,7 +89,10 @@ class IsolateCollection {
       (await _iso._request('insert', _name, documents) as List)
           .cast<NitriteId>();
 
-  Future<List<Document>> find({Filter? filter, FindOptions? findOptions}) async =>
+  Future<List<Document>> find({
+    Filter? filter,
+    FindOptions? findOptions,
+  }) async =>
       (await _iso._request('find', _name, (filter, findOptions)) as List)
           .cast<Document>();
 
@@ -100,14 +105,18 @@ class IsolateCollection {
       (await _iso._request('remove', _name, (filter, justOne)) as List)
           .cast<NitriteId>();
 
-  Future<List<NitriteId>> update(Filter filter, Document update,
-          {bool justOnce = false}) async =>
+  Future<List<NitriteId>> update(
+    Filter filter,
+    Document update, {
+    bool justOnce = false,
+  }) async =>
       (await _iso._request('update', _name, (filter, update, justOnce)) as List)
           .cast<NitriteId>();
 
-  Future<void> createIndex(List<String> fields,
-          [IndexOptions? indexOptions]) async =>
-      await _iso._request('createIndex', _name, (fields, indexOptions));
+  Future<void> createIndex(
+    List<String> fields, [
+    IndexOptions? indexOptions,
+  ]) async => await _iso._request('createIndex', _name, (fields, indexOptions));
 }
 
 /// Owner-isolate entry point: opens the database, then serves commands from a
@@ -148,7 +157,11 @@ Future<void> _ownerMain((SendPort, NitriteOpener) init) async {
 }
 
 Future<Object?> _dispatch(
-    Nitrite db, String type, String name, dynamic arg) async {
+  Nitrite db,
+  String type,
+  String name,
+  dynamic arg,
+) async {
   var col = await db.getCollection(name);
   switch (type) {
     case 'insert':

@@ -18,8 +18,12 @@ class CollectionOperations {
   late WriteOperations _writeOperations;
   late ReadOperations _readOperations;
 
-  CollectionOperations(this._collectionName, this._nitriteMap,
-      this._nitriteConfig, this._eventBus);
+  CollectionOperations(
+    this._collectionName,
+    this._nitriteMap,
+    this._nitriteConfig,
+    this._eventBus,
+  );
 
   void addProcessor(Processor processor) {
     _processorChain.add(processor);
@@ -113,7 +117,10 @@ class CollectionOperations {
   }
 
   Future<WriteResult> update(
-      Filter filter, Document update, UpdateOptions updateOptions) async {
+    Filter filter,
+    Document update,
+    UpdateOptions updateOptions,
+  ) async {
     var stream = _writeOperations.update(filter, update, updateOptions);
     var list = await stream.toList();
     return WriteResult(list);
@@ -127,14 +134,28 @@ class CollectionOperations {
   Future<void> initialize() async {
     _processorChain = ProcessorChain();
     _indexOperations = IndexOperations(
-        _collectionName, _nitriteConfig, _nitriteMap, _eventBus);
+      _collectionName,
+      _nitriteConfig,
+      _nitriteMap,
+      _eventBus,
+    );
     await _indexOperations.initialize();
 
-    _readOperations = ReadOperations(_collectionName, _indexOperations,
-        _nitriteConfig, _nitriteMap, _processorChain);
+    _readOperations = ReadOperations(
+      _collectionName,
+      _indexOperations,
+      _nitriteConfig,
+      _nitriteMap,
+      _processorChain,
+    );
 
     var indexWriter = DocumentIndexWriter(_nitriteConfig, _indexOperations);
     _writeOperations = WriteOperations(
-        indexWriter, _readOperations, _nitriteMap, _eventBus, _processorChain);
+      indexWriter,
+      _readOperations,
+      _nitriteMap,
+      _eventBus,
+      _processorChain,
+    );
   }
 }

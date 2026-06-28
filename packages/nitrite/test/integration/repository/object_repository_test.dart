@@ -54,7 +54,8 @@ void main() {
 
     test('Test With Ignored Field', () async {
       var repo = await db.getRepository<WithTransientField>(
-          entityDecorator: WithTransientFieldDecorator());
+        entityDecorator: WithTransientFieldDecorator(),
+      );
       expect(await repo.hasIndex(['number']), true);
 
       var object = WithTransientField(name: 'test', number: 2);
@@ -97,26 +98,33 @@ void main() {
 
     test('Test With Date as Id', () async {
       var repo = await db.getRepository<WithDateId>(
-          entityDecorator: WithDateIdDecorator());
+        entityDecorator: WithDateIdDecorator(),
+      );
       expect(await repo.hasIndex(['id']), true);
 
       var object1 = WithDateId(
-          id: DateTime.fromMillisecondsSinceEpoch(1482773634000),
-          name: 'first date');
+        id: DateTime.fromMillisecondsSinceEpoch(1482773634000),
+        name: 'first date',
+      );
       var object2 = WithDateId(
-          id: DateTime.fromMillisecondsSinceEpoch(1482773720000),
-          name: 'second date');
+        id: DateTime.fromMillisecondsSinceEpoch(1482773720000),
+        name: 'second date',
+      );
       await repo.insertMany([object1, object2]);
 
       var cursor = repo.find(
-          filter: where('id')
-              .eq(DateTime.fromMillisecondsSinceEpoch(1482773634000)));
+        filter: where(
+          'id',
+        ).eq(DateTime.fromMillisecondsSinceEpoch(1482773634000)),
+      );
       var item = await cursor.first;
       expect(item, object1);
 
       cursor = repo.find(
-          filter: where('id')
-              .eq(DateTime.fromMillisecondsSinceEpoch(1482773720000)));
+        filter: where(
+          'id',
+        ).eq(DateTime.fromMillisecondsSinceEpoch(1482773720000)),
+      );
       item = await cursor.first;
       expect(item, object2);
     });
@@ -156,8 +164,8 @@ void main() {
       expect(await cursor.length, 0);
 
       cursor = repository.find(
-          filter:
-              where('date').eq(DateTime.fromMillisecondsSinceEpoch(10000000)));
+        filter: where('date').eq(DateTime.fromMillisecondsSinceEpoch(10000000)),
+      );
       expect(await cursor.length, 1);
 
       cursor = repository.find(filter: where('id').eq(1));
@@ -166,7 +174,8 @@ void main() {
 
     test('Test Attributes', () async {
       var repository = await db.getRepository<WithDateId>(
-          entityDecorator: WithDateIdDecorator());
+        entityDecorator: WithDateIdDecorator(),
+      );
       expect(await repository.hasIndex(['id']), true);
 
       var attributes = Attributes(repository.documentCollection.name);
@@ -222,15 +231,25 @@ void main() {
     test('Test Entity Repository', () async {
       var managerRepo = await db.getRepository<EmployeeEntity>(key: 'managers');
       var employeeRepo = await db.getRepository<EmployeeEntity>();
-      var developerRepo =
-          await db.getRepository<EmployeeEntity>(key: 'developers');
+      var developerRepo = await db.getRepository<EmployeeEntity>(
+        key: 'developers',
+      );
 
-      await managerRepo
-          .insertMany([EmployeeEntity(), EmployeeEntity(), EmployeeEntity()]);
-      await employeeRepo
-          .insertMany([EmployeeEntity(), EmployeeEntity(), EmployeeEntity()]);
-      await developerRepo
-          .insertMany([EmployeeEntity(), EmployeeEntity(), EmployeeEntity()]);
+      await managerRepo.insertMany([
+        EmployeeEntity(),
+        EmployeeEntity(),
+        EmployeeEntity(),
+      ]);
+      await employeeRepo.insertMany([
+        EmployeeEntity(),
+        EmployeeEntity(),
+        EmployeeEntity(),
+      ]);
+      await developerRepo.insertMany([
+        EmployeeEntity(),
+        EmployeeEntity(),
+        EmployeeEntity(),
+      ]);
 
       bool errored = false;
       try {
@@ -270,36 +289,52 @@ void main() {
     });
 
     test('Test Repository Name', () async {
-      var productRepository =
-          await db.getRepository<Product>(entityDecorator: ProductDecorator());
+      var productRepository = await db.getRepository<Product>(
+        entityDecorator: ProductDecorator(),
+      );
       var upcomingProductRepository = await db.getRepository<Product>(
-          entityDecorator: ProductDecorator(), key: 'upcoming');
+        entityDecorator: ProductDecorator(),
+        key: 'upcoming',
+      );
       var manufacturerRepository = await db.getRepository<Manufacturer>(
-          entityDecorator: ManufacturerDecorator());
+        entityDecorator: ManufacturerDecorator(),
+      );
       var exManufacturerRepository = await db.getRepository<Manufacturer>(
-          entityDecorator: ManufacturerDecorator(), key: 'ex');
+        entityDecorator: ManufacturerDecorator(),
+        key: 'ex',
+      );
       var employeeRepository = await db.getRepository<Employee>();
       var managerRepository = await db.getRepository<Employee>(key: 'manager');
 
       expect(productRepository.documentCollection.name, 'product');
-      expect(upcomingProductRepository.documentCollection.name,
-          'product+upcoming');
+      expect(
+        upcomingProductRepository.documentCollection.name,
+        'product+upcoming',
+      );
       expect(manufacturerRepository.documentCollection.name, 'Manufacturer');
       expect(
-          exManufacturerRepository.documentCollection.name, 'Manufacturer+ex');
+        exManufacturerRepository.documentCollection.name,
+        'Manufacturer+ex',
+      );
       expect(employeeRepository.documentCollection.name, 'Employee');
       expect(managerRepository.documentCollection.name, 'Employee+manager');
     });
 
     test('Test Repository Type', () async {
-      var productRepository =
-          await db.getRepository<Product>(entityDecorator: ProductDecorator());
+      var productRepository = await db.getRepository<Product>(
+        entityDecorator: ProductDecorator(),
+      );
       var upcomingProductRepository = await db.getRepository<Product>(
-          entityDecorator: ProductDecorator(), key: 'upcoming');
+        entityDecorator: ProductDecorator(),
+        key: 'upcoming',
+      );
       var manufacturerRepository = await db.getRepository<Manufacturer>(
-          entityDecorator: ManufacturerDecorator());
+        entityDecorator: ManufacturerDecorator(),
+      );
       var exManufacturerRepository = await db.getRepository<Manufacturer>(
-          entityDecorator: ManufacturerDecorator(), key: 'ex');
+        entityDecorator: ManufacturerDecorator(),
+        key: 'ex',
+      );
       var employeeRepository = await db.getRepository<Employee>();
       var managerRepository = await db.getRepository<Employee>(key: 'manager');
 
@@ -312,14 +347,20 @@ void main() {
     });
 
     test('Test Destroy Repository', () async {
-      var productRepository =
-          await db.getRepository<Product>(entityDecorator: ProductDecorator());
+      var productRepository = await db.getRepository<Product>(
+        entityDecorator: ProductDecorator(),
+      );
       var upcomingProductRepository = await db.getRepository<Product>(
-          entityDecorator: ProductDecorator(), key: 'upcoming');
+        entityDecorator: ProductDecorator(),
+        key: 'upcoming',
+      );
       var manufacturerRepository = await db.getRepository<Manufacturer>(
-          entityDecorator: ManufacturerDecorator());
+        entityDecorator: ManufacturerDecorator(),
+      );
       var exManufacturerRepository = await db.getRepository<Manufacturer>(
-          entityDecorator: ManufacturerDecorator(), key: 'ex');
+        entityDecorator: ManufacturerDecorator(),
+        key: 'ex',
+      );
       var employeeRepository = await db.getRepository<Employee>();
       var managerRepository = await db.getRepository<Employee>(key: 'manager');
 
@@ -332,51 +373,83 @@ void main() {
 
       expect(await db.hasRepository(entityDecorator: ProductDecorator()), true);
       expect(
-          await db.hasRepository(
-              entityDecorator: ProductDecorator(), key: 'upcoming'),
-          true);
-      expect(await db.hasRepository(entityDecorator: ManufacturerDecorator()),
-          true);
+        await db.hasRepository(
+          entityDecorator: ProductDecorator(),
+          key: 'upcoming',
+        ),
+        true,
+      );
       expect(
-          await db.hasRepository(
-              entityDecorator: ManufacturerDecorator(), key: 'ex'),
-          true);
+        await db.hasRepository(entityDecorator: ManufacturerDecorator()),
+        true,
+      );
+      expect(
+        await db.hasRepository(
+          entityDecorator: ManufacturerDecorator(),
+          key: 'ex',
+        ),
+        true,
+      );
       expect(await db.hasRepository<Employee>(), true);
       expect(await db.hasRepository<Employee>(key: 'manager'), true);
 
       await db.destroyRepository(entityDecorator: ProductDecorator());
       expect(
-          await db.hasRepository(entityDecorator: ProductDecorator()), false);
+        await db.hasRepository(entityDecorator: ProductDecorator()),
+        false,
+      );
       expect(
-          await db.hasRepository(
-              entityDecorator: ProductDecorator(), key: 'upcoming'),
-          true);
+        await db.hasRepository(
+          entityDecorator: ProductDecorator(),
+          key: 'upcoming',
+        ),
+        true,
+      );
 
       await db.destroyRepository(
-          entityDecorator: ProductDecorator(), key: 'upcoming');
+        entityDecorator: ProductDecorator(),
+        key: 'upcoming',
+      );
       expect(
-          await db.hasRepository(entityDecorator: ProductDecorator()), false);
+        await db.hasRepository(entityDecorator: ProductDecorator()),
+        false,
+      );
       expect(
-          await db.hasRepository(
-              entityDecorator: ProductDecorator(), key: 'upcoming'),
-          false);
+        await db.hasRepository(
+          entityDecorator: ProductDecorator(),
+          key: 'upcoming',
+        ),
+        false,
+      );
 
       await db.destroyRepository(entityDecorator: ManufacturerDecorator());
-      expect(await db.hasRepository(entityDecorator: ManufacturerDecorator()),
-          false);
       expect(
-          await db.hasRepository(
-              entityDecorator: ManufacturerDecorator(), key: 'ex'),
-          true);
+        await db.hasRepository(entityDecorator: ManufacturerDecorator()),
+        false,
+      );
+      expect(
+        await db.hasRepository(
+          entityDecorator: ManufacturerDecorator(),
+          key: 'ex',
+        ),
+        true,
+      );
 
       await db.destroyRepository(
-          entityDecorator: ManufacturerDecorator(), key: 'ex');
-      expect(await db.hasRepository(entityDecorator: ManufacturerDecorator()),
-          false);
+        entityDecorator: ManufacturerDecorator(),
+        key: 'ex',
+      );
       expect(
-          await db.hasRepository(
-              entityDecorator: ManufacturerDecorator(), key: 'ex'),
-          false);
+        await db.hasRepository(entityDecorator: ManufacturerDecorator()),
+        false,
+      );
+      expect(
+        await db.hasRepository(
+          entityDecorator: ManufacturerDecorator(),
+          key: 'ex',
+        ),
+        false,
+      );
 
       await db.destroyRepository<Employee>();
       expect(await db.hasRepository<Employee>(), false);
@@ -388,43 +461,63 @@ void main() {
     });
 
     test('Test Destroy Repository Wrong Decorator', () async {
-      var productRepository =
-          await db.getRepository(entityDecorator: ProductDecorator());
+      var productRepository = await db.getRepository(
+        entityDecorator: ProductDecorator(),
+      );
       expect(productRepository, isNotNull);
       expect(await db.hasRepository(entityDecorator: ProductDecorator()), true);
-      expect(await db.hasRepository(entityDecorator: ManufacturerDecorator()),
-          false);
+      expect(
+        await db.hasRepository(entityDecorator: ManufacturerDecorator()),
+        false,
+      );
 
       await db.destroyRepository(entityDecorator: ManufacturerDecorator());
       expect(await db.hasRepository(entityDecorator: ProductDecorator()), true);
-      expect(await db.hasRepository(entityDecorator: ManufacturerDecorator()),
-          false);
+      expect(
+        await db.hasRepository(entityDecorator: ManufacturerDecorator()),
+        false,
+      );
     });
 
     test('Test Destroy Repository Wrong Decorator with Key', () async {
       var productRepository = await db.getRepository(
-          entityDecorator: ProductDecorator(), key: 'upcoming');
+        entityDecorator: ProductDecorator(),
+        key: 'upcoming',
+      );
       expect(productRepository, isNotNull);
       expect(
-          await db.hasRepository(
-              entityDecorator: ProductDecorator(), key: 'upcoming'),
-          true);
-      expect(await db.hasRepository(entityDecorator: ManufacturerDecorator()),
-          false);
+        await db.hasRepository(
+          entityDecorator: ProductDecorator(),
+          key: 'upcoming',
+        ),
+        true,
+      );
+      expect(
+        await db.hasRepository(entityDecorator: ManufacturerDecorator()),
+        false,
+      );
 
       await db.destroyRepository(
-          entityDecorator: ManufacturerDecorator(), key: 'upcoming');
+        entityDecorator: ManufacturerDecorator(),
+        key: 'upcoming',
+      );
       expect(
-          await db.hasRepository(
-              entityDecorator: ProductDecorator(), key: 'upcoming'),
-          true);
-      expect(await db.hasRepository(entityDecorator: ManufacturerDecorator()),
-          false);
+        await db.hasRepository(
+          entityDecorator: ProductDecorator(),
+          key: 'upcoming',
+        ),
+        true,
+      );
+      expect(
+        await db.hasRepository(entityDecorator: ManufacturerDecorator()),
+        false,
+      );
     });
 
     test('Test Destroy Repository Wrong Class Name', () async {
-      var productRepository =
-          await db.getRepository(entityDecorator: ProductDecorator());
+      var productRepository = await db.getRepository(
+        entityDecorator: ProductDecorator(),
+      );
       expect(productRepository, isNotNull);
       expect(await db.hasRepository<Product>(), false);
 
@@ -445,8 +538,9 @@ void main() {
 
     test('Test Has Repository', () async {
       var employeeRepository = await db.getRepository<Employee>();
-      var productRepository =
-          await db.getRepository(entityDecorator: ProductDecorator());
+      var productRepository = await db.getRepository(
+        entityDecorator: ProductDecorator(),
+      );
 
       expect(employeeRepository, isNotNull);
       expect(productRepository, isNotNull);
@@ -455,15 +549,18 @@ void main() {
       expect(await db.hasRepository<Employee>(key: 'manager'), false);
       expect(await db.hasRepository(entityDecorator: ProductDecorator()), true);
       expect(
-          await db.hasRepository(
-              entityDecorator: ProductDecorator(), key: 'ex'),
-          false);
+        await db.hasRepository(entityDecorator: ProductDecorator(), key: 'ex'),
+        false,
+      );
     });
 
     test('Test Update with UniqueConstraint Error', () async {
       var companyRepository = await db.getRepository<Company>();
       var company1 = Company(
-          companyId: 1, companyName: 'ABCD', dateCreated: DateTime.now());
+        companyId: 1,
+        companyName: 'ABCD',
+        dateCreated: DateTime.now(),
+      );
       await companyRepository.insert(company1);
 
       var company2 = Company(companyId: 2, companyName: 'ABCD');
@@ -483,10 +580,13 @@ void main() {
 }
 
 @Convertable()
-@Entity(name: 'entity.employee', indices: [
-  Index(fields: ['firstName'], type: IndexType.nonUnique),
-  Index(fields: ['lastName'], type: IndexType.nonUnique),
-])
+@Entity(
+  name: 'entity.employee',
+  indices: [
+    Index(fields: ['firstName'], type: IndexType.nonUnique),
+    Index(fields: ['lastName'], type: IndexType.nonUnique),
+  ],
+)
 class EmployeeEntity with _$EmployeeEntityEntityMixin {
   static final f.Faker faker = f.Faker();
   static int counter = 0;

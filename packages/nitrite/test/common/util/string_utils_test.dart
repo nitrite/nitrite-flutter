@@ -21,7 +21,7 @@ void main() {
         'th3',
         'lazy',
         'dog',
-        'cat'
+        'cat',
       ]);
     });
   });

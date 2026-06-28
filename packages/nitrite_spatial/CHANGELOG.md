@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Reformatted the source with the latest Dart formatter.
+
 ## 1.1.1
 
 - Added `geoNear` and `kNearest` spatial filters.

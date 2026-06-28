@@ -12,8 +12,12 @@ class IndexOperations {
 
   late IndexManager _indexManager;
 
-  IndexOperations(this._collectionName, this._nitriteConfig, this._nitriteMap,
-      this._eventBus);
+  IndexOperations(
+    this._collectionName,
+    this._nitriteConfig,
+    this._nitriteMap,
+    this._eventBus,
+  );
 
   Future<bool> isIndexing(Fields indexFields) async => false;
 
@@ -30,14 +34,17 @@ class IndexOperations {
     var indexDescriptor = await _indexManager.findExactIndexDescriptor(fields);
     if (indexDescriptor == null) {
       // if no index create index
-      indexDescriptor =
-          await _indexManager.createIndexDescriptor(fields, indexType);
+      indexDescriptor = await _indexManager.createIndexDescriptor(
+        fields,
+        indexType,
+      );
     } else {
       // if index already there check if it is of same type, if not throw exception
       if (indexDescriptor.indexType != indexType) {
         throw IndexingException(
-            'Index already exists on fields: $fields with type '
-            '${indexDescriptor.indexType}');
+          'Index already exists on fields: $fields with type '
+          '${indexDescriptor.indexType}',
+        );
       } else {
         // if index is of same type, return
         return;
@@ -100,7 +107,9 @@ class IndexOperations {
   }
 
   Future<void> _buildIndexInternal(
-      IndexDescriptor indexDescriptor, bool rebuild) async {
+    IndexDescriptor indexDescriptor,
+    bool rebuild,
+  ) async {
     var fields = indexDescriptor.fields;
 
     _alert(EventType.indexStart, fields);
@@ -120,7 +129,10 @@ class IndexOperations {
       var fieldValues = getDocumentValues(document, indexDescriptor.fields);
 
       await nitriteIndexer.writeIndexEntry(
-          fieldValues, indexDescriptor, _nitriteConfig);
+        fieldValues,
+        indexDescriptor,
+        _nitriteConfig,
+      );
     }
 
     // remove dirty marker to denote indexing completed successfully
@@ -131,10 +143,11 @@ class IndexOperations {
 
   void _alert(EventType eventType, Fields field) {
     var eventInfo = CollectionEventInfo<Fields>(
-        eventType: eventType,
-        item: field,
-        timestamp: DateTime.now().millisecondsSinceEpoch,
-        originator: 'IndexOperations');
+      eventType: eventType,
+      item: field,
+      timestamp: DateTime.now().millisecondsSinceEpoch,
+      originator: 'IndexOperations',
+    );
 
     if (!_eventBus.streamController.isClosed) {
       _eventBus.fire(eventInfo);

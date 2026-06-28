@@ -46,7 +46,7 @@ Future<void> collectionExample(Nitrite db) async {
       .put("books", [
         createDocument("name", "Book ABCD")..put("tag", ["tag1", "tag2"]),
         createDocument("name", "Book EFGH")..put("tag", ["tag3", "tag1"]),
-        createDocument("name", "No Tag")
+        createDocument("name", "No Tag"),
       ]);
 
   var doc2 = createDocument("firstName", "fn2")
@@ -58,7 +58,7 @@ Future<void> collectionExample(Nitrite db) async {
       .put("books", [
         createDocument("name", "Book abcd")..put("tag", ["tag4", "tag5"]),
         createDocument("name", "Book wxyz")..put("tag", ["tag3", "tag1"]),
-        createDocument("name", "No Tag 2")
+        createDocument("name", "No Tag 2"),
       ]);
 
   var doc3 = createDocument("firstName", "fn3")
@@ -66,13 +66,14 @@ Future<void> collectionExample(Nitrite db) async {
       .put("birthDay", DateTime.parse("2014-04-17T16:02:48.440Z"))
       .put("data", [9, 4, 8])
       .put(
-          "body",
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nunc mi, '
-              'mattis ullamcorper dignissim vitae, condimentum non lorem.')
+        "body",
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nunc mi, '
+            'mattis ullamcorper dignissim vitae, condimentum non lorem.',
+      )
       .put("books", [
         createDocument("name", "Book Mnop")..put("tag", ["tag6", "tag2"]),
         createDocument("name", "Book ghij")..put("tag", ["tag3", "tag7"]),
-        createDocument("name", "No Tag")
+        createDocument("name", "No Tag"),
       ]);
 
   // Insert a document
@@ -113,8 +114,9 @@ Future<void> collectionExample(Nitrite db) async {
     ]),
   );
   print(
-      'Documents where lastName is ln2, firstName is not fn1 and list contains'
-      ' four: ${await cursor.toList()}');
+    'Documents where lastName is ln2, firstName is not fn1 and list contains'
+    ' four: ${await cursor.toList()}',
+  );
 
   // Update a collection
   await coll.update(
@@ -166,20 +168,19 @@ Future<void> objectRepositoryExample(Nitrite db) async {
 
   // Find books by price and publisher
   cursor = repo.find(
-    filter: and([
-      where('price').gt(100),
-      where('publisher').eq('publisher1'),
-    ]),
+    filter: and([where('price').gt(100), where('publisher').eq('publisher1')]),
   );
-  print('Books where price is greater than 100 and publisher is publisher1: '
-      '${await cursor.toList()}');
+  print(
+    'Books where price is greater than 100 and publisher is publisher1: '
+    '${await cursor.toList()}',
+  );
 
   // Find books by price and publisher
-  cursor = repo.find(
-    filter: where('book_id.isbn').eq(book.bookId!.isbn),
+  cursor = repo.find(filter: where('book_id.isbn').eq(book.bookId!.isbn));
+  print(
+    'Books where bookId is ${book.bookId}: '
+    '${await cursor.toList()}',
   );
-  print('Books where bookId is ${book.bookId}: '
-      '${await cursor.toList()}');
 
   // Update a book
   await repo.updateDocument(
@@ -246,11 +247,14 @@ Future<void> transactionExample(Nitrite db) async {
 // Entity classes
 // ==============================================================
 @Convertable(className: 'MyBookConverter')
-@Entity(name: 'books', indices: [
-  Index(fields: ['tags'], type: IndexType.nonUnique),
-  Index(fields: ['description'], type: IndexType.fullText),
-  Index(fields: ['price', 'publisher']),
-])
+@Entity(
+  name: 'books',
+  indices: [
+    Index(fields: ['tags'], type: IndexType.nonUnique),
+    Index(fields: ['description'], type: IndexType.fullText),
+    Index(fields: ['price', 'publisher']),
+  ],
+)
 class Book with _$BookEntityMixin {
   // id field
   @Id(fieldName: 'book_id', embeddedFields: ['isbn', 'book_name'])
@@ -337,18 +341,8 @@ class BookId {
 // ==============================================================
 var faker = Faker(seed: DateTime.now().millisecondsSinceEpoch);
 var random = Random(DateTime.now().millisecondsSinceEpoch);
-var tags = [
-  'tag1',
-  'tag2',
-  'tag3',
-  'tag4',
-];
-var publisher = [
-  'publisher1',
-  'publisher2',
-  'publisher3',
-  'publisher4',
-];
+var tags = ['tag1', 'tag2', 'tag3', 'tag4'];
+var publisher = ['publisher1', 'publisher2', 'publisher3', 'publisher4'];
 
 Book randomBook() {
   var book = Book();

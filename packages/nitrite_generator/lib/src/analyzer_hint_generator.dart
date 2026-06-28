@@ -7,11 +7,12 @@ import 'package:nitrite/nitrite.dart' as no2;
 import 'package:source_gen/source_gen.dart';
 
 class AnalyzerHintGenerator extends Generator {
-  final _dartfmt = DartFormatter();
+  final _dartfmt =
+      DartFormatter(languageVersion: DartFormatter.latestLanguageVersion);
 
   // generates hint only where nitrite annotations are present
-  final entityChecker = TypeChecker.fromRuntime(no2.Entity);
-  final converterChecker = TypeChecker.fromRuntime(no2.Convertable);
+  final entityChecker = TypeChecker.typeNamed(no2.Entity);
+  final converterChecker = TypeChecker.typeNamed(no2.Convertable);
 
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {

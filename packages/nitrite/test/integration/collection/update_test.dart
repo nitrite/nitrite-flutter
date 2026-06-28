@@ -25,8 +25,10 @@ void main() {
         expect(document['lastName'], 'ln1');
       }
 
-      var updateResult = await collection.update(where('firstName').eq('fn1'),
-          createDocument('lastName', 'new-last-name'));
+      var updateResult = await collection.update(
+        where('firstName').eq('fn1'),
+        createDocument('lastName', 'new-last-name'),
+      );
       expect(updateResult.getAffectedCount(), 1);
 
       cursor = collection.find(filter: where('firstName').eq('fn1'));
@@ -41,8 +43,9 @@ void main() {
       var update = createDocument('lastName', 'ln4');
 
       expect(
-          () async => await collection.updateOne(update, insertIfAbsent: false),
-          throwsNotIdentifiableException);
+        () async => await collection.updateOne(update, insertIfAbsent: false),
+        throwsNotIdentifiableException,
+      );
     });
 
     test('Test Upsert', () async {
@@ -50,8 +53,10 @@ void main() {
       expect(await collection.size, 3);
 
       var update = createDocument('lastName', 'ln4');
-      var writeResult =
-          await collection.updateOne(update, insertIfAbsent: true);
+      var writeResult = await collection.updateOne(
+        update,
+        insertIfAbsent: true,
+      );
       expect(writeResult.getAffectedCount(), 1);
       expect(await collection.size, 4);
 
@@ -64,17 +69,27 @@ void main() {
       var cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 0);
 
-      var updateResult = await collection.update(where('firstName').eq('fn1'),
-          doc1, updateOptions(insertIfAbsent: true));
+      var updateResult = await collection.update(
+        where('firstName').eq('fn1'),
+        doc1,
+        updateOptions(insertIfAbsent: true),
+      );
       expect(updateResult.getAffectedCount(), 1);
 
       cursor = collection.find(filter: where('firstName').eq('fn1'));
       expect(await cursor.length, 1);
       await for (var document in cursor) {
         expect(
-            isSimilarDocument(document, doc1,
-                ['firstName', 'lastName', 'birthDay', 'data', 'list', 'body']),
-            true);
+          isSimilarDocument(document, doc1, [
+            'firstName',
+            'lastName',
+            'birthDay',
+            'data',
+            'list',
+            'body',
+          ]),
+          true,
+        );
       }
     });
 
@@ -85,8 +100,10 @@ void main() {
       await insert();
 
       var document = createDocument('lastName', 'newLastName1');
-      var updateResult =
-          await collection.update(where('firstName').eq('fn1').not(), document);
+      var updateResult = await collection.update(
+        where('firstName').eq('fn1').not(),
+        document,
+      );
       expect(updateResult.getAffectedCount(), 2);
 
       cursor = collection.find(filter: where('lastName').eq('newLastName1'));
@@ -98,8 +115,11 @@ void main() {
       expect(await cursor.length, 0);
 
       var options = updateOptions(insertIfAbsent: false);
-      var updateResult =
-          await collection.update(where('firstName').eq('fn1'), doc1, options);
+      var updateResult = await collection.update(
+        where('firstName').eq('fn1'),
+        doc1,
+        options,
+      );
       expect(updateResult.getAffectedCount(), 0);
 
       cursor = collection.find(filter: where('firstName').eq('fn1'));
@@ -116,7 +136,10 @@ void main() {
 
       var document = createDocument('lastName', 'newLastName1');
       var updateResult = await collection.update(
-          where('firstName').eq('fn1').not(), document, options);
+        where('firstName').eq('fn1').not(),
+        document,
+        options,
+      );
       expect(updateResult.getAffectedCount(), 2);
 
       cursor = collection.find(filter: where('lastName').eq('newLastName1'));
@@ -133,7 +156,10 @@ void main() {
 
       var document = createDocument('lastName', 'newLastName1');
       var updateResult = await collection.update(
-          where('firstName').eq('fn1').not(), document, options);
+        where('firstName').eq('fn1').not(),
+        document,
+        options,
+      );
       expect(updateResult.getAffectedCount(), 1);
 
       cursor = collection.find(filter: where('lastName').eq('newLastName1'));
@@ -149,8 +175,10 @@ void main() {
         expect(document['lastName'], 'ln1');
       }
 
-      var updateResult = await collection.update(where('firstName').eq('fn1'),
-          createDocument('new-value', 'new-value-value'));
+      var updateResult = await collection.update(
+        where('firstName').eq('fn1'),
+        createDocument('new-value', 'new-value-value'),
+      );
       expect(updateResult.getAffectedCount(), 1);
 
       cursor = collection.find(filter: where('firstName').eq('fn1'));
@@ -171,8 +199,9 @@ void main() {
       }
 
       var updateResult = await collection.update(
-          where('some-value').eq('some-value'),
-          createDocument("lastName", "new-last-name"));
+        where('some-value').eq('some-value'),
+        createDocument("lastName", "new-last-name"),
+      );
       expect(updateResult.getAffectedCount(), 0);
     });
 
@@ -203,29 +232,37 @@ void main() {
     test('Test Update without Id', () async {
       var collection = await db.getCollection('test');
       var document = createDocument('test', 'test123');
-      expect(() async => await collection.updateOne(document),
-          throwsNotIdentifiableException);
+      expect(
+        () async => await collection.updateOne(document),
+        throwsNotIdentifiableException,
+      );
     });
 
     test('Test Remove without Id', () async {
       var collection = await db.getCollection('test');
       var document = createDocument('test', 'test123');
-      expect(() async => await collection.removeOne(document),
-          throwsNotIdentifiableException);
+      expect(
+        () async => await collection.removeOne(document),
+        throwsNotIdentifiableException,
+      );
     });
 
     test('Test Register Listener After Drop', () async {
       var collection = await db.getCollection('test');
       await collection.drop();
-      expect(() => collection.subscribe((_) => fail('Should not happen')),
-          throwsNitriteIOException);
+      expect(
+        () => collection.subscribe((_) => fail('Should not happen')),
+        throwsNitriteIOException,
+      );
     });
 
     test('Test Register Listener After Close', () async {
       var collection = await db.getCollection('test');
       await collection.close();
-      expect(() => collection.subscribe((_) => fail('Should not happen')),
-          throwsNitriteIOException);
+      expect(
+        () => collection.subscribe((_) => fail('Should not happen')),
+        throwsNitriteIOException,
+      );
     });
 
     test('Test Unique Contraint in Update', () async {
@@ -243,15 +280,21 @@ void main() {
       var doc3 = await cursor.first;
 
       doc3['fruit'] = 'Apple';
-      expect(() async => await collection.updateOne(doc3),
-          throwsUniqueConstraintException);
+      expect(
+        () async => await collection.updateOne(doc3),
+        throwsUniqueConstraintException,
+      );
     });
 
     test('Test Update Nested Document', () async {
-      var doc1 = createDocument("conversation",
-          createDocument("unread", createDocument("me", 1).put("other", 2)));
-      var doc2 = createDocument("conversation",
-          createDocument("unread", createDocument("me", 10).put("other", 4)));
+      var doc1 = createDocument(
+        "conversation",
+        createDocument("unread", createDocument("me", 1).put("other", 2)),
+      );
+      var doc2 = createDocument(
+        "conversation",
+        createDocument("unread", createDocument("me", 10).put("other", 4)),
+      );
 
       var coll = await db.getCollection('test_updateNestedDocument');
       await coll.insertMany([doc1, doc2]);
@@ -260,7 +303,9 @@ void main() {
       expect(await cursor.length, 1);
 
       var update = createDocument(
-          "conversation", createDocument("unread", createDocument("me", 0)));
+        "conversation",
+        createDocument("unread", createDocument("me", 0)),
+      );
       var updateResult = await coll.update(all, update);
       expect(updateResult.getAffectedCount(), 2);
 
@@ -289,8 +334,9 @@ void main() {
       var updateResult = await coll.updateOne(update);
 
       expect(updateResult.getAffectedCount(), 1);
-      var updatedDoc =
-          await coll.find(filter: where("_id").eq(id.idValue)).first;
+      var updatedDoc = await coll
+          .find(filter: where("_id").eq(id.idValue))
+          .first;
       expect(updatedDoc, isNotNull);
       expect(updatedDoc["fruitType"], "citric");
     });

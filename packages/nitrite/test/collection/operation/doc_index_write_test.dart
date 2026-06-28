@@ -19,20 +19,29 @@ void main() {
 
     test('Test Write Index Entry', () async {
       var indexDescriptorList = <IndexDescriptor>[];
-      indexDescriptorList.add(IndexDescriptor(
-          IndexType.unique, Fields.withNames(["a"]), "Collection Name"));
+      indexDescriptorList.add(
+        IndexDescriptor(
+          IndexType.unique,
+          Fields.withNames(["a"]),
+          "Collection Name",
+        ),
+      );
 
       var indexOperations = MockIndexOperations();
-      when(indexOperations.listIndexes())
-          .thenAnswer((_) => Future.value(indexDescriptorList));
-      when(indexOperations.shouldRebuildIndex(any))
-          .thenAnswer((_) => Future.value(false));
+      when(
+        indexOperations.listIndexes(),
+      ).thenAnswer((_) => Future.value(indexDescriptorList));
+      when(
+        indexOperations.shouldRebuildIndex(any),
+      ).thenAnswer((_) => Future.value(false));
 
       var config = MockNitriteConfig();
-      when(config.findIndexer(IndexType.unique))
-          .thenAnswer((_) => Future.value(UniqueIndexer()));
-      when(config.getNitriteStore())
-          .thenReturn(InMemoryStore(InMemoryConfig()));
+      when(
+        config.findIndexer(IndexType.unique),
+      ).thenAnswer((_) => Future.value(UniqueIndexer()));
+      when(
+        config.getNitriteStore(),
+      ).thenReturn(InMemoryStore(InMemoryConfig()));
 
       var indexWriter = DocumentIndexWriter(config, indexOperations);
       await indexWriter.writeIndexEntry(createDocument("a", 1));
@@ -41,20 +50,29 @@ void main() {
 
     test('Test Remove Index Entry', () async {
       var indexDescriptorList = <IndexDescriptor>[];
-      indexDescriptorList.add(IndexDescriptor(
-          IndexType.unique, Fields.withNames(["a"]), "Collection Name"));
+      indexDescriptorList.add(
+        IndexDescriptor(
+          IndexType.unique,
+          Fields.withNames(["a"]),
+          "Collection Name",
+        ),
+      );
 
       var indexOperations = MockIndexOperations();
-      when(indexOperations.listIndexes())
-          .thenAnswer((_) => Future.value(indexDescriptorList));
-      when(indexOperations.shouldRebuildIndex(any))
-          .thenAnswer((_) => Future.value(false));
+      when(
+        indexOperations.listIndexes(),
+      ).thenAnswer((_) => Future.value(indexDescriptorList));
+      when(
+        indexOperations.shouldRebuildIndex(any),
+      ).thenAnswer((_) => Future.value(false));
 
       var config = MockNitriteConfig();
-      when(config.findIndexer(IndexType.unique))
-          .thenAnswer((_) => Future.value(UniqueIndexer()));
-      when(config.getNitriteStore())
-          .thenReturn(InMemoryStore(InMemoryConfig()));
+      when(
+        config.findIndexer(IndexType.unique),
+      ).thenAnswer((_) => Future.value(UniqueIndexer()));
+      when(
+        config.getNitriteStore(),
+      ).thenReturn(InMemoryStore(InMemoryConfig()));
 
       var indexWriter = DocumentIndexWriter(config, indexOperations);
       await indexWriter.removeIndexEntry(createDocument("a", 1));
@@ -63,24 +81,36 @@ void main() {
 
     test('Test Update Index Entry', () async {
       var indexDescriptorList = <IndexDescriptor>[];
-      indexDescriptorList.add(IndexDescriptor(
-          IndexType.unique, Fields.withNames(["a"]), "Collection Name"));
+      indexDescriptorList.add(
+        IndexDescriptor(
+          IndexType.unique,
+          Fields.withNames(["a"]),
+          "Collection Name",
+        ),
+      );
 
       var indexOperations = MockIndexOperations();
-      when(indexOperations.listIndexes())
-          .thenAnswer((_) => Future.value(indexDescriptorList));
-      when(indexOperations.shouldRebuildIndex(any))
-          .thenAnswer((_) => Future.value(false));
+      when(
+        indexOperations.listIndexes(),
+      ).thenAnswer((_) => Future.value(indexDescriptorList));
+      when(
+        indexOperations.shouldRebuildIndex(any),
+      ).thenAnswer((_) => Future.value(false));
 
       var config = MockNitriteConfig();
-      when(config.findIndexer(IndexType.unique))
-          .thenAnswer((_) => Future.value(UniqueIndexer()));
-      when(config.getNitriteStore())
-          .thenReturn(InMemoryStore(InMemoryConfig()));
+      when(
+        config.findIndexer(IndexType.unique),
+      ).thenAnswer((_) => Future.value(UniqueIndexer()));
+      when(
+        config.getNitriteStore(),
+      ).thenReturn(InMemoryStore(InMemoryConfig()));
 
       var indexWriter = DocumentIndexWriter(config, indexOperations);
-      await indexWriter.updateIndexEntry(createDocument("a", 1),
-          createDocument("a", 2), createDocument("a", 3));
+      await indexWriter.updateIndexEntry(
+        createDocument("a", 1),
+        createDocument("a", 2),
+        createDocument("a", 3),
+      );
       verify(indexOperations.listIndexes()).called(1);
     });
   });

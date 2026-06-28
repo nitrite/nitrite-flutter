@@ -48,7 +48,9 @@ abstract class Cursor<T> extends StreamView<T> {
   /// contain the localField, the join treats the field as having a value
   /// of default value for matching purposes.
   Stream<Joined> leftJoin<Foreign, Joined>(
-      Cursor<Foreign> foreignCursor, LookUp lookup);
+    Cursor<Foreign> foreignCursor,
+    LookUp lookup,
+  );
 }
 
 /// @nodoc
@@ -57,7 +59,7 @@ class ObjectCursor<T> extends Cursor<T> {
   final NitriteMapper _nitriteMapper;
 
   ObjectCursor(this._documentCursor, this._nitriteMapper)
-      : super(MutatedObjectStream(_documentCursor, _nitriteMapper, false));
+    : super(MutatedObjectStream(_documentCursor, _nitriteMapper, false));
 
   @override
   Future<FindPlan> get findPlan => _documentCursor.findPlan;
@@ -74,10 +76,14 @@ class ObjectCursor<T> extends Cursor<T> {
 
   @override
   Stream<Joined> leftJoin<Foreign, Joined>(
-      Cursor<Foreign> foreignCursor, LookUp lookup) {
+    Cursor<Foreign> foreignCursor,
+    LookUp lookup,
+  ) {
     var foreignObjectCursor = foreignCursor as ObjectCursor<Foreign>;
-    var joinedStream =
-        _documentCursor.leftJoin(foreignObjectCursor._documentCursor, lookup);
+    var joinedStream = _documentCursor.leftJoin(
+      foreignObjectCursor._documentCursor,
+      lookup,
+    );
     return MutatedObjectStream(joinedStream, _nitriteMapper);
   }
 

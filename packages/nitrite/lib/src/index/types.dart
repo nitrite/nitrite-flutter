@@ -73,8 +73,9 @@ class IndexMeta {
 
   factory IndexMeta.fromDocument(Document document) {
     if ('IndexMeta' == document[typeId]) {
-      var indexDescriptor =
-          IndexDescriptor.fromDocument(document['indexDescriptor']);
+      var indexDescriptor = IndexDescriptor.fromDocument(
+        document['indexDescriptor'],
+      );
       var indexMap = document['indexMap'];
       var isDirty = document['isDirty'];
       return IndexMeta()

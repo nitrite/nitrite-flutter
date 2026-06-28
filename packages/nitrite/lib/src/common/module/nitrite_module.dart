@@ -21,7 +21,7 @@ abstract class NitriteModule {
 /// Creates a Nitrite module with a set of [NitritePlugin]s.
 ///
 /// Args:
-///   plugins (List<NitritePlugin>): A list of [NitritePlugin] objects.
+///   plugins (`List<NitritePlugin>`): A list of [NitritePlugin] objects.
 NitriteModule module(List<NitritePlugin> plugins) =>
     _NitriteModule(plugins.toSet());
 

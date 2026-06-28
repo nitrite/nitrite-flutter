@@ -5,34 +5,54 @@ import 'package:test/test.dart';
 void main() {
   group(retry: 3, "IndexUtils Test Suite", () {
     test('Test DeriveIndexMetaMapName', () {
-      expect(deriveIndexMetaMapName('collectionName'),
-          '$indexMetaPrefix${internalNameSeparator}collectionName');
+      expect(
+        deriveIndexMetaMapName('collectionName'),
+        '$indexMetaPrefix${internalNameSeparator}collectionName',
+      );
     });
 
     test('Test DeriveIndexMapName', () {
       expect(
-          deriveIndexMapName(IndexDescriptor(
-              IndexType.unique, Fields.withNames(['name']), 'collectionName')),
-          '$indexPrefix${internalNameSeparator}collectionName'
-          '${internalNameSeparator}name${internalNameSeparator}Unique');
+        deriveIndexMapName(
+          IndexDescriptor(
+            IndexType.unique,
+            Fields.withNames(['name']),
+            'collectionName',
+          ),
+        ),
+        '$indexPrefix${internalNameSeparator}collectionName'
+        '${internalNameSeparator}name${internalNameSeparator}Unique',
+      );
     });
 
     test('Test DeriveIndexMapName with NonUnique Index', () {
       expect(
-          deriveIndexMapName(IndexDescriptor(IndexType.nonUnique,
-              Fields.withNames(['name', 'age']), 'collectionName')),
-          '$indexPrefix${internalNameSeparator}collectionName'
-          '${internalNameSeparator}name${internalNameSeparator}age'
-          '${internalNameSeparator}NonUnique');
+        deriveIndexMapName(
+          IndexDescriptor(
+            IndexType.nonUnique,
+            Fields.withNames(['name', 'age']),
+            'collectionName',
+          ),
+        ),
+        '$indexPrefix${internalNameSeparator}collectionName'
+        '${internalNameSeparator}name${internalNameSeparator}age'
+        '${internalNameSeparator}NonUnique',
+      );
     });
 
     test('Test DeriveIndexMapName with FullText Index', () {
       expect(
-          deriveIndexMapName(IndexDescriptor(IndexType.fullText,
-              Fields.withNames(['name', 'age']), 'collectionName')),
-          '$indexPrefix${internalNameSeparator}collectionName'
-          '${internalNameSeparator}name${internalNameSeparator}age'
-          '${internalNameSeparator}Fulltext');
+        deriveIndexMapName(
+          IndexDescriptor(
+            IndexType.fullText,
+            Fields.withNames(['name', 'age']),
+            'collectionName',
+          ),
+        ),
+        '$indexPrefix${internalNameSeparator}collectionName'
+        '${internalNameSeparator}name${internalNameSeparator}age'
+        '${internalNameSeparator}Fulltext',
+      );
     });
   });
 }

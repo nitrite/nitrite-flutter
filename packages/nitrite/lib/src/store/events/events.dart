@@ -24,5 +24,5 @@ enum StoreEvents {
   closing,
 
   /// Event emitted when a Nitrite database is closed.
-  closed
+  closed,
 }

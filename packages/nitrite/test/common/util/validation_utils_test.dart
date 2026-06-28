@@ -18,10 +18,12 @@ void main() {
         1,
         2,
         [1, 2],
-        3
+        3,
       ];
-      expect(() => validateIterableIndexField(iterable, "iter"),
-          throwsInvalidOperationException);
+      expect(
+        () => validateIterableIndexField(iterable, "iter"),
+        throwsInvalidOperationException,
+      );
 
       iterable = [1, null];
       try {
@@ -31,30 +33,40 @@ void main() {
       }
 
       iterable = [1, 2, 3, SpatialKey(1, [])];
-      expect(() => validateIterableIndexField(iterable, "iter"),
-          throwsIndexingException);
+      expect(
+        () => validateIterableIndexField(iterable, "iter"),
+        throwsIndexingException,
+      );
     });
 
     test("Test ValidateArrayIndexItem", () {
-      expect(() => validateArrayIndexItem([], "iter"),
-          throwsInvalidOperationException);
+      expect(
+        () => validateArrayIndexItem([], "iter"),
+        throwsInvalidOperationException,
+      );
 
-      expect(() => validateArrayIndexItem(SpatialKey(1, []), "iter"),
-          throwsIndexingException);
+      expect(
+        () => validateArrayIndexItem(SpatialKey(1, []), "iter"),
+        throwsIndexingException,
+      );
     });
 
     test("Test ValidateStringIterableIndexField", () {
       List<dynamic> iterable = [1, 2, 3, 4];
 
-      expect(() => validateStringIterableIndexField(iterable, "iter"),
-          throwsIndexingException);
+      expect(
+        () => validateStringIterableIndexField(iterable, "iter"),
+        throwsIndexingException,
+      );
 
       iterable = [
         "a",
-        ["b"]
+        ["b"],
       ];
-      expect(() => validateStringIterableIndexField(iterable, "iter"),
-          throwsIndexingException);
+      expect(
+        () => validateStringIterableIndexField(iterable, "iter"),
+        throwsIndexingException,
+      );
 
       iterable = ["a", 'b'];
       try {
@@ -66,10 +78,14 @@ void main() {
 
     test("Test ValidateStringIterableItem", () {
       expect(
-          () => validateStringIterableItem(1, "iter"), throwsIndexingException);
+        () => validateStringIterableItem(1, "iter"),
+        throwsIndexingException,
+      );
 
-      expect(() => validateStringIterableItem([], "iter"),
-          throwsIndexingException);
+      expect(
+        () => validateStringIterableItem([], "iter"),
+        throwsIndexingException,
+      );
 
       try {
         validateStringIterableItem("iterable", "iter");
@@ -117,14 +133,22 @@ void main() {
 
       validateProjectionType<_A>(nitriteMapper);
 
-      expect(() => validateProjectionType<_C>(nitriteMapper),
-          throwsValidationException);
-      expect(() => validateProjectionType<String>(nitriteMapper),
-          throwsValidationException);
-      expect(() => validateProjectionType<num>(nitriteMapper),
-          throwsValidationException);
-      expect(() => validateProjectionType(nitriteMapper),
-          throwsValidationException);
+      expect(
+        () => validateProjectionType<_C>(nitriteMapper),
+        throwsValidationException,
+      );
+      expect(
+        () => validateProjectionType<String>(nitriteMapper),
+        throwsValidationException,
+      );
+      expect(
+        () => validateProjectionType<num>(nitriteMapper),
+        throwsValidationException,
+      );
+      expect(
+        () => validateProjectionType(nitriteMapper),
+        throwsValidationException,
+      );
     });
 
     test("Test ValidateRepositoryType", () async {
@@ -135,14 +159,22 @@ void main() {
 
       validateRepositoryType<_A>(nitriteConfig);
 
-      expect(() => validateRepositoryType<_C>(nitriteConfig),
-          throwsValidationException);
-      expect(() => validateRepositoryType<String>(nitriteConfig),
-          throwsValidationException);
-      expect(() => validateRepositoryType<num>(nitriteConfig),
-          throwsValidationException);
-      expect(() => validateRepositoryType(nitriteConfig),
-          throwsValidationException);
+      expect(
+        () => validateRepositoryType<_C>(nitriteConfig),
+        throwsValidationException,
+      );
+      expect(
+        () => validateRepositoryType<String>(nitriteConfig),
+        throwsValidationException,
+      );
+      expect(
+        () => validateRepositoryType<num>(nitriteConfig),
+        throwsValidationException,
+      );
+      expect(
+        () => validateRepositoryType(nitriteConfig),
+        throwsValidationException,
+      );
     });
   });
 }

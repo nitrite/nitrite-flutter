@@ -27,8 +27,10 @@ void main() {
     test('Test Delete with Options', () async {
       await insert();
 
-      var writeResult =
-          await collection.remove(where('lastName').notEq(null), justOne: true);
+      var writeResult = await collection.remove(
+        where('lastName').notEq(null),
+        justOne: true,
+      );
       expect(writeResult.getAffectedCount(), 1);
 
       var cursor = collection.find();

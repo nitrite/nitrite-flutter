@@ -11,8 +11,11 @@ class EntityId {
   final bool _isNitriteId;
   final List<String> _embeddedFields;
 
-  EntityId(this._fieldName,
-      [this._isNitriteId = false, this._embeddedFields = const []]);
+  EntityId(
+    this._fieldName, [
+    this._isNitriteId = false,
+    this._embeddedFields = const [],
+  ]);
 
   /// Returns the name of the id field.
   String get fieldName => _fieldName;
@@ -152,7 +155,6 @@ class EntityIndex {
 }
 
 @internal
-
 /// Represents an entity in the Nitrite database with metadata.
 abstract class NitriteEntity {
   /// Gets the name of the entity.

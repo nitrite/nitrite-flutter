@@ -57,10 +57,12 @@ class DocumentStream extends DocumentCursor {
   final FutureFactory<FindPlan> _findPlanFactory;
   final Future<int> Function()? _countFactory;
 
-  DocumentStream(StreamFactory<Document> streamFactory,
-      ProcessorChain processorChain, this._findPlanFactory,
-      [this._countFactory])
-      : _stream = ProcessedDocumentStream(streamFactory, processorChain);
+  DocumentStream(
+    StreamFactory<Document> streamFactory,
+    ProcessorChain processorChain,
+    this._findPlanFactory, [
+    this._countFactory,
+  ]) : _stream = ProcessedDocumentStream(streamFactory, processorChain);
 
   @override
   Future<FindPlan> get findPlan async => await _findPlanFactory();
@@ -83,15 +85,23 @@ class DocumentStream extends DocumentCursor {
   @override
   Stream<Document> leftJoin(DocumentCursor foreignCursor, LookUp lookup) {
     return ReplayConnectableStream(
-        JoinedDocumentStream(this, foreignCursor, lookup))
-      ..connect();
+      JoinedDocumentStream(this, foreignCursor, lookup),
+    )..connect();
   }
 
   @override
-  StreamSubscription<Document> listen(void Function(Document event)? onData,
-      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return _stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  StreamSubscription<Document> listen(
+    void Function(Document event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    return _stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
   }
 
   void _validateProjection(Document projection) {

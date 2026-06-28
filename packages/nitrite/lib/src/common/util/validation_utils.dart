@@ -18,8 +18,10 @@ void validateArrayIndexItem(dynamic value, String field) {
   }
 
   if (value is! Comparable) {
-    throw IndexingException('Each value in the iterable field $field must '
-        'implement Comparable');
+    throw IndexingException(
+      'Each value in the iterable field $field must '
+      'implement Comparable',
+    );
   }
 }
 
@@ -36,8 +38,10 @@ void validateStringIterableIndexField(Iterable fieldValue, String field) {
 /// @nodoc
 void validateStringIterableItem(dynamic value, String field) {
   if (value is! String) {
-    throw IndexingException('Each value in the iterable field $field must '
-        'be a string');
+    throw IndexingException(
+      'Each value in the iterable field $field must '
+      'be a string',
+    );
   }
 }
 
@@ -47,8 +51,11 @@ void validateProjectionType<T>(NitriteMapper nitriteMapper) {
   try {
     value = newInstance<T>(nitriteMapper);
   } catch (e, s) {
-    throw ValidationException("Invalid projection type",
-        cause: e, stackTrace: s);
+    throw ValidationException(
+      "Invalid projection type",
+      cause: e,
+      stackTrace: s,
+    );
   }
 
   if (value == null) {
@@ -59,8 +66,11 @@ void validateProjectionType<T>(NitriteMapper nitriteMapper) {
   try {
     document = nitriteMapper.tryConvert<Document, T>(value);
   } catch (e, s) {
-    throw ValidationException("Invalid projection type",
-        cause: e, stackTrace: s);
+    throw ValidationException(
+      "Invalid projection type",
+      cause: e,
+      stackTrace: s,
+    );
   }
 
   if (document == null || document.size == 0) {
@@ -81,17 +91,22 @@ void validateRepositoryType<T>(NitriteConfig nitriteConfig) {
     value = newInstance<T>(nitriteMapper);
     if (value == null) {
       throw ValidationException(
-          "Cannot create new instance of type ${T.toString()}");
+        "Cannot create new instance of type ${T.toString()}",
+      );
     }
 
     var document = nitriteMapper.tryConvert<Document, T>(value);
     if (document == null || document.size == 0) {
       throw ValidationException(
-          "Cannot convert to document from type ${T.toString()}");
+        "Cannot convert to document from type ${T.toString()}",
+      );
     }
   } catch (e, s) {
-    throw ValidationException("Invalid repository type",
-        cause: e, stackTrace: s);
+    throw ValidationException(
+      "Invalid repository type",
+      cause: e,
+      stackTrace: s,
+    );
   }
 }
 

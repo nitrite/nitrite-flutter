@@ -10,8 +10,8 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   bool _closed = false;
 
   InMemoryStore(super._storeConfig)
-      : _nitriteMapRegistry = <String, dynamic>{},
-        _nitriteRTreeMapRegistry = <String, dynamic>{};
+    : _nitriteMapRegistry = <String, dynamic>{},
+      _nitriteRTreeMapRegistry = <String, dynamic>{};
 
   @override
   bool get isClosed => _closed;
@@ -78,7 +78,8 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
 
   @override
   Future<NitriteRTree<Key, Value>> openRTree<Key extends BoundingBox, Value>(
-      String rTreeName) async {
+    String rTreeName,
+  ) async {
     if (_nitriteRTreeMapRegistry.containsKey(rTreeName)) {
       return _nitriteRTreeMapRegistry[rTreeName]! as InMemoryRTree<Key, Value>;
     }

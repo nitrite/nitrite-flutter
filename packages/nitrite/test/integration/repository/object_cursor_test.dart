@@ -16,20 +16,26 @@ void main() {
 
     test('Test Projection For Abstract Class', () async {
       var cursor = employeeRepository.find();
-      expect(() async => await cursor.project<Comparable>().toList(),
-          throwsValidationException);
+      expect(
+        () async => await cursor.project<Comparable>().toList(),
+        throwsValidationException,
+      );
     });
 
     test('Test Projection For Number', () async {
       var cursor = employeeRepository.find();
-      expect(() async => await cursor.project<int>().toList(),
-          throwsValidationException);
+      expect(
+        () async => await cursor.project<int>().toList(),
+        throwsValidationException,
+      );
     });
 
     test('Test Projection For List', () async {
       var cursor = employeeRepository.find();
-      expect(() async => await cursor.project<List<String>>().toList(),
-          throwsValidationException);
+      expect(
+        () async => await cursor.project<List<String>>().toList(),
+        throwsValidationException,
+      );
     });
   });
 }

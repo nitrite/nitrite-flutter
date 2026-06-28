@@ -10,11 +10,15 @@ void main() {
       expect(orderByResult.orderBy, isNotNull);
       expect(orderByResult.orderBy?.encodedName, "fieldName");
 
-      orderByResult = orderBy("fieldName1", SortOrder.descending)
-          .thenOrderBy("fieldName2", SortOrder.ascending);
+      orderByResult = orderBy(
+        "fieldName1",
+        SortOrder.descending,
+      ).thenOrderBy("fieldName2", SortOrder.ascending);
       expect(orderByResult.orderBy, isNotNull);
-      expect(orderByResult.orderBy?.encodedName,
-          "fieldName1${internalNameSeparator}fieldName2");
+      expect(
+        orderByResult.orderBy?.encodedName,
+        "fieldName1${internalNameSeparator}fieldName2",
+      );
     });
 
     test("Test SkipBy", () {

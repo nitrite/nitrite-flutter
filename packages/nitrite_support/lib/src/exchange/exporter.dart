@@ -31,17 +31,17 @@ class Exporter {
   /// from the database. If set to true, the data will be exported; if set to
   /// false, only the database structure will be exported. Defaults to true.
   ///
-  ///   collections (List<String>): A list of collection names to export.
+  ///   collections (`List<String>`): A list of collection names to export.
   /// If not provided, all collections will be exported. If an empty list is
   /// provided, no collections will be exported. If a list of collection names
   /// is provided, only those collections will be exported.
   ///
-  ///   repositories (List<String>): A list of repository names to export.
+  ///   repositories (`List<String>`): A list of repository names to export.
   /// If not provided, all repositories will be exported. If an empty list is
   /// provided, no repositories will be exported. If a list of repository names
   /// is provided, only those repositories will be exported.
   ///
-  ///   keyedRepositories (Map<String, Set<String>>): A map of keyed-repositories
+  ///   keyedRepositories (`Map<String, Set<String>>`): A map of keyed-repositories
   /// to export. If not provided, all keyed-repositories will be exported. If an
   /// empty map is provided, no keyed-repositories will be exported. If a map of
   /// keyed-repositories is provided, only those keyed-repositories will be

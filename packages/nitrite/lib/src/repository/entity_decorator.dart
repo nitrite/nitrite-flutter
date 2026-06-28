@@ -41,7 +41,9 @@ class EntityDecoratorReader<T> {
           : [_entityDecorator.idField!.fieldName];
 
       await _collection.createIndex(
-          idFieldNames, indexOptions(IndexType.unique));
+        idFieldNames,
+        indexOptions(IndexType.unique),
+      );
     }
   }
 

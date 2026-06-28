@@ -26,8 +26,10 @@ void main() {
       await insert();
 
       var cursor = collection.find(
-          filter:
-              where('birthDay').gt(DateTime.parse('2012-07-01T16:02:48.440Z')));
+        filter: where(
+          'birthDay',
+        ).gt(DateTime.parse('2012-07-01T16:02:48.440Z')),
+      );
       expect(await cursor.length, 1);
 
       var doc = await cursor.first;
@@ -35,18 +37,24 @@ void main() {
       expect(doc.get('lastName'), 'ln2');
 
       cursor = collection.find(
-          filter: where('birthDay')
-              .gte(DateTime.parse('2012-07-01T16:02:48.440Z')));
+        filter: where(
+          'birthDay',
+        ).gte(DateTime.parse('2012-07-01T16:02:48.440Z')),
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(
-          filter:
-              where('birthDay').lt(DateTime.parse('2012-07-01T16:02:48.440Z')));
+        filter: where(
+          'birthDay',
+        ).lt(DateTime.parse('2012-07-01T16:02:48.440Z')),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where('birthDay')
-              .lte(DateTime.parse('2012-07-01T16:02:48.440Z')));
+        filter: where(
+          'birthDay',
+        ).lte(DateTime.parse('2012-07-01T16:02:48.440Z')),
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(filter: where('birthDay').lte(DateTime.now()));
@@ -62,45 +70,50 @@ void main() {
       expect(await cursor.length, 0);
 
       cursor = collection.find(
-          filter: where('birthDay')
-              .lte(DateTime.now())
-              .and(where('firstName').eq('fn1')));
+        filter: where(
+          'birthDay',
+        ).lte(DateTime.now()).and(where('firstName').eq('fn1')),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where('birthDay')
-              .lte(DateTime.now())
-              .or(where('firstName').eq('fn12')));
+        filter: where(
+          'birthDay',
+        ).lte(DateTime.now()).or(where('firstName').eq('fn12')),
+      );
       expect(await cursor.length, 3);
 
       cursor = collection.find(
-          filter: and([
-        or([
-          where('birthDay').lte(DateTime.now()),
-          where('firstName').eq('fn12'),
+        filter: and([
+          or([
+            where('birthDay').lte(DateTime.now()),
+            where('firstName').eq('fn12'),
+          ]),
+          where('lastName').eq('ln1'),
         ]),
-        where('lastName').eq('ln1')
-      ]));
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: and([
-        or([
-          where('birthDay').lte(DateTime.now()),
-          where('firstName').eq('fn12'),
-        ]),
-        where('lastName').eq('ln1')
-      ]).not());
+        filter: and([
+          or([
+            where('birthDay').lte(DateTime.now()),
+            where('firstName').eq('fn12'),
+          ]),
+          where('lastName').eq('ln1'),
+        ]).not(),
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(
-          filter: ~and([
-        or([
-          where('birthDay').lte(DateTime.now()),
-          where('firstName').eq('fn12'),
+        filter: ~and([
+          or([
+            where('birthDay').lte(DateTime.now()),
+            where('firstName').eq('fn12'),
+          ]),
+          where('lastName').eq('ln1'),
         ]),
-        where('lastName').eq('ln1')
-      ]));
+      );
       expect(await cursor.length, 2);
 
       cursor = collection.find(filter: where('data.1').eq(4));
@@ -110,11 +123,13 @@ void main() {
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where('lastName').within(["ln1", "ln2", "ln10"]));
+        filter: where('lastName').within(["ln1", "ln2", "ln10"]),
+      );
       expect(await cursor.length, 3);
 
-      cursor =
-          collection.find(filter: where('firstName').notIn(["fn1", "fn2"]));
+      cursor = collection.find(
+        filter: where('firstName').notIn(["fn1", "fn2"]),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(filter: ~all);
@@ -155,8 +170,10 @@ void main() {
       cursor = collection.find(findOptions: skipBy(2));
       expect(await cursor.length, 1);
 
-      expect(() async => await collection.find(findOptions: skipBy(-2)).first,
-          throwsValidationException);
+      expect(
+        () async => await collection.find(findOptions: skipBy(-2)).first,
+        throwsValidationException,
+      );
     });
 
     test("Test Find with Limit", () async {
@@ -171,15 +188,18 @@ void main() {
       cursor = collection.find(findOptions: limitBy(30));
       expect(await cursor.length, 3);
 
-      expect(() async => await collection.find(findOptions: limitBy(-1)).first,
-          throwsValidationException);
+      expect(
+        () async => await collection.find(findOptions: limitBy(-1)).first,
+        throwsValidationException,
+      );
     });
 
     test("Test Find with Sort Ascending", () async {
       await insert();
 
       var cursor = collection.find(
-          findOptions: orderBy('birthDay', SortOrder.ascending));
+        findOptions: orderBy('birthDay', SortOrder.ascending),
+      );
       expect(await cursor.length, 3);
       var dateList = <DateTime>[];
       await for (var document in cursor) {
@@ -193,7 +213,8 @@ void main() {
       await insert();
 
       var cursor = collection.find(
-          findOptions: orderBy('birthDay', SortOrder.descending));
+        findOptions: orderBy('birthDay', SortOrder.descending),
+      );
       expect(await cursor.length, 3);
       var dateList = <DateTime>[];
       await for (var document in cursor) {
@@ -207,8 +228,11 @@ void main() {
       await insert();
 
       var cursor = collection.find(
-          findOptions:
-              orderBy('birthDay', SortOrder.descending).setSkip(1).setLimit(2));
+        findOptions: orderBy(
+          'birthDay',
+          SortOrder.descending,
+        ).setSkip(1).setLimit(2),
+      );
       expect(await cursor.length, 2);
       var dateList = <DateTime>[];
       await for (var document in cursor) {
@@ -217,7 +241,8 @@ void main() {
       expect(isSorted<DateTime>(dateList, false), isTrue);
 
       cursor = collection.find(
-          findOptions: orderBy('birthDay').setSkip(1).setLimit(2));
+        findOptions: orderBy('birthDay').setSkip(1).setLimit(2),
+      );
       expect(await cursor.length, 2);
       dateList = <DateTime>[];
       await for (var document in cursor) {
@@ -226,7 +251,8 @@ void main() {
       expect(isSorted<DateTime>(dateList, true), isTrue);
 
       cursor = collection.find(
-          findOptions: orderBy('firstName').setSkip(0).setLimit(30));
+        findOptions: orderBy('firstName').setSkip(0).setLimit(30),
+      );
       expect(await cursor.length, 3);
       var nameList = <String>[];
       await for (var document in cursor) {
@@ -239,7 +265,8 @@ void main() {
       await insert();
 
       var cursor = collection.find(
-          findOptions: orderBy('my-value', SortOrder.descending));
+        findOptions: orderBy('my-value', SortOrder.descending),
+      );
       expect(await cursor.length, 3);
 
       var dateList = <DateTime>[];
@@ -292,9 +319,11 @@ void main() {
       await insert();
 
       var cursor = collection.find(
-          findOptions: orderBy('birthDay2', SortOrder.descending)
-              .setSkip(1)
-              .setLimit(2));
+        findOptions: orderBy(
+          'birthDay2',
+          SortOrder.descending,
+        ).setSkip(1).setLimit(2),
+      );
       expect(await cursor.length, 2);
     });
 
@@ -322,8 +351,9 @@ void main() {
       await insert();
 
       var cursor = collection.find(
-          filter: where('birthDay').lte(DateTime.now()),
-          findOptions: orderBy('firstName').setSkip(1).setLimit(2));
+        filter: where('birthDay').lte(DateTime.now()),
+        findOptions: orderBy('firstName').setSkip(1).setLimit(2),
+      );
       expect(await cursor.length, 2);
 
       expect(cursor.map((d) => d['firstName']), emitsInOrder(['fn2', 'fn3']));
@@ -352,47 +382,51 @@ void main() {
       await insert();
 
       var cursor = collection.find(
-          filter: where('birthDay').lte(DateTime.now()),
-          findOptions: orderBy('firstName').setSkip(0).setLimit(3));
+        filter: where('birthDay').lte(DateTime.now()),
+        findOptions: orderBy('firstName').setSkip(0).setLimit(3),
+      );
 
       var iter = 0;
       await for (var doc in cursor) {
         switch (iter) {
           case 0:
             expect(
-                isSimilarDocument(doc, doc1, [
-                  "firstName",
-                  "lastName",
-                  "birthDay",
-                  "data",
-                  "list",
-                  "body"
-                ]),
-                isTrue);
+              isSimilarDocument(doc, doc1, [
+                "firstName",
+                "lastName",
+                "birthDay",
+                "data",
+                "list",
+                "body",
+              ]),
+              isTrue,
+            );
             break;
           case 1:
             expect(
-                isSimilarDocument(doc, doc2, [
-                  "firstName",
-                  "lastName",
-                  "birthDay",
-                  "data",
-                  "list",
-                  "body"
-                ]),
-                isTrue);
+              isSimilarDocument(doc, doc2, [
+                "firstName",
+                "lastName",
+                "birthDay",
+                "data",
+                "list",
+                "body",
+              ]),
+              isTrue,
+            );
             break;
           case 2:
             expect(
-                isSimilarDocument(doc, doc3, [
-                  "firstName",
-                  "lastName",
-                  "birthDay",
-                  "data",
-                  "list",
-                  "body"
-                ]),
-                isTrue);
+              isSimilarDocument(doc, doc3, [
+                "firstName",
+                "lastName",
+                "birthDay",
+                "data",
+                "list",
+                "body",
+              ]),
+              isTrue,
+            );
             break;
         }
         iter++;
@@ -405,22 +439,24 @@ void main() {
       var doc1 = emptyDocument()
         ..put('name', 'John')
         ..put(
-            'address',
-            emptyDocument()
-              ..put('street', 'Main Street')
-              ..put('city', 'New York')
-              ..put('state', 'NY')
-              ..put('zip', '10001'));
+          'address',
+          emptyDocument()
+            ..put('street', 'Main Street')
+            ..put('city', 'New York')
+            ..put('state', 'NY')
+            ..put('zip', '10001'),
+        );
 
       var doc2 = emptyDocument()
         ..put('name', 'Jane')
         ..put(
-            'address',
-            emptyDocument()
-              ..put('street', 'Other Street')
-              ..put('city', 'New Jersey')
-              ..put('state', 'NJ')
-              ..put('zip', '70001'));
+          'address',
+          emptyDocument()
+            ..put('street', 'Other Street')
+            ..put('city', 'New Jersey')
+            ..put('state', 'NJ')
+            ..put('zip', '70001'),
+        );
 
       var collection = await db.getCollection('person');
       await collection.insertMany([doc1, doc2]);
@@ -435,23 +471,26 @@ void main() {
 
       expect(await stream.length, 2);
       expect(
-          stream,
-          emitsInOrder([
-            emptyDocument()
-              ..put('name', 'John')
-              ..put(
-                  'address',
-                  emptyDocument()
-                    ..put('city', 'New York')
-                    ..put('state', 'NY')),
-            emptyDocument()
-              ..put('name', 'Jane')
-              ..put(
-                  'address',
-                  emptyDocument()
-                    ..put('city', 'New Jersey')
-                    ..put('state', 'NJ'))
-          ]));
+        stream,
+        emitsInOrder([
+          emptyDocument()
+            ..put('name', 'John')
+            ..put(
+              'address',
+              emptyDocument()
+                ..put('city', 'New York')
+                ..put('state', 'NY'),
+            ),
+          emptyDocument()
+            ..put('name', 'Jane')
+            ..put(
+              'address',
+              emptyDocument()
+                ..put('city', 'New Jersey')
+                ..put('state', 'NJ'),
+            ),
+        ]),
+      );
     });
 
     test('Test Find with List Equal', () async {
@@ -474,15 +513,18 @@ void main() {
       await insert();
 
       var cursor = collection.find(
-          filter: where('data').elemMatch($.gte(2).and($.lt(5))));
+        filter: where('data').elemMatch($.gte(2).and($.lt(5))),
+      );
       expect(await cursor.length, 3);
 
       cursor = collection.find(
-          filter: where('data').elemMatch($.gt(2).or($.lte(5))));
+        filter: where('data').elemMatch($.gt(2).or($.lte(5))),
+      );
       expect(await cursor.length, 3);
 
       cursor = collection.find(
-          filter: where('data').elemMatch($.gt(1).and($.lt(4))));
+        filter: where('data').elemMatch($.gt(1).and($.lt(4))),
+      );
       expect(await cursor.length, 2);
     });
 
@@ -524,86 +566,104 @@ void main() {
       await prodCollection.insertMany([doc1, doc2, doc3]);
 
       var cursor = prodCollection.find(
-          filter: where('productScores').elemMatch(
-              where('product').eq('xyz').and(where('score').gte(8))));
+        filter: where(
+          'productScores',
+        ).elemMatch(where('product').eq('xyz').and(where('score').gte(8))),
+      );
       expect(await cursor.length, 1);
 
       cursor = prodCollection.find(
-          filter:
-              where("productScores").elemMatch(where("score").lte(8).not()));
+        filter: where("productScores").elemMatch(where("score").lte(8).not()),
+      );
       expect(await cursor.length, 1);
 
       cursor = prodCollection.find(
-          filter: where("productScores")
-              .elemMatch(where("product").eq("xyz").or(where("score").gte(8))));
+        filter: where(
+          "productScores",
+        ).elemMatch(where("product").eq("xyz").or(where("score").gte(8))),
+      );
       expect(await cursor.length, 3);
 
       cursor = prodCollection.find(
-          filter: where("productScores").elemMatch(where("product").eq("xyz")));
+        filter: where("productScores").elemMatch(where("product").eq("xyz")),
+      );
       expect(await cursor.length, 3);
 
       cursor = prodCollection.find(
-          filter: where("productScores").elemMatch(where("score").gte(10)));
+        filter: where("productScores").elemMatch(where("score").gte(10)),
+      );
       expect(await cursor.length, 1);
 
       cursor = prodCollection.find(
-          filter: where("productScores").elemMatch(where("score").gt(8)));
+        filter: where("productScores").elemMatch(where("score").gt(8)),
+      );
       expect(await cursor.length, 1);
 
       cursor = prodCollection.find(
-          filter: where("productScores").elemMatch(where("score").lt(7)));
+        filter: where("productScores").elemMatch(where("score").lt(7)),
+      );
       expect(await cursor.length, 1);
 
       cursor = prodCollection.find(
-          filter: where("productScores").elemMatch(where("score").lte(7)));
+        filter: where("productScores").elemMatch(where("score").lte(7)),
+      );
       expect(await cursor.length, 3);
 
       cursor = prodCollection.find(
-          filter:
-              where("productScores").elemMatch(where("score").within([7, 8])));
+        filter: where("productScores").elemMatch(where("score").within([7, 8])),
+      );
       expect(await cursor.length, 2);
 
       cursor = prodCollection.find(
-          filter:
-              where("productScores").elemMatch(where("score").notIn([7, 8])));
+        filter: where("productScores").elemMatch(where("score").notIn([7, 8])),
+      );
       expect(await cursor.length, 1);
 
       cursor = prodCollection.find(
-          filter:
-              where("productScores").elemMatch(where("product").regex("xyz")));
+        filter: where("productScores").elemMatch(where("product").regex("xyz")),
+      );
       expect(await cursor.length, 3);
 
-      cursor =
-          prodCollection.find(filter: where("strArray").elemMatch($.eq("a")));
+      cursor = prodCollection.find(
+        filter: where("strArray").elemMatch($.eq("a")),
+      );
       expect(await cursor.length, 2);
 
       cursor = prodCollection.find(
-          filter: where("strArray")
-              .elemMatch($.eq("a").or($.eq("f").or($.eq("b"))).not()));
+        filter: where(
+          "strArray",
+        ).elemMatch($.eq("a").or($.eq("f").or($.eq("b"))).not()),
+      );
       expect(await cursor.length, 1);
 
-      cursor =
-          prodCollection.find(filter: where("strArray").elemMatch($.gt("e")));
+      cursor = prodCollection.find(
+        filter: where("strArray").elemMatch($.gt("e")),
+      );
       expect(await cursor.length, 1);
 
-      cursor =
-          prodCollection.find(filter: where("strArray").elemMatch($.gte("e")));
+      cursor = prodCollection.find(
+        filter: where("strArray").elemMatch($.gte("e")),
+      );
       expect(await cursor.length, 2);
 
-      cursor =
-          prodCollection.find(filter: where("strArray").elemMatch($.lte("b")));
+      cursor = prodCollection.find(
+        filter: where("strArray").elemMatch($.lte("b")),
+      );
       expect(await cursor.length, 2);
 
-      cursor =
-          prodCollection.find(filter: where("strArray").elemMatch($.lt("a")));
+      cursor = prodCollection.find(
+        filter: where("strArray").elemMatch($.lt("a")),
+      );
       expect(await cursor.length, 0);
 
       cursor = prodCollection.find(
-          filter: where("strArray").elemMatch($.within(["a", "f"])));
+        filter: where("strArray").elemMatch($.within(["a", "f"])),
+      );
       expect(await cursor.length, 2);
 
       cursor = prodCollection.find(
-          filter: where("strArray").elemMatch($.regex("a")));
+        filter: where("strArray").elemMatch($.regex("a")),
+      );
       expect(await cursor.length, 2);
     });
 
@@ -623,11 +683,13 @@ void main() {
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where("abc").notEq(null).and(where("xyz").eq(null)));
+        filter: where("abc").notEq(null).and(where("xyz").eq(null)),
+      );
       expect(await cursor.length, 1);
 
       cursor = collection.find(
-          filter: where("abc").eq(null).and(where("xyz").notEq(null)));
+        filter: where("abc").eq(null).and(where("xyz").notEq(null)),
+      );
       expect(await cursor.length, 0);
 
       await collection.remove(all);
@@ -638,9 +700,14 @@ void main() {
 
       await collection.insert(doc);
       cursor = collection.find(
-          filter: where('revision').gte(1482225343160).and(where('revision')
-              .lte(1482225343162)
-              .and(where('revision').notEq(null))));
+        filter: where('revision')
+            .gte(1482225343160)
+            .and(
+              where(
+                'revision',
+              ).lte(1482225343162).and(where('revision').notEq(null)),
+            ),
+      );
       var projected = await cursor.first;
       expect(projected, isNotNull);
     });
@@ -682,22 +749,25 @@ void main() {
       expect(result.length, 1);
 
       var cursor = col.find(
-          filter: where('group').eq('groupA'),
-          findOptions: orderBy('startTime', SortOrder.descending));
+        filter: where('group').eq('groupA'),
+        findOptions: orderBy('startTime', SortOrder.descending),
+      );
       expect(await cursor.length, 2);
 
       expect(
-          cursor,
-          emitsInOrder([
-            emits(containsPair('startTime', isNotNull)),
-            emits(isNot(containsPair('startTime', isNotNull))),
-            emitsDone
-          ]));
+        cursor,
+        emitsInOrder([
+          emits(containsPair('startTime', isNotNull)),
+          emits(isNot(containsPair('startTime', isNotNull))),
+          emitsDone,
+        ]),
+      );
 
       // sort with invalid field
       cursor = col.find(
-          filter: where('group').eq('groupA'),
-          findOptions: orderBy('startTime2', SortOrder.descending));
+        filter: where('group').eq('groupA'),
+        findOptions: orderBy('startTime2', SortOrder.descending),
+      );
       expect(await cursor.length, 2);
     });
 
@@ -724,32 +794,36 @@ void main() {
       expect(result.length, 3);
 
       var cursor = col.find(
-          filter: where('group').eq('groupA'),
-          findOptions: orderBy('startTime', SortOrder.descending));
+        filter: where('group').eq('groupA'),
+        findOptions: orderBy('startTime', SortOrder.descending),
+      );
       expect(await cursor.length, 3);
 
       expect(
-          cursor,
-          emitsInOrder([
-            emits(containsPair('id', equals('test-2'))),
-            emits(containsPair('id', equals('test-3'))),
-            emits(containsPair('id', equals('test-1'))),
-            emitsDone
-          ]));
+        cursor,
+        emitsInOrder([
+          emits(containsPair('id', equals('test-2'))),
+          emits(containsPair('id', equals('test-3'))),
+          emits(containsPair('id', equals('test-1'))),
+          emitsDone,
+        ]),
+      );
 
       cursor = col.find(
-          filter: where('group').eq('groupA'),
-          findOptions: orderBy('startTime', SortOrder.ascending));
+        filter: where('group').eq('groupA'),
+        findOptions: orderBy('startTime', SortOrder.ascending),
+      );
       expect(await cursor.length, 3);
 
       expect(
-          cursor,
-          emitsInOrder([
-            emits(containsPair('id', equals('test-1'))),
-            emits(containsPair('id', equals('test-3'))),
-            emits(containsPair('id', equals('test-2'))),
-            emitsDone
-          ]));
+        cursor,
+        emitsInOrder([
+          emits(containsPair('id', equals('test-1'))),
+          emits(containsPair('id', equals('test-3'))),
+          emits(containsPair('id', equals('test-2'))),
+          emitsDone,
+        ]),
+      );
     });
 
     test("Test Find Filter Invalid Accessor", () async {
@@ -785,27 +859,29 @@ void main() {
       // there is no locale supported string sort in dart/flutter
       // so Ôrange will come last.
       expect(
-          cursor,
-          emitsInOrder([
-            emits(containsPair('id', equals('test-1'))),
-            emits(containsPair('id', equals('test-4'))),
-            emits(containsPair('id', equals('test-3'))),
-            emits(containsPair('id', equals('test-2'))),
-            emitsDone
-          ]));
+        cursor,
+        emitsInOrder([
+          emits(containsPair('id', equals('test-1'))),
+          emits(containsPair('id', equals('test-4'))),
+          emits(containsPair('id', equals('test-3'))),
+          emits(containsPair('id', equals('test-2'))),
+          emitsDone,
+        ]),
+      );
 
       cursor = col.find(findOptions: orderBy('fruit', SortOrder.descending));
       expect(await cursor.length, 4);
 
       expect(
-          cursor,
-          emitsInOrder([
-            emits(containsPair('id', equals('test-2'))),
-            emits(containsPair('id', equals('test-3'))),
-            emits(containsPair('id', equals('test-4'))),
-            emits(containsPair('id', equals('test-1'))),
-            emitsDone
-          ]));
+        cursor,
+        emitsInOrder([
+          emits(containsPair('id', equals('test-2'))),
+          emits(containsPair('id', equals('test-3'))),
+          emits(containsPair('id', equals('test-4'))),
+          emits(containsPair('id', equals('test-1'))),
+          emitsDone,
+        ]),
+      );
     });
 
     test("Test Find by Nested Field in List", () async {
@@ -817,7 +893,7 @@ void main() {
             ..put('other', 'value'),
           emptyDocument()
             ..put('type', 'another-example')
-            ..put('other', 'another-value')
+            ..put('other', 'another-value'),
         ]);
 
       var doc2 = emptyDocument()
@@ -828,19 +904,20 @@ void main() {
             ..put('other', 'value2'),
           emptyDocument()
             ..put('type', 'another-example2')
-            ..put('other', 'another-value2')
+            ..put('other', 'another-value2'),
         ]);
 
       var col = await db.getCollection('test');
       await col.insertMany([doc1, doc2]);
 
       var cursor = col.find(
-          filter: where('tags').elemMatch(where('type').eq('example')));
+        filter: where('tags').elemMatch(where('type').eq('example')),
+      );
 
       expect(
-          cursor,
-          emitsInOrder(
-              [emits(containsPair('name', equals('John'))), emitsDone]));
+        cursor,
+        emitsInOrder([emits(containsPair('name', equals('John'))), emitsDone]),
+      );
     });
 
     test("Test Find by Between Filter", () async {
@@ -871,19 +948,24 @@ void main() {
       expect(await cursor.length, 5);
 
       cursor = col.find(
-          filter: where('age')
-              .between(31, 35, lowerInclusive: false, upperInclusive: false));
+        filter: where(
+          'age',
+        ).between(31, 35, lowerInclusive: false, upperInclusive: false),
+      );
       expect(await cursor.length, 3);
 
       cursor = col.find(
-          filter: where('age')
-              .between(31, 35, lowerInclusive: false, upperInclusive: true));
+        filter: where(
+          'age',
+        ).between(31, 35, lowerInclusive: false, upperInclusive: true),
+      );
       expect(await cursor.length, 4);
 
       cursor = col.find(
-          filter: where('age')
-              .between(31, 35, lowerInclusive: false, upperInclusive: false)
-              .not());
+        filter: where(
+          'age',
+        ).between(31, 35, lowerInclusive: false, upperInclusive: false).not(),
+      );
       expect(await cursor.length, 2);
 
       // create index and same search with same result
@@ -892,19 +974,24 @@ void main() {
       expect(await cursor.length, 5);
 
       cursor = col.find(
-          filter: where('age')
-              .between(31, 35, lowerInclusive: false, upperInclusive: false));
+        filter: where(
+          'age',
+        ).between(31, 35, lowerInclusive: false, upperInclusive: false),
+      );
       expect(await cursor.length, 3);
 
       cursor = col.find(
-          filter: where('age')
-              .between(31, 35, lowerInclusive: false, upperInclusive: true));
+        filter: where(
+          'age',
+        ).between(31, 35, lowerInclusive: false, upperInclusive: true),
+      );
       expect(await cursor.length, 4);
 
       cursor = col.find(
-          filter: where('age')
-              .between(31, 35, lowerInclusive: false, upperInclusive: false)
-              .not());
+        filter: where(
+          'age',
+        ).between(31, 35, lowerInclusive: false, upperInclusive: false).not(),
+      );
       expect(await cursor.length, 2);
     });
 
@@ -940,11 +1027,13 @@ void main() {
       expect(result, equals(doc));
 
       result = await (col.find(
-          filter: and([byId(nitriteId), where("age").notEq(null)]))).first;
+        filter: and([byId(nitriteId), where("age").notEq(null)]),
+      )).first;
       expect(result, equals(doc));
 
       result = await (col.find(
-          filter: and([byId(nitriteId), where("tag").eq(doc['tag'])]))).first;
+        filter: and([byId(nitriteId), where("tag").eq(doc['tag'])]),
+      )).first;
       expect(result, equals(doc));
     });
   });

@@ -35,8 +35,10 @@ class TextIndex extends NitriteIndex {
         await _addIndexElement(indexMap, fieldValues, item);
       }
     } else {
-      throw IndexingException("Index field $firstField must be a "
-          "String or Iterable<String>");
+      throw IndexingException(
+        "Index field $firstField must be a "
+        "String or Iterable<String>",
+      );
     }
   }
 
@@ -61,8 +63,10 @@ class TextIndex extends NitriteIndex {
         await _removeIndexElement(indexMap, fieldValues, item);
       }
     } else {
-      throw IndexingException("Index field $firstField must be a "
-          "String or Iterable<String>");
+      throw IndexingException(
+        "Index field $firstField must be a "
+        "String or Iterable<String>",
+      );
     }
   }
 
@@ -94,8 +98,11 @@ class TextIndex extends NitriteIndex {
     return _nitriteStore.openMap<String, List<dynamic>>(mapName);
   }
 
-  Future<void> _addIndexElement(NitriteMap<String, List<dynamic>> indexMap,
-      FieldValues fieldValues, String? value) async {
+  Future<void> _addIndexElement(
+    NitriteMap<String, List<dynamic>> indexMap,
+    FieldValues fieldValues,
+    String? value,
+  ) async {
     var words = _decompose(value);
 
     for (var word in words) {
@@ -107,8 +114,11 @@ class TextIndex extends NitriteIndex {
     }
   }
 
-  Future<void> _removeIndexElement(NitriteMap<String, List<dynamic>> indexMap,
-      FieldValues fieldValues, String? value) async {
+  Future<void> _removeIndexElement(
+    NitriteMap<String, List<dynamic>> indexMap,
+    FieldValues fieldValues,
+    String? value,
+  ) async {
     var words = _decompose(value);
 
     for (var word in words) {

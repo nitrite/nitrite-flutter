@@ -1,3 +1,9 @@
+## 1.1.2
+
+- Widened the `rxdart` dependency constraint to `^0.28.0` to support its latest version.
+- Added missing type annotations and corrected doc comments to satisfy the latest analysis rules.
+- Reformatted the source with the latest Dart formatter.
+
 ## 1.1.1
 
 - Added `NitriteIsolate` for concurrent database access across multiple isolates.

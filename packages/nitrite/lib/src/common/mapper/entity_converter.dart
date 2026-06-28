@@ -38,7 +38,9 @@ abstract class EntityConverter<T> extends NitritePlugin {
   /// If the type [I] is a registered value type, it will return the
   /// same list without converting its elements.
   static dynamic fromIterable<I>(
-      Iterable<I>? iterable, NitriteMapper nitriteMapper) {
+    Iterable<I>? iterable,
+    NitriteMapper nitriteMapper,
+  ) {
     var docList = [];
     if (iterable != null) {
       for (var item in iterable) {

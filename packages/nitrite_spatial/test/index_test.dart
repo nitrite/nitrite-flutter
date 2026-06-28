@@ -168,8 +168,10 @@ void main() {
       var findPlan = await cursor.findPlan;
       expect(findPlan, isNotNull);
       expect(findPlan.indexScanFilter?.filters.length, 1);
-      expect(findPlan.indexScanFilter?.filters.first, isA<IntersectsIndexFilter>());
-      expect(findPlan.collectionScanFilter, isNotNull);  // Now has validation filter too
+      expect(findPlan.indexScanFilter?.filters.first,
+          isA<IntersectsIndexFilter>());
+      expect(findPlan.collectionScanFilter,
+          isNotNull); // Now has validation filter too
 
       var result = await cursor.map((doc) => doc['key']).toList();
       expect(result.length, 1);

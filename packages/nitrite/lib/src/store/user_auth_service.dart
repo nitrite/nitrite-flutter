@@ -38,8 +38,12 @@ class UserAuthenticationService {
     }
   }
 
-  Future<void> addOrUpdatePassword(bool update, String username,
-      String oldPassword, String newPassword) async {
+  Future<void> addOrUpdatePassword(
+    bool update,
+    String username,
+    String oldPassword,
+    String newPassword,
+  ) async {
     NitriteMap<String, Document>? uMap;
 
     if (update) {

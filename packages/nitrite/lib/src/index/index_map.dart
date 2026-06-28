@@ -22,15 +22,15 @@ class IndexMap {
 
   bool _reverseScan = false;
 
-  IndexMap(
-      {NitriteMap<DBValue, dynamic>? nitriteMap,
-      Map<dynamic, dynamic>? subMap,
-      NitriteMap<IndexKey, bool>? compositeMap,
-      int compositeFieldCount = 1})
-      : _nitriteMap = nitriteMap,
-        _compositeMap = compositeMap,
-        _compositeFieldCount = compositeFieldCount,
-        _navigableMap = SplayTreeMapEx.fromMap(subMap);
+  IndexMap({
+    NitriteMap<DBValue, dynamic>? nitriteMap,
+    Map<dynamic, dynamic>? subMap,
+    NitriteMap<IndexKey, bool>? compositeMap,
+    int compositeFieldCount = 1,
+  }) : _nitriteMap = nitriteMap,
+       _compositeMap = compositeMap,
+       _compositeFieldCount = compositeFieldCount,
+       _navigableMap = SplayTreeMapEx.fromMap(subMap);
 
   set reverseScan(bool reverseScan) {
     _reverseScan = reverseScan;
@@ -218,23 +218,27 @@ class IndexMap {
       }
     } else if (_navigableMap != null) {
       if (!_reverseScan) {
-        yield* Stream.fromIterable(_navigableMap.entries.map((entry) {
-          var dbKey = entry.key;
-          if (dbKey is DBNull) {
-            return (null, entry.value);
-          } else {
-            return (dbKey.value, entry.value);
-          }
-        }));
+        yield* Stream.fromIterable(
+          _navigableMap.entries.map((entry) {
+            var dbKey = entry.key;
+            if (dbKey is DBNull) {
+              return (null, entry.value);
+            } else {
+              return (dbKey.value, entry.value);
+            }
+          }),
+        );
       } else {
-        yield* Stream.fromIterable(_navigableMap.reversedEntries.map((entry) {
-          var dbKey = entry.key;
-          if (dbKey is DBNull) {
-            return (null, entry.value);
-          } else {
-            return (dbKey.value, entry.value);
-          }
-        }));
+        yield* Stream.fromIterable(
+          _navigableMap.reversedEntries.map((entry) {
+            var dbKey = entry.key;
+            if (dbKey is DBNull) {
+              return (null, entry.value);
+            } else {
+              return (dbKey.value, entry.value);
+            }
+          }),
+        );
       }
     }
     return;

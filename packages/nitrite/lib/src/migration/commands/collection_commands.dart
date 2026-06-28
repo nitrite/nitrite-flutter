@@ -18,8 +18,12 @@ class CollectionRenameCommand extends BaseCommand {
     await initialize(nitrite, oldName);
 
     var newMap = await nitriteStore?.openMap<NitriteId, Document>(newName);
-    var newOperations =
-        CollectionOperations(newName, newMap!, nitrite.config, EventBus());
+    var newOperations = CollectionOperations(
+      newName,
+      newMap!,
+      nitrite.config,
+      EventBus(),
+    );
 
     try {
       await newOperations.initialize();
@@ -64,8 +68,9 @@ class AddFieldCommand extends BaseCommand {
 
     await initialize(nitrite, collectionName);
 
-    var indexDescriptor =
-        await operations?.findIndex(Fields.withNames([fieldName]));
+    var indexDescriptor = await operations?.findIndex(
+      Fields.withNames([fieldName]),
+    );
 
     await for (var pair in nitriteMap!.entries()) {
       var document = pair.$2;
@@ -80,7 +85,9 @@ class AddFieldCommand extends BaseCommand {
 
     if (indexDescriptor != null) {
       await operations?.createIndex(
-          Fields.withNames([fieldName]), indexDescriptor.indexType);
+        Fields.withNames([fieldName]),
+        indexDescriptor.indexType,
+      );
     }
   }
 }
@@ -103,8 +110,8 @@ class RenameFieldCommand extends BaseCommand {
     try {
       await indexManager.initialize();
       var oldField = Fields.withNames([oldName]);
-      var matchingIndexDescriptors =
-          await indexManager.findMatchingIndexDescriptors(oldField);
+      var matchingIndexDescriptors = await indexManager
+          .findMatchingIndexDescriptors(oldField);
 
       await for (var pair in nitriteMap!.entries()) {
         var document = pair.$2;
@@ -123,8 +130,11 @@ class RenameFieldCommand extends BaseCommand {
           var indexType = indexDescriptor.indexType;
 
           var oldIndexFields = indexDescriptor.fields;
-          var newIndexFields =
-              _getNewIndexFields(oldIndexFields, oldName, newName);
+          var newIndexFields = _getNewIndexFields(
+            oldIndexFields,
+            oldName,
+            newName,
+          );
 
           await operations!.dropIndex(indexDescriptor.fields);
           await operations!.createIndex(newIndexFields, indexType);
@@ -136,7 +146,10 @@ class RenameFieldCommand extends BaseCommand {
   }
 
   Fields _getNewIndexFields(
-      Fields oldIndexFields, String oldName, String newName) {
+    Fields oldIndexFields,
+    String oldName,
+    String newName,
+  ) {
     var newIndexFields = Fields();
     for (var fieldName in oldIndexFields.fieldNames) {
       if (fieldName == oldName) {
@@ -162,8 +175,9 @@ class DeleteFieldCommand extends BaseCommand {
 
     await initialize(nitrite, collectionName);
 
-    var indexDescriptor =
-        await operations?.findIndex(Fields.withNames([fieldName]));
+    var indexDescriptor = await operations?.findIndex(
+      Fields.withNames([fieldName]),
+    );
 
     await for (var pair in nitriteMap!.entries()) {
       var document = pair.$2;

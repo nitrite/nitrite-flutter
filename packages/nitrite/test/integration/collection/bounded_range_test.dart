@@ -25,16 +25,21 @@ void main() {
       return out;
     }
 
-    test('between is fully index-covered (no collection scan filter)',
-        () async {
-      var cursor = col.find(filter: where('seq').between(40, 50));
-      var plan = await cursor.findPlan;
-      expect(plan.indexDescriptor, isNotNull);
-      expect(plan.collectionScanFilter, isNull,
-          reason: 'both bounds should be absorbed into the index scan');
-      var result = await seqs(where('seq').between(40, 50));
-      expect(result..sort(), [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]);
-    });
+    test(
+      'between is fully index-covered (no collection scan filter)',
+      () async {
+        var cursor = col.find(filter: where('seq').between(40, 50));
+        var plan = await cursor.findPlan;
+        expect(plan.indexDescriptor, isNotNull);
+        expect(
+          plan.collectionScanFilter,
+          isNull,
+          reason: 'both bounds should be absorbed into the index scan',
+        );
+        var result = await seqs(where('seq').between(40, 50));
+        expect(result..sort(), [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]);
+      },
+    );
 
     test('explicit gte AND lte combine into bounded scan', () async {
       var f = and([where('seq').gte(10), where('seq').lte(13)]);
@@ -51,14 +56,18 @@ void main() {
     });
 
     test('bounded range with descending sort', () async {
-      var result = await seqs(where('seq').between(20, 24),
-          orderBy('seq', SortOrder.descending));
+      var result = await seqs(
+        where('seq').between(20, 24),
+        orderBy('seq', SortOrder.descending),
+      );
       expect(result, [24, 23, 22, 21, 20]);
     });
 
     test('bounded range with ascending sort', () async {
-      var result = await seqs(where('seq').between(20, 24),
-          orderBy('seq', SortOrder.ascending));
+      var result = await seqs(
+        where('seq').between(20, 24),
+        orderBy('seq', SortOrder.ascending),
+      );
       expect(result, [20, 21, 22, 23, 24]);
     });
 
@@ -72,8 +81,10 @@ void main() {
       for (var i = 0; i < 100; i++) {}
       var indexed = await seqs(where('seq').between(30, 70));
       expect(indexed.length, 41);
-      expect(indexed.toSet().containsAll(List.generate(41, (i) => 30 + i)),
-          isTrue);
+      expect(
+        indexed.toSet().containsAll(List.generate(41, (i) => 30 + i)),
+        isTrue,
+      );
     });
   });
 }

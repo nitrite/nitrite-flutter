@@ -25,8 +25,10 @@ void main() {
       var cursor = collection.find();
       await expectLater(cursor.length, completion(3));
 
-      expect(() async => await collection.remove(where('lastName').gt(null)),
-          throwsFilterException);
+      expect(
+        () async => await collection.remove(where('lastName').gt(null)),
+        throwsFilterException,
+      );
     });
   });
 }

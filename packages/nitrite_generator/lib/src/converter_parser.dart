@@ -82,7 +82,9 @@ class ConverterParser extends Parser<ConverterInfo> {
 
     var property = element.getAnnotation(DocumentKey);
     if (property != null &&
-        (element.isStatic || element.isPrivate || element.isSynthetic)) {
+        (element.isStatic ||
+            element.isPrivate ||
+            !identical(element, element.nonSynthetic))) {
       /*
       * class A {
       *   @DocumentKey
@@ -109,7 +111,7 @@ class ConverterParser extends Parser<ConverterInfo> {
 
     if (element.isPrivate) return false;
     if (element.isStatic) return false;
-    if (element.isSynthetic) return false;
+    if (!identical(element, element.nonSynthetic)) return false;
     return true;
   }
 
@@ -162,7 +164,7 @@ class ConverterParser extends Parser<ConverterInfo> {
     var constructors = _element.constructors;
     var validConstructors = constructors.where((ctor) =>
         ctor.isPublic &&
-        ctor.name.isEmpty &&
+        ctor.name == 'new' &&
         (ctor.isGenerative || !ctor.isFactory || ctor.isDefaultConstructor));
 
     /*
@@ -203,23 +205,23 @@ class ConverterParser extends Parser<ConverterInfo> {
     }
 
     bool hasDefaultCtor =
-        validConstructors.any((ctor) => ctor.parameters.isEmpty);
+        validConstructors.any((ctor) => ctor.formalParameters.isEmpty);
 
     bool hasAllOptionalPositionalCtor = validConstructors.any((ctor) =>
-        ctor.parameters.isNotEmpty &&
-        ctor.parameters.every((param) => param.isOptionalPositional));
+        ctor.formalParameters.isNotEmpty &&
+        ctor.formalParameters.every((param) => param.isOptionalPositional));
 
     bool hasAllOptionalNamedCtor = validConstructors.any((ctor) =>
-        ctor.parameters.isNotEmpty &&
-        ctor.parameters.every((param) => param.isOptionalNamed));
+        ctor.formalParameters.isNotEmpty &&
+        ctor.formalParameters.every((param) => param.isOptionalNamed));
 
     bool hasAllNamedCtor = validConstructors.any((ctor) =>
-        ctor.parameters.isNotEmpty &&
-        ctor.parameters.every((param) => param.isNamed));
+        ctor.formalParameters.isNotEmpty &&
+        ctor.formalParameters.every((param) => param.isNamed));
 
     var ctorParams = <ParamInfo>[];
     for (var ctor in validConstructors) {
-      var params = ctor.parameters
+      var params = ctor.formalParameters
           .map((e) => ParamInfo(e.type, e.displayName, e.isRequired, e.isNamed))
           .toList();
       if (params.length > ctorParams.length) {
@@ -271,16 +273,19 @@ class ConverterParser extends Parser<ConverterInfo> {
 
   List<PropertyInfo> _getPropertyInfoList() {
     var propInfos = <PropertyInfo>{};
-    var accessors = _element.accessors;
+    var accessors = <PropertyAccessorElement>[
+      ..._element.getters,
+      ..._element.setters,
+    ];
 
     for (var accessor in accessors) {
       // validate valid type
       accessor.type.accept(TypeValidator(accessor));
 
       // synthetic properties are ignored
-      if (accessor.isSynthetic) continue;
+      if (!identical(accessor, accessor.nonSynthetic)) continue;
 
-      if (accessor.isSetter && accessor.correspondingGetter == null) {
+      if (accessor is SetterElement && accessor.correspondingGetter == null) {
         /*
         * class A {
         *   // no way to get the value
@@ -300,7 +305,7 @@ class ConverterParser extends Parser<ConverterInfo> {
             element: _element);
       }
 
-      if (accessor.isGetter) {
+      if (accessor is GetterElement) {
         // combine getter and setter accessors
         var iterable = propInfos.where(
             (element) => element.setterFieldName == accessor.displayName);
@@ -329,7 +334,7 @@ class ConverterParser extends Parser<ConverterInfo> {
           aliasName ??= "";
           propInfo.aliasName = aliasName;
         }
-      } else if (accessor.isSetter) {
+      } else if (accessor is SetterElement) {
         // combine getter and setter accessors
         var iterable = propInfos.where(
             (element) => element.getterFieldName == accessor.displayName);

@@ -47,15 +47,19 @@ abstract class Nitrite {
   /// If the entity type [T] cannot be annotated with [Entity], an
   /// [EntityDecorator] implementation of the type can also be provided
   /// to create an object repository.
-  Future<ObjectRepository<T>> getRepository<T>(
-      {EntityDecorator<T>? entityDecorator, String? key});
+  Future<ObjectRepository<T>> getRepository<T>({
+    EntityDecorator<T>? entityDecorator,
+    String? key,
+  });
 
   /// Destroys a [NitriteCollection] without opening it first.
   Future<void> destroyCollection(String name);
 
   /// Destroys an [ObjectRepository] without opening it first.
-  Future<void> destroyRepository<T>(
-      {EntityDecorator<T>? entityDecorator, String? key});
+  Future<void> destroyRepository<T>({
+    EntityDecorator<T>? entityDecorator,
+    String? key,
+  });
 
   /// Gets the set of all [NitriteCollection]s' names saved in the store.
   Future<Set<String>> get listCollectionNames;
@@ -100,8 +104,10 @@ abstract class Nitrite {
 
   /// Checks if a repository of the specified type and key exists in the
   /// database.
-  Future<bool> hasRepository<T>(
-      {EntityDecorator<T>? entityDecorator, String? key}) async {
+  Future<bool> hasRepository<T>({
+    EntityDecorator<T>? entityDecorator,
+    String? key,
+  }) async {
     checkOpened();
     var nitriteMapper = config.nitriteMapper;
     var entityName = entityDecorator == null

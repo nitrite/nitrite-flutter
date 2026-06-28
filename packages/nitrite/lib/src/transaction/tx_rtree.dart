@@ -10,9 +10,11 @@ class TransactionalRTree<Key extends BoundingBox, Value>
   final NitriteStore _store;
 
   TransactionalRTree(
-      this._mapName, NitriteRTree<Key, Value>? primaryRTree, this._store)
-      : _primaryRTree = primaryRTree!,
-        _map = <SpatialKey, Key>{};
+    this._mapName,
+    NitriteRTree<Key, Value>? primaryRTree,
+    this._store,
+  ) : _primaryRTree = primaryRTree!,
+      _map = <SpatialKey, Key>{};
 
   @override
   Future<int> size() async => _map.length;
@@ -45,10 +47,7 @@ class TransactionalRTree<Key extends BoundingBox, Value>
     }
 
     var primaryRecords = _primaryRTree.findIntersectingKeys(key);
-    return ConcatStream([
-      primaryRecords,
-      Stream.fromIterable(set),
-    ]);
+    return ConcatStream([primaryRecords, Stream.fromIterable(set)]);
   }
 
   @override
@@ -63,24 +62,32 @@ class TransactionalRTree<Key extends BoundingBox, Value>
     }
 
     var primaryRecords = _primaryRTree.findContainedKeys(key);
-    return ConcatStream([
-      primaryRecords,
-      Stream.fromIterable(set),
-    ]);
+    return ConcatStream([primaryRecords, Stream.fromIterable(set)]);
   }
 
   @override
-  Stream<NitriteId> findNearestNeighbors(double x, double y, int k,
-      [double? maxDistance]) async* {
+  Stream<NitriteId> findNearestNeighbors(
+    double x,
+    double y,
+    int k, [
+    double? maxDistance,
+  ]) async* {
     if (k <= 0) return;
-    var localIds = nearestNeighborIds(_map.keys, x, y, k, maxDistance)
-        .map((id) => NitriteId.createId(id.toString()));
+    var localIds = nearestNeighborIds(
+      _map.keys,
+      x,
+      y,
+      k,
+      maxDistance,
+    ).map((id) => NitriteId.createId(id.toString()));
     var primary = _primaryRTree.findNearestNeighbors(x, y, k, maxDistance);
 
     var seen = <NitriteId>{};
     var count = 0;
-    await for (var id
-        in ConcatStream([primary, Stream.fromIterable(localIds)])) {
+    await for (var id in ConcatStream([
+      primary,
+      Stream.fromIterable(localIds),
+    ])) {
       if (count >= k) break;
       if (seen.add(id)) {
         count++;

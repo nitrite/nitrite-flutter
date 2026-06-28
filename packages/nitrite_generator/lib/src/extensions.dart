@@ -15,7 +15,7 @@ extension IterableExtension<T> on Iterable<T> {
 extension FieldElementExtension on FieldElement {
   // field should not be static or synthetic
   bool shouldBeIncluded() {
-    return !(isStatic || isSynthetic);
+    return !(isStatic || !identical(this, nonSynthetic));
   }
 }
 

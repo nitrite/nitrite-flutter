@@ -104,12 +104,16 @@ void main() {
       nitriteMapper.registerEntityConverter(_GConverter());
 
       expect(findRepositoryNameByType<_F>(nitriteMapper), '_F');
-      expect(findRepositoryNameByType<_F>(nitriteMapper, 'a'),
-          '_F${keyObjSeparator}a');
+      expect(
+        findRepositoryNameByType<_F>(nitriteMapper, 'a'),
+        '_F${keyObjSeparator}a',
+      );
 
       expect(findRepositoryNameByType<_G>(nitriteMapper), 'g');
-      expect(findRepositoryNameByType<_G>(nitriteMapper, 'a'),
-          'g${keyObjSeparator}a');
+      expect(
+        findRepositoryNameByType<_G>(nitriteMapper, 'a'),
+        'g${keyObjSeparator}a',
+      );
     });
 
     test('Test findRepositoryNameByTypeName', () {
@@ -174,7 +178,9 @@ void main() {
 
       expect(() => newInstance(nitriteMapper), throwsObjectMappingException);
       expect(
-          () => newInstance<_G>(nitriteMapper), throwsObjectMappingException);
+        () => newInstance<_G>(nitriteMapper),
+        throwsObjectMappingException,
+      );
     });
 
     test('Test DefaultValue', () {
@@ -280,8 +286,8 @@ class _BDecorator extends EntityDecorator<_B> {
 
   @override
   List<EntityIndex> get indexFields => [
-        EntityIndex(["value"], IndexType.nonUnique)
-      ];
+    EntityIndex(["value"], IndexType.nonUnique),
+  ];
 }
 
 class _CDecorator implements EntityDecorator<_C> {

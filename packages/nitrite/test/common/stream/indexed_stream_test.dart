@@ -18,8 +18,9 @@ void main() {
       ]);
 
       var stream = IndexedStream(indexMap, nitriteMap);
-      when(nitriteMap[any])
-          .thenAnswer((_) async => documentFromMap({"id": 1, "name": "John"}));
+      when(
+        nitriteMap[any],
+      ).thenAnswer((_) async => documentFromMap({"id": 1, "name": "John"}));
 
       expect(await stream.toList(), [
         documentFromMap({"id": 1, "name": "John"}),
@@ -33,8 +34,9 @@ void main() {
       var indexMap = Stream.fromIterable(<NitriteId>[]);
 
       var stream = IndexedStream(indexMap, nitriteMap);
-      when(nitriteMap[any])
-          .thenAnswer((_) async => documentFromMap({"id": 1, "name": "John"}));
+      when(
+        nitriteMap[any],
+      ).thenAnswer((_) async => documentFromMap({"id": 1, "name": "John"}));
 
       expect(await stream.toList(), []);
     });

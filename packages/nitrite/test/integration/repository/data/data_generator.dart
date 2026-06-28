@@ -13,11 +13,12 @@ var random = Random(DateTime.now().millisecondsSinceEpoch);
 obj.Company generateCompanyRecord() {
   var departments = generateDepartments();
   var company = obj.Company(
-      companyId: DateTime.now().millisecondsSinceEpoch + counter++,
-      companyName: faker.guid.guid(),
-      dateCreated: faker.date.dateTime(),
-      departments: departments,
-      employeeRecord: {});
+    companyId: DateTime.now().millisecondsSinceEpoch + counter++,
+    companyName: faker.guid.guid(),
+    dateCreated: faker.date.dateTime(),
+    departments: departments,
+    employeeRecord: {},
+  );
 
   setEmployeeRecords(company, departments);
   return company;
@@ -25,13 +26,17 @@ obj.Company generateCompanyRecord() {
 
 void setEmployeeRecords(obj.Company company, List<String> departments) {
   for (var value in departments) {
-    company.employeeRecord[value] =
-        generateEmployeeRecords(company, random.nextInt(20)).toList();
+    company.employeeRecord[value] = generateEmployeeRecords(
+      company,
+      random.nextInt(20),
+    ).toList();
   }
 }
 
 Iterable<obj.Employee> generateEmployeeRecords(
-    obj.Company company, int nextInt) sync* {
+  obj.Company company,
+  int nextInt,
+) sync* {
   for (var i = 0; i < nextInt; i++) {
     yield generateEmployee(company);
   }
@@ -39,13 +44,14 @@ Iterable<obj.Employee> generateEmployeeRecords(
 
 obj.Employee generateEmployee(obj.Company? company) {
   return obj.Employee(
-      empId: DateTime.now().millisecondsSinceEpoch + counter++,
-      joinDate: faker.date.dateTime(),
-      address: faker.address.streetAddress(),
-      emailAddress: faker.internet.safeEmail(),
-      blob: utf8.encode(faker.lorem.sentence()),
-      company: company,
-      employeeNote: generateNote());
+    empId: DateTime.now().millisecondsSinceEpoch + counter++,
+    joinDate: faker.date.dateTime(),
+    address: faker.address.streetAddress(),
+    emailAddress: faker.internet.safeEmail(),
+    blob: utf8.encode(faker.lorem.sentence()),
+    company: company,
+    employeeNote: generateNote(),
+  );
 }
 
 obj.Note generateNote() {
@@ -88,15 +94,18 @@ obj.BookId randomBookId() {
 
 Product randomProduct() {
   return Product(
-      productId: randomProductId(),
-      manufacturer: randomManufacturer(),
-      productName: faker.guid.guid(),
-      price: random.nextDouble());
+    productId: randomProductId(),
+    manufacturer: randomManufacturer(),
+    productName: faker.guid.guid(),
+    price: random.nextDouble(),
+  );
 }
 
 ProductId randomProductId() {
   return ProductId(
-      uniqueId: faker.guid.guid(), productCode: faker.internet.macAddress());
+    uniqueId: faker.guid.guid(),
+    productCode: faker.internet.macAddress(),
+  );
 }
 
 Manufacturer randomManufacturer() {

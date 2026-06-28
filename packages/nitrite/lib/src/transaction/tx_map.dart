@@ -18,9 +18,9 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
   bool _cleared = false;
 
   TransactionalMap(this._mapName, NitriteMap<K, V>? primaryMap, this._store)
-      : _primaryMap = primaryMap ?? InMemoryMap<K, V>(_mapName, _store),
-        _backingMap = InMemoryMap<K, V>(_mapName, _store),
-        _tombstones = <K>{};
+    : _primaryMap = primaryMap ?? InMemoryMap<K, V>(_mapName, _store),
+      _backingMap = InMemoryMap<K, V>(_mapName, _store),
+      _tombstones = <K>{};
 
   @override
   String get name => _mapName;
@@ -152,9 +152,9 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     if (_cleared) return Stream.empty();
 
     return ConcatStream([
-      _primaryMap
-          .reversedEntries()
-          .where((entry) => !_tombstones.contains(entry.$1)),
+      _primaryMap.reversedEntries().where(
+        (entry) => !_tombstones.contains(entry.$1),
+      ),
       _backingMap.reversedEntries(),
     ]);
   }
@@ -167,7 +167,10 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     var backingKey = await _backingMap.higherKey(key);
 
     return _computeKey(
-        primaryKey, backingKey, (keyMap) => keyMap.higherKey(key));
+      primaryKey,
+      backingKey,
+      (keyMap) => keyMap.higherKey(key),
+    );
   }
 
   @override
@@ -178,7 +181,10 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     var backingKey = await _backingMap.ceilingKey(key);
 
     return _computeKey(
-        primaryKey, backingKey, (keyMap) => keyMap.ceilingKey(key));
+      primaryKey,
+      backingKey,
+      (keyMap) => keyMap.ceilingKey(key),
+    );
   }
 
   @override
@@ -189,7 +195,10 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     var backingKey = await _backingMap.lowerKey(key);
 
     return _computeKey(
-        primaryKey, backingKey, (keyMap) => keyMap.lowerKey(key));
+      primaryKey,
+      backingKey,
+      (keyMap) => keyMap.lowerKey(key),
+    );
   }
 
   @override
@@ -200,7 +209,10 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     var backingKey = await _backingMap.floorKey(key);
 
     return _computeKey(
-        primaryKey, backingKey, (keyMap) => keyMap.floorKey(key));
+      primaryKey,
+      backingKey,
+      (keyMap) => keyMap.floorKey(key),
+    );
   }
 
   @override
@@ -258,8 +270,11 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
     return _computeKey(primaryKey, backingKey, (keyMap) => keyMap.lastKey());
   }
 
-  K? _computeKey(K? primaryKey, K? backingKey,
-      K? Function(SplayTreeMap<K, K>) computeFunction) {
+  K? _computeKey(
+    K? primaryKey,
+    K? backingKey,
+    K? Function(SplayTreeMap<K, K>) computeFunction,
+  ) {
     if (primaryKey == null) return backingKey;
     if (backingKey == null) return primaryKey;
 

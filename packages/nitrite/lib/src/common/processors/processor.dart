@@ -31,8 +31,11 @@ abstract class Processor {
       await for (var document in documentCursor) {
         // process all documents in parallel
         var processed = await processBeforeWrite(document);
-        await nitriteCollection.update(createUniqueFilter(document), processed,
-            updateOptions(insertIfAbsent: false));
+        await nitriteCollection.update(
+          createUniqueFilter(document),
+          processed,
+          updateOptions(insertIfAbsent: false),
+        );
       }
     }
   }

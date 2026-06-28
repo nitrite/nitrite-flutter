@@ -9,20 +9,17 @@ void main() {
       nitriteMapper.registerEntityConverter(_AConverter());
 
       var stream = MutatedObjectStream<_A>(
-          Stream.fromIterable([
-            documentFromMap({"_id": 1, "name": "John", "age": 20}),
-            documentFromMap({"_id": 2, "name": "Jane", "age": 21}),
-            documentFromMap({"_id": 3, "name": "Joe", "age": 22}),
-          ]),
-          nitriteMapper);
+        Stream.fromIterable([
+          documentFromMap({"_id": 1, "name": "John", "age": 20}),
+          documentFromMap({"_id": 2, "name": "Jane", "age": 21}),
+          documentFromMap({"_id": 3, "name": "Joe", "age": 22}),
+        ]),
+        nitriteMapper,
+      );
 
       var objectList = await stream.toList();
       expect(objectList.length, 3);
-      expect(objectList, [
-        _A("John", 20),
-        _A("Jane", 21),
-        _A("Joe", 22),
-      ]);
+      expect(objectList, [_A("John", 20), _A("Jane", 21), _A("Joe", 22)]);
       expect(objectList[0].id, isNull);
     });
 
@@ -31,21 +28,18 @@ void main() {
       nitriteMapper.registerEntityConverter(_AConverter());
 
       var stream = MutatedObjectStream<_A>(
-          Stream.fromIterable([
-            documentFromMap({"_id": 1, "name": "John", "age": 20}),
-            documentFromMap({"_id": 2, "name": "Jane", "age": 21}),
-            documentFromMap({"_id": 3, "name": "Joe", "age": 22}),
-          ]),
-          nitriteMapper,
-          false);
+        Stream.fromIterable([
+          documentFromMap({"_id": 1, "name": "John", "age": 20}),
+          documentFromMap({"_id": 2, "name": "Jane", "age": 21}),
+          documentFromMap({"_id": 3, "name": "Joe", "age": 22}),
+        ]),
+        nitriteMapper,
+        false,
+      );
 
       var objectList = await stream.toList();
       expect(objectList.length, 3);
-      expect(objectList, [
-        _A("John", 20),
-        _A("Jane", 21),
-        _A("Joe", 22),
-      ]);
+      expect(objectList, [_A("John", 20), _A("Jane", 21), _A("Joe", 22)]);
       expect(objectList[0].id, isNotNull);
     });
   });

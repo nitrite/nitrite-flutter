@@ -6,10 +6,10 @@ import 'package:nitrite/src/migration/commands/commands.dart';
 /// @nodoc
 class RepositoryRenameCommand extends CollectionRenameCommand {
   RepositoryRenameCommand((String, String?, String, String?) arguments)
-      : super((
-          findRepositoryNameByTypeName(arguments.$1, arguments.$2),
-          findRepositoryNameByTypeName(arguments.$3, arguments.$4)
-        ));
+    : super((
+        findRepositoryNameByTypeName(arguments.$1, arguments.$2),
+        findRepositoryNameByTypeName(arguments.$3, arguments.$4),
+      ));
 }
 
 /// @nodoc
@@ -20,8 +20,10 @@ class ChangeDataTypeCommand extends BaseCommand {
 
   @override
   Future<void> execute(Nitrite nitrite) async {
-    var repositoryName =
-        findRepositoryNameByTypeName(_arguments.$1, _arguments.$2);
+    var repositoryName = findRepositoryNameByTypeName(
+      _arguments.$1,
+      _arguments.$2,
+    );
     var fieldName = _arguments.$3;
     TypeConverter typeConverter = _arguments.$4;
 
@@ -36,8 +38,9 @@ class ChangeDataTypeCommand extends BaseCommand {
       await nitriteMap!.put(pair.$1, document);
     }
 
-    var indexDescriptor =
-        await operations?.findIndex(Fields.withNames([fieldName]));
+    var indexDescriptor = await operations?.findIndex(
+      Fields.withNames([fieldName]),
+    );
     if (indexDescriptor != null) {
       await operations?.rebuildIndex(indexDescriptor);
     }
@@ -52,8 +55,10 @@ class ChangeIdFieldCommand extends BaseCommand {
 
   @override
   Future<void> execute(Nitrite nitrite) async {
-    var repositoryName =
-        findRepositoryNameByTypeName(_arguments.$1, _arguments.$2);
+    var repositoryName = findRepositoryNameByTypeName(
+      _arguments.$1,
+      _arguments.$2,
+    );
     var oldFields = _arguments.$3;
     var newFields = _arguments.$4;
 

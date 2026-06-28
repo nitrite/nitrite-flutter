@@ -22,8 +22,9 @@ void main() {
       await collection.createIndex(['firstName']);
       expect(await collection.hasIndex(['firstName']), true);
 
-      await collection
-          .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+      ], indexOptions(IndexType.nonUnique));
       expect(await collection.hasIndex(['lastName']), true);
 
       await collection.createIndex(['body'], indexOptions(IndexType.fullText));
@@ -39,8 +40,9 @@ void main() {
       await collection.createIndex(['firstName']);
       expect(await collection.hasIndex(['firstName']), true);
 
-      await collection
-          .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+      ], indexOptions(IndexType.nonUnique));
       expect(await collection.hasIndex(['lastName']), true);
 
       await collection.createIndex(['body'], indexOptions(IndexType.fullText));
@@ -63,8 +65,9 @@ void main() {
     test('Test Drop All Indexes', () async {
       await collection.dropAllIndices();
       await collection.createIndex(['firstName']);
-      await collection
-          .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+      ], indexOptions(IndexType.nonUnique));
       await collection.createIndex(['body'], indexOptions(IndexType.fullText));
       await collection.createIndex(['birthDay']);
 
@@ -76,8 +79,9 @@ void main() {
 
     test('Test Has Index', () async {
       expect(await collection.hasIndex(['lastName']), false);
-      await collection
-          .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+      ], indexOptions(IndexType.nonUnique));
       expect(await collection.hasIndex(['lastName']), true);
 
       expect(await collection.hasIndex(['body']), false);
@@ -114,19 +118,16 @@ void main() {
 
     test('Test Null Value in Indexed Field', () async {
       await collection.createIndex(['firstName']);
-      await collection
-          .createIndex(['birthDay'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'birthDay',
+      ], indexOptions(IndexType.nonUnique));
       await insert();
 
       var document = createDocument('firstName', null)
         ..put('lastName', 'ln1')
         ..put('birthDay', null)
         ..put('data', [1, 2, 3])
-        ..put('list', [
-          'one',
-          'two',
-          'three',
-        ])
+        ..put('list', ['one', 'two', 'three'])
         ..put('body', 'a quick brown fox jump over the lazy dog');
 
       await collection.insert(document);
@@ -159,8 +160,9 @@ void main() {
       var cursor = collection.find(filter: where('field').eq(5));
       expect(await cursor.length, 1);
 
-      await collection
-          .createIndex(['field'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'field',
+      ], indexOptions(IndexType.nonUnique));
 
       cursor = collection.find(filter: where('field').eq(5));
       expect(await cursor.length, 1);
@@ -172,8 +174,10 @@ void main() {
       var random = Random();
 
       for (var i = 0; i < 10000; i++) {
-        var document = createDocument("first", random.nextInt(100))
-            .put("second", random.nextDouble());
+        var document = createDocument(
+          "first",
+          random.nextInt(100),
+        ).put("second", random.nextDouble());
         await collection.insert(document);
       }
 
@@ -193,13 +197,15 @@ void main() {
         }
       });
 
-      await collection
-          .createIndex(['first'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'first',
+      ], indexOptions(IndexType.nonUnique));
       var cursor = collection.find();
       expect(await cursor.length, 10000);
 
-      await collection
-          .createIndex(['second'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'second',
+      ], indexOptions(IndexType.nonUnique));
       cursor = collection.find();
       expect(await cursor.length, 10000);
 
@@ -209,35 +215,46 @@ void main() {
 
     test('Test Index and Search on Null Values', () async {
       var collection = await db.getCollection('index-on-null');
-      await collection.insert(createDocument('first', null)
-        ..put('second', 123)
-        ..put('third', [1, 2, null]));
-      await collection.insert(createDocument('first', 'abcd')
-        ..put('second', 456)
-        ..put('third', [3, 1]));
-      await collection.insert(createDocument('first', 'xyz')
-        ..put('second', 789)
-        ..put('third', null));
+      await collection.insert(
+        createDocument('first', null)
+          ..put('second', 123)
+          ..put('third', [1, 2, null]),
+      );
+      await collection.insert(
+        createDocument('first', 'abcd')
+          ..put('second', 456)
+          ..put('third', [3, 1]),
+      );
+      await collection.insert(
+        createDocument('first', 'xyz')
+          ..put('second', 789)
+          ..put('third', null),
+      );
 
       await collection.createIndex(['first']);
       var cursor = collection.find(filter: where('first').eq(null));
       expect(await cursor.length, 1);
 
-      await collection
-          .createIndex(['third'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'third',
+      ], indexOptions(IndexType.nonUnique));
       cursor = collection.find(filter: where('third').eq(null));
       expect(await cursor.length, 2);
     });
 
     test('Test Create Compound and Single Field Index on Same Field', () async {
-      await collection
-          .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+      ], indexOptions(IndexType.nonUnique));
 
-      await collection
-          .createIndex(['firstName'], indexOptions(IndexType.unique));
+      await collection.createIndex([
+        'firstName',
+      ], indexOptions(IndexType.unique));
 
-      await collection.createIndex(
-          ['lastName', 'firstName'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+        'firstName',
+      ], indexOptions(IndexType.nonUnique));
     });
   });
 }

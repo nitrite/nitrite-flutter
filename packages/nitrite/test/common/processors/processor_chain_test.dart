@@ -9,10 +9,7 @@ import 'package:test/test.dart';
 
 import 'processor_chain_test.mocks.dart';
 
-@GenerateMocks([
-  Processor,
-  NitriteCollection,
-])
+@GenerateMocks([Processor, NitriteCollection])
 void main() {
   group(retry: 3, "ProcessorChain Test Suite", () {
     test("Test Remove", () {
@@ -28,8 +25,9 @@ void main() {
     test("Test Process Before Write", () async {
       var processorChain = ProcessorChain();
       var processor = MockProcessor();
-      when(processor.processBeforeWrite(any))
-          .thenAnswer((_) => Future.value(createDocument("processed", true)));
+      when(
+        processor.processBeforeWrite(any),
+      ).thenAnswer((_) => Future.value(createDocument("processed", true)));
       processorChain.add(processor);
 
       var document = emptyDocument();
@@ -47,8 +45,9 @@ void main() {
     test("Test Process After Read", () async {
       var processorChain = ProcessorChain();
       var processor = MockProcessor();
-      when(processor.processAfterRead(any))
-          .thenAnswer((_) => Future.value(emptyDocument()));
+      when(
+        processor.processAfterRead(any),
+      ).thenAnswer((_) => Future.value(emptyDocument()));
       processorChain.add(processor);
 
       var document = createDocument("processed", true);
@@ -66,19 +65,22 @@ void main() {
       var spyProcessor = _SpyProcessor(mockProcessor);
       var collection = MockNitriteCollection();
       var documentCursor = DocumentStream(
-          () => Stream.fromIterable([
-                createDocument("key", 1),
-                createDocument("key", 2),
-              ]),
-          ProcessorChain([spyProcessor]),
-          () async => FindPlan());
+        () => Stream.fromIterable([
+          createDocument("key", 1),
+          createDocument("key", 2),
+        ]),
+        ProcessorChain([spyProcessor]),
+        () async => FindPlan(),
+      );
 
       when(collection.find()).thenAnswer((_) => documentCursor);
-      when(collection.update(any, any, any))
-          .thenAnswer((_) => Future.value(WriteResult([NitriteId.newId()])));
+      when(
+        collection.update(any, any, any),
+      ).thenAnswer((_) => Future.value(WriteResult([NitriteId.newId()])));
 
-      when(mockProcessor.processBeforeWrite(any))
-          .thenAnswer((_) => Future.value(createDocument("processed", true)));
+      when(
+        mockProcessor.processBeforeWrite(any),
+      ).thenAnswer((_) => Future.value(createDocument("processed", true)));
 
       when(mockProcessor.processAfterRead(any)).thenAnswer((invocation) {
         var doc = invocation.positionalArguments.first as Document;
@@ -87,12 +89,14 @@ void main() {
 
       await spyProcessor.process(collection);
 
-      verify(mockProcessor.processBeforeWrite(any))
-          .called(2); // during process()
+      verify(
+        mockProcessor.processBeforeWrite(any),
+      ).called(2); // during process()
 
       verify(collection.find()).called(1);
-      verify(mockProcessor.processAfterRead(any))
-          .called(2); // during cursor for-await loop
+      verify(
+        mockProcessor.processAfterRead(any),
+      ).called(2); // during cursor for-await loop
       verify(collection.update(any, any, any)).called(2);
     });
   });

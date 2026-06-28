@@ -71,11 +71,16 @@ class NitriteDatabase extends Nitrite {
   }
 
   @override
-  Future<ObjectRepository<T>> getRepository<T>(
-      {EntityDecorator<T>? entityDecorator, String? key}) async {
+  Future<ObjectRepository<T>> getRepository<T>({
+    EntityDecorator<T>? entityDecorator,
+    String? key,
+  }) async {
     checkOpened();
     return _repositoryFactory.getRepository<T>(
-        _nitriteConfig, entityDecorator, key);
+      _nitriteConfig,
+      entityDecorator,
+      key,
+    );
   }
 
   @override
@@ -85,8 +90,10 @@ class NitriteDatabase extends Nitrite {
   }
 
   @override
-  Future<void> destroyRepository<T>(
-      {EntityDecorator<T>? entityDecorator, String? key}) async {
+  Future<void> destroyRepository<T>({
+    EntityDecorator<T>? entityDecorator,
+    String? key,
+  }) async {
     checkOpened();
     var mapName = entityDecorator == null
         ? findRepositoryNameByType<T>(_nitriteConfig.nitriteMapper, key)
@@ -120,8 +127,11 @@ class NitriteDatabase extends Nitrite {
     } on NitriteIOException {
       rethrow;
     } on Exception catch (e, stackTrace) {
-      throw NitriteIOException('Error occurred while closing the database',
-          stackTrace: stackTrace, cause: e);
+      throw NitriteIOException(
+        'Error occurred while closing the database',
+        stackTrace: stackTrace,
+        cause: e,
+      );
     }
   }
 
@@ -135,8 +145,11 @@ class NitriteDatabase extends Nitrite {
         _log.warning('Cannot commit on read-only database.');
       }
     } catch (e, stackTrace) {
-      throw NitriteIOException('Error occurred while committing the database',
-          stackTrace: stackTrace, cause: e);
+      throw NitriteIOException(
+        'Error occurred while committing the database',
+        stackTrace: stackTrace,
+        cause: e,
+      );
     }
     _log.fine('Unsaved changes has been committed successfully.');
   }
@@ -164,23 +177,35 @@ class NitriteDatabase extends Nitrite {
       await authService.authenticate(username, password);
     } catch (e, stackTrace) {
       _log.severe(
-          'Error occurred while initializing the database', e, stackTrace);
+        'Error occurred while initializing the database',
+        e,
+        stackTrace,
+      );
       if (!_nitriteStore.isClosed) {
         try {
           await _nitriteStore.close();
         } on Exception catch (e, stackTrace) {
           _log.severe(
-              'Error occurred while closing the database', e, stackTrace);
-          throw NitriteIOException('Failed to close database',
-              stackTrace: stackTrace, cause: e);
+            'Error occurred while closing the database',
+            e,
+            stackTrace,
+          );
+          throw NitriteIOException(
+            'Failed to close database',
+            stackTrace: stackTrace,
+            cause: e,
+          );
         }
       }
 
       if (e is NitriteException) {
         rethrow;
       } else {
-        throw NitriteIOException('Failed to initialize database',
-            stackTrace: stackTrace, cause: e);
+        throw NitriteIOException(
+          'Failed to initialize database',
+          stackTrace: stackTrace,
+          cause: e,
+        );
       }
     }
   }

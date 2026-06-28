@@ -12,7 +12,7 @@ import 'package:test/test.dart';
 import 'read_operation_test.mocks.dart';
 
 @GenerateMocks([IndexOperations, Filter])
-main() {
+void main() {
   group(retry: 3, 'Read Operation Test Suite', () {
     setUp(() {
       // Additional setup goes here.
@@ -24,10 +24,17 @@ main() {
     when(indexOperations.listIndexes()).thenAnswer((_) => Future.value([]));
     var nitriteConfig = NitriteConfig();
     var nitriteMap = InMemoryMap<NitriteId, Document>(
-        "Map Name", InMemoryStore(InMemoryConfig()));
+      "Map Name",
+      InMemoryStore(InMemoryConfig()),
+    );
 
-    var readOperation = ReadOperations("Collection Name", indexOperations,
-        nitriteConfig, nitriteMap, ProcessorChain());
+    var readOperation = ReadOperations(
+      "Collection Name",
+      indexOperations,
+      nitriteConfig,
+      nitriteMap,
+      ProcessorChain(),
+    );
 
     var filter = MockFilter();
     var cursor = readOperation.find(filter, FindOptions());
@@ -39,16 +46,27 @@ main() {
   test("Test Find with IndexDescriptor", () async {
     var indexOperations = MockIndexOperations();
     var indexDescriptor = IndexDescriptor(
-        IndexType.unique, Fields.withNames(["a"]), "Collection Name");
-    when(indexOperations.listIndexes())
-        .thenAnswer((_) => Future.value([indexDescriptor]));
+      IndexType.unique,
+      Fields.withNames(["a"]),
+      "Collection Name",
+    );
+    when(
+      indexOperations.listIndexes(),
+    ).thenAnswer((_) => Future.value([indexDescriptor]));
 
     var nitriteConfig = NitriteConfig();
     var nitriteMap = InMemoryMap<NitriteId, Document>(
-        "Map Name", InMemoryStore(InMemoryConfig()));
+      "Map Name",
+      InMemoryStore(InMemoryConfig()),
+    );
 
-    var readOperation = ReadOperations("Collection Name", indexOperations,
-        nitriteConfig, nitriteMap, ProcessorChain());
+    var readOperation = ReadOperations(
+      "Collection Name",
+      indexOperations,
+      nitriteConfig,
+      nitriteMap,
+      ProcessorChain(),
+    );
 
     var filter = MockFilter();
     var cursor = readOperation.find(filter, FindOptions());
@@ -62,10 +80,17 @@ main() {
     when(indexOperations.listIndexes()).thenAnswer((_) => Future.value([]));
     var nitriteConfig = NitriteConfig();
     var nitriteMap = InMemoryMap<NitriteId, Document>(
-        "Map Name", InMemoryStore(InMemoryConfig()));
+      "Map Name",
+      InMemoryStore(InMemoryConfig()),
+    );
 
-    var readOperation = ReadOperations("Collection Name", indexOperations,
-        nitriteConfig, nitriteMap, ProcessorChain());
+    var readOperation = ReadOperations(
+      "Collection Name",
+      indexOperations,
+      nitriteConfig,
+      nitriteMap,
+      ProcessorChain(),
+    );
 
     var byId = await readOperation.getById(NitriteId.newId());
     expect(byId, isNull);

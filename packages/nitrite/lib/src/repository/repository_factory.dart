@@ -11,8 +11,11 @@ class RepositoryFactory {
 
   RepositoryFactory(this._collectionFactory);
 
-  Future<ObjectRepository<T>> getRepository<T>(NitriteConfig nitriteConfig,
-      [EntityDecorator<T>? entityDecorator, String? key]) async {
+  Future<ObjectRepository<T>> getRepository<T>(
+    NitriteConfig nitriteConfig, [
+    EntityDecorator<T>? entityDecorator,
+    String? key,
+  ]) async {
     var collectionName = entityDecorator == null
         ? findRepositoryNameByType<T>(nitriteConfig.nitriteMapper, key)
         : findRepositoryNameByDecorator(entityDecorator, key);
@@ -22,13 +25,21 @@ class RepositoryFactory {
       if (repository.isDropped || !repository.isOpen) {
         _repositoryMap.remove(collectionName);
         return await _createRepository<T>(
-            nitriteConfig, collectionName, entityDecorator, key);
+          nitriteConfig,
+          collectionName,
+          entityDecorator,
+          key,
+        );
       } else {
         return repository;
       }
     } else {
       return await _createRepository<T>(
-          nitriteConfig, collectionName, entityDecorator, key);
+        nitriteConfig,
+        collectionName,
+        entityDecorator,
+        key,
+      );
     }
   }
 
@@ -39,14 +50,20 @@ class RepositoryFactory {
       }
       _repositoryMap.clear();
     } catch (e, stackTrace) {
-      throw NitriteIOException('Failed to clear an object repository',
-          cause: e, stackTrace: stackTrace);
+      throw NitriteIOException(
+        'Failed to clear an object repository',
+        cause: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
   Future<ObjectRepository<T>> _createRepository<T>(
-      NitriteConfig nitriteConfig, String collectionName,
-      [EntityDecorator<T>? entityDecorator, String? key]) async {
+    NitriteConfig nitriteConfig,
+    String collectionName, [
+    EntityDecorator<T>? entityDecorator,
+    String? key,
+  ]) async {
     var store = nitriteConfig.getNitriteStore();
 
     validateRepositoryType<T>(nitriteConfig);
@@ -54,13 +71,20 @@ class RepositoryFactory {
     var collectionNames = await store.collectionNames;
     if (collectionNames.contains(collectionName)) {
       throw ValidationException(
-          'A collection with same entity name already exists');
+        'A collection with same entity name already exists',
+      );
     }
 
     var nitriteCollection = await _collectionFactory.getCollection(
-        collectionName, nitriteConfig, false);
+      collectionName,
+      nitriteConfig,
+      false,
+    );
     var repository = _DefaultObjectRepository<T>(
-        entityDecorator, nitriteCollection, nitriteConfig);
+      entityDecorator,
+      nitriteCollection,
+      nitriteConfig,
+    );
 
     // initialize
     await repository.initialize();
@@ -72,7 +96,10 @@ class RepositoryFactory {
   }
 
   Future<void> _writeCatalog(
-      NitriteStore store, String collectionName, String? key) async {
+    NitriteStore store,
+    String collectionName,
+    String? key,
+  ) async {
     var storeCatalog = await store.getCatalog();
     var exists = await storeCatalog.hasEntry(collectionName);
     if (!exists) {
@@ -92,7 +119,10 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   late RepositoryOperations<T> _operations;
 
   _DefaultObjectRepository(
-      this._entityDecorator, this._nitriteCollection, this._nitriteConfig);
+    this._entityDecorator,
+    this._nitriteCollection,
+    this._nitriteConfig,
+  );
 
   @override
   bool get isDropped => _nitriteCollection.isDropped;
@@ -155,29 +185,44 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
 
   @override
   Future<WriteResult> updateOne(T element, {bool insertIfAbsent = false}) {
-    return update(_operations.createUniqueFilter(element), element,
-        updateOptions(insertIfAbsent: insertIfAbsent, justOnce: true));
+    return update(
+      _operations.createUniqueFilter(element),
+      element,
+      updateOptions(insertIfAbsent: insertIfAbsent, justOnce: true),
+    );
   }
 
   @override
-  Future<WriteResult> update(Filter filter, T element,
-      [UpdateOptions? updateOptions]) {
+  Future<WriteResult> update(
+    Filter filter,
+    T element, [
+    UpdateOptions? updateOptions,
+  ]) {
     var updateDocument = _operations.toDocument(element, true);
     if (updateOptions == null || !updateOptions.insertIfAbsent) {
       _operations.removeNitriteId(updateDocument);
     }
 
     return _nitriteCollection.update(
-        _operations.asObjectFilter(filter), updateDocument, updateOptions);
+      _operations.asObjectFilter(filter),
+      updateDocument,
+      updateOptions,
+    );
   }
 
   @override
-  Future<WriteResult> updateDocument(Filter filter, Document document,
-      {bool justOnce = false}) {
+  Future<WriteResult> updateDocument(
+    Filter filter,
+    Document document, {
+    bool justOnce = false,
+  }) {
     _operations.removeNitriteId(document);
     _operations.serializeFields(document);
-    return _nitriteCollection.update(_operations.asObjectFilter(filter),
-        document, updateOptions(justOnce: justOnce));
+    return _nitriteCollection.update(
+      _operations.asObjectFilter(filter),
+      document,
+      updateOptions(justOnce: justOnce),
+    );
   }
 
   @override
@@ -187,8 +232,10 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
 
   @override
   Future<WriteResult> remove(Filter filter, {bool justOne = false}) {
-    return _nitriteCollection.remove(_operations.asObjectFilter(filter),
-        justOne: justOne);
+    return _nitriteCollection.remove(
+      _operations.asObjectFilter(filter),
+      justOne: justOne,
+    );
   }
 
   @override
@@ -208,8 +255,10 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
       var cursor = find(filter: idFilter);
       return await cursor.first;
     } catch (e) {
-      throw InvalidIdException('No element found using the specified id',
-          cause: e);
+      throw InvalidIdException(
+        'No element found using the specified id',
+        cause: e,
+      );
     }
   }
 
@@ -256,7 +305,10 @@ class _DefaultObjectRepository<T> extends ObjectRepository<T> {
   @override
   Future<void> initialize() {
     _operations = RepositoryOperations<T>(
-        _entityDecorator, _nitriteCollection, _nitriteConfig);
+      _entityDecorator,
+      _nitriteCollection,
+      _nitriteConfig,
+    );
     _operations.scanIndexes();
     return _operations.createIndices();
   }

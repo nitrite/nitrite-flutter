@@ -90,8 +90,9 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
   @override
   Future<Attributes> getAttributes() async {
     if (!isDropped) {
-      NitriteMap<String, Document> metaMap =
-          await getStore().openMap(metaMapName);
+      NitriteMap<String, Document> metaMap = await getStore().openMap(
+        metaMapName,
+      );
 
       if (name != metaMapName) {
         var attributesDoc = await metaMap[name];
@@ -130,8 +131,10 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
           ? Attributes(name)
           : Attributes.fromDocument(attributesDoc);
 
-      attributes.set(Attributes.lastModifiedTime,
-          DateTime.now().millisecondsSinceEpoch.toString());
+      attributes.set(
+        Attributes.lastModifiedTime,
+        DateTime.now().millisecondsSinceEpoch.toString(),
+      );
       await metaMap.put(name, attributes.toDocument());
     }
   }

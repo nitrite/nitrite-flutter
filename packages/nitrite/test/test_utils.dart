@@ -24,19 +24,23 @@ const isTransactionException = TypeMatcher<TransactionException>();
 final Matcher throwsNitriteException = throwsA(isNitriteException);
 final Matcher throwsIndexingException = throwsA(isIndexingException);
 final Matcher throwsInvalidIdException = throwsA(isInvalidIdException);
-final Matcher throwsInvalidOperationException =
-    throwsA(isInvalidOperationException);
+final Matcher throwsInvalidOperationException = throwsA(
+  isInvalidOperationException,
+);
 final Matcher throwsNitriteIOException = throwsA(isNitriteIOException);
 final Matcher throwsValidationException = throwsA(isValidationException);
 final Matcher throwsFilterException = throwsA(isFilterException);
-final Matcher throwsNotIdentifiableException =
-    throwsA(isNotIdentifiableException);
-final Matcher throwsUniqueConstraintException =
-    throwsA(isUniqueConstraintException);
+final Matcher throwsNotIdentifiableException = throwsA(
+  isNotIdentifiableException,
+);
+final Matcher throwsUniqueConstraintException = throwsA(
+  isUniqueConstraintException,
+);
 final Matcher throwsObjectMappingException = throwsA(isObjectMappingException);
 final Matcher throwsPluginException = throwsA(isPluginException);
-final Matcher throwsNitriteSecurityException =
-    throwsA(isNitriteSecurityException);
+final Matcher throwsNitriteSecurityException = throwsA(
+  isNitriteSecurityException,
+);
 final Matcher throwsMigrationException = throwsA(isMigrationException);
 final Matcher throwsTransactionException = throwsA(isTransactionException);
 
@@ -65,7 +69,10 @@ bool isSorted<T extends Comparable<T>>(Iterable<T> iterable, bool ascending) {
 }
 
 bool isSimilarDocument(
-    Document? document, Document? other, List<String> fields) {
+  Document? document,
+  Document? other,
+  List<String> fields,
+) {
   var result = true;
   if (document == null && other != null) return false;
   if (document != null && other == null) return false;

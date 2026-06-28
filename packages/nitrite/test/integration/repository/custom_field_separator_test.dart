@@ -49,10 +49,12 @@ void main() {
 
       await repository.insert(emp1);
 
-      var cursor1 =
-          repository.find(filter: where('employeeNote.text').eq('Dummy Note'));
+      var cursor1 = repository.find(
+        filter: where('employeeNote.text').eq('Dummy Note'),
+      );
       var cursor2 = repository.find(
-          filter: where('employeeNote:text').text('Dummy Note'));
+        filter: where('employeeNote:text').text('Dummy Note'),
+      );
 
       expect(await cursor1.length, 0);
       expect(await cursor2.length, 1);

@@ -23,11 +23,12 @@ void main() {
       });
 
       var stream = ProcessedDocumentStream(
-          () => Stream.fromIterable([
-                createDocument("key", 1),
-                createDocument("key", 2),
-              ]),
-          processorChain);
+        () => Stream.fromIterable([
+          createDocument("key", 1),
+          createDocument("key", 2),
+        ]),
+        processorChain,
+      );
 
       expect(await stream.toList(), [
         documentFromMap({"key": 1, "processed": true}),
@@ -53,12 +54,13 @@ void main() {
       });
 
       var stream = ProcessedDocumentStream(
-          () => Stream.fromIterable([
-                createDocument("key", 1),
-                createDocument("key", 2),
-              ]),
-          processorChain,
-          reusable: false);
+        () => Stream.fromIterable([
+          createDocument("key", 1),
+          createDocument("key", 2),
+        ]),
+        processorChain,
+        reusable: false,
+      );
 
       expect(await stream.toList(), [
         documentFromMap({"key": 1, "processed": true}),

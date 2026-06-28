@@ -25,7 +25,9 @@ Future<void> main() async {
       return Nitrite.builder().loadModule(module).openOrCreate();
     });
 
-    await db.getCollection('c').createIndex(['w'], indexOptions(IndexType.nonUnique));
+    await db
+        .getCollection('c')
+        .createIndex(['w'], indexOptions(IndexType.nonUnique));
 
     // 4 worker isolates each insert 250 docs into the same db, concurrently
     const workers = 4;
@@ -36,7 +38,10 @@ Future<void> main() async {
           var col = db.getCollection('c');
           for (var i = 0; i < perWorker; i++) {
             await col.insert([
-              emptyDocument().put('w', w).put('i', i).put('n', w * perWorker + i)
+              emptyDocument()
+                  .put('w', w)
+                  .put('i', i)
+                  .put('n', w * perWorker + i)
             ]);
           }
           return col.size;
@@ -52,7 +57,8 @@ Future<void> main() async {
     var counts = await Future.wait([
       for (var w = 0; w < workers; w++)
         Isolate.run(() async {
-          var found = await db.getCollection('c').find(filter: where('w').eq(w));
+          var found =
+              await db.getCollection('c').find(filter: where('w').eq(w));
           return found.length;
         }),
     ]);
@@ -62,8 +68,9 @@ Future<void> main() async {
     // concurrent read-modify from multiple isolates
     await Future.wait([
       Isolate.run(() => db.getCollection('c').remove(where('w').eq(0))),
-      Isolate.run(() => db.getCollection('c').update(
-          where('w').eq(1), emptyDocument().put('tag', 'x'))),
+      Isolate.run(() => db
+          .getCollection('c')
+          .update(where('w').eq(1), emptyDocument().put('tag', 'x'))),
     ]);
     var afterRemove = await db.getCollection('c').size;
     check(afterRemove == (workers - 1) * perWorker,

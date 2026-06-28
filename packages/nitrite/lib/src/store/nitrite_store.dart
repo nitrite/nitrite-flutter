@@ -66,7 +66,8 @@ abstract class NitriteStore<Config extends StoreConfig> extends NitritePlugin {
   /// The [Key] and [Value] types are generic and should be specified when
   /// calling this method.
   Future<NitriteRTree<Key, Value>> openRTree<Key extends BoundingBox, Value>(
-      String rTreeName);
+    String rTreeName,
+  );
 
   /// Closes a [NitriteRTree] with the specified name in the store.
   Future<void> closeRTree(String rTreeName);

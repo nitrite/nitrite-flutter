@@ -67,5 +67,5 @@ enum Languages {
   urdu,
   vietnamese,
   yoruba,
-  zulu
+  zulu,
 }

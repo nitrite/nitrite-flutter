@@ -6,12 +6,13 @@ void main() {
   group(retry: 3, "ProjectedDocumentStream Test Suite", () {
     test("Test Stream with Projection", () async {
       var stream = ProjectedDocumentStream(
-          Stream.fromIterable([
-            documentFromMap({"id": 1, "name": "John"}),
-            documentFromMap({"id": 2, "name": "Jane"}),
-            documentFromMap({"id": 3, "name": "Joe"}),
-          ]),
-          documentFromMap({"name": ""}));
+        Stream.fromIterable([
+          documentFromMap({"id": 1, "name": "John"}),
+          documentFromMap({"id": 2, "name": "Jane"}),
+          documentFromMap({"id": 3, "name": "Joe"}),
+        ]),
+        documentFromMap({"name": ""}),
+      );
       expect(await stream.toList(), [
         documentFromMap({"name": "John"}),
         documentFromMap({"name": "Jane"}),
@@ -21,12 +22,13 @@ void main() {
 
     test("Test Stream with no Projection", () async {
       var stream = ProjectedDocumentStream(
-          Stream.fromIterable([
-            documentFromMap({"id": 1, "name": "John"}),
-            documentFromMap({"id": 2, "name": "Jane"}),
-            documentFromMap({"id": 3, "name": "Joe"}),
-          ]),
-          emptyDocument());
+        Stream.fromIterable([
+          documentFromMap({"id": 1, "name": "John"}),
+          documentFromMap({"id": 2, "name": "Jane"}),
+          documentFromMap({"id": 3, "name": "Joe"}),
+        ]),
+        emptyDocument(),
+      );
       expect(await stream.toList(), [
         emptyDocument(),
         emptyDocument(),

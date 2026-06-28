@@ -3,8 +3,11 @@ import 'package:nitrite/src/filters/filter.dart';
 
 /// @nodoc
 class FindOptimizer {
-  FindPlan optimize(Filter filter, FindOptions? findOptions,
-      Iterable<IndexDescriptor> indexDescriptors) {
+  FindPlan optimize(
+    Filter filter,
+    FindOptions? findOptions,
+    Iterable<IndexDescriptor> indexDescriptors,
+  ) {
     var findPlan = _createFilterPlan(indexDescriptors, filter);
     _readSortOption(findOptions, findPlan);
     _readLimitOption(findOptions, findPlan);
@@ -16,7 +19,9 @@ class FindOptimizer {
   }
 
   FindPlan _createFilterPlan(
-      Iterable<IndexDescriptor> indexDescriptors, Filter filter) {
+    Iterable<IndexDescriptor> indexDescriptors,
+    Filter filter,
+  ) {
     if (filter is FlattenableFilter) {
       var filters = _flattenFilter(filter as FlattenableFilter);
       return _createAndPlan(indexDescriptors, filters);
@@ -42,7 +47,9 @@ class FindOptimizer {
   }
 
   FindPlan _createOrPlan(
-      Iterable<IndexDescriptor> indexDescriptors, List<Filter> filters) {
+    Iterable<IndexDescriptor> indexDescriptors,
+    List<Filter> filters,
+  ) {
     var findPlan = FindPlan();
     var flattenedFilter = <Filter>{};
 
@@ -77,7 +84,9 @@ class FindOptimizer {
   }
 
   FindPlan _createAndPlan(
-      Iterable<IndexDescriptor> indexDescriptors, List<Filter> filters) {
+    Iterable<IndexDescriptor> indexDescriptors,
+    List<Filter> filters,
+  ) {
     var findPlan = FindPlan();
     var indexScanFilters = <ComparableFilter>{};
     var columnScanFilters = <Filter>{};
@@ -87,18 +96,30 @@ class FindOptimizer {
 
     // find out if there are any index only filter with index
     _planForIndexOnlyFilters(
-        findPlan, indexScanFilters, indexDescriptors, filters);
+      findPlan,
+      indexScanFilters,
+      indexDescriptors,
+      filters,
+    );
 
     // if no id filter found or no index only filter found,
     // scan for matching index
     if (findPlan.byIdFilter == null && indexScanFilters.isEmpty) {
       _planForIndexScanningFilters(
-          findPlan, indexScanFilters, indexDescriptors, filters);
+        findPlan,
+        indexScanFilters,
+        indexDescriptors,
+        filters,
+      );
     }
 
     // plan for column scan filters
     _planForCollectionScanningFilters(
-        findPlan, indexScanFilters, columnScanFilters, filters);
+      findPlan,
+      indexScanFilters,
+      columnScanFilters,
+      filters,
+    );
 
     IndexScanFilter? indexScanFilter;
     if (indexScanFilters.length == 1) {
@@ -130,10 +151,11 @@ class FindOptimizer {
   }
 
   void _planForIndexOnlyFilters(
-      FindPlan findPlan,
-      Set<ComparableFilter> indexScanFilters,
-      Iterable<IndexDescriptor> indexDescriptors,
-      List<Filter> filters) {
+    FindPlan findPlan,
+    Set<ComparableFilter> indexScanFilters,
+    Iterable<IndexDescriptor> indexDescriptors,
+    List<Filter> filters,
+  ) {
     // find out if there are any filter which does not support covered queries
     var indexOnlyFilters = <IndexOnlyFilter>[];
     for (var filter in filters) {
@@ -144,7 +166,8 @@ class FindOptimizer {
           indexOnlyFilters.add(filter);
         } else {
           throw FilterException(
-              'A query can not have multiple index only filters');
+            'A query can not have multiple index only filters',
+          );
         }
       }
     }
@@ -165,14 +188,18 @@ class FindOptimizer {
       }
 
       if (findPlan.indexDescriptor == null) {
-        throw FilterException('${anyFilter.field} is not indexed '
-            'with ${anyFilter.supportedIndexType()} index');
+        throw FilterException(
+          '${anyFilter.field} is not indexed '
+          'with ${anyFilter.supportedIndexType()} index',
+        );
       }
     }
   }
 
   bool _isCompatibleFilter(
-      List<IndexOnlyFilter> indexOnlyFilters, IndexOnlyFilter filter) {
+    List<IndexOnlyFilter> indexOnlyFilters,
+    IndexOnlyFilter filter,
+  ) {
     if (indexOnlyFilters.isEmpty) {
       return true;
     } else {
@@ -182,10 +209,11 @@ class FindOptimizer {
   }
 
   void _planForIndexScanningFilters(
-      FindPlan findPlan,
-      Set<ComparableFilter> indexScanFilters,
-      Iterable<IndexDescriptor> indexDescriptors,
-      List<Filter> filters) {
+    FindPlan findPlan,
+    Set<ComparableFilter> indexScanFilters,
+    Iterable<IndexDescriptor> indexDescriptors,
+    List<Filter> filters,
+  ) {
     // descending sort based on cardinality of indices,
     // consider the higher cardinality index first
     var indexFilterMap = <IndexDescriptor, List<ComparableFilter>>{};
@@ -239,10 +267,11 @@ class FindOptimizer {
   }
 
   void _planForCollectionScanningFilters(
-      FindPlan findPlan,
-      Set<ComparableFilter> indexScanFilters,
-      Set<Filter> columnScanFilters,
-      List<Filter> filters) {
+    FindPlan findPlan,
+    Set<ComparableFilter> indexScanFilters,
+    Set<Filter> columnScanFilters,
+    List<Filter> filters,
+  ) {
     // bound filters absorbed into a bounded range index scan are already
     // enforced by that scan, so they must not be re-applied as column scans.
     var absorbed = <Filter>{};
@@ -276,7 +305,8 @@ class FindOptimizer {
     for (var filter in filters) {
       if (filter is IndexOnlyFilter) {
         throw FilterException(
-            'Collection scan is not supported for the filter $filter');
+          'Collection scan is not supported for the filter $filter',
+        );
       } else if (filter is TextFilter) {
         throw FilterException('${filter.field} is not full-text indexed');
       }

@@ -59,14 +59,14 @@ class SimpleNitriteMapper extends NitriteMapper {
     _converterRegistry["${entityConverter.entityType}?"] = entityConverter;
   }
 
-  _registerValueTypes(List<Type> valueTypes) {
+  void _registerValueTypes(List<Type> valueTypes) {
     _valueTypes.addAll(builtInTypes().map((e) => e.toString()));
     _valueTypes.add("$Enum");
     _valueTypes.add("$NitriteId");
     _valueTypes.addAll(valueTypes.map((e) => e.toString()));
   }
 
-  bool _isValue(value) {
+  bool _isValue(dynamic value) {
     return _valueTypes.any((type) => value.runtimeType.toString() == type);
   }
 
@@ -85,9 +85,11 @@ class SimpleNitriteMapper extends NitriteMapper {
       }
     }
 
-    throw ObjectMappingException('Can\'t convert object of type '
-        '${source.runtimeType} to Document, try registering a '
-        'EntityConverter for it.');
+    throw ObjectMappingException(
+      'Can\'t convert object of type '
+      '${source.runtimeType} to Document, try registering a '
+      'EntityConverter for it.',
+    );
   }
 
   /// Converts a document to a target object of type [Target].
@@ -97,8 +99,10 @@ class SimpleNitriteMapper extends NitriteMapper {
       return converter.fromDocument(source, this) as Target;
     }
 
-    throw ObjectMappingException('Can\'t convert Document to type '
-        '$Target, try registering a EntityConverter for it.');
+    throw ObjectMappingException(
+      'Can\'t convert Document to type '
+      '$Target, try registering a EntityConverter for it.',
+    );
   }
 
   EntityConverter? _findEntityConverter(dynamic value) {

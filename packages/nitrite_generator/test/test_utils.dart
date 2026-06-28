@@ -20,7 +20,7 @@ Future<ClassElement> createClassElement(final String clazz) async {
         .findLibraryByName('test')
         .then((value) => ArgumentError.checkNotNull(value))
         .then((value) => LibraryReader(value));
-  });
+  }, readAllSourcesFromFilesystem: true);
 
   return library.classes.first;
 }
@@ -47,7 +47,7 @@ Future<FieldElement> generateFieldElement(final String field) async {
         .findLibraryByName('test')
         .then((value) => ArgumentError.checkNotNull(value))
         .then((value) => LibraryReader(value));
-  });
+  }, readAllSourcesFromFilesystem: true);
 
   return library.classes.first.fields.first;
 }
@@ -64,7 +64,7 @@ Future<EntityInfo> createEntityInfo(final String entity) async {
         .findLibraryByName('test')
         .then((value) => ArgumentError.checkNotNull(value))
         .then((value) => LibraryReader(value));
-  });
+  }, readAllSourcesFromFilesystem: true);
 
   return library.classes
       .where((element) => element.hasAnnotation(Entity))
@@ -84,7 +84,7 @@ Future<ConverterInfo> createConverterInfo(final String converter) async {
         .findLibraryByName('test')
         .then((value) => ArgumentError.checkNotNull(value))
         .then((value) => LibraryReader(value));
-  });
+  }, readAllSourcesFromFilesystem: true);
 
   return library.classes
       .where((element) => element.hasAnnotation(Convertable))

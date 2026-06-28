@@ -17,11 +17,10 @@ void main() {
       db = await builder.fieldSeparator('::').openOrCreate();
 
       var document =
-          createDocument('address', createDocument('street', 'ABCD Road'))
-              .put('colorCodes', [
-        createDocument('color', 'Red'),
-        createDocument('color', 'Green'),
-      ]);
+          createDocument('address', createDocument('street', 'ABCD Road')).put(
+            'colorCodes',
+            [createDocument('color', 'Red'), createDocument('color', 'Green')],
+          );
 
       var street = document['address::street'] as String?;
       expect(street, 'ABCD Road');

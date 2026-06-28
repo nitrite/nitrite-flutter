@@ -14,19 +14,29 @@ abstract class NitriteIndexer extends NitritePlugin {
 
   /// Drops the index from the collection.
   Future<void> dropIndex(
-      IndexDescriptor indexDescriptor, NitriteConfig nitriteConfig);
+    IndexDescriptor indexDescriptor,
+    NitriteConfig nitriteConfig,
+  );
 
   /// Writes an index entry for the given field values and index descriptor.
-  Future<void> writeIndexEntry(FieldValues fieldValues,
-      IndexDescriptor indexDescriptor, NitriteConfig nitriteConfig);
+  Future<void> writeIndexEntry(
+    FieldValues fieldValues,
+    IndexDescriptor indexDescriptor,
+    NitriteConfig nitriteConfig,
+  );
 
   /// Removes an index entry for the given field values and index descriptor
   /// from the Nitrite database.
-  Future<void> removeIndexEntry(FieldValues fieldValues,
-      IndexDescriptor indexDescriptor, NitriteConfig nitriteConfig);
+  Future<void> removeIndexEntry(
+    FieldValues fieldValues,
+    IndexDescriptor indexDescriptor,
+    NitriteConfig nitriteConfig,
+  );
 
   /// Finds the NitriteIds of the documents that match the given filter in
   /// the specified collection.
   Stream<NitriteId> findByFilter(
-      FindPlan findPlan, NitriteConfig nitriteConfig);
+    FindPlan findPlan,
+    NitriteConfig nitriteConfig,
+  );
 }

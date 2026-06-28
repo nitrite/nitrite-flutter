@@ -21,8 +21,10 @@ void main() {
       var cursor = collection.find();
       var document = await cursor.first;
 
-      expect(() async => await collection.insert(document),
-          throwsUniqueConstraintException);
+      expect(
+        () async => await collection.insert(document),
+        throwsUniqueConstraintException,
+      );
     });
   });
 }

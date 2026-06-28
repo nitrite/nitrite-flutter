@@ -14,7 +14,7 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   bool _closedFlag = false;
 
   InMemoryMap(this._mapName, this._nitriteStore)
-      : _backingMap = SplayTreeMap<Key, Value>(_comp);
+    : _backingMap = SplayTreeMap<Key, Value>(_comp);
 
   @override
   String get name => _mapName;
@@ -85,14 +85,16 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   Stream<(Key, Value)> entries() {
     _checkOpened();
     return Stream.fromIterable(
-        _backingMap.entries.map((e) => (e.key, e.value)));
+      _backingMap.entries.map((e) => (e.key, e.value)),
+    );
   }
 
   @override
   Stream<(Key, Value)> reversedEntries() {
     _checkOpened();
     return Stream.fromIterable(
-        _backingMap.reversedEntries.map((e) => (e.key, e.value)));
+      _backingMap.reversedEntries.map((e) => (e.key, e.value)),
+    );
   }
 
   @override
@@ -171,7 +173,7 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
     await updateLastModifiedTime();
   }
 
-  static int _comp(k1, k2) {
+  static int _comp(dynamic k1, dynamic k2) {
     if (k1 is Comparable && k2 is Comparable) {
       return compare(k1, k2);
     }

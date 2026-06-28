@@ -28,7 +28,9 @@ class NitriteEntityReader<T> {
           ? entity.entityId!.encodedFieldNames
           : [entity.entityId!.fieldName];
       await _nitriteCollection.createIndex(
-          idFieldNames, indexOptions(IndexType.unique));
+        idFieldNames,
+        indexOptions(IndexType.unique),
+      );
     }
   }
 
@@ -41,7 +43,9 @@ class NitriteEntityReader<T> {
       if (indexes != null) {
         for (var index in indexes) {
           await _nitriteCollection.createIndex(
-              index.fieldNames, indexOptions(index.indexType));
+            index.fieldNames,
+            indexOptions(index.indexType),
+          );
         }
       }
     }

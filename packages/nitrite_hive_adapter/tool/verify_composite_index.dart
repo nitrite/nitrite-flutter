@@ -28,8 +28,8 @@ Future<void> main() async {
 
     // low-cardinality field: 200 docs across 4 acct values
     for (var i = 0; i < 200; i++) {
-      await col.insert(
-          emptyDocument().put('acct', i % 4).put('n', i).put('seq', i));
+      await col
+          .insert(emptyDocument().put('acct', i % 4).put('n', i).put('seq', i));
     }
 
     // equality
@@ -108,7 +108,8 @@ Future<void> main() async {
     sw.stop();
     var bc = await big.find(filter: where('folder').eq(2)).count();
     check(bc == 600, 'bulk eq(2) == 600 (got $bc)');
-    print('bulk-load 3000 low-cardinality inserts: ${sw.elapsedMilliseconds} ms');
+    print(
+        'bulk-load 3000 low-cardinality inserts: ${sw.elapsedMilliseconds} ms');
     await db4.close();
 
     // compound non-unique composite index (first field low-cardinality)

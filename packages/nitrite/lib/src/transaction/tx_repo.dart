@@ -11,8 +11,12 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
 
   late RepositoryOperations<T> _operations;
 
-  DefaultTransactionalRepository(this._primary, this._backingCollection,
-      this._entityDecorator, this._nitriteConfig);
+  DefaultTransactionalRepository(
+    this._primary,
+    this._backingCollection,
+    this._entityDecorator,
+    this._nitriteConfig,
+  );
 
   @override
   bool get isDropped => _backingCollection.isDropped;
@@ -74,30 +78,45 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
 
   @override
   Future<WriteResult> updateOne(T element, {bool insertIfAbsent = false}) {
-    return update(_operations.createUniqueFilter(element), element,
-        updateOptions(insertIfAbsent: insertIfAbsent, justOnce: true));
+    return update(
+      _operations.createUniqueFilter(element),
+      element,
+      updateOptions(insertIfAbsent: insertIfAbsent, justOnce: true),
+    );
   }
 
   @override
-  Future<WriteResult> update(Filter filter, T element,
-      [UpdateOptions? updateOptions]) {
+  Future<WriteResult> update(
+    Filter filter,
+    T element, [
+    UpdateOptions? updateOptions,
+  ]) {
     var updateDocument = _operations.toDocument(element, true);
     if (updateOptions == null || !updateOptions.insertIfAbsent) {
       _operations.removeNitriteId(updateDocument);
     }
 
     return _backingCollection.update(
-        _operations.asObjectFilter(filter), updateDocument, updateOptions);
+      _operations.asObjectFilter(filter),
+      updateDocument,
+      updateOptions,
+    );
   }
 
   @override
-  Future<WriteResult> updateDocument(Filter filter, Document document,
-      {bool justOnce = false}) {
+  Future<WriteResult> updateDocument(
+    Filter filter,
+    Document document, {
+    bool justOnce = false,
+  }) {
     _operations.removeNitriteId(document);
     _operations.serializeFields(document);
 
-    return _backingCollection.update(_operations.asObjectFilter(filter),
-        document, updateOptions(insertIfAbsent: false, justOnce: justOnce));
+    return _backingCollection.update(
+      _operations.asObjectFilter(filter),
+      document,
+      updateOptions(insertIfAbsent: false, justOnce: justOnce),
+    );
   }
 
   @override
@@ -107,8 +126,10 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
 
   @override
   Future<WriteResult> remove(Filter filter, {bool justOne = false}) {
-    return _backingCollection.remove(_operations.asObjectFilter(filter),
-        justOne: justOne);
+    return _backingCollection.remove(
+      _operations.asObjectFilter(filter),
+      justOne: justOne,
+    );
   }
 
   @override
@@ -175,7 +196,10 @@ class DefaultTransactionalRepository<T> extends ObjectRepository<T> {
   @override
   Future<void> initialize() async {
     _operations = RepositoryOperations<T>(
-        _entityDecorator, _backingCollection, _nitriteConfig);
+      _entityDecorator,
+      _backingCollection,
+      _nitriteConfig,
+    );
     _operations.scanIndexes();
   }
 }

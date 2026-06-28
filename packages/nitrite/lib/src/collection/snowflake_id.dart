@@ -27,8 +27,10 @@ class SnowflakeIdGenerator {
   int get id {
     var timestamp = DateTime.now().millisecondsSinceEpoch;
     if (timestamp < _lastTimestamp) {
-      _log.warning('Clock moved backwards. Refusing to generate id for '
-          '${_lastTimestamp - timestamp} milliseconds');
+      _log.warning(
+        'Clock moved backwards. Refusing to generate id for '
+        '${_lastTimestamp - timestamp} milliseconds',
+      );
       Future.delayed(Duration(milliseconds: _lastTimestamp - timestamp));
     }
 
@@ -45,7 +47,8 @@ class SnowflakeIdGenerator {
     _lastTimestamp = timestamp;
     var timestampLeftShift = sequenceBits + _nodeIdBits;
     var no2epoch = 1288834974657;
-    var id = ((timestamp - no2epoch) << timestampLeftShift) |
+    var id =
+        ((timestamp - no2epoch) << timestampLeftShift) |
         (_nodeId << sequenceBits) |
         _sequence;
 

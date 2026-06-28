@@ -13,7 +13,11 @@ class AddPasswordCommand extends Command {
   Future<void> execute(Nitrite nitrite) {
     var authService = UserAuthenticationService(nitrite.getStore());
     return authService.addOrUpdatePassword(
-        false, _arguments.$1, "", _arguments.$2);
+      false,
+      _arguments.$1,
+      "",
+      _arguments.$2,
+    );
   }
 }
 
@@ -27,7 +31,11 @@ class ChangePasswordCommand extends Command {
   Future<void> execute(Nitrite nitrite) {
     var authService = UserAuthenticationService(nitrite.getStore());
     return authService.addOrUpdatePassword(
-        true, _arguments.$1, _arguments.$2, _arguments.$3);
+      true,
+      _arguments.$1,
+      _arguments.$2,
+      _arguments.$3,
+    );
   }
 }
 
@@ -48,7 +56,7 @@ class DropCollectionCommand extends BaseCommand {
 /// @nodoc
 class DropRepositoryCommand extends DropCollectionCommand {
   DropRepositoryCommand((String, String?) arguments)
-      : super(findRepositoryNameByTypeName(arguments.$1, arguments.$2));
+    : super(findRepositoryNameByTypeName(arguments.$1, arguments.$2));
 }
 
 /// @nodoc

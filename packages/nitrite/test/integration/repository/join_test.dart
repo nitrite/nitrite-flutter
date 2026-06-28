@@ -64,8 +64,10 @@ void main() {
       var personCursor = personRepository.find();
       var addressCursor = addressRepository.find();
 
-      var result =
-          personCursor.leftJoin<Address, PersonDetails>(addressCursor, lookup);
+      var result = personCursor.leftJoin<Address, PersonDetails>(
+        addressCursor,
+        lookup,
+      );
       expect(await result.length, 10);
 
       await for (var personDetails in result) {
@@ -79,8 +81,10 @@ void main() {
       }
 
       personCursor = personRepository.find(findOptions: skipBy(0).setLimit(5));
-      result =
-          personCursor.leftJoin<Address, PersonDetails>(addressCursor, lookup);
+      result = personCursor.leftJoin<Address, PersonDetails>(
+        addressCursor,
+        lookup,
+      );
 
       expect(await result.length, 5);
       expect(await result.isEmpty, false);

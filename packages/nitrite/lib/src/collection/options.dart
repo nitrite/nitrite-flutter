@@ -15,13 +15,17 @@ class UpdateOptions {
 
 /// Creates a new instance of [UpdateOptions] with [insertIfAbsent] and
 /// [justOnce] set to false.
-UpdateOptions updateOptions({insertIfAbsent = false, justOnce = false}) =>
-    UpdateOptions(insertIfAbsent: insertIfAbsent, justOnce: justOnce);
+UpdateOptions updateOptions({
+  bool insertIfAbsent = false,
+  bool justOnce = false,
+}) => UpdateOptions(insertIfAbsent: insertIfAbsent, justOnce: justOnce);
 
 /// Creates a new instance of [FindOptions] with sorting order set to
 /// [fieldName] and [sortOrder].
-FindOptions orderBy(String fieldName,
-    [SortOrder sortOrder = SortOrder.ascending]) {
+FindOptions orderBy(
+  String fieldName, [
+  SortOrder sortOrder = SortOrder.ascending,
+]) {
   var sortableFields = SortableFields();
   sortableFields.addSortedField(fieldName, sortOrder);
 

@@ -13,8 +13,8 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   flutter_slidable: ^3.0.0
-  flutter_riverpod: ^2.3.6
-  riverpod_annotation: ^2.1.1
+  flutter_riverpod: ^3.0.0
+  riverpod_annotation: ^4.0.0
   nitrite: ^1.1.1
   nitrite_hive_adapter: ^1.1.1
   path_provider: ^2.0.15
@@ -24,10 +24,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-  riverpod_generator: ^2.2.3
+  riverpod_generator: ^4.0.0
   build_runner: ^2.4.6
-  custom_lint: any
-  riverpod_lint: any
   nitrite_generator: ^1.1.1
   icons_launcher: ^2.1.3
 

@@ -11,7 +11,10 @@ class CollectionFactory {
   final Map<String, NitriteCollection> _collectionMap = {};
 
   Future<NitriteCollection> getCollection(
-      String name, NitriteConfig nitriteConfig, bool writeCatalogue) async {
+    String name,
+    NitriteConfig nitriteConfig,
+    bool writeCatalogue,
+  ) async {
     name.notNullOrEmpty('Collection name is empty');
 
     if (_collectionMap.containsKey(name)) {
@@ -37,13 +40,19 @@ class CollectionFactory {
       }
       _collectionMap.clear();
     } catch (e, stackTrace) {
-      throw NitriteIOException("Failed to close a collection",
-          stackTrace: stackTrace, cause: e);
+      throw NitriteIOException(
+        "Failed to close a collection",
+        stackTrace: stackTrace,
+        cause: e,
+      );
     }
   }
 
   Future<NitriteCollection> _createCollection(
-      String name, NitriteConfig nitriteConfig, bool writeCatalogue) async {
+    String name,
+    NitriteConfig nitriteConfig,
+    bool writeCatalogue,
+  ) async {
     var store = nitriteConfig.getNitriteStore();
 
     if (writeCatalogue) {
@@ -55,8 +64,10 @@ class CollectionFactory {
       var keyedRepoRegistry = await store.keyedRepositoryRegistry;
       for (var set in keyedRepoRegistry.values) {
         if (set.contains(name)) {
-          throw ValidationException("A keyed repository with same name "
-              "already exists");
+          throw ValidationException(
+            "A keyed repository with same name "
+            "already exists",
+          );
         }
       }
     }
@@ -91,7 +102,10 @@ class _DefaultNitriteCollection extends NitriteCollection {
   bool _isDropped = false;
 
   _DefaultNitriteCollection(
-      this._collectionName, this._nitriteMap, this._nitriteConfig);
+    this._collectionName,
+    this._nitriteMap,
+    this._nitriteConfig,
+  );
 
   @override
   bool get isDropped => _isDropped || _nitriteMap.isDropped;
@@ -129,8 +143,10 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<void> createIndex(List<String> fields,
-      [IndexOptions? indexOptions]) async {
+  Future<void> createIndex(
+    List<String> fields, [
+    IndexOptions? indexOptions,
+  ]) async {
     fields.notNullOrEmpty('Fields cannot be empty');
 
     var indexFields = Fields.withNames(fields);
@@ -140,7 +156,9 @@ class _DefaultNitriteCollection extends NitriteCollection {
       return _collectionOperations.createIndex(indexFields, IndexType.unique);
     } else {
       return _collectionOperations.createIndex(
-          indexFields, indexOptions.indexType);
+        indexFields,
+        indexOptions.indexType,
+      );
     }
   }
 
@@ -249,7 +267,8 @@ class _DefaultNitriteCollection extends NitriteCollection {
       return _collectionOperations.removeDocument(document);
     } else {
       throw NotIdentifiableException(
-          'Document has no id, cannot remove by document');
+        'Document has no id, cannot remove by document',
+      );
     }
   }
 
@@ -257,7 +276,8 @@ class _DefaultNitriteCollection extends NitriteCollection {
   Future<WriteResult> remove(Filter filter, {bool justOne = false}) {
     if (filter == all && justOne) {
       throw InvalidOperationException(
-          'Cannot remove all documents with justOne set to true');
+        'Cannot remove all documents with justOne set to true',
+      );
     }
 
     _checkOpened();
@@ -291,8 +311,10 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   @override
-  Future<WriteResult> updateOne(Document document,
-      {bool insertIfAbsent = false}) async {
+  Future<WriteResult> updateOne(
+    Document document, {
+    bool insertIfAbsent = false,
+  }) async {
     if (insertIfAbsent) {
       var filter = createUniqueFilter(document);
       return update(filter, document, UpdateOptions(insertIfAbsent: true));
@@ -301,15 +323,20 @@ class _DefaultNitriteCollection extends NitriteCollection {
         var filter = createUniqueFilter(document);
         return update(filter, document, UpdateOptions(insertIfAbsent: false));
       } else {
-        throw NotIdentifiableException('Update operation failed as the '
-            'document does not have id');
+        throw NotIdentifiableException(
+          'Update operation failed as the '
+          'document does not have id',
+        );
       }
     }
   }
 
   @override
-  Future<WriteResult> update(Filter filter, Document update,
-      [UpdateOptions? updateOptions]) async {
+  Future<WriteResult> update(
+    Filter filter,
+    Document update, [
+    UpdateOptions? updateOptions,
+  ]) async {
     if (updateOptions == null) {
       updateOptions = UpdateOptions();
       updateOptions.insertIfAbsent = false;
@@ -326,12 +353,17 @@ class _DefaultNitriteCollection extends NitriteCollection {
     _nitriteStore = _nitriteConfig.getNitriteStore();
     _eventBus = EventBus();
     _collectionOperations = CollectionOperations(
-        _collectionName, _nitriteMap, _nitriteConfig, _eventBus);
+      _collectionName,
+      _nitriteMap,
+      _nitriteConfig,
+      _eventBus,
+    );
     await _collectionOperations.initialize();
   }
 
   void _checkOpened() {
-    var opened = !_nitriteStore.isClosed &&
+    var opened =
+        !_nitriteStore.isClosed &&
         !_isDropped &&
         !_nitriteMap.isClosed &&
         !_nitriteMap.isDropped;
@@ -346,7 +378,8 @@ class _DefaultNitriteCollection extends NitriteCollection {
     var isIndexing = await this.isIndexing(indexFields);
     if (isIndexing) {
       throw InvalidOperationException(
-          'Cannot rebuild index, index is currently being built');
+        'Cannot rebuild index, index is currently being built',
+      );
     }
   }
 

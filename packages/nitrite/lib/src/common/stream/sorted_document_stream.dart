@@ -5,10 +5,12 @@ import 'package:nitrite/nitrite.dart';
 /// @nodoc
 class SortedDocumentStream extends StreamView<Document> {
   SortedDocumentStream(FindPlan findPlan, Stream<Document> rawStream)
-      : super(_sort(findPlan, rawStream));
+    : super(_sort(findPlan, rawStream));
 
   static Stream<Document> _sort(
-      FindPlan findPlan, Stream<Document> rawStream) async* {
+    FindPlan findPlan,
+    Stream<Document> rawStream,
+  ) async* {
     var list = await rawStream.toList();
     list.sort((a, b) => _compare(a, b, findPlan.blockingSortOrder));
     for (var doc in list) {
@@ -17,7 +19,10 @@ class SortedDocumentStream extends StreamView<Document> {
   }
 
   static int _compare(
-      Document a, Document b, List<(String, SortOrder)> sortOrder) {
+    Document a,
+    Document b,
+    List<(String, SortOrder)> sortOrder,
+  ) {
     if (sortOrder.isEmpty) {
       return 0;
     }
@@ -41,7 +46,8 @@ class SortedDocumentStream extends StreamView<Document> {
         // validate comparable
         if (aValue is! Comparable || bValue is! Comparable) {
           throw InvalidOperationException(
-              "Cannot compare ${aValue.runtimeType} and ${bValue.runtimeType}");
+            "Cannot compare ${aValue.runtimeType} and ${bValue.runtimeType}",
+          );
         }
 
         // compare values

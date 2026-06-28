@@ -9,8 +9,12 @@ import 'package:collection/collection.dart';
 ///
 /// @nodoc
 Iterable<int> nearestNeighborIds(
-    Iterable<SpatialKey> keys, double x, double y, int k,
-    [double? maxDistance]) {
+  Iterable<SpatialKey> keys,
+  double x,
+  double y,
+  int k, [
+  double? maxDistance,
+]) {
   var scored = <(int, double)>[];
   for (var sk in keys) {
     if (sk.isNull()) continue;

@@ -41,11 +41,18 @@ void main() {
 
     test('Test Duplicate Index on Same Field', () async {
       expect(
-          () async => await db.getRepository<WrongIndexEntity>(),
-          throwsA(predicate((e) =>
-              e is IndexingException &&
-              e.message.contains('Index already exists on fields: '
-                  '[name] with type Fulltext'))));
+        () async => await db.getRepository<WrongIndexEntity>(),
+        throwsA(
+          predicate(
+            (e) =>
+                e is IndexingException &&
+                e.message.contains(
+                  'Index already exists on fields: '
+                  '[name] with type Fulltext',
+                ),
+          ),
+        ),
+      );
     });
   });
 }

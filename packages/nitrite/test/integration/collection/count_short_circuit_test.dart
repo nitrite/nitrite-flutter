@@ -45,7 +45,9 @@ void main() {
 
     test('count with limit falls back (not index id count)', () async {
       var cursor = col.find(
-          filter: where('seq').gte(0), findOptions: limitBy(7));
+        filter: where('seq').gte(0),
+        findOptions: limitBy(7),
+      );
       expect(await cursor.count(), 7);
     });
   });

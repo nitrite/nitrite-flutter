@@ -22,9 +22,12 @@ void main() {
 
       await aObjectRepository.createIndex(['b.number']);
       cursor = aObjectRepository.find(
-          filter: where('b.number').eq(160).not(),
-          findOptions:
-              orderBy('b.number', SortOrder.ascending).setSkip(0).setLimit(10));
+        filter: where('b.number').eq(160).not(),
+        findOptions: orderBy(
+          'b.number',
+          SortOrder.ascending,
+        ).setSkip(0).setLimit(10),
+      );
       expect(await cursor.isEmpty, false);
 
       var findRecord = cursor.project<ClassA>();
@@ -37,9 +40,12 @@ void main() {
       });
 
       cursor = aObjectRepository.find(
-          filter: where('b.number').eq(160).not(),
-          findOptions:
-              orderBy('b.number', SortOrder.descending).setSkip(2).setLimit(7));
+        filter: where('b.number').eq(160).not(),
+        findOptions: orderBy(
+          'b.number',
+          SortOrder.descending,
+        ).setSkip(2).setLimit(7),
+      );
       expect(await cursor.isEmpty, false);
       findRecord = cursor.project<ClassA>();
       expect(await findRecord.length, 7);
@@ -51,9 +57,9 @@ void main() {
       });
 
       var cursorC = cObjectRepository.find(
-          filter: where('id').gt(900),
-          findOptions:
-              orderBy('id', SortOrder.descending).setSkip(2).setLimit(7));
+        filter: where('id').gt(900),
+        findOptions: orderBy('id', SortOrder.descending).setSkip(2).setLimit(7),
+      );
       expect(await cursorC.isEmpty, false);
       var findRecordC = cursorC.project<ClassC>();
       expect(await findRecordC.length, 7);
@@ -70,19 +76,26 @@ void main() {
       expect(await cursor.isEmpty, false);
 
       expect(
-          await productRepository
-              .hasIndex(["productId.uniqueId", "productId.productCode"]),
-          isTrue);
+        await productRepository.hasIndex([
+          "productId.uniqueId",
+          "productId.productCode",
+        ]),
+        isTrue,
+      );
       expect(await productRepository.hasIndex(["manufacturer.name"]), isTrue);
       expect(
-          await productRepository
-              .hasIndex(["productName", "manufacturer.uniqueId"]),
-          isTrue);
+        await productRepository.hasIndex([
+          "productName",
+          "manufacturer.uniqueId",
+        ]),
+        isTrue,
+      );
 
       cursor = productRepository.find(
-          filter: where('productId.uniqueId')
-              .notEq(null)
-              .and(where('price').gt(0.0)));
+        filter: where(
+          'productId.uniqueId',
+        ).notEq(null).and(where('price').gt(0.0)),
+      );
 
       expect(await cursor.isEmpty, false);
       expect(await cursor.length, 10);
@@ -91,7 +104,8 @@ void main() {
       expect(await miniProducts.length, 10);
       await miniProducts.forEach((miniProduct) async {
         var products = productRepository.find(
-            filter: where('productId.uniqueId').eq(miniProduct.uniqueId));
+          filter: where('productId.uniqueId').eq(miniProduct.uniqueId),
+        );
 
         var first = await products.first;
         expect(await products.length, 1);
@@ -106,20 +120,29 @@ void main() {
       expect(await cursor.isEmpty, false);
 
       expect(
-          await upcomingProductRepository
-              .hasIndex(["productId.uniqueId", "productId.productCode"]),
-          isTrue);
-      expect(await upcomingProductRepository.hasIndex(["manufacturer.name"]),
-          isTrue);
+        await upcomingProductRepository.hasIndex([
+          "productId.uniqueId",
+          "productId.productCode",
+        ]),
+        isTrue,
+      );
       expect(
-          await upcomingProductRepository
-              .hasIndex(["productName", "manufacturer.uniqueId"]),
-          isTrue);
+        await upcomingProductRepository.hasIndex(["manufacturer.name"]),
+        isTrue,
+      );
+      expect(
+        await upcomingProductRepository.hasIndex([
+          "productName",
+          "manufacturer.uniqueId",
+        ]),
+        isTrue,
+      );
 
       cursor = upcomingProductRepository.find(
-          filter: where('productId.uniqueId')
-              .notEq(null)
-              .and(where('price').gt(0.0)));
+        filter: where(
+          'productId.uniqueId',
+        ).notEq(null).and(where('price').gt(0.0)),
+      );
 
       expect(await cursor.isEmpty, false);
       expect(await cursor.length, 10);
@@ -128,7 +151,8 @@ void main() {
       expect(await miniProducts.length, 10);
       await miniProducts.forEach((miniProduct) async {
         var products = upcomingProductRepository.find(
-            filter: where('productId.uniqueId').eq(miniProduct.uniqueId));
+          filter: where('productId.uniqueId').eq(miniProduct.uniqueId),
+        );
 
         var first = await products.first;
         expect(await products.length, 1);

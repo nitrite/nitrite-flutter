@@ -16,8 +16,13 @@ class WriteOperations {
   final EventBus _eventBus;
   final ProcessorChain _processorChain;
 
-  WriteOperations(this._documentIndexWriter, this._readOperations,
-      this._nitriteMap, this._eventBus, this._processorChain);
+  WriteOperations(
+    this._documentIndexWriter,
+    this._readOperations,
+    this._nitriteMap,
+    this._eventBus,
+    this._processorChain,
+  );
 
   Stream<NitriteId> insert(List<Document> documents) async* {
     _log.fine('Inserting ${documents.length} documents in ${_nitriteMap.name}');
@@ -49,8 +54,10 @@ class WriteOperations {
       var hasKey = await _nitriteMap.containsKey(nitriteId);
 
       if (hasKey) {
-        throw UniqueConstraintException('Document with id : $nitriteId already'
-            ' exists in ${_nitriteMap.name}');
+        throw UniqueConstraintException(
+          'Document with id : $nitriteId already'
+          ' exists in ${_nitriteMap.name}',
+        );
       } else {
         try {
           await _nitriteMap.putIfAbsent(nitriteId, processed);
@@ -58,9 +65,10 @@ class WriteOperations {
         } catch (e) {
           if (e is UniqueConstraintException || e is IndexingException) {
             _log.severe(
-                'Error while writing index entry for document with id'
-                ' : $nitriteId in ${_nitriteMap.name}',
-                e);
+              'Error while writing index entry for document with id'
+              ' : $nitriteId in ${_nitriteMap.name}',
+              e,
+            );
             await _nitriteMap.remove(nitriteId);
           }
           rethrow;
@@ -92,7 +100,8 @@ class WriteOperations {
       removed.put(docModified, removedAt);
 
       _log.fine(
-          'Removed document with id : $nitriteId from ${_nitriteMap.name}');
+        'Removed document with id : $nitriteId from ${_nitriteMap.name}',
+      );
 
       yield nitriteId;
 
@@ -137,7 +146,8 @@ class WriteOperations {
         removed.put(docModified, removedAt);
 
         _log.fine(
-            'Removed document with id : $nitriteId from ${_nitriteMap.name}');
+          'Removed document with id : $nitriteId from ${_nitriteMap.name}',
+        );
 
         yield nitriteId;
 
@@ -161,7 +171,10 @@ class WriteOperations {
   }
 
   Stream<NitriteId> update(
-      Filter filter, Document update, UpdateOptions updateOptions) async* {
+    Filter filter,
+    Document update,
+    UpdateOptions updateOptions,
+  ) async* {
     var cursor = _readOperations.find(filter, null);
     var document = update.clone();
     document.remove(docId);
@@ -186,8 +199,10 @@ class WriteOperations {
         var time = DateTime.now().millisecondsSinceEpoch;
 
         var nitriteId = newDoc.id;
-        _log.fine('Updating document with id : $nitriteId '
-            'in ${_nitriteMap.name}');
+        _log.fine(
+          'Updating document with id : $nitriteId '
+          'in ${_nitriteMap.name}',
+        );
 
         if (replicator != source) {
           document.remove(docSource);
@@ -206,12 +221,17 @@ class WriteOperations {
         _log.fine('Processed document with id : $nitriteId');
 
         await _nitriteMap.put(nitriteId, processed);
-        _log.fine('Updated document with id : $nitriteId '
-            'in ${_nitriteMap.name}');
+        _log.fine(
+          'Updated document with id : $nitriteId '
+          'in ${_nitriteMap.name}',
+        );
 
         try {
           await _documentIndexWriter.updateIndexEntry(
-              oldDoc, processed, document);
+            oldDoc,
+            processed,
+            document,
+          );
 
           // if 'update' only contains id value, affected count = 0
           if (document.size > 0) {
@@ -219,11 +239,16 @@ class WriteOperations {
           }
         } catch (e) {
           if (e is UniqueConstraintException || e is IndexingException) {
-            _log.severe('Error while writing index entry for document with id'
-                ' : $nitriteId in ${_nitriteMap.name}');
+            _log.severe(
+              'Error while writing index entry for document with id'
+              ' : $nitriteId in ${_nitriteMap.name}',
+            );
             await _nitriteMap.put(nitriteId, oldDoc);
             await _documentIndexWriter.updateIndexEntry(
-                processed, oldDoc, document);
+              processed,
+              oldDoc,
+              document,
+            );
           }
           rethrow;
         }
@@ -252,8 +277,10 @@ class WriteOperations {
   }
 
   void _alert<T>(CollectionEventInfo<T> changedItem) {
-    _log.fine('Alerting event listeners for action : ${changedItem.eventType} '
-        'in collection ${_nitriteMap.name}');
+    _log.fine(
+      'Alerting event listeners for action : ${changedItem.eventType} '
+      'in collection ${_nitriteMap.name}',
+    );
 
     if (!_eventBus.streamController.isClosed) {
       _eventBus.fire(changedItem);

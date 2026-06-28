@@ -42,8 +42,10 @@ class NitriteConfig {
   /// Throws [InvalidOperationException] if the database is already initialized.
   void setFieldSeparator(String fieldSeparator) {
     if (_configured) {
-      throw InvalidOperationException("Cannot change the separator after "
-          "database initialization");
+      throw InvalidOperationException(
+        "Cannot change the separator after "
+        "database initialization",
+      );
     }
     NitriteConfig.fieldSeparator = fieldSeparator;
   }
@@ -54,8 +56,9 @@ class NitriteConfig {
   void disableRepositoryTypeValidation() {
     if (_configured) {
       throw InvalidOperationException(
-          "Cannot disable repository type validation "
-          "after database initialization");
+        "Cannot disable repository type validation "
+        "after database initialization",
+      );
     }
     _repositoryTypeValidationDisabled = true;
   }
@@ -66,8 +69,10 @@ class NitriteConfig {
   /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig loadModule(NitriteModule module) {
     if (_configured) {
-      throw InvalidOperationException("Cannot load module after database "
-          "initialization");
+      throw InvalidOperationException(
+        "Cannot load module after database "
+        "initialization",
+      );
     }
     _modules.add(module);
     return this;
@@ -78,10 +83,13 @@ class NitriteConfig {
   ///
   /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig registerEntityConverter(
-      EntityConverter<dynamic> entityConverter) {
+    EntityConverter<dynamic> entityConverter,
+  ) {
     if (_configured) {
-      throw InvalidOperationException("Cannot register entity converter after "
-          "database initialization");
+      throw InvalidOperationException(
+        "Cannot register entity converter after "
+        "database initialization",
+      );
     }
     _entityConverters.add(entityConverter);
     return this;
@@ -94,18 +102,26 @@ class NitriteConfig {
   /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig addMigration(Migration migration) {
     if (_configured) {
-      throw InvalidOperationException("Cannot add migration after database "
-          "initialization");
+      throw InvalidOperationException(
+        "Cannot add migration after database "
+        "initialization",
+      );
     }
 
     if (_migrations.containsKey(migration.fromVersion)) {
-      _migrations[migration.fromVersion]
-          ?.putIfAbsent(migration.toVersion, () => migration);
+      _migrations[migration.fromVersion]?.putIfAbsent(
+        migration.toVersion,
+        () => migration,
+      );
     } else {
       _migrations.putIfAbsent(
-          migration.fromVersion, () => SplayTreeMap<int, Migration>());
-      _migrations[migration.fromVersion]
-          ?.putIfAbsent(migration.toVersion, () => migration);
+        migration.fromVersion,
+        () => SplayTreeMap<int, Migration>(),
+      );
+      _migrations[migration.fromVersion]?.putIfAbsent(
+        migration.toVersion,
+        () => migration,
+      );
     }
     return this;
   }
@@ -115,8 +131,10 @@ class NitriteConfig {
   /// Throws [InvalidOperationException] if the database is already initialized.
   NitriteConfig currentSchemaVersion(int version) {
     if (_configured) {
-      throw InvalidOperationException("Cannot change the schema version after "
-          "database initialization");
+      throw InvalidOperationException(
+        "Cannot change the schema version after "
+        "database initialization",
+      );
     }
     _schemaVersion = version;
     return this;
@@ -125,8 +143,10 @@ class NitriteConfig {
   /// Automatically configures Nitrite database by finding and loading plugins.
   Future<void> autoConfigure() async {
     if (_configured) {
-      throw InvalidOperationException("Cannot auto configure after database "
-          "initialization");
+      throw InvalidOperationException(
+        "Cannot auto configure after database "
+        "initialization",
+      );
     }
     await _loadModules();
     return _pluginManager.findAndLoadPlugins();

@@ -9,8 +9,10 @@ late Document doc1, doc2, doc3;
 void setUpLog() {
   Logger.root.level = Level.OFF;
   Logger.root.onRecord.listen((record) {
-    print('${record.time}: [${record.level.name}] ${record.loggerName} -'
-        ' ${record.message}');
+    print(
+      '${record.time}: [${record.level.name}] ${record.loggerName} -'
+      ' ${record.message}',
+    );
     if (record.error != null) {
       print('ERROR: ${record.error}');
     }
@@ -26,24 +28,28 @@ Future<void> setUpNitriteTest() async {
       .put("firstName", "fn1")
       .put("lastName", "ln1")
       .put("birthDay", DateTime.parse("2012-07-01T16:02:48.440Z"))
-      .put("data", [1, 2, 3]).put("list", ["one", "two", "three"]).put(
-          "body", "a quick brown fox jump over the lazy dog");
+      .put("data", [1, 2, 3])
+      .put("list", ["one", "two", "three"])
+      .put("body", "a quick brown fox jump over the lazy dog");
 
   doc2 = emptyDocument()
       .put("firstName", "fn2")
       .put("lastName", "ln2")
       .put("birthDay", DateTime.parse("2010-06-12T16:02:48.440Z"))
-      .put("data", [3, 4, 3]).put("list", ["three", "four", "five"]).put(
-          "body", "quick hello world from nitrite");
+      .put("data", [3, 4, 3])
+      .put("list", ["three", "four", "five"])
+      .put("body", "quick hello world from nitrite");
 
   doc3 = emptyDocument()
       .put("firstName", "fn3")
       .put("lastName", "ln2")
       .put("birthDay", DateTime.parse("2014-04-17T16:02:48.440Z"))
-      .put("data", [9, 4, 8]).put(
-          "body",
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nunc mi, '
-              'mattis ullamcorper dignissim vitae, condimentum non lorem.');
+      .put("data", [9, 4, 8])
+      .put(
+        "body",
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nunc mi, '
+            'mattis ullamcorper dignissim vitae, condimentum non lorem.',
+      );
 
   collection = await db.getCollection('test');
   await collection.remove(all);

@@ -17,14 +17,20 @@ class RepositoryOperations<T> {
   NitriteEntityReader<T>? _nitriteEntityReader;
 
   RepositoryOperations(
-      this._entityDecorator, this._nitriteCollection, this._nitriteConfig)
-      : _nitriteMapper = _nitriteConfig.nitriteMapper {
+    this._entityDecorator,
+    this._nitriteCollection,
+    this._nitriteConfig,
+  ) : _nitriteMapper = _nitriteConfig.nitriteMapper {
     if (_entityDecorator != null) {
-      _entityDecoratorReader =
-          EntityDecoratorReader<T>(_entityDecorator, _nitriteCollection);
+      _entityDecoratorReader = EntityDecoratorReader<T>(
+        _entityDecorator,
+        _nitriteCollection,
+      );
     } else {
-      _nitriteEntityReader =
-          NitriteEntityReader<T>(_nitriteMapper, _nitriteCollection);
+      _nitriteEntityReader = NitriteEntityReader<T>(
+        _nitriteMapper,
+        _nitriteCollection,
+      );
     }
   }
 
@@ -125,7 +131,8 @@ class RepositoryOperations<T> {
           // if it is an insert, then we should not allow to insert the
           // document with user provided id
           throw InvalidIdException(
-              "Auto generated id should not be set manually");
+            "Auto generated id should not be set manually",
+          );
         }
       }
 
@@ -169,7 +176,8 @@ class RepositoryOperations<T> {
   Filter createIdFilter<I>(I id) {
     if (_objectIdField == null) {
       throw NotIdentifiableException(
-          '${T.runtimeType} does not have any id field');
+        '${T.runtimeType} does not have any id field',
+      );
     }
 
     if (id == null) {
@@ -194,7 +202,9 @@ class RepositoryOperations<T> {
   Cursor<T> find(Filter? filter, FindOptions? findOptions) {
     filter ??= all;
     var documentCursor = _nitriteCollection.find(
-        filter: asObjectFilter(filter), findOptions: findOptions);
+      filter: asObjectFilter(filter),
+      findOptions: findOptions,
+    );
     return ObjectCursor<T>(documentCursor, _nitriteMapper);
   }
 
@@ -204,11 +214,14 @@ class RepositoryOperations<T> {
         return _objectIdField!.createUniqueFilter(filter.value, _nitriteMapper);
       } else if (filter is ComparableFilter) {
         var fieldValue = filter.value;
-        var converted =
-            _nitriteMapper.tryConvert<Document, dynamic>(fieldValue);
+        var converted = _nitriteMapper.tryConvert<Document, dynamic>(
+          fieldValue,
+        );
         if (converted is Document) {
-          throw InvalidOperationException('Cannot compare object of type '
-              '${fieldValue.runtimeType} with id field');
+          throw InvalidOperationException(
+            'Cannot compare object of type '
+            '${fieldValue.runtimeType} with id field',
+          );
         }
       }
     }

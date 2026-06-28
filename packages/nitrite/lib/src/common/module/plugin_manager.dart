@@ -37,8 +37,11 @@ class PluginManager {
     try {
       await _loadInternalPlugins();
     } catch (e, stackTrace) {
-      throw PluginException("Error loading plugins",
-          stackTrace: stackTrace, cause: e);
+      throw PluginException(
+        "Error loading plugins",
+        stackTrace: stackTrace,
+        cause: e,
+      );
     }
   }
 
@@ -113,8 +116,10 @@ class PluginManager {
   Future<void> _loadIndexer(NitriteIndexer plugin) async {
     if (_indexerMap.containsKey(plugin.indexType)) {
       await plugin.close();
-      throw PluginException("Multiple indexer plugins found for type: "
-          "${plugin.indexType}");
+      throw PluginException(
+        "Multiple indexer plugins found for type: "
+        "${plugin.indexType}",
+      );
     }
     _indexerMap[plugin.indexType] = plugin;
   }
@@ -151,21 +156,25 @@ class PluginManager {
     if (_nitriteMapper != null && _nitriteMapper is SimpleNitriteMapper) {
       if (_nitriteConfig.entityConverters.isNotEmpty) {
         for (var converter in _nitriteConfig.entityConverters) {
-          (_nitriteMapper as SimpleNitriteMapper)
-              .registerEntityConverter(converter);
+          (_nitriteMapper as SimpleNitriteMapper).registerEntityConverter(
+            converter,
+          );
         }
       }
 
       for (var converter in _entityConverters) {
-        (_nitriteMapper as SimpleNitriteMapper)
-            .registerEntityConverter(converter);
+        (_nitriteMapper as SimpleNitriteMapper).registerEntityConverter(
+          converter,
+        );
       }
     }
 
     if (_nitriteStore == null) {
       await loadModule(InMemoryStoreModule());
-      _log.warning('No persistent storage module found, creating an '
-          'in-memory storage');
+      _log.warning(
+        'No persistent storage module found, creating an '
+        'in-memory storage',
+      );
     }
   }
 }

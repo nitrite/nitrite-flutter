@@ -20,11 +20,12 @@ void main() {
 
       await collection.createIndex(['list', 'lastName', 'firstName']);
       var cursor = collection.find(
-          filter: and([
-        where('lastName').eq('ln2'),
-        where("firstName").notEq("fn1"),
-        where("list").eq("four")
-      ]));
+        filter: and([
+          where('lastName').eq('ln2'),
+          where("firstName").notEq("fn1"),
+          where("list").eq("four"),
+        ]),
+      );
 
       var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
@@ -34,13 +35,19 @@ void main() {
       var indexScanFilter = findPlan.indexScanFilter;
       expect(indexScanFilter?.filters.first, where('list').eq('four'));
       expect(
-          indexScanFilter?.filters.skip(1).first, where('lastName').eq('ln2'));
-      expect(indexScanFilter?.filters.skip(2).first,
-          where('firstName').notEq('fn1'));
+        indexScanFilter?.filters.skip(1).first,
+        where('lastName').eq('ln2'),
+      );
+      expect(
+        indexScanFilter?.filters.skip(2).first,
+        where('firstName').notEq('fn1'),
+      );
 
       await expectLater(cursor.length, completion(1));
-      await expectLater(cursor.first,
-          completion(containsPair('body', 'quick hello world from nitrite')));
+      await expectLater(
+        cursor.first,
+        completion(containsPair('body', 'quick hello world from nitrite')),
+      );
     });
 
     test('Test Find by OR Filter & AND Filter', () async {
@@ -48,16 +55,11 @@ void main() {
       await collection.createIndex(['lastName', 'firstName']);
 
       var cursor = collection.find(
-          filter: or([
-        and([
-          where("lastName").eq("ln2"),
-          where("firstName").notEq("fn1"),
+        filter: or([
+          and([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
+          and([where("firstName").eq("fn3"), where("lastName").eq("ln2")]),
         ]),
-        and([
-          where("firstName").eq("fn3"),
-          where("lastName").eq("ln2"),
-        ])
-      ]));
+      );
 
       var findPlan = await cursor.findPlan;
       expect(findPlan.collectionScanFilter, isNull);
@@ -70,29 +72,26 @@ void main() {
       expect(findPlan.distinct, isFalse);
 
       expect(
-          await cursor
-              .where((d) => d['firstName'] == 'fn2' && d['lastName'] == 'ln2')
-              .length,
-          1);
+        await cursor
+            .where((d) => d['firstName'] == 'fn2' && d['lastName'] == 'ln2')
+            .length,
+        1,
+      );
       expect(
-          await cursor
-              .where((d) => d['firstName'] == 'fn3' && d['lastName'] == 'ln2')
-              .length,
-          2);
+        await cursor
+            .where((d) => d['firstName'] == 'fn3' && d['lastName'] == 'ln2')
+            .length,
+        2,
+      );
 
       // distinct test
       cursor = collection.find(
-          filter: or([
-            and([
-              where("lastName").eq("ln2"),
-              where("firstName").notEq("fn1"),
-            ]),
-            and([
-              where("firstName").eq("fn3"),
-              where("lastName").eq("ln2"),
-            ])
-          ]),
-          findOptions: distinct());
+        filter: or([
+          and([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
+          and([where("firstName").eq("fn3"), where("lastName").eq("ln2")]),
+        ]),
+        findOptions: distinct(),
+      );
 
       expect(await cursor.length, 2);
 
@@ -107,15 +106,17 @@ void main() {
       expect(findPlan.distinct, isTrue);
 
       expect(
-          await cursor
-              .where((d) => d['firstName'] == 'fn2' && d['lastName'] == 'ln2')
-              .length,
-          1);
+        await cursor
+            .where((d) => d['firstName'] == 'fn2' && d['lastName'] == 'ln2')
+            .length,
+        1,
+      );
       expect(
-          await cursor
-              .where((d) => d['firstName'] == 'fn3' && d['lastName'] == 'ln2')
-              .length,
-          1);
+        await cursor
+            .where((d) => d['firstName'] == 'fn3' && d['lastName'] == 'ln2')
+            .length,
+        1,
+      );
     });
 
     test('Test Find AND Filter & OR Filter', () async {
@@ -123,16 +124,11 @@ void main() {
       await collection.createIndex(['lastName', 'firstName']);
 
       var cursor = collection.find(
-          filter: and([
-        or([
-          where("lastName").eq("ln2"),
-          where("firstName").notEq("fn1"),
+        filter: and([
+          or([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
+          or([where("firstName").eq("fn3"), where("lastName").eq("ln2")]),
         ]),
-        or([
-          where("firstName").eq("fn3"),
-          where("lastName").eq("ln2"),
-        ]),
-      ]));
+      );
 
       expect(await cursor.length, 2);
 
@@ -142,15 +138,17 @@ void main() {
       expect(findPlan.subPlans, isEmpty);
 
       expect(
-          await cursor
-              .where((d) => d['firstName'] == 'fn2' && d['lastName'] == 'ln2')
-              .length,
-          1);
+        await cursor
+            .where((d) => d['firstName'] == 'fn2' && d['lastName'] == 'ln2')
+            .length,
+        1,
+      );
       expect(
-          await cursor
-              .where((d) => d['firstName'] == 'fn3' && d['lastName'] == 'ln2')
-              .length,
-          1);
+        await cursor
+            .where((d) => d['firstName'] == 'fn3' && d['lastName'] == 'ln2')
+            .length,
+        1,
+      );
     });
 
     test('Test Find by AND Filter & AND Filter', () async {
@@ -158,16 +156,11 @@ void main() {
       await collection.createIndex(['lastName', 'firstName']);
 
       var cursor = collection.find(
-          filter: and([
-        and([
-          where("lastName").eq("ln2"),
-          where("firstName").notEq("fn1"),
+        filter: and([
+          and([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
+          and([where("firstName").eq("fn3"), where("lastName").eq("ln2")]),
         ]),
-        and([
-          where("firstName").eq("fn3"),
-          where("lastName").eq("ln2"),
-        ]),
-      ]));
+      );
 
       expect(await cursor.length, 1);
       var findPlan = await cursor.findPlan;
@@ -178,10 +171,11 @@ void main() {
       var indexes = await collection.listIndexes();
       expect(findPlan.indexDescriptor, indexes.first);
       expect(
-          findPlan.indexScanFilter?.filters,
-          (and([where("lastName").eq("ln2"), where("firstName").notEq("fn1")])
-                  as AndFilter)
-              .filters);
+        findPlan.indexScanFilter?.filters,
+        (and([where("lastName").eq("ln2"), where("firstName").notEq("fn1")])
+                as AndFilter)
+            .filters,
+      );
       expect(findPlan.collectionScanFilter, where("firstName").eq("fn3"));
 
       expect(await cursor.first, containsPair('firstName', 'fn3'));
@@ -194,14 +188,12 @@ void main() {
       await collection.createIndex(['birthDay']);
 
       var cursor = collection.find(
-          filter: or([
-        or([
-          where("lastName").eq("ln2"),
+        filter: or([
+          or([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
+          where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
           where("firstName").notEq("fn1"),
         ]),
-        where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
-        where("firstName").notEq("fn1")
-      ]));
+      );
 
       var findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 3);
@@ -209,15 +201,13 @@ void main() {
 
       // with distinct
       cursor = collection.find(
-          filter: or([
-            or([
-              where("lastName").eq("ln2"),
-              where("firstName").notEq("fn1"),
-            ]),
-            where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
-            where("firstName").notEq("fn1")
-          ]),
-          findOptions: distinct());
+        filter: or([
+          or([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
+          where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
+          where("firstName").notEq("fn1"),
+        ]),
+        findOptions: distinct(),
+      );
 
       findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 3);
@@ -230,14 +220,12 @@ void main() {
       await collection.createIndex(['firstName']);
 
       var cursor = collection.find(
-          filter: or([
-        or([
-          where("lastName").eq("ln2"),
+        filter: or([
+          or([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
+          where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
           where("firstName").notEq("fn1"),
         ]),
-        where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
-        where("firstName").notEq("fn1")
-      ]));
+      );
 
       var findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 0);
@@ -249,10 +237,11 @@ void main() {
       await collection.createIndex(['lastName', 'firstName']);
 
       var cursor = collection.find(
-          filter: and([
-        where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
-        where("firstName").notEq("fn1")
-      ]));
+        filter: and([
+          where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
+          where("firstName").notEq("fn1"),
+        ]),
+      );
 
       var findPlan = await cursor.findPlan;
       expect(findPlan.indexScanFilter, isNull);
@@ -267,20 +256,24 @@ void main() {
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8]).put(
-              "body",
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                  "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                  "non lorem.");
+          .put("data", [9, 4, 8])
+          .put(
+            "body",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+                "non lorem.",
+          );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(
-          filter: and([
-            where("lastName").notEq("ln1"),
-            where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
-          ]),
-          findOptions: orderBy('lastName')
-              .thenOrderBy('birthDay', SortOrder.descending));
+        filter: and([
+          where("lastName").notEq("ln1"),
+          where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z")),
+        ]),
+        findOptions: orderBy(
+          'lastName',
+        ).thenOrderBy('birthDay', SortOrder.descending),
+      );
 
       expect(await cursor.length, 3);
 
@@ -310,20 +303,24 @@ void main() {
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8]).put(
-              "body",
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                  "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                  "non lorem.");
+          .put("data", [9, 4, 8])
+          .put(
+            "body",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+                "non lorem.",
+          );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(
-          filter: and([
-            where("lastName").notEq("ln1"),
-            where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
-          ]),
-          findOptions: orderBy('lastName')
-              .thenOrderBy('birthDay', SortOrder.descending));
+        filter: and([
+          where("lastName").notEq("ln1"),
+          where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z")),
+        ]),
+        findOptions: orderBy(
+          'lastName',
+        ).thenOrderBy('birthDay', SortOrder.descending),
+      );
 
       expect(await cursor.length, 3);
 
@@ -357,26 +354,31 @@ void main() {
     });
 
     test('Test Sort Not Covered By Index', () async {
-      await collection
-          .createIndex(['lastName'], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'lastName',
+      ], indexOptions(IndexType.nonUnique));
 
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8]).put(
-              "body",
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                  "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                  "non lorem.");
+          .put("data", [9, 4, 8])
+          .put(
+            "body",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+                "non lorem.",
+          );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(
-          filter: and([
-            where("lastName").notEq("ln1"),
-            where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
-          ]),
-          findOptions: orderBy('lastName')
-              .thenOrderBy('birthDay', SortOrder.descending));
+        filter: and([
+          where("lastName").notEq("ln1"),
+          where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z")),
+        ]),
+        findOptions: orderBy(
+          'lastName',
+        ).thenOrderBy('birthDay', SortOrder.descending),
+      );
 
       expect(await cursor.length, 3);
 
@@ -415,19 +417,22 @@ void main() {
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8]).put(
-              "body",
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                  "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                  "non lorem.");
+          .put("data", [9, 4, 8])
+          .put(
+            "body",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+                "non lorem.",
+          );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(
-          filter: and([
-            where("lastName").notEq("ln1"),
-            where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
-          ]),
-          findOptions: orderBy('lastName'));
+        filter: and([
+          where("lastName").notEq("ln1"),
+          where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z")),
+        ]),
+        findOptions: orderBy('lastName'),
+      );
 
       expect(await cursor.length, 3);
 
@@ -457,22 +462,24 @@ void main() {
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8]).put(
-              "body",
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                  "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                  "non lorem.");
+          .put("data", [9, 4, 8])
+          .put(
+            "body",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+                "non lorem.",
+          );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(
-          filter: and([
-            where("lastName").notEq("ln1"),
-            where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z"))
-          ]),
-          findOptions: orderBy('lastName')
-              .thenOrderBy('birthDay', SortOrder.descending)
-              .setSkip(2)
-              .setLimit(1));
+        filter: and([
+          where("lastName").notEq("ln1"),
+          where("birthDay").notEq(DateTime.parse("2012-07-01T16:02:48.440Z")),
+        ]),
+        findOptions: orderBy(
+          'lastName',
+        ).thenOrderBy('birthDay', SortOrder.descending).setSkip(2).setLimit(1),
+      );
 
       expect(await cursor.length, 1);
 

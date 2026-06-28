@@ -18,21 +18,21 @@ class TypeToken {
   /// Uint8List
   static const byteListT = 5;
 
-  /// List<int>
+  /// `List<int>`
   static const intListT = 6;
 
-  /// List<double>
+  /// `List<double>`
   static const doubleListT = 7;
 
-  /// List<bool>
+  /// `List<bool>`
   static const boolListT = 8;
 
-  /// List<String>
+  /// `List<String>`
   static const stringListT = 9;
 
-  /// List<dynamic>
+  /// `List<dynamic>`
   static const listT = 10;
 
-  /// Map<dynamic, dynamic>
+  /// `Map<dynamic, dynamic>`
   static const mapT = 11;
 }

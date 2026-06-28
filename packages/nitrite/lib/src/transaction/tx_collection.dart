@@ -64,8 +64,11 @@ class DefaultTransactionalCollection extends NitriteCollection {
   }
 
   @override
-  Future<WriteResult> update(Filter filter, Document update,
-      [UpdateOptions? updateOptions]) async {
+  Future<WriteResult> update(
+    Filter filter,
+    Document update, [
+    UpdateOptions? updateOptions,
+  ]) async {
     if (updateOptions == null) {
       updateOptions = UpdateOptions();
       updateOptions.insertIfAbsent = false;
@@ -73,8 +76,11 @@ class DefaultTransactionalCollection extends NitriteCollection {
     }
 
     _checkOpened();
-    var result =
-        await _collectionOperations.update(filter, update, updateOptions);
+    var result = await _collectionOperations.update(
+      filter,
+      update,
+      updateOptions,
+    );
 
     var documentList = <Document>[];
 
@@ -108,18 +114,28 @@ class DefaultTransactionalCollection extends NitriteCollection {
   }
 
   @override
-  Future<WriteResult> updateOne(Document document,
-      {bool insertIfAbsent = false}) {
+  Future<WriteResult> updateOne(
+    Document document, {
+    bool insertIfAbsent = false,
+  }) {
     if (insertIfAbsent) {
-      return update(createUniqueFilter(document), document,
-          UpdateOptions(insertIfAbsent: true));
+      return update(
+        createUniqueFilter(document),
+        document,
+        UpdateOptions(insertIfAbsent: true),
+      );
     } else {
       if (document.hasId) {
-        return update(createUniqueFilter(document), document,
-            UpdateOptions(insertIfAbsent: false));
+        return update(
+          createUniqueFilter(document),
+          document,
+          UpdateOptions(insertIfAbsent: false),
+        );
       } else {
-        throw NotIdentifiableException('Update operation failed as no id value'
-            ' found for the document');
+        throw NotIdentifiableException(
+          'Update operation failed as no id value'
+          ' found for the document',
+        );
       }
     }
   }
@@ -127,8 +143,10 @@ class DefaultTransactionalCollection extends NitriteCollection {
   @override
   Future<WriteResult> removeOne(Document document) async {
     if (!document.hasId) {
-      throw NotIdentifiableException('Remove operation failed as no id value'
-          ' found for the document');
+      throw NotIdentifiableException(
+        'Remove operation failed as no id value'
+        ' found for the document',
+      );
     }
 
     _checkOpened();
@@ -155,7 +173,8 @@ class DefaultTransactionalCollection extends NitriteCollection {
   Future<WriteResult> remove(Filter filter, {bool justOne = false}) async {
     if (filter == all && justOne) {
       throw InvalidOperationException(
-          'Remove all cannot be combined with just once');
+        'Remove all cannot be combined with just once',
+      );
     }
 
     _checkOpened();
@@ -206,8 +225,10 @@ class DefaultTransactionalCollection extends NitriteCollection {
   }
 
   @override
-  Future<void> createIndex(List<String> fields,
-      [IndexOptions? indexOptions]) async {
+  Future<void> createIndex(
+    List<String> fields, [
+    IndexOptions? indexOptions,
+  ]) async {
     _checkOpened();
     await _primary.createIndex(fields, indexOptions);
   }
@@ -331,7 +352,11 @@ class DefaultTransactionalCollection extends NitriteCollection {
 
     _eventBus = EventBus();
     _collectionOperations = CollectionOperations(
-        _collectionName, _nitriteMap, nitriteConfig, _eventBus);
+      _collectionName,
+      _nitriteMap,
+      nitriteConfig,
+      _eventBus,
+    );
 
     await _collectionOperations.initialize();
   }

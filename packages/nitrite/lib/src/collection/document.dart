@@ -137,14 +137,18 @@ class _NitriteDocument extends Document {
   Document put(String field, dynamic value) {
     // field name cannot be empty or null
     if (field.isNullOrEmpty) {
-      throw InvalidOperationException("Document does not support empty "
-          "or null key.");
+      throw InvalidOperationException(
+        "Document does not support empty "
+        "or null key.",
+      );
     }
 
     // field name cannot be empty or null
     if (field == docId && !NitriteId.validId(value)) {
-      throw InvalidOperationException("_id is an auto generated value and"
-          " cannot be set");
+      throw InvalidOperationException(
+        "_id is an auto generated value and"
+        " cannot be set",
+      );
     }
 
     // if field name contains field separator, split the fields, and put the value
@@ -257,7 +261,8 @@ class _NitriteDocument extends Document {
       }
     } else {
       throw InvalidOperationException(
-          "Document merge only supports NitriteDocument");
+        "Document merge only supports NitriteDocument",
+      );
     }
     return this;
   }
@@ -290,8 +295,10 @@ class _NitriteDocument extends Document {
       return false;
     }
 
-    return DeepCollectionEquality.unordered()
-        .equals(_documentMap, other._documentMap);
+    return DeepCollectionEquality.unordered().equals(
+      _documentMap,
+      other._documentMap,
+    );
   }
 
   @override
@@ -326,8 +333,12 @@ class _NitriteDocument extends Document {
           fields.addAll(value._getFieldsInternal(pair.key));
         } else {
           // level-n fields, separated by field separator
-          fields.addAll(value._getFieldsInternal("$prefix"
-              "${NitriteConfig.fieldSeparator}${pair.key}"));
+          fields.addAll(
+            value._getFieldsInternal(
+              "$prefix"
+              "${NitriteConfig.fieldSeparator}${pair.key}",
+            ),
+          );
         }
       } else {
         // if there is no more embedded document, add the field to the list
@@ -495,14 +506,18 @@ class _NitriteDocument extends Document {
 
         // check index lower bound
         if (index < 0) {
-          throw ValidationException("Invalid index $index to access item "
-              "inside a document");
+          throw ValidationException(
+            "Invalid index $index to access item "
+            "inside a document",
+          );
         }
 
         // check index upper bound
         if (index >= value.length) {
-          throw ValidationException("Invalid index $index to access item "
-              "inside a document");
+          throw ValidationException(
+            "Invalid index $index to access item "
+            "inside a document",
+          );
         }
 
         // get the value at the index from the list

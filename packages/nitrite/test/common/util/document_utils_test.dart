@@ -12,20 +12,26 @@ void main() {
       document.put('name', 'John');
       document.put('age', '30');
       document.put(
-          'address',
-          emptyDocument()
-            ..put('street', '1st Street')
-            ..put('city', 'New York')
-            ..put('state', 'NY')
-            ..put('zip', '10001'));
+        'address',
+        emptyDocument()
+          ..put('street', '1st Street')
+          ..put('city', 'New York')
+          ..put('state', 'NY')
+          ..put('zip', '10001'),
+      );
       document.put(
-          'phone',
-          emptyDocument()
-            ..put('home', '212-555-1212')
-            ..put('cell', '212-555-1213'));
+        'phone',
+        emptyDocument()
+          ..put('home', '212-555-1212')
+          ..put('cell', '212-555-1213'),
+      );
 
-      var fields =
-          Fields.withNames(['name', 'age', 'address.zip', 'phone.home']);
+      var fields = Fields.withNames([
+        'name',
+        'age',
+        'address.zip',
+        'phone.home',
+      ]);
       var fieldValues = getDocumentValues(document, fields);
 
       expect(fieldValues.nitriteId, NitriteId.createId('1'));
@@ -58,8 +64,10 @@ void main() {
 
     test('Test SkeletonDocument with value type', () {
       var nitriteMapper = SimpleNitriteMapper();
-      expect(() => skeletonDocument<int>(nitriteMapper),
-          throwsObjectMappingException);
+      expect(
+        () => skeletonDocument<int>(nitriteMapper),
+        throwsObjectMappingException,
+      );
     });
   });
 }
@@ -77,10 +85,12 @@ class _PersonConverter extends EntityConverter<_Person> {
     _Person entity = _Person();
     entity.name = document.get('name');
     entity.age = document.get('age');
-    entity.address =
-        nitriteMapper.tryConvert<_Address, Document>(document.get('address'));
-    entity.phone =
-        nitriteMapper.tryConvert<_Phone, Document>(document.get('phone'));
+    entity.address = nitriteMapper.tryConvert<_Address, Document>(
+      document.get('address'),
+    );
+    entity.phone = nitriteMapper.tryConvert<_Phone, Document>(
+      document.get('phone'),
+    );
     return entity;
   }
 
@@ -89,10 +99,14 @@ class _PersonConverter extends EntityConverter<_Person> {
     var document = emptyDocument();
     document.put('name', entity.name);
     document.put('age', entity.age);
-    document.put('address',
-        nitriteMapper.tryConvert<Document, _Address>(entity.address));
     document.put(
-        'phone', nitriteMapper.tryConvert<Document, _Phone>(entity.phone));
+      'address',
+      nitriteMapper.tryConvert<Document, _Address>(entity.address),
+    );
+    document.put(
+      'phone',
+      nitriteMapper.tryConvert<Document, _Phone>(entity.phone),
+    );
     return document;
   }
 }

@@ -10,8 +10,10 @@ class IndexScanner {
 
   IndexScanner(this._indexMap);
 
-  Stream<NitriteId> doScan(Iterable<ComparableFilter>? filters,
-      Map<String, bool> indexScanOrder) async* {
+  Stream<NitriteId> doScan(
+    Iterable<ComparableFilter>? filters,
+    Map<String, bool> indexScanOrder,
+  ) async* {
     if (filters != null && filters.isNotEmpty) {
       // get the first filter to start scanning
       ComparableFilter comparableFilter = filters.first;
@@ -29,8 +31,9 @@ class IndexScanner {
 
       // apply the filter on the index map
       // result can be list of nitrite ids or list of navigable maps
-      var scanResult =
-          ReplayConnectableStream(comparableFilter.applyOnIndex(_indexMap));
+      var scanResult = ReplayConnectableStream(
+        comparableFilter.applyOnIndex(_indexMap),
+      );
       scanResult.connect();
 
       if (await scanResult.isEmpty) {
@@ -75,14 +78,12 @@ class IndexScanner {
       return _StreamType.nitriteId;
     } else {
       _log.fine(
-          '''Unknown stream type is encountered - ${await stream.toList()},
-       with index map - ${await _indexMap.entries().toList()}''');
+        '''Unknown stream type is encountered - ${await stream.toList()},
+       with index map - ${await _indexMap.entries().toList()}''',
+      );
       throw FilterException('Unknown stream type');
     }
   }
 }
 
-enum _StreamType {
-  nitriteId,
-  map,
-}
+enum _StreamType { nitriteId, map }

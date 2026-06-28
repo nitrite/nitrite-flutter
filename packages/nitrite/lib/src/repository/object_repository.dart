@@ -66,8 +66,11 @@ abstract class ObjectRepository<T> extends PersistentCollection<T> {
   /// **NOTE**: This operations will notify all [CollectionEventListener]
   /// instances registered to this repository with change type
   /// [EventType.update].
-  Future<WriteResult> update(Filter filter, T element,
-      [UpdateOptions? updateOptions]);
+  Future<WriteResult> update(
+    Filter filter,
+    T element, [
+    UpdateOptions? updateOptions,
+  ]);
 
   /// Update the filtered objects in the repository with the [update] document.
   ///
@@ -76,8 +79,11 @@ abstract class ObjectRepository<T> extends PersistentCollection<T> {
   /// **NOTE**: This operations will notify all [CollectionEventListener]
   /// instances registered to this repository with change type
   /// [EventType.update].
-  Future<WriteResult> updateDocument(Filter filter, Document document,
-      {bool justOnce = false});
+  Future<WriteResult> updateDocument(
+    Filter filter,
+    Document document, {
+    bool justOnce = false,
+  });
 
   /// Removes the element from the repository.
   ///

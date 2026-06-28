@@ -5,11 +5,14 @@ import 'package:nitrite/src/common/util/number_utils.dart';
 part 'test_objects.no2.dart';
 
 @Convertable(className: 'MyBookConverter')
-@Entity(name: 'books', indices: [
-  Index(fields: ['tags'], type: IndexType.nonUnique),
-  Index(fields: ['description'], type: IndexType.fullText),
-  Index(fields: ['price', 'publisher']),
-])
+@Entity(
+  name: 'books',
+  indices: [
+    Index(fields: ['tags'], type: IndexType.nonUnique),
+    Index(fields: ['description'], type: IndexType.fullText),
+    Index(fields: ['price', 'publisher']),
+  ],
+)
 class Book with _$BookEntityMixin {
   @Id(fieldName: 'book_id', embeddedFields: ['isbn', 'book_name'])
   @DocumentKey(alias: 'book_id')
@@ -23,12 +26,13 @@ class Book with _$BookEntityMixin {
 
   String? description;
 
-  Book(
-      [this.bookId,
-      this.publisher,
-      this.price,
-      this.tags = const [],
-      this.description]);
+  Book([
+    this.bookId,
+    this.publisher,
+    this.price,
+    this.tags = const [],
+    this.description,
+  ]);
 
   @override
   bool operator ==(Object other) =>
@@ -198,9 +202,11 @@ class ClassC with _$ClassCEntityMixin {
   String toString() => '{id: $id, digit: $digit, parent: $parent}';
 }
 
-@Entity(indices: [
-  Index(fields: ['companyName'])
-])
+@Entity(
+  indices: [
+    Index(fields: ['companyName']),
+  ],
+)
 class Company with _$CompanyEntityMixin {
   @Id(fieldName: 'company_id')
   @DocumentKey(alias: 'company_id')
@@ -210,12 +216,13 @@ class Company with _$CompanyEntityMixin {
   final List<String> departments;
   final Map<String, List<Employee>> employeeRecord;
 
-  Company(
-      {this.companyId = 0,
-      this.companyName = '',
-      this.dateCreated,
-      this.departments = const [],
-      this.employeeRecord = const {}});
+  Company({
+    this.companyId = 0,
+    this.companyName = '',
+    this.dateCreated,
+    this.departments = const [],
+    this.employeeRecord = const {},
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -226,8 +233,10 @@ class Company with _$CompanyEntityMixin {
           companyName == other.companyName &&
           dateCreated == other.dateCreated &&
           ListEquality().equals(departments, other.departments) &&
-          MapEquality<String, List<Employee>>()
-              .equals(employeeRecord, other.employeeRecord);
+          MapEquality<String, List<Employee>>().equals(
+            employeeRecord,
+            other.employeeRecord,
+          );
 
   @override
   int get hashCode =>
@@ -240,10 +249,7 @@ class Company with _$CompanyEntityMixin {
 
 class CompanyConverter extends EntityConverter<Company> {
   @override
-  Company fromDocument(
-    Document document,
-    NitriteMapper nitriteMapper,
-  ) {
+  Company fromDocument(Document document, NitriteMapper nitriteMapper) {
     var map = <String, List<Employee>>{};
     var employeeRecords = document['employeeRecord'] == null
         ? {}
@@ -259,8 +265,10 @@ class CompanyConverter extends EntityConverter<Company> {
       companyId: document['company_id'] ?? 0,
       companyName: document['companyName'] ?? "",
       dateCreated: document['dateCreated'],
-      departments:
-          EntityConverter.toList(document['departments'], nitriteMapper),
+      departments: EntityConverter.toList(
+        document['departments'],
+        nitriteMapper,
+      ),
       employeeRecord: map,
     );
 
@@ -268,27 +276,30 @@ class CompanyConverter extends EntityConverter<Company> {
   }
 
   @override
-  Document toDocument(
-    Company entity,
-    NitriteMapper nitriteMapper,
-  ) {
+  Document toDocument(Company entity, NitriteMapper nitriteMapper) {
     var document = emptyDocument();
     document.put('company_id', entity.companyId);
     document.put('companyName', entity.companyName);
     document.put('dateCreated', entity.dateCreated);
-    document.put('departments',
-        EntityConverter.fromList(entity.departments, nitriteMapper));
-    document.put('employeeRecord',
-        EntityConverter.fromMap(entity.employeeRecord, nitriteMapper));
+    document.put(
+      'departments',
+      EntityConverter.fromList(entity.departments, nitriteMapper),
+    );
+    document.put(
+      'employeeRecord',
+      EntityConverter.fromMap(entity.employeeRecord, nitriteMapper),
+    );
     return document;
   }
 }
 
-@Entity(indices: [
-  Index(fields: ["joinDate"], type: IndexType.nonUnique),
-  Index(fields: ["address"], type: IndexType.fullText),
-  Index(fields: ["employeeNote.text"], type: IndexType.fullText),
-])
+@Entity(
+  indices: [
+    Index(fields: ["joinDate"], type: IndexType.nonUnique),
+    Index(fields: ["address"], type: IndexType.fullText),
+    Index(fields: ["employeeNote.text"], type: IndexType.fullText),
+  ],
+)
 @Convertable()
 class Employee with _$EmployeeEntityMixin {
   @Id(fieldName: 'empId')
@@ -303,23 +314,25 @@ class Employee with _$EmployeeEntityMixin {
 
   static Employee clone(Employee employee) {
     return Employee(
-        address: employee.address,
-        blob: employee.blob,
-        company: employee.company,
-        emailAddress: employee.emailAddress,
-        empId: employee.empId,
-        joinDate: employee.joinDate,
-        employeeNote: employee.employeeNote);
+      address: employee.address,
+      blob: employee.blob,
+      company: employee.company,
+      emailAddress: employee.emailAddress,
+      empId: employee.empId,
+      joinDate: employee.joinDate,
+      employeeNote: employee.employeeNote,
+    );
   }
 
-  Employee(
-      {this.empId,
-      this.joinDate,
-      this.address = '',
-      this.emailAddress = '',
-      this.blob = const [],
-      this.company,
-      this.employeeNote});
+  Employee({
+    this.empId,
+    this.joinDate,
+    this.address = '',
+    this.emailAddress = '',
+    this.blob = const [],
+    this.company,
+    this.employeeNote,
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -457,10 +470,13 @@ class EncryptedPerson {
       expiryDate.hashCode;
 }
 
-@Entity(name: 'MyPerson', indices: [
-  Index(fields: ['name'], type: IndexType.fullText),
-  Index(fields: ['status'], type: IndexType.nonUnique)
-])
+@Entity(
+  name: 'MyPerson',
+  indices: [
+    Index(fields: ['name'], type: IndexType.fullText),
+    Index(fields: ['status'], type: IndexType.nonUnique),
+  ],
+)
 @Convertable()
 class PersonEntity with _$PersonEntityEntityMixin {
   @Id(fieldName: 'uuid')
@@ -490,11 +506,13 @@ class PersonEntity with _$PersonEntityEntityMixin {
       dateCreated.hashCode;
 }
 
-@Entity(indices: [
-  Index(fields: ['firstName']),
-  Index(fields: ['lastName'], type: IndexType.fullText),
-  Index(fields: ['age'], type: IndexType.nonUnique)
-])
+@Entity(
+  indices: [
+    Index(fields: ['firstName']),
+    Index(fields: ['lastName'], type: IndexType.fullText),
+    Index(fields: ['age'], type: IndexType.nonUnique),
+  ],
+)
 @Convertable()
 class RepeatableIndexTest with _$RepeatableIndexTestEntityMixin {
   String? firstName;
@@ -732,9 +750,11 @@ class WithTransientFieldDecorator extends EntityDecorator<WithTransientField> {
   List<EntityIndex> get indexFields => [];
 }
 
-@Entity(indices: [
-  Index(fields: ['text'], type: IndexType.fullText)
-])
+@Entity(
+  indices: [
+    Index(fields: ['text'], type: IndexType.fullText),
+  ],
+)
 @Convertable()
 class TextData with _$TextDataEntityMixin {
   int? id;
@@ -748,11 +768,13 @@ class TxData {
   String? name;
 }
 
-@Entity(indices: [
-  Index(fields: ["joinDate"], type: IndexType.nonUnique),
-  Index(fields: ["address"], type: IndexType.fullText),
-  Index(fields: ["employeeNote:text"], type: IndexType.fullText),
-])
+@Entity(
+  indices: [
+    Index(fields: ["joinDate"], type: IndexType.nonUnique),
+    Index(fields: ["address"], type: IndexType.fullText),
+    Index(fields: ["employeeNote:text"], type: IndexType.fullText),
+  ],
+)
 @Convertable()
 class EmployeeForCustomSeparator with _$EmployeeForCustomSeparatorEntityMixin {
   @Id(fieldName: 'empId')

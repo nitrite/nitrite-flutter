@@ -57,8 +57,10 @@ class Session {
   ///   await txCol.insert(document);
   /// });
   /// ```
-  Future<void> executeTransaction(Future<void> Function(Transaction tx) action,
-      {List<Type> rollbackFor = const []}) async {
+  Future<void> executeTransaction(
+    Future<void> Function(Transaction tx) action, {
+    List<Type> rollbackFor = const [],
+  }) async {
     if (!_active) {
       throw TransactionException('Session is closed');
     }
@@ -142,8 +144,10 @@ class _NitriteTransaction extends Transaction {
   }
 
   @override
-  Future<ObjectRepository<T>> getRepository<T>(
-      {EntityDecorator<T>? entityDecorator, String? key}) async {
+  Future<ObjectRepository<T>> getRepository<T>({
+    EntityDecorator<T>? entityDecorator,
+    String? key,
+  }) async {
     _checkState();
 
     var name = entityDecorator == null
@@ -156,23 +160,34 @@ class _NitriteTransaction extends Transaction {
 
     ObjectRepository<T> primary;
     if (await _nitrite.hasRepository<T>(
-        entityDecorator: entityDecorator, key: key)) {
+      entityDecorator: entityDecorator,
+      key: key,
+    )) {
       primary = await _nitrite.getRepository<T>(
-          entityDecorator: entityDecorator, key: key);
+        entityDecorator: entityDecorator,
+        key: key,
+      );
     } else {
       throw TransactionException(
-          'Repository of type ${T.runtimeType} does not exist');
+        'Repository of type ${T.runtimeType} does not exist',
+      );
     }
 
     var txMap = await _transactionStore.openMap<NitriteId, Document>(name);
     var txContext = TransactionContext(name, txMap, _transactionConfig);
     var primaryCollection = primary.documentCollection;
-    var backingCollection =
-        DefaultTransactionalCollection(primaryCollection, txContext);
+    var backingCollection = DefaultTransactionalCollection(
+      primaryCollection,
+      txContext,
+    );
     await backingCollection.initialize();
 
     var txRepository = DefaultTransactionalRepository<T>(
-        primary, backingCollection, entityDecorator, _transactionConfig);
+      primary,
+      backingCollection,
+      entityDecorator,
+      _transactionConfig,
+    );
     await txRepository.initialize();
 
     _repositoryRegistry[name] = txRepository;
@@ -210,8 +225,11 @@ class _NitriteTransaction extends Transaction {
         rethrow;
       } catch (e, stackTrace) {
         _state = TransactionState.failed;
-        throw TransactionException('Error committing transaction',
-            cause: e, stackTrace: stackTrace);
+        throw TransactionException(
+          'Error committing transaction',
+          cause: e,
+          stackTrace: stackTrace,
+        );
       } finally {
         _undoRegistry[collectionName] = undoLog!;
         txContext.active = false;
@@ -254,8 +272,11 @@ class _NitriteTransaction extends Transaction {
       await _transactionStore.close();
       await _transactionConfig.close();
     } catch (e, stackTrace) {
-      throw TransactionException('Error closing transaction',
-          cause: e, stackTrace: stackTrace);
+      throw TransactionException(
+        'Error closing transaction',
+        cause: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 

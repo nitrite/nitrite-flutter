@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Raised the minimum `nitrite` dependency to `1.1.1`, which is required for `IndexKey`.
+
 ## 1.1.1
 
 - Added support for composite indexing via `IndexKey`.

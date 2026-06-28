@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Migrated to `analyzer` 13.x, `source_gen` 4.x, `build` 4.x and `dart_style` 3.x, including the updated analyzer element model API.
+
 ## 1.1.1
 
 - Updated Nitrite to 1.1.1.

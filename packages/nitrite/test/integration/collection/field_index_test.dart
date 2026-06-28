@@ -16,7 +16,7 @@ void main() {
         ..put("books", [
           createDocument("name", "Book ABCD")..put("tag", ["tag1", "tag2"]),
           createDocument("name", "Book EFGH")..put("tag", ["tag3", "tag1"]),
-          createDocument("name", "No Tag")
+          createDocument("name", "No Tag"),
         ]);
 
       var doc2 = createDocument("name", "Bill")
@@ -24,7 +24,7 @@ void main() {
         ..put("books", [
           createDocument("name", "Book abcd")..put("tag", ["tag4", "tag5"]),
           createDocument("name", "Book wxyz")..put("tag", ["tag3", "tag1"]),
-          createDocument("name", "No Tag 2")
+          createDocument("name", "No Tag 2"),
         ]);
 
       var doc3 = createDocument("name", "John")
@@ -32,22 +32,26 @@ void main() {
         ..put("books", [
           createDocument("name", "Book Mnop")..put("tag", ["tag6", "tag2"]),
           createDocument("name", "Book ghij")..put("tag", ["tag3", "tag7"]),
-          createDocument("name", "No Tag")
+          createDocument("name", "No Tag"),
         ]);
 
       var collection = await db.getCollection('test');
       await collection.createIndex(['color']);
-      await collection
-          .createIndex(['books.tag'], indexOptions(IndexType.nonUnique));
-      await collection
-          .createIndex(['books.name'], indexOptions(IndexType.fullText));
+      await collection.createIndex([
+        'books.tag',
+      ], indexOptions(IndexType.nonUnique));
+      await collection.createIndex([
+        'books.name',
+      ], indexOptions(IndexType.fullText));
 
       var writeResult = await collection.insertMany([doc1, doc2, doc3]);
       expect(writeResult.getAffectedCount(), 3);
 
       var cursor = collection.find(filter: where('color').eq('red'));
       await expectLater(
-          cursor.first, completion(containsPair('name', 'Anindya')));
+        cursor.first,
+        completion(containsPair('name', 'Anindya')),
+      );
 
       cursor = collection.find(filter: where('books.name').text('abcd'));
       await expectLater(cursor.length, completion(2));

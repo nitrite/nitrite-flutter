@@ -8,7 +8,8 @@ import 'package:nitrite_generator/src/entity_writer.dart';
 import 'package:source_gen/source_gen.dart';
 
 class NitriteEntityGenerator extends GeneratorForAnnotation<Entity> {
-  final _dartfmt = DartFormatter();
+  final _dartfmt =
+      DartFormatter(languageVersion: DartFormatter.latestLanguageVersion);
 
   @override
   String generateForAnnotatedElement(

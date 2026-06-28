@@ -24,8 +24,10 @@ void main() {
       var nitritePluginSet = {MockNitritePlugin()};
       var nitriteModule = MockNitriteModule();
       when(nitriteModule.plugins).thenReturn(nitritePluginSet);
-      expect(() async => await pluginManager.loadModule(nitriteModule),
-          throwsPluginException);
+      expect(
+        () async => await pluginManager.loadModule(nitriteModule),
+        throwsPluginException,
+      );
       verify(nitriteModule.plugins).called(2);
     });
 

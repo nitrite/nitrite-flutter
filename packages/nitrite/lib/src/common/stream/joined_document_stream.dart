@@ -6,11 +6,16 @@ import 'package:nitrite/src/common/util/object_utils.dart';
 /// @nodoc
 class JoinedDocumentStream extends StreamView<Document> {
   JoinedDocumentStream(
-      Stream<Document> stream, DocumentCursor foreignCursor, LookUp lookup)
-      : super(_join(stream, foreignCursor, lookup));
+    Stream<Document> stream,
+    DocumentCursor foreignCursor,
+    LookUp lookup,
+  ) : super(_join(stream, foreignCursor, lookup));
 
   static Stream<Document> _join(
-      Stream<Document> stream, DocumentCursor foreignCursor, LookUp lookup) {
+    Stream<Document> stream,
+    DocumentCursor foreignCursor,
+    LookUp lookup,
+  ) {
     return stream.asyncMap((localDoc) async {
       // get the foreign document
       var newDoc = localDoc.clone();

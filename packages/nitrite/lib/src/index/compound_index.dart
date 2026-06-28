@@ -32,11 +32,12 @@ class CompoundIndex extends NitriteIndex {
 
     var filters = findPlan.indexScanFilter?.filters;
     var iMap = IndexMap(
-        compositeMap: await _findCompositeMap(),
-        compositeFieldCount: _fieldCount);
-    yield* IndexScanner(iMap)
-        .doScan(filters, findPlan.indexScanOrder)
-        .distinctUnique();
+      compositeMap: await _findCompositeMap(),
+      compositeFieldCount: _fieldCount,
+    );
+    yield* IndexScanner(
+      iMap,
+    ).doScan(filters, findPlan.indexScanOrder).distinctUnique();
   }
 
   @override
@@ -66,14 +67,18 @@ class CompoundIndex extends NitriteIndex {
   /// every stored row for that tuple, so the ceiling lands on the first such
   /// row (if any) in O(log n).
   Future<void> _checkUnique(
-      NitriteMap<IndexKey, bool> indexMap, List<DBValue> tuple, NitriteId id) async {
+    NitriteMap<IndexKey, bool> indexMap,
+    List<DBValue> tuple,
+    NitriteId id,
+  ) async {
     var ceiling = await indexMap.ceilingKey(IndexKey.lowerBound(tuple));
     if (ceiling != null &&
         ceiling.id != null &&
         ceiling.id != id &&
         _tupleEquals(ceiling.values, tuple)) {
       throw UniqueConstraintException(
-          'Unique key constraint violation for ${_indexDescriptor.fields}');
+        'Unique key constraint violation for ${_indexDescriptor.fields}',
+      );
     }
   }
 
@@ -100,8 +105,10 @@ class CompoundIndex extends NitriteIndex {
       if (value == null) {
         tail.add(DBNull.instance);
       } else if (value is Iterable) {
-        throw IndexingException('Compound multikey index is supported on the '
-            'first field of the index only');
+        throw IndexingException(
+          'Compound multikey index is supported on the '
+          'first field of the index only',
+        );
       } else if (value is Comparable) {
         tail.add(DBValue(value));
       } else {
@@ -111,16 +118,16 @@ class CompoundIndex extends NitriteIndex {
 
     if (firstValue == null) {
       return [
-        [DBNull.instance, ...tail]
+        [DBNull.instance, ...tail],
       ];
     } else if (firstValue is Iterable) {
       return [
         for (var item in firstValue)
-          [item == null ? DBNull.instance : DBValue(item), ...tail]
+          [item == null ? DBNull.instance : DBValue(item), ...tail],
       ];
     } else {
       return [
-        [DBValue(firstValue as Comparable), ...tail]
+        [DBValue(firstValue as Comparable), ...tail],
       ];
     }
   }
