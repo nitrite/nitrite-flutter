@@ -1,3 +1,7 @@
+## 2.0.0
+
+* **BREAKING CHANGE**: Upgraded minimum Dart SDK to 3.5.0 and migrated to Dart Workspaces to support Melos 8.
+
 ## 1.1.2
 
 - Corrected doc comments to satisfy the latest analysis rules.

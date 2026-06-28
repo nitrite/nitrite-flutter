@@ -1,3 +1,7 @@
+## 2.0.0
+
+* **BREAKING CHANGE**: Upgraded minimum Dart SDK to 3.5.0 and migrated to Dart Workspaces to support Melos 8.
+
 ## 1.1.2
 
 - Widened the `rxdart` dependency constraint to `^0.28.0` to support its latest version.

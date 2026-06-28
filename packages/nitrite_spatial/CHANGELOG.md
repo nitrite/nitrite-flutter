@@ -1,3 +1,7 @@
+## 2.0.0
+
+* **BREAKING CHANGE**: Upgraded minimum Dart SDK to 3.5.0 and migrated to Dart Workspaces to support Melos 8.
+
 ## 1.1.3
 
 - Added the `test` dev dependency so the package test suite compiles and runs in CI.
