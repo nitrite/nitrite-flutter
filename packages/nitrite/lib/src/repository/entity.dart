@@ -155,6 +155,7 @@ class EntityIndex {
 }
 
 @internal
+
 /// Represents an entity in the Nitrite database with metadata.
 abstract class NitriteEntity {
   /// Gets the name of the entity.

@@ -7,7 +7,7 @@ class NitriteTextIndexer extends NitriteIndexer {
   final Map<IndexDescriptor, TextIndex> _indexRegistry = {};
 
   NitriteTextIndexer([TextTokenizer? tokenizer])
-    : _tokenizer = tokenizer ?? EnglishTextTokenizer();
+      : _tokenizer = tokenizer ?? EnglishTextTokenizer();
 
   @override
   Future<void> initialize(NitriteConfig nitriteConfig) async {}

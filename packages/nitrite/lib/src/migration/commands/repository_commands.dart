@@ -6,10 +6,10 @@ import 'package:nitrite/src/migration/commands/commands.dart';
 /// @nodoc
 class RepositoryRenameCommand extends CollectionRenameCommand {
   RepositoryRenameCommand((String, String?, String, String?) arguments)
-    : super((
-        findRepositoryNameByTypeName(arguments.$1, arguments.$2),
-        findRepositoryNameByTypeName(arguments.$3, arguments.$4),
-      ));
+      : super((
+          findRepositoryNameByTypeName(arguments.$1, arguments.$2),
+          findRepositoryNameByTypeName(arguments.$3, arguments.$4),
+        ));
 }
 
 /// @nodoc

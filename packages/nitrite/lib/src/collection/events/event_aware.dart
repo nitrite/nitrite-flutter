@@ -2,8 +2,8 @@ import 'package:nitrite/nitrite.dart';
 
 /// A listener which is able to listen to any changes in a [NitriteCollection]
 /// or [ObjectRepository].
-typedef CollectionEventListener<T> =
-    void Function(CollectionEventInfo<T> event);
+typedef CollectionEventListener<T> = void Function(
+    CollectionEventInfo<T> event);
 
 /// @nodoc
 abstract class EventAware {

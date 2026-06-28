@@ -117,9 +117,9 @@ class JournalEntry {
     required ChangeType changeType,
     required TxAction commit,
     required TxAction rollback,
-  }) : _changeType = changeType,
-       _commit = commit,
-       _rollback = rollback;
+  })  : _changeType = changeType,
+        _commit = commit,
+        _rollback = rollback;
 
   ChangeType get changeType => _changeType;
   TxAction get commit => _commit;

@@ -98,7 +98,7 @@ class _DelegatedInstruction extends CollectionInstruction {
   final CollectionInstruction _delegate;
 
   _DelegatedInstruction(this._delegate)
-    : _collectionName = _delegate.collectionName;
+      : _collectionName = _delegate.collectionName;
 
   @override
   String get collectionName => _collectionName;

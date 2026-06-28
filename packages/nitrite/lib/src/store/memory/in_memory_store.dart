@@ -10,8 +10,8 @@ class InMemoryStore extends AbstractNitriteStore<InMemoryConfig> {
   bool _closed = false;
 
   InMemoryStore(super._storeConfig)
-    : _nitriteMapRegistry = <String, dynamic>{},
-      _nitriteRTreeMapRegistry = <String, dynamic>{};
+      : _nitriteMapRegistry = <String, dynamic>{},
+        _nitriteRTreeMapRegistry = <String, dynamic>{};
 
   @override
   bool get isClosed => _closed;

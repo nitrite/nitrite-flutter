@@ -12,11 +12,11 @@ class ProcessedDocumentStream extends DeferStream<Document> {
     ProcessorChain processorChain, {
     bool reusable = true,
   }) : super(
-         () => streamFactory().asyncMap(
-           (event) => _process(processorChain, event),
-         ),
-         reusable: reusable,
-       );
+          () => streamFactory().asyncMap(
+            (event) => _process(processorChain, event),
+          ),
+          reusable: reusable,
+        );
 
   static Future<Document> _process(
     ProcessorChain processorChain,

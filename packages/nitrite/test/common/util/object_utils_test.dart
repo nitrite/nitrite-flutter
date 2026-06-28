@@ -286,8 +286,8 @@ class _BDecorator extends EntityDecorator<_B> {
 
   @override
   List<EntityIndex> get indexFields => [
-    EntityIndex(["value"], IndexType.nonUnique),
-  ];
+        EntityIndex(["value"], IndexType.nonUnique),
+      ];
 }
 
 class _CDecorator implements EntityDecorator<_C> {

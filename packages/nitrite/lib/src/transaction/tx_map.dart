@@ -18,9 +18,9 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
   bool _cleared = false;
 
   TransactionalMap(this._mapName, NitriteMap<K, V>? primaryMap, this._store)
-    : _primaryMap = primaryMap ?? InMemoryMap<K, V>(_mapName, _store),
-      _backingMap = InMemoryMap<K, V>(_mapName, _store),
-      _tombstones = <K>{};
+      : _primaryMap = primaryMap ?? InMemoryMap<K, V>(_mapName, _store),
+        _backingMap = InMemoryMap<K, V>(_mapName, _store),
+        _tombstones = <K>{};
 
   @override
   String get name => _mapName;
@@ -153,8 +153,8 @@ class TransactionalMap<K, V> extends NitriteMap<K, V> {
 
     return ConcatStream([
       _primaryMap.reversedEntries().where(
-        (entry) => !_tombstones.contains(entry.$1),
-      ),
+            (entry) => !_tombstones.contains(entry.$1),
+          ),
       _backingMap.reversedEntries(),
     ]);
   }

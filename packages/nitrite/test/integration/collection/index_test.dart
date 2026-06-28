@@ -127,9 +127,8 @@ void main() {
       var doc = createDocument('firstName', null)
           .put('lastName', 'ln1')
           .put('birthDay', null)
-          .put('data', [1, 2, 3])
-          .put('list', ['one', 'two', 'three'])
-          .put('body', 'a quick brown fox jump over the lazy dog');
+          .put('data', [1, 2, 3]).put('list', ['one', 'two', 'three']).put(
+              'body', 'a quick brown fox jump over the lazy dog');
       await collection.insert(doc);
     });
 

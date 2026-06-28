@@ -110,8 +110,8 @@ class RenameFieldCommand extends BaseCommand {
     try {
       await indexManager.initialize();
       var oldField = Fields.withNames([oldName]);
-      var matchingIndexDescriptors = await indexManager
-          .findMatchingIndexDescriptors(oldField);
+      var matchingIndexDescriptors =
+          await indexManager.findMatchingIndexDescriptors(oldField);
 
       await for (var pair in nitriteMap!.entries()) {
         var document = pair.$2;

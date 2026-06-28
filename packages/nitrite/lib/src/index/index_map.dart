@@ -27,10 +27,10 @@ class IndexMap {
     Map<dynamic, dynamic>? subMap,
     NitriteMap<IndexKey, bool>? compositeMap,
     int compositeFieldCount = 1,
-  }) : _nitriteMap = nitriteMap,
-       _compositeMap = compositeMap,
-       _compositeFieldCount = compositeFieldCount,
-       _navigableMap = SplayTreeMapEx.fromMap(subMap);
+  })  : _nitriteMap = nitriteMap,
+        _compositeMap = compositeMap,
+        _compositeFieldCount = compositeFieldCount,
+        _navigableMap = SplayTreeMapEx.fromMap(subMap);
 
   set reverseScan(bool reverseScan) {
     _reverseScan = reverseScan;

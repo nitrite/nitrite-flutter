@@ -286,9 +286,8 @@ void main() {
 
       var cursor = collection.find(findOptions: orderBy('birthDay'));
       expect(await cursor.length, 3);
-      var dateList = await cursor
-          .map((doc) => doc['birthDay'] as DateTime)
-          .toList();
+      var dateList =
+          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
       expect(isListSorted(dateList, true), isTrue);
     });
 
@@ -300,9 +299,8 @@ void main() {
         findOptions: orderBy('birthDay', SortOrder.descending),
       );
       expect(await cursor.length, 3);
-      var dateList = await cursor
-          .map((doc) => doc['birthDay'] as DateTime)
-          .toList();
+      var dateList =
+          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
       expect(isListSorted(dateList, false), isTrue);
     });
 
@@ -317,27 +315,24 @@ void main() {
         ).setSkip(1).setLimit(2),
       );
       expect(await cursor.length, 2);
-      var dateList = await cursor
-          .map((doc) => doc['birthDay'] as DateTime)
-          .toList();
+      var dateList =
+          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
       expect(isListSorted(dateList, false), isTrue);
 
       cursor = collection.find(
         findOptions: orderBy('birthDay').setSkip(1).setLimit(2),
       );
       expect(await cursor.length, 2);
-      dateList = await cursor
-          .map((doc) => doc['birthDay'] as DateTime)
-          .toList();
+      dateList =
+          await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
       expect(isListSorted(dateList, true), isTrue);
 
       cursor = collection.find(
         findOptions: orderBy('firstName').setSkip(0).setLimit(30),
       );
       expect(await cursor.length, 3);
-      var nameList = await cursor
-          .map((doc) => doc['firstName'] as String)
-          .toList();
+      var nameList =
+          await cursor.map((doc) => doc['firstName'] as String).toList();
       expect(isListSorted(nameList, true), isTrue);
     });
 

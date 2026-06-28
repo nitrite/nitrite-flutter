@@ -97,7 +97,7 @@ class _DatabaseInstruction extends DatabaseInstruction {
   final Queue<MigrationStep> _migrationSteps;
 
   _DatabaseInstruction(this._migrationSteps, NitriteMapper _nitriteMapper)
-    : super(_nitriteMapper);
+      : super(_nitriteMapper);
 
   @override
   void addStep(MigrationStep step) {

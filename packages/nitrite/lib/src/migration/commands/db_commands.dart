@@ -56,7 +56,7 @@ class DropCollectionCommand extends BaseCommand {
 /// @nodoc
 class DropRepositoryCommand extends DropCollectionCommand {
   DropRepositoryCommand((String, String?) arguments)
-    : super(findRepositoryNameByTypeName(arguments.$1, arguments.$2));
+      : super(findRepositoryNameByTypeName(arguments.$1, arguments.$2));
 }
 
 /// @nodoc

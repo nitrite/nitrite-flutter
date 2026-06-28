@@ -18,7 +18,8 @@ class UpdateOptions {
 UpdateOptions updateOptions({
   bool insertIfAbsent = false,
   bool justOnce = false,
-}) => UpdateOptions(insertIfAbsent: insertIfAbsent, justOnce: justOnce);
+}) =>
+    UpdateOptions(insertIfAbsent: insertIfAbsent, justOnce: justOnce);
 
 /// Creates a new instance of [FindOptions] with sorting order set to
 /// [fieldName] and [sortOrder].

@@ -45,10 +45,13 @@ class NitriteIsolate {
   /// returns a sendable handle to it.
   static Future<NitriteIsolate> spawn(NitriteOpener factory) async {
     var init = ReceivePort();
-    await Isolate.spawn(_ownerMain, (
-      init.sendPort,
-      factory,
-    ), debugName: 'nitrite-owner');
+    await Isolate.spawn(
+        _ownerMain,
+        (
+          init.sendPort,
+          factory,
+        ),
+        debugName: 'nitrite-owner');
     var first = await init.first;
     init.close();
     if (first is SendPort) {
@@ -116,7 +119,8 @@ class IsolateCollection {
   Future<void> createIndex(
     List<String> fields, [
     IndexOptions? indexOptions,
-  ]) async => await _iso._request('createIndex', _name, (fields, indexOptions));
+  ]) async =>
+      await _iso._request('createIndex', _name, (fields, indexOptions));
 }
 
 /// Owner-isolate entry point: opens the database, then serves commands from a

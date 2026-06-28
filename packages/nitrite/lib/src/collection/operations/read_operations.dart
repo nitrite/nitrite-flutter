@@ -38,8 +38,8 @@ class ReadOperations {
     _prepareFilter(filter);
 
     return _createCursor(() async {
-      Iterable<IndexDescriptor> indexDescriptors = await _indexOperations
-          .listIndexes();
+      Iterable<IndexDescriptor> indexDescriptors =
+          await _indexOperations.listIndexes();
 
       var findPlan = _findOptimizer.optimize(
         filter!,

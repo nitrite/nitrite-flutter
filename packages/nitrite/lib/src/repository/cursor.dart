@@ -59,7 +59,7 @@ class ObjectCursor<T> extends Cursor<T> {
   final NitriteMapper _nitriteMapper;
 
   ObjectCursor(this._documentCursor, this._nitriteMapper)
-    : super(MutatedObjectStream(_documentCursor, _nitriteMapper, false));
+      : super(MutatedObjectStream(_documentCursor, _nitriteMapper, false));
 
   @override
   Future<FindPlan> get findPlan => _documentCursor.findPlan;

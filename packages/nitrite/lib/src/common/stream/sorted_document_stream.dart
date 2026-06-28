@@ -5,7 +5,7 @@ import 'package:nitrite/nitrite.dart';
 /// @nodoc
 class SortedDocumentStream extends StreamView<Document> {
   SortedDocumentStream(FindPlan findPlan, Stream<Document> rawStream)
-    : super(_sort(findPlan, rawStream));
+      : super(_sort(findPlan, rawStream));
 
   static Stream<Document> _sort(
     FindPlan findPlan,

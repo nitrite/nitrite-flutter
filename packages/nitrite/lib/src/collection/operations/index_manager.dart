@@ -11,7 +11,7 @@ class IndexManager {
   late NitriteMap<Fields, Document> _indexMetaMap;
 
   IndexManager(this._collectionName, this._nitriteConfig)
-    : _nitriteStore = _nitriteConfig.getNitriteStore();
+      : _nitriteStore = _nitriteConfig.getNitriteStore();
 
   Future<void> initialize() async {
     var mapName = deriveIndexMetaMapName(_collectionName);
@@ -119,9 +119,8 @@ class IndexManager {
 
   Future<void> dropIndexDescriptor(Fields fields) async {
     var indexMetaDoc = await _indexMetaMap[fields];
-    var indexMeta = indexMetaDoc == null
-        ? null
-        : IndexMeta.fromDocument(indexMetaDoc);
+    var indexMeta =
+        indexMetaDoc == null ? null : IndexMeta.fromDocument(indexMetaDoc);
     if (indexMeta != null) {
       var indexMapName = indexMeta.indexMap;
       if (indexMapName != null) {

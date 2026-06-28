@@ -282,7 +282,7 @@ class TextFilter extends StringFilter {
 
 class _BetweenFilter<T> extends AndFilter {
   _BetweenFilter(String field, _Bound<T> bound)
-    : super(<Filter>[_rhs(field, bound), _lhs(field, bound)]);
+      : super(<Filter>[_rhs(field, bound), _lhs(field, bound)]);
 
   static Filter _rhs<R>(String field, _Bound<R> bound) {
     _validateBound(bound);
@@ -529,7 +529,7 @@ class _LesserThanFilter extends SortingAwareFilter {
 
 class _NotEqualsFilter extends ComparableFilter {
   _NotEqualsFilter(String field, dynamic value)
-    : super(field, _wrapNull(value));
+      : super(field, _wrapNull(value));
 
   @override
   bool apply(Document doc) {
@@ -863,7 +863,7 @@ class BoundedRangeFilter extends SortingAwareFilter {
   final SortingAwareFilter _upper;
 
   BoundedRangeFilter(String field, this._lower, this._upper)
-    : super(field, _lower.value);
+      : super(field, _lower.value);
 
   /// The original lower-bound filter absorbed into this range.
   SortingAwareFilter get lowerBound => _lower;

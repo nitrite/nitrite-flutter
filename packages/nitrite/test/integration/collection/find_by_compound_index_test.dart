@@ -256,13 +256,12 @@ void main() {
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8])
-          .put(
-            "body",
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                "non lorem.",
-          );
+          .put("data", [9, 4, 8]).put(
+        "body",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+            "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+            "non lorem.",
+      );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(
@@ -303,13 +302,12 @@ void main() {
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8])
-          .put(
-            "body",
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                "non lorem.",
-          );
+          .put("data", [9, 4, 8]).put(
+        "body",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+            "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+            "non lorem.",
+      );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(
@@ -361,13 +359,12 @@ void main() {
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8])
-          .put(
-            "body",
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                "non lorem.",
-          );
+          .put("data", [9, 4, 8]).put(
+        "body",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+            "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+            "non lorem.",
+      );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(
@@ -417,13 +414,12 @@ void main() {
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8])
-          .put(
-            "body",
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                "non lorem.",
-          );
+          .put("data", [9, 4, 8]).put(
+        "body",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+            "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+            "non lorem.",
+      );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(
@@ -462,13 +458,12 @@ void main() {
       var doc = createDocument("firstName", "fn4")
           .put("lastName", "ln3")
           .put("birthDay", DateTime.parse("2016-04-17T16:02:48.440Z"))
-          .put("data", [9, 4, 8])
-          .put(
-            "body",
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
-                "non lorem.",
-          );
+          .put("data", [9, 4, 8]).put(
+        "body",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+            "Sed nunc mi, mattis ullamcorper dignissim vitae, condimentum "
+            "non lorem.",
+      );
 
       await collection.insertMany([doc, doc3, doc1, doc2]);
       var cursor = collection.find(

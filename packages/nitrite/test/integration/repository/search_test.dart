@@ -26,9 +26,8 @@ void main() {
 
     test('Test Employee Projection', () async {
       var employeeList = await (employeeRepository.find()).toList();
-      var subEmployeeList = await (employeeRepository.find())
-          .project<SubEmployee>()
-          .toList();
+      var subEmployeeList =
+          await (employeeRepository.find()).project<SubEmployee>().toList();
       expect(employeeList, isNotEmpty);
       expect(subEmployeeList, isNotEmpty);
       expect(employeeList.length, subEmployeeList.length);

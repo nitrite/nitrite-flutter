@@ -29,8 +29,8 @@ class IndexKey implements Comparable<IndexKey> {
 
   /// A real, stored single-field `(value, id)` entry.
   IndexKey(DBValue value, NitriteId this.id)
-    : values = [value],
-      _bound = _Bound.exact;
+      : values = [value],
+        _bound = _Bound.exact;
 
   /// A real, stored compound `(values…, id)` entry.
   IndexKey.compound(this.values, NitriteId this.id) : _bound = _Bound.exact;
@@ -51,10 +51,10 @@ class IndexKey implements Comparable<IndexKey> {
   DBValue get value => values.first;
 
   int get _boundRank => switch (_bound) {
-    _Bound.lower => -1,
-    _Bound.exact => 0,
-    _Bound.upper => 1,
-  };
+        _Bound.lower => -1,
+        _Bound.exact => 0,
+        _Bound.upper => 1,
+      };
 
   @override
   int compareTo(IndexKey other) {

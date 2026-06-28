@@ -5,11 +5,10 @@ class NitriteException implements Exception {
   final dynamic cause;
 
   NitriteException(this.message, {StackTrace? stackTrace, this.cause})
-    : stackTrace = stackTrace ?? StackTrace.current;
+      : stackTrace = stackTrace ?? StackTrace.current;
 
   @override
-  String toString() =>
-      '${runtimeType.toString()}: $message\n$stackTrace'
+  String toString() => '${runtimeType.toString()}: $message\n$stackTrace'
       '${cause != null ? "\nCaused by: $cause" : ""}';
 }
 

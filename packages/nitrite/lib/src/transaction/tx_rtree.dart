@@ -13,8 +13,8 @@ class TransactionalRTree<Key extends BoundingBox, Value>
     this._mapName,
     NitriteRTree<Key, Value>? primaryRTree,
     this._store,
-  ) : _primaryRTree = primaryRTree!,
-      _map = <SpatialKey, Key>{};
+  )   : _primaryRTree = primaryRTree!,
+        _map = <SpatialKey, Key>{};
 
   @override
   Future<int> size() async => _map.length;

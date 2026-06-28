@@ -52,8 +52,8 @@ abstract class DatabaseInstruction implements Instruction {
   }) {
     var derivedName = entityName == null || entityName.isEmpty
         ? entityDecorator != null
-              ? entityDecorator.entityName
-              : getEntityName<T>(_nitriteMapper)
+            ? entityDecorator.entityName
+            : getEntityName<T>(_nitriteMapper)
         : entityName;
 
     MigrationStep migrationStep = MigrationStep(

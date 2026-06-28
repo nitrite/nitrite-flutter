@@ -334,9 +334,8 @@ void main() {
       var updateResult = await coll.updateOne(update);
 
       expect(updateResult.getAffectedCount(), 1);
-      var updatedDoc = await coll
-          .find(filter: where("_id").eq(id.idValue))
-          .first;
+      var updatedDoc =
+          await coll.find(filter: where("_id").eq(id.idValue)).first;
       expect(updatedDoc, isNotNull);
       expect(updatedDoc["fruitType"], "citric");
     });

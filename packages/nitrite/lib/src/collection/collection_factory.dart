@@ -362,8 +362,7 @@ class _DefaultNitriteCollection extends NitriteCollection {
   }
 
   void _checkOpened() {
-    var opened =
-        !_nitriteStore.isClosed &&
+    var opened = !_nitriteStore.isClosed &&
         !_isDropped &&
         !_nitriteMap.isClosed &&
         !_nitriteMap.isDropped;

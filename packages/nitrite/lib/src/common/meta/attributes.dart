@@ -61,8 +61,8 @@ class Attributes {
   ///   The method is returning an object of type [Attributes].
   Attributes set(String key, String value) {
     _attributes[key] = value;
-    _attributes[lastModifiedTime] = DateTime.now().millisecondsSinceEpoch
-        .toString();
+    _attributes[lastModifiedTime] =
+        DateTime.now().millisecondsSinceEpoch.toString();
     return this;
   }
 

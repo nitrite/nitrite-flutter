@@ -106,15 +106,16 @@ class FluentFilter {
     Comparable upperBound, {
     upperInclusive = true,
     lowerInclusive = true,
-  }) => _BetweenFilter(
-    _field,
-    _Bound(
-      upperBound,
-      lowerBound,
-      upperInclusive: upperInclusive,
-      lowerInclusive: lowerInclusive,
-    ),
-  );
+  }) =>
+      _BetweenFilter(
+        _field,
+        _Bound(
+          upperBound,
+          lowerBound,
+          upperInclusive: upperInclusive,
+          lowerInclusive: lowerInclusive,
+        ),
+      );
 
   /// Returns a filter which performs a text search on the content of
   /// the field indexed with a full-text index.

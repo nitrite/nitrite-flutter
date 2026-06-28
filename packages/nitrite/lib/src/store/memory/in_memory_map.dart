@@ -14,7 +14,7 @@ class InMemoryMap<Key, Value> extends NitriteMap<Key, Value> {
   bool _closedFlag = false;
 
   InMemoryMap(this._mapName, this._nitriteStore)
-    : _backingMap = SplayTreeMap<Key, Value>(_comp);
+      : _backingMap = SplayTreeMap<Key, Value>(_comp);
 
   @override
   String get name => _mapName;

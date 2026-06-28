@@ -700,9 +700,7 @@ void main() {
 
       await collection.insert(doc);
       cursor = collection.find(
-        filter: where('revision')
-            .gte(1482225343160)
-            .and(
+        filter: where('revision').gte(1482225343160).and(
               where(
                 'revision',
               ).lte(1482225343162).and(where('revision').notEq(null)),

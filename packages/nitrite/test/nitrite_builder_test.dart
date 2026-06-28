@@ -18,9 +18,9 @@ void main() {
 
       var document =
           createDocument('address', createDocument('street', 'ABCD Road')).put(
-            'colorCodes',
-            [createDocument('color', 'Red'), createDocument('color', 'Green')],
-          );
+        'colorCodes',
+        [createDocument('color', 'Red'), createDocument('color', 'Green')],
+      );
 
       var street = document['address::street'] as String?;
       expect(street, 'ABCD Road');
