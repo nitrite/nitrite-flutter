@@ -52,7 +52,8 @@ final Matcher throwsNitriteSecurityException =
 final Matcher throwsMigrationException = throwsA(isMigrationException);
 final Matcher throwsTransactionException = throwsA(isTransactionException);
 
-bool isListSorted<T extends Comparable<T>>(Iterable<T> iterable, bool ascending) {
+bool isListSorted<T extends Comparable<T>>(
+    Iterable<T> iterable, bool ascending) {
   var iterator = iterable.iterator;
   if (!iterator.moveNext()) {
     return true;
