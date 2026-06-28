@@ -258,7 +258,7 @@ void main() {
       expect(await cursor.length, 3);
       var dateList =
           await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
-      expect(isSorted(dateList, true), isTrue);
+      expect(isListSorted(dateList, true), isTrue);
     });
 
     test('Test Find by Indexed Sort Descending', () async {
@@ -270,7 +270,7 @@ void main() {
       expect(await cursor.length, 3);
       var dateList =
           await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
-      expect(isSorted(dateList, false), isTrue);
+      expect(isListSorted(dateList, false), isTrue);
     });
 
     test('Test Find by Index Limit & Sort', () async {
@@ -283,21 +283,21 @@ void main() {
       expect(await cursor.length, 2);
       var dateList =
           await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
-      expect(isSorted(dateList, false), isTrue);
+      expect(isListSorted(dateList, false), isTrue);
 
       cursor = collection.find(
           findOptions: orderBy('birthDay').setSkip(1).setLimit(2));
       expect(await cursor.length, 2);
       dateList =
           await cursor.map((doc) => doc['birthDay'] as DateTime).toList();
-      expect(isSorted(dateList, true), isTrue);
+      expect(isListSorted(dateList, true), isTrue);
 
       cursor = collection.find(
           findOptions: orderBy('firstName').setSkip(0).setLimit(30));
       expect(await cursor.length, 3);
       var nameList =
           await cursor.map((doc) => doc['firstName'] as String).toList();
-      expect(isSorted(nameList, true), isTrue);
+      expect(isListSorted(nameList, true), isTrue);
     });
 
     test('Test Find After Dropped Index', () async {

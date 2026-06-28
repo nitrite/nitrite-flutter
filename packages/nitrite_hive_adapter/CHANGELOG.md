@@ -1,3 +1,7 @@
+## 1.1.3
+
+- Renamed the `isSorted` test helper to avoid a name collision with the latest `matcher` package so the test suite compiles in CI.
+
 ## 1.1.2
 
 - Raised the minimum `nitrite` dependency to `1.1.1`, which is required for `IndexKey`.

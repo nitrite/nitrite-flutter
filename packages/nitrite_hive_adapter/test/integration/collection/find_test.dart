@@ -186,7 +186,7 @@ void main() {
         dateList.add(document.get('birthDay') as DateTime);
       }
 
-      expect(isSorted<DateTime>(dateList, true), isTrue);
+      expect(isListSorted<DateTime>(dateList, true), isTrue);
     });
 
     test("Test Find with Sort Descending", () async {
@@ -200,7 +200,7 @@ void main() {
         dateList.add(document.get('birthDay') as DateTime);
       }
 
-      expect(isSorted<DateTime>(dateList, false), isTrue);
+      expect(isListSorted<DateTime>(dateList, false), isTrue);
     });
 
     test("Test Find with Limit & Sort", () async {
@@ -214,7 +214,7 @@ void main() {
       await for (var document in cursor) {
         dateList.add(document.get('birthDay') as DateTime);
       }
-      expect(isSorted<DateTime>(dateList, false), isTrue);
+      expect(isListSorted<DateTime>(dateList, false), isTrue);
 
       cursor = collection.find(
           findOptions: orderBy('birthDay').setSkip(1).setLimit(2));
@@ -223,7 +223,7 @@ void main() {
       await for (var document in cursor) {
         dateList.add(document.get('birthDay') as DateTime);
       }
-      expect(isSorted<DateTime>(dateList, true), isTrue);
+      expect(isListSorted<DateTime>(dateList, true), isTrue);
 
       cursor = collection.find(
           findOptions: orderBy('firstName').setSkip(0).setLimit(30));
@@ -232,7 +232,7 @@ void main() {
       await for (var document in cursor) {
         nameList.add(document.get('firstName') as String);
       }
-      expect(isSorted<String>(nameList, true), isTrue);
+      expect(isListSorted<String>(nameList, true), isTrue);
     });
 
     test("Test Find with Sort on NonExisting Field", () async {
@@ -246,7 +246,7 @@ void main() {
       await for (var document in cursor) {
         dateList.add(document.get('birthDay') as DateTime);
       }
-      expect(isSorted<DateTime>(dateList, false), isFalse);
+      expect(isListSorted<DateTime>(dateList, false), isFalse);
     });
 
     test("Test Find with Invalid Field", () async {
