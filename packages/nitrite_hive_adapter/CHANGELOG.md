@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Spatial queries on the Hive store now use an in-memory packed R-tree hydrated from the durable box, replacing the per-query linear key scan with `O(log n + result)` lookups. Query results are unchanged.
+
 ## 2.0.0
 
 * **BREAKING CHANGE**: Upgraded minimum Dart SDK to 3.5.0 and migrated to Dart Workspaces to support Melos 8.

@@ -3,7 +3,7 @@ import 'package:nitrite/nitrite.dart';
 /// @nodoc
 class InMemoryRTree<Key extends BoundingBox, Value>
     extends NitriteRTree<Key, Value> {
-  final Map<SpatialKey, Key?> _backingMap = <SpatialKey, Key?>{};
+  final SpatialRTree _tree = SpatialRTree();
   final NitriteStore _nitriteStore;
   final String _mapName;
 
@@ -15,15 +15,14 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   @override
   Future<int> size() async {
     _checkOpened();
-    return _backingMap.length;
+    return _tree.size;
   }
 
   @override
   Future<void> add(Key? key, NitriteId? value) async {
     _checkOpened();
     if (value != null) {
-      var spatialKey = _getKey(key, int.parse(value.idValue));
-      _backingMap[spatialKey] = key;
+      _tree.put(_getKey(key, int.parse(value.idValue)));
     }
   }
 
@@ -31,32 +30,25 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   Future<void> remove(Key? key, NitriteId? value) async {
     _checkOpened();
     if (value != null) {
-      var spatialKey = _getKey(key, int.parse(value.idValue));
-      _backingMap.remove(spatialKey);
+      _tree.removeId(int.parse(value.idValue));
     }
   }
 
   @override
   Stream<NitriteId> findIntersectingKeys(Key? key) async* {
     _checkOpened();
-    var spatialKey = _getKey(key, 0);
-
-    for (var sk in _backingMap.keys) {
-      if (_isOverlap(sk, spatialKey)) {
-        yield NitriteId.createId(sk.id.toString());
-      }
+    var query = _getKey(key, 0);
+    for (var id in _tree.intersecting(query)) {
+      yield NitriteId.createId(id.toString());
     }
   }
 
   @override
   Stream<NitriteId> findContainedKeys(Key? key) async* {
     _checkOpened();
-    var spatialKey = _getKey(key, 0);
-
-    for (var sk in _backingMap.keys) {
-      if (_isInside(sk, spatialKey)) {
-        yield NitriteId.createId(sk.id.toString());
-      }
+    var query = _getKey(key, 0);
+    for (var id in _tree.contained(query)) {
+      yield NitriteId.createId(id.toString());
     }
   }
 
@@ -68,8 +60,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
     double? maxDistance,
   ]) async* {
     _checkOpened();
-    if (k <= 0) return;
-    for (var id in nearestNeighborIds(_backingMap.keys, x, y, k, maxDistance)) {
+    for (var id in _tree.nearest(x, y, k, maxDistance)) {
       yield NitriteId.createId(id.toString());
     }
   }
@@ -77,7 +68,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   @override
   Future<void> clear() async {
     _checkOpened();
-    _backingMap.clear();
+    _tree.clear();
     await _nitriteStore.closeRTree(_mapName);
   }
 
@@ -91,7 +82,7 @@ class InMemoryRTree<Key extends BoundingBox, Value>
   Future<void> drop() async {
     _checkOpened();
     _droppedFlag = true;
-    _backingMap.clear();
+    _tree.clear();
     await _nitriteStore.removeRTree(_mapName);
   }
 
@@ -100,34 +91,6 @@ class InMemoryRTree<Key extends BoundingBox, Value>
       return SpatialKey(id, []);
     }
     return SpatialKey(id, [key.minX, key.maxX, key.minY, key.maxY]);
-  }
-
-  bool _isOverlap(SpatialKey a, SpatialKey b) {
-    if (a.isNull() || b.isNull()) {
-      return false;
-    }
-
-    for (var i = 0; i < 2; i++) {
-      if (a.max(i) < b.min(i) || a.min(i) > b.max(i)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  bool _isInside(SpatialKey a, SpatialKey b) {
-    if (a.isNull() || b.isNull()) {
-      return false;
-    }
-
-    for (var i = 0; i < 2; i++) {
-      if (a.min(i) <= b.min(i) || a.max(i) >= b.max(i)) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   void _checkOpened() {

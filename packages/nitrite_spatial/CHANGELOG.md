@@ -1,3 +1,8 @@
+## 2.0.1
+
+- Spatial queries (intersects/within/nearest) now run on a packed R-tree provided by `nitrite` and `nitrite_hive_adapter` 2.0.1, replacing the per-query linear scan with `O(log n + result)` lookups. Query results are unchanged.
+- Raised `nitrite`, `nitrite_hive_adapter` and `nitrite_generator` dependencies to `^2.0.1`.
+
 ## 2.0.0
 
 * **BREAKING CHANGE**: Upgraded minimum Dart SDK to 3.5.0 and migrated to Dart Workspaces to support Melos 8.

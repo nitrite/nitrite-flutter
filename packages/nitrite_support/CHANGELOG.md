@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Maintenance release: raised `nitrite`, `nitrite_hive_adapter` and `nitrite_generator` dependencies to `^2.0.1`.
+
 ## 2.0.0
 
 * **BREAKING CHANGE**: Upgraded minimum Dart SDK to 3.5.0 and migrated to Dart Workspaces to support Melos 8.
