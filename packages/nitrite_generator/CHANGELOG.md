@@ -1,3 +1,7 @@
+## 2.0.0
+
+* **BREAKING CHANGE**: Upgraded minimum Dart SDK to 3.5.0 and migrated to Dart Workspaces to support Melos 8.
+
 ## 1.1.2
 
 - Migrated to `analyzer` 13.x, `source_gen` 4.x, `build` 4.x and `dart_style` 3.x, including the updated analyzer element model API.
