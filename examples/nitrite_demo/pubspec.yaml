@@ -23,7 +23,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
   riverpod_generator: ^4.0.0
   build_runner: ^2.4.6
   nitrite_generator: ^2.0.0
