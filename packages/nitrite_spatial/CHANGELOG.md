@@ -1,3 +1,9 @@
+## 2.1.0
+
+ - **FIX**(spatial): add test dev dependency to fix CI build. ([4b9b499c](https://github.com/nitrite/nitrite-flutter/commit/4b9b499cadadfd8f615ede29ede588f476f96b52))
+ - **FEAT**(spatial): packed R-tree for spatial index, release 2.0.1. ([50ad30d7](https://github.com/nitrite/nitrite-flutter/commit/50ad30d7bce6d3de1d388677ea91632d6be91fde))
+ - **FEAT**: add count method to DocumentCursor and Cursor for efficient document counting. ([994c31a7](https://github.com/nitrite/nitrite-flutter/commit/994c31a7c94b456eac2765a2200968a1dfab4745))
+
 ## 2.0.1
 
 - Spatial queries (intersects/within/nearest) now run on a packed R-tree provided by `nitrite` and `nitrite_hive_adapter` 2.0.1, replacing the per-query linear scan with `O(log n + result)` lookups. Query results are unchanged.

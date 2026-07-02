@@ -1,3 +1,7 @@
+## 2.1.0
+
+ - **FEAT**(spatial): packed R-tree for spatial index, release 2.0.1. ([50ad30d7](https://github.com/nitrite/nitrite-flutter/commit/50ad30d7bce6d3de1d388677ea91632d6be91fde))
+
 ## 2.0.1
 
 - Maintenance release: raised `nitrite` dependency to `^2.0.1`.

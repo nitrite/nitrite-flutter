@@ -3,7 +3,7 @@ description: A simple Flutter project to demonstrate Nitrite database usage.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 2.0.0
+version: 2.0.1
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
@@ -15,8 +15,8 @@ dependencies:
   flutter_slidable: ^4.0.3
   flutter_riverpod: ^3.0.0
   riverpod_annotation: ^4.0.0
-  nitrite: ^2.0.0
-  nitrite_hive_adapter: ^2.0.0
+  nitrite: ^2.1.0
+  nitrite_hive_adapter: ^2.1.0
   path_provider: ^2.0.15
   uuid: ^4.2.0
 
@@ -26,7 +26,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   riverpod_generator: ^4.0.0
   build_runner: ^2.4.6
-  nitrite_generator: ^2.0.0
+  nitrite_generator: ^2.1.0
   icons_launcher: ^3.1.0
 
 flutter:
