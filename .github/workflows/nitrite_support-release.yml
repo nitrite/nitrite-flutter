@@ -3,7 +3,7 @@ name: Release Nitrite Support
 on:
   push:
     tags:
-      - 'nitrite_support-[0-9]+.[0-9]+.[0-9]+*'
+      - 'nitrite_support-v?[0-9]+.[0-9]+.[0-9]+*'
 
 jobs:
   publish:
