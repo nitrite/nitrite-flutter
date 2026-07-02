@@ -36,12 +36,16 @@ class SortedDocumentStream extends StreamView<Document> {
 
       // handle null values
       int result;
-      if ((aValue == null || aValue is DBNull) && bValue != null) {
+      var aIsNull = aValue == null || aValue is DBNull;
+      var bIsNull = bValue == null || bValue is DBNull;
+      if (aIsNull && bIsNull) {
+        // two null keys are equal, otherwise the comparator violates
+        // antisymmetry and the sort result is undefined
+        result = 0;
+      } else if (aIsNull) {
         result = -1;
-      } else if (aValue != null && (bValue == null || bValue is DBNull)) {
+      } else if (bIsNull) {
         result = 1;
-      } else if (aValue == null) {
-        result = -1;
       } else {
         // validate comparable
         if (aValue is! Comparable || bValue is! Comparable) {

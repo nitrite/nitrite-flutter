@@ -464,7 +464,10 @@ class _LesserEqualFilter extends SortingAwareFilter {
         floorKey = await indexMap.lowerKey(floorKey);
       }
     } else {
-      var firstKey = await indexMap.firstKey();
+      // seed from the first non-null key; firstKey() would return null for
+      // the leading null key when the index contains nulls, terminating the
+      // scan immediately
+      var firstKey = await indexMap.higherKey(null);
       while (firstKey != null && compare(firstKey, comparable) <= 0) {
         // get the starting value, it can be a navigable-map (compound index)
         // or list (single field index)
@@ -512,7 +515,10 @@ class _LesserThanFilter extends SortingAwareFilter {
         lowerKey = await indexMap.lowerKey(lowerKey);
       }
     } else {
-      var firstKey = await indexMap.firstKey();
+      // seed from the first non-null key; firstKey() would return null for
+      // the leading null key when the index contains nulls, terminating the
+      // scan immediately
+      var firstKey = await indexMap.higherKey(null);
       while (firstKey != null && compare(firstKey, comparable) < 0) {
         // get the starting value, it can be a navigable-map (compound index)
         // or list (single field index)
@@ -588,9 +594,16 @@ class _InFilter extends ComparableArrayFilter {
   }
 
   Stream<dynamic> applyOnIndex(IndexMap indexMap) async* {
-    await for ((Comparable?, dynamic) entry in indexMap.entries()) {
-      if (_comparableSet.contains(entry.$1)) {
-        yield* yieldValues(entry.$2);
+    // look up each value directly in the index instead of scanning every
+    // entry, turning the scan from O(index size) into O(values * log size);
+    // the values are visited in natural (or reverse) order, so the scan
+    // follows the index order
+    var sortedValues = _comparableSet.toSet().toList()..sort();
+    var scanOrder = indexMap.reverseScan ? sortedValues.reversed : sortedValues;
+    for (var value in scanOrder) {
+      var val = await indexMap.get(value);
+      if (val != null) {
+        yield* yieldValues(val);
       }
     }
   }

@@ -36,6 +36,8 @@ class IndexMap {
     _reverseScan = reverseScan;
   }
 
+  bool get reverseScan => _reverseScan;
+
   DBValue _toDbValue(Comparable? comparable) => comparable is DBNull
       ? comparable
       : (comparable == null ? DBNull.instance : DBValue(comparable));

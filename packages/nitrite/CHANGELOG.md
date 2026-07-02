@@ -1,3 +1,9 @@
+## 2.0.2
+
+- Fixed indexed `lt`/`lte` filters returning an empty result when the indexed field contains any null value; the forward index scan now starts from the first non-null key. Mirrors nitrite-java issue [#1262](https://github.com/nitrite/nitrite-java/issues/1262).
+- Fixed the blocking sort comparator violating the comparator contract when two documents both have a null sort key, which made `orderBy` results on fields with multiple null values undefined. Mirrors nitrite-java issue [#1261](https://github.com/nitrite/nitrite-java/issues/1261).
+- Made `in` filter index scans look up each value directly instead of scanning every index entry, so `in` queries on large indexed collections are now as fast as `eq`. Mirrors nitrite-java issue [#1258](https://github.com/nitrite/nitrite-java/issues/1258).
+
 ## 2.0.1
 
 - Replaced the linear-scan spatial R-tree with a Sort-Tile-Recursive packed R-tree, giving `O(log n + result)` window queries (intersects/within) and best-first nearest-neighbour search instead of an `O(n)` scan per query. Query semantics are unchanged.
