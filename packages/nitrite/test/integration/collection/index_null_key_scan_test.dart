@@ -51,8 +51,8 @@ void main() {
     }
 
     test('range scans with nulls on non-unique index', () async {
-      await collection.createIndex(['value'],
-          indexOptions(IndexType.nonUnique));
+      await collection
+          .createIndex(['value'], indexOptions(IndexType.nonUnique));
       await checkRangeScans();
     });
 
@@ -66,8 +66,8 @@ void main() {
     });
 
     test('in filter uses index and returns correct results', () async {
-      await collection.createIndex(['value'],
-          indexOptions(IndexType.nonUnique));
+      await collection
+          .createIndex(['value'], indexOptions(IndexType.nonUnique));
       expect(
         await collection
             .find(filter: where('value').within([1.0, 4.0, 7.0, 100.0]))

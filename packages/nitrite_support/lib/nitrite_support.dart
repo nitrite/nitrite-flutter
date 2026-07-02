@@ -1,5 +1,5 @@
 /// This library contains various support classes for Nitrite database in Flutter.
-library nitrite_support;
+library;
 
 export 'src/exchange/exporter.dart';
 export 'src/exchange/importer.dart';

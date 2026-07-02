@@ -20,8 +20,6 @@ class IndexMap {
   /// value maps to a terminal id-list, >1 means a nested sub-map.
   final int _compositeFieldCount;
 
-  bool _reverseScan = false;
-
   IndexMap({
     NitriteMap<DBValue, dynamic>? nitriteMap,
     Map<dynamic, dynamic>? subMap,
@@ -32,11 +30,7 @@ class IndexMap {
         _compositeFieldCount = compositeFieldCount,
         _navigableMap = SplayTreeMapEx.fromMap(subMap);
 
-  set reverseScan(bool reverseScan) {
-    _reverseScan = reverseScan;
-  }
-
-  bool get reverseScan => _reverseScan;
+  bool reverseScan = false;
 
   DBValue _toDbValue(Comparable? comparable) => comparable is DBNull
       ? comparable
@@ -199,7 +193,7 @@ class IndexMap {
     }
 
     if (_nitriteMap != null) {
-      if (!_reverseScan) {
+      if (!reverseScan) {
         yield* _nitriteMap.entries().map((entry) {
           var dbKey = entry.$1;
           if (dbKey is DBNull) {
@@ -219,7 +213,7 @@ class IndexMap {
         });
       }
     } else if (_navigableMap != null) {
-      if (!_reverseScan) {
+      if (!reverseScan) {
         yield* Stream.fromIterable(
           _navigableMap.entries.map((entry) {
             var dbKey = entry.key;
@@ -264,7 +258,7 @@ class IndexMap {
       bucket!.add(key);
     }
 
-    if (_reverseScan) {
+    if (reverseScan) {
       groups = groups.reversed.toList();
     }
 

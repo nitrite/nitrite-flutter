@@ -8,7 +8,7 @@
 /// and does not require any external setup or installation.
 ///
 /// This library provides a Dart implementation of Nitrite.
-library nitrite;
+library;
 
 export 'src/nitrite_base.dart';
 export 'src/nitrite_builder.dart';
