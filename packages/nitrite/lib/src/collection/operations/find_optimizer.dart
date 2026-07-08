@@ -255,14 +255,24 @@ class FindOptimizer {
       }
     }
 
+    // pick the single index whose filter combination encompasses the most
+    // fields; accumulating filters from multiple candidate indices here
+    // (instead of picking one winner) would let filters on unrelated
+    // fields/types leak into the same index scan filter set - see
+    // https://github.com/nitrite/nitrite-java/issues/1266
+    IndexDescriptor? bestDescriptor;
+    List<ComparableFilter>? bestFilters;
     for (var entry in indexFilterMap.entries) {
-      // consider the filter combination if it encompasses more fields
-      // than the previously selected filter
-      if (entry.value.length > indexScanFilters.length) {
-        // maintain the order in set
-        indexScanFilters.addAll(entry.value);
-        findPlan.indexDescriptor = entry.key;
+      if (bestFilters == null || entry.value.length > bestFilters.length) {
+        bestDescriptor = entry.key;
+        bestFilters = entry.value;
       }
+    }
+
+    if (bestFilters != null) {
+      // maintain the order in set
+      indexScanFilters.addAll(bestFilters);
+      findPlan.indexDescriptor = bestDescriptor;
     }
   }
 
