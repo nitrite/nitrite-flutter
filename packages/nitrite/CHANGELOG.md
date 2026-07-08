@@ -1,3 +1,7 @@
+## 2.0.3
+
+- Fixed a type-comparison crash (e.g. `InvalidOperationException: Could not compare type int to String`) when an AND filter combined a filter on one indexed field with filters on another, differently-typed indexed field matching a different number of fields (e.g. a single-field index next to a compound index). The query planner picked the best-matching index candidate per field independently but accumulated filters from every candidate it visited into one shared set instead of keeping only the winning index's filters, so filters from an unrelated index leaked into the scan of the chosen index. The planner now selects a single best-matching index and only keeps that index's own filters for the index scan. Mirrors nitrite-java issue [#1266](https://github.com/nitrite/nitrite-java/issues/1266).
+
 ## 2.0.2
 
 - Fixed indexed `lt`/`lte` filters returning an empty result when the indexed field contains any null value; the forward index scan now starts from the first non-null key. Mirrors nitrite-java issue [#1262](https://github.com/nitrite/nitrite-java/issues/1262).
