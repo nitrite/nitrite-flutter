@@ -1,3 +1,7 @@
+## 2.0.3
+
+- Maintenance release: raised `nitrite` dependency to `^2.0.3`.
+
 ## 2.0.1
 
 - Spatial queries (intersects/within/nearest) now run on a packed R-tree provided by `nitrite` and `nitrite_hive_adapter` 2.0.1, replacing the per-query linear scan with `O(log n + result)` lookups. Query results are unchanged.

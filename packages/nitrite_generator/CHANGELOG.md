@@ -1,3 +1,7 @@
+## 2.0.3
+
+- Maintenance release: raised `nitrite` dependency to `^2.0.3`.
+
 ## 2.0.1
 
 - Maintenance release: raised `nitrite` dependency to `^2.0.1`.
