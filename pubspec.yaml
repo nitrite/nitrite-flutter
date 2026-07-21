@@ -65,8 +65,9 @@ melos:
         melos exec -c 6 --fail-fast --scope="*generator*" -- dart pub global run coverage:test_with_coverage &&
         melos exec -c 1 --file-exists=coverage/lcov.info --scope="nitrite" -- lcov --ignore-errors unused --remove coverage/lcov.info "lib/src/migration/*" "lib/src/transaction/*" "lib/src/index/fulltext/stop_words.dart" &&
         melos exec --ignore="*demo*" -- genhtml coverage/lcov.info --output-directory=coverage/ &&
-        melos exec -c 1 --file-exists=coverage/lcov.info -- coverde filter --input ./coverage/lcov.info --output MELOS_ROOT_PATH/coverage/filtered.lcov.info --filters \.g\.dart &&
-        coverde value -i coverage/filtered.lcov.info --file-coverage-log-level=none > MELOS_ROOT_PATH/coverage/result.txt
+        mkdir -p $MELOS_ROOT_PATH/coverage &&
+        melos exec -c 1 --file-exists=coverage/lcov.info -- coverde filter --input ./coverage/lcov.info --output $MELOS_ROOT_PATH/coverage/filtered.lcov.info --filters \.g\.dart &&
+        coverde value -i $MELOS_ROOT_PATH/coverage/filtered.lcov.info --file-coverage-log-level=none > $MELOS_ROOT_PATH/coverage/result.txt
       description: Run `flutter test` for a specific package with coverage.
     test-without-coverage:
       run: >
