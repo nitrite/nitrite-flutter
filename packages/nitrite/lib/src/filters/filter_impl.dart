@@ -21,7 +21,24 @@ class EqualsFilter extends ComparableFilter {
   @override
   bool apply(Document doc) {
     var fieldValue = doc.get(field);
-    return deepEquals(fieldValue, _unwrapNull(value));
+    var target = _unwrapNull(value);
+    if (deepEquals(fieldValue, target)) {
+      return true;
+    }
+    // A list field matches by element containment, mirroring applyOnIndex()
+    // (arrays are indexed element-wise). Without this, field.eq(x) on a list
+    // field returns different results depending on whether an index exists /
+    // is chosen by the planner: an indexed array-eq that the planner
+    // relegates to a collection scan (e.g. when a range filter on another
+    // field claims the index) would otherwise silently match nothing.
+    if (fieldValue is Iterable) {
+      for (var element in fieldValue) {
+        if (deepEquals(element, target)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @override
@@ -589,6 +606,17 @@ class _InFilter extends ComparableArrayFilter {
 
     if (fieldValue is Comparable) {
       return _comparableSet.contains(fieldValue);
+    }
+    // `within` is multi-value `eq`, so it matches a list field by element
+    // containment for the same index-independence reason as EqualsFilter:
+    // the index path already treats arrays element-wise, so a collection scan
+    // must too.
+    if (fieldValue is Iterable) {
+      for (var element in fieldValue) {
+        if (element is Comparable && _comparableSet.contains(element)) {
+          return true;
+        }
+      }
     }
     return false;
   }
