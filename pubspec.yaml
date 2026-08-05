@@ -9,6 +9,7 @@ dev_dependencies:
 
 workspace:
   - packages/nitrite
+  - packages/nitrite_bridge
   - packages/nitrite_generator
   - packages/nitrite_hive_adapter
   - packages/nitrite_spatial
