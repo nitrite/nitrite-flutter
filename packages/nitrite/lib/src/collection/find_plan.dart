@@ -27,9 +27,6 @@ class FindPlan {
   /// Gets the limit count.
   int? limit;
 
-  /// Gets the distinct flag.
-  bool distinct = false;
-
   /// Gets the sub plans.
   List<FindPlan> subPlans = [];
 }

@@ -573,6 +573,22 @@ class _NotEqualsFilter extends ComparableFilter {
   toString() => "($field != $value)";
 }
 
+/// Matches documents where [field] is present, irrespective of its value.
+///
+/// This is a collection scanning filter, it deliberately does not extend
+/// [ComparableFilter]. A missing field and a field holding null are both stored
+/// under the same null key in an index, so an index scan cannot tell them apart
+/// and would disagree with a collection scan.
+class _ExistsFilter extends FieldBasedFilter {
+  _ExistsFilter(String field) : super(field, null);
+
+  @override
+  bool apply(Document doc) => doc.containsField(field);
+
+  @override
+  toString() => "($field exists)";
+}
+
 class _RegexFilter extends FieldBasedFilter {
   final RegExp _pattern;
 

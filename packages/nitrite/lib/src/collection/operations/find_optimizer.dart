@@ -12,9 +12,6 @@ class FindOptimizer {
     _readSortOption(findOptions, findPlan);
     _readLimitOption(findOptions, findPlan);
 
-    if (findOptions != null) {
-      findPlan.distinct = findOptions.distinct;
-    }
     return findPlan;
   }
 

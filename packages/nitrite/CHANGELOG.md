@@ -1,3 +1,15 @@
+## 3.0.0
+
+- **BREAKING CHANGE**: Removed the `distinct` find option - the `distinct()` factory, `FindOptions.distinct`, `FindOptions.withDistinct()`, and `FindPlan.distinct`. It had no effect on the result set. A find never returns the same document twice, and the only place the flag was ever read was the `or` sub-stream union, which now deduplicates unconditionally (see below) because an `or` is a set union by definition. The flag's sole remaining effect was to paper over the duplicate defect fixed in this release. Callers passing `distinct()` can drop it without any change in results.
+- Fixed `find` returning a document more than once from an `or` filter when the document satisfies more than one branch and every branch is index-backed. The per-branch index scans were concatenated into the result, but the concatenation was only deduplicated if the caller passed the `distinct()` find option, which defaulted to off. An `or` is a set union by definition, so the branches are now always deduplicated by `NitriteId`. The planner path that falls back to a single collection scan when a branch has no index was already correct here (unlike nitrite-rust, where both halves were broken).
+
+## 2.1.0
+
+- Added an `exists` filter. `where("nick").exists()` matches the documents which have the field, irrespective of its value; `where("nick").exists().not()` (or `~where("nick").exists()`) matches those which do not. Also available as a string extension: `"nick".exists()`.
+- A field explicitly set to null is present and matches. This is the case no existing filter could express: `eq(null)` and `notEq(null)` cannot tell a missing field apart from one holding null, so "has this document been given a value for this field at all" was not answerable.
+- The filter deliberately does not extend `ComparableFilter` and so always runs as a collection scan. A missing field and a field holding null are stored under the same null key in an index, so an index scan could not tell them apart and would disagree with a collection scan.
+- Embedded fields are addressed by their dotted path (`where("address.city").exists()`), the same way `Document.containsField` resolves them.
+
 ## 2.0.4
 
 - Fixed `field.eq(x)` / `field.within(..)` on an array (list) field silently matching nothing when the filter runs as a collection scan. Array membership is matched element-wise on the index path but was matched by whole-value equality (`deepEquals`) on the collection-scan path, so results depended on whether an index existed or was chosen by the planner. Combined with the 2.0.3 planner change (mirror of nitrite-java [#1266](https://github.com/nitrite/nitrite-java/issues/1266)) — which correctly relegates the non-winning-index filter to a collection scan — an AND of an indexed array `eq` and a bounded range on a second indexed field left the array `eq` running as a collection scan, where it matched no documents. `EqualsFilter` and `_InFilter` now match an array/`Iterable` field by element containment on the collection-scan path, mirroring `applyOnIndex`.

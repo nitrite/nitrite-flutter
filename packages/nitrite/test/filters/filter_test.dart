@@ -500,4 +500,80 @@ void main() {
       expect(f3.apply(doc), isFalse);
     });
   });
+
+  group(retry: 3, "Exists Filter Test Suite", () {
+    test("Test Field Present", () {
+      var doc = emptyDocument().put('a', 1);
+      expect(where('a').exists().apply(doc), isTrue);
+    });
+
+    test("Test Field Absent", () {
+      var doc = emptyDocument().put('a', 1);
+      expect(where('b').exists().apply(doc), isFalse);
+      expect(where('a').exists().apply(emptyDocument()), isFalse);
+    });
+
+    test("Test Null Value Is Present", () {
+      // a field explicitly set to null exists - that is the whole point of
+      // the filter, eq(null) cannot tell it apart from a missing field
+      var doc = emptyDocument().put('a', null);
+      expect(where('a').exists().apply(doc), isTrue);
+      expect(where('a').exists().not().apply(doc), isFalse);
+    });
+
+    test("Test Embedded Field", () {
+      var doc = emptyDocument()
+          .put('name', 'n1')
+          .put('address', emptyDocument().put('city', 'c1').put('pin', 123456));
+
+      expect(where('address').exists().apply(doc), isTrue);
+      expect(where('address.city').exists().apply(doc), isTrue);
+      expect(where('address.pin').exists().apply(doc), isTrue);
+      expect(where('address.street').exists().apply(doc), isFalse);
+      expect(where('addr.city').exists().apply(doc), isFalse);
+    });
+
+    test("Test Not", () {
+      var doc = emptyDocument().put('a', 1);
+      expect(where('a').exists().not().apply(doc), isFalse);
+      expect((~where('a').exists()).apply(doc), isFalse);
+      expect(where('b').exists().not().apply(doc), isTrue);
+    });
+
+    test("Test And Or", () {
+      var doc = emptyDocument().put('a', 1).put('b', 2);
+
+      expect(where('a').exists().and(where('b').exists()).apply(doc), isTrue);
+      expect(where('a').exists().and(where('c').exists()).apply(doc), isFalse);
+      expect(where('c').exists().or(where('b').exists()).apply(doc), isTrue);
+      expect(where('c').exists().or(where('d').exists()).apply(doc), isFalse);
+    });
+
+    test("Test ToString", () {
+      expect(where('a').exists().toString(), '(a exists)');
+      expect(where('a').exists().not().toString(), '!((a exists))');
+    });
+
+    test("Test Equality", () {
+      expect(where('a').exists(), where('a').exists());
+      expect(where('a').exists().hashCode, where('a').exists().hashCode);
+      expect(where('a').exists(), isNot(where('b').exists()));
+    });
+
+    test("Test Is Field Based Filter", () {
+      var filter = where('a').exists();
+      expect(filter, isA<FieldBasedFilter>());
+      // never index scanned - a missing field and an explicit null share the
+      // same null index key
+      expect(filter, isNot(isA<ComparableFilter>()));
+      expect((filter as FieldBasedFilter).field, 'a');
+      expect(filter.value, isNull);
+    });
+
+    test("Test String Extension", () {
+      var doc = emptyDocument().put('a', 1);
+      expect('a'.exists().apply(doc), isTrue);
+      expect('b'.exists().apply(doc), isFalse);
+    });
+  });
 }

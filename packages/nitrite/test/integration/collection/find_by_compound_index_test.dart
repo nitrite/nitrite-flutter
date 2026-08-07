@@ -69,48 +69,17 @@ void main() {
       expect(findPlan.subPlans.length, 2);
       expect(findPlan.subPlans[0].indexScanFilter, isNotNull);
       expect(findPlan.subPlans[1].indexScanFilter, isNotNull);
-      expect(findPlan.distinct, isFalse);
-
-      expect(
-        await cursor
-            .where((d) => d['firstName'] == 'fn2' && d['lastName'] == 'ln2')
-            .length,
-        1,
-      );
-      expect(
-        await cursor
-            .where((d) => d['firstName'] == 'fn3' && d['lastName'] == 'ln2')
-            .length,
-        2,
-      );
-
-      // distinct test
-      cursor = collection.find(
-        filter: or([
-          and([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
-          and([where("firstName").eq("fn3"), where("lastName").eq("ln2")]),
-        ]),
-        findOptions: distinct(),
-      );
 
       expect(await cursor.length, 2);
 
-      findPlan = await cursor.findPlan;
-      expect(findPlan.collectionScanFilter, isNull);
-      expect(findPlan.indexScanFilter, isNull);
-      expect(findPlan.subPlans, isNotNull);
-
-      expect(findPlan.subPlans.length, 2);
-      expect(findPlan.subPlans[0].indexScanFilter, isNotNull);
-      expect(findPlan.subPlans[1].indexScanFilter, isNotNull);
-      expect(findPlan.distinct, isTrue);
-
       expect(
         await cursor
             .where((d) => d['firstName'] == 'fn2' && d['lastName'] == 'ln2')
             .length,
         1,
       );
+      // this document satisfies both branches of the or, and is still
+      // reported once - an or is a set union
       expect(
         await cursor
             .where((d) => d['firstName'] == 'fn3' && d['lastName'] == 'ln2')
@@ -197,20 +166,8 @@ void main() {
 
       var findPlan = await cursor.findPlan;
       expect(findPlan.subPlans.length, 3);
-      expect(await cursor.length, 5);
-
-      // with distinct
-      cursor = collection.find(
-        filter: or([
-          or([where("lastName").eq("ln2"), where("firstName").notEq("fn1")]),
-          where('birthDay').eq(DateTime.parse('2012-07-01T16:02:48.440Z')),
-          where("firstName").notEq("fn1"),
-        ]),
-        findOptions: distinct(),
-      );
-
-      findPlan = await cursor.findPlan;
-      expect(findPlan.subPlans.length, 3);
+      // the collection only holds 3 documents, and documents matching more than
+      // one branch of the or are reported once - an or is a set union
       expect(await cursor.length, 3);
     });
 

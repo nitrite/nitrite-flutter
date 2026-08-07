@@ -16,6 +16,13 @@ extension StringFilterExtension on FieldName {
     return where(this).notEq(value);
   }
 
+  /// Creates a filter which matches documents where the field is present,
+  /// irrespective of its value. A field explicitly set to null is present
+  /// and matches.
+  NitriteFilter exists() {
+    return where(this).exists();
+  }
+
   /// Creates a greater than filter which matches those documents where the value
   /// of the field is greater than the specified value.
   NitriteFilter gt(dynamic value) {

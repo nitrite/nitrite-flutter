@@ -79,6 +79,18 @@ class FluentFilter {
   /// the field is not equal to the given [value].
   NitriteFilter notEq(dynamic value) => _NotEqualsFilter(_field, value);
 
+  /// Returns a filter that matches documents where the field is present,
+  /// irrespective of its value. A field explicitly set to null is present
+  /// and matches.
+  ///
+  /// Use [Filter.not] for the opposite - `where("a").exists().not()` matches
+  /// the documents which do not have the field.
+  ///
+  /// ```dart
+  /// collection.find(filter: where("nick").exists());
+  /// ```
+  NitriteFilter exists() => _ExistsFilter(_field);
+
   /// Returns a filter that matches documents where the value of the field is
   /// greater than the given value.
   NitriteFilter gt(dynamic value) => _GreaterThanFilter(_field, value);
