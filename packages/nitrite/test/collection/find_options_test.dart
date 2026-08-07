@@ -58,17 +58,5 @@ void main() {
       expect(findOptions.limit, 1);
       expect(findOptions.orderBy?.encodedName, "fieldName");
     });
-
-    test("Test Distinct", () {
-      var findOptions = distinct();
-      expect(findOptions.distinct, isTrue);
-    });
-
-    test("Test Distinct", () {
-      var findOptions = FindOptions();
-      expect(findOptions.distinct, isFalse);
-      findOptions.withDistinct(true);
-      expect(findOptions.distinct, isTrue);
-    });
   });
 }

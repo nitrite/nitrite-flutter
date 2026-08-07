@@ -49,13 +49,6 @@ FindOptions limitBy(int limit) {
   return findOptions;
 }
 
-/// Creates a new instance of [FindOptions] with distinct flag set to true.
-FindOptions distinct() {
-  var findOptions = FindOptions();
-  findOptions.distinct = true;
-  return findOptions;
-}
-
 /// The options for find operation.
 class FindOptions {
   /// Gets the [SortableFields] for sorting the find results.
@@ -66,9 +59,6 @@ class FindOptions {
 
   /// Gets the limit count.
   int? limit;
-
-  /// Indicates if the find operation should return distinct results.
-  bool distinct = false;
 
   /// Creates a new instance of [FindOptions].
   FindOptions({this.orderBy, this.skip, this.limit});
@@ -95,12 +85,6 @@ class FindOptions {
       orderBy = sortableFields;
     }
 
-    return this;
-  }
-
-  /// Set the flag if the find operation should return distinct results.
-  FindOptions withDistinct(bool value) {
-    distinct = value;
     return this;
   }
 }

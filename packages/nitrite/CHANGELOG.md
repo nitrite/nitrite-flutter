@@ -1,3 +1,8 @@
+## 3.0.0
+
+- **BREAKING CHANGE**: Removed the `distinct` find option - the `distinct()` factory, `FindOptions.distinct`, `FindOptions.withDistinct()`, and `FindPlan.distinct`. It had no effect on the result set. A find never returns the same document twice, and the only place the flag was ever read was the `or` sub-stream union, which now deduplicates unconditionally (see below) because an `or` is a set union by definition. The flag's sole remaining effect was to paper over the duplicate defect fixed in this release. Callers passing `distinct()` can drop it without any change in results.
+- Fixed `find` returning a document more than once from an `or` filter when the document satisfies more than one branch and every branch is index-backed. The per-branch index scans were concatenated into the result, but the concatenation was only deduplicated if the caller passed the `distinct()` find option, which defaulted to off. An `or` is a set union by definition, so the branches are now always deduplicated by `NitriteId`. The planner path that falls back to a single collection scan when a branch has no index was already correct here (unlike nitrite-rust, where both halves were broken).
+
 ## 2.1.0
 
 - Added an `exists` filter. `where("nick").exists()` matches the documents which have the field, irrespective of its value; `where("nick").exists().not()` (or `~where("nick").exists()`) matches those which do not. Also available as a string extension: `"nick".exists()`.

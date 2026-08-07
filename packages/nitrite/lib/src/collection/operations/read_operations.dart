@@ -136,15 +136,15 @@ class ReadOperations {
       // concat all suitable stream of all sub plans
       rawStream = ConcatStream(subStreams);
 
-      // return only distinct items
-      if (findPlan.distinct) {
-        rawStream = rawStream.distinctUnique(
-          equals: (a, b) {
-            return a.id == b.id;
-          },
-          hashCode: (doc) => doc.id.hashCode,
-        );
-      }
+      // sub plans are the branches of an or filter, so their concatenation is a
+      // set union - a document matching several branches arrives from several
+      // sub streams and must still be reported once.
+      rawStream = rawStream.distinctUnique(
+        equals: (a, b) {
+          return a.id == b.id;
+        },
+        hashCode: (doc) => doc.id.hashCode,
+      );
     } else {
       // and or single filter
       if (findPlan.byIdFilter != null) {

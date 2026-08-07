@@ -1,3 +1,7 @@
+## 3.0.0
+
+- Maintenance release: raised `nitrite` dependency to `^3.0.0`, which drops the no-op `distinct` find option.
+
 ## 2.1.0
 
 - Maintenance release: raised `nitrite` dependency to `^2.1.0`.
