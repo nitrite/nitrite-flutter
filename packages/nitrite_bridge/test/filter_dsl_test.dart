@@ -115,18 +115,40 @@ void main() {
           }),
           selects(people, ['ada', 'cyd']));
     });
+
+    test('presence', () {
+      // nitrite 3.0.0 added `exists`, so the operator `PROTOCOL.md` §4.1 has
+      // always listed is now implementable rather than refused.
+      final nicknamed = [
+        doc({'name': 'ada', 'nick': 'countess'}),
+        doc({'name': 'bob', 'nick': null}),
+        doc({'name': 'cyd'}),
+      ];
+      // A field explicitly set to null is present — the case no other operator
+      // can express, and the reason `exists` is not `ne: null`.
+      expect(parse({'field': 'nick', 'op': 'exists'}),
+          selects(nicknamed, ['ada', 'bob']));
+      expect(
+          parse({
+            'not': {'field': 'nick', 'op': 'exists'}
+          }),
+          selects(nicknamed, ['cyd']));
+    });
+
+    test('exists ignores any value the client sent with it', () {
+      // The operator is about presence, so `value: false` is not "does not
+      // exist" — a client that means that sends `not`. Honouring the value
+      // would silently select the opposite rows.
+      final nicknamed = [
+        doc({'name': 'ada', 'nick': 'countess'}),
+        doc({'name': 'cyd'}),
+      ];
+      expect(parse({'field': 'nick', 'op': 'exists', 'value': false}),
+          selects(nicknamed, ['ada']));
+    });
   });
 
   group('what this implementation does not have', () {
-    test('exists is refused rather than mistranslated', () {
-      // nitrite-flutter has no exists filter. PROTOCOL §1: an operator that is
-      // out of scope must be absent from `filterOps`, never silently turned
-      // into something else.
-      expect(nitriteFilterOps, isNot(contains('exists')));
-      expect(() => parse({'field': 'age', 'op': 'exists', 'value': true}),
-          badRequest('there is no exists filter to map it onto'));
-    });
-
     test('an unknown operator is a bad request, not an unfiltered page', () {
       expect(() => parse({'field': 'age', 'op': 'nearby', 'value': 1}),
           badRequest('the client sent something this bridge cannot honour'));

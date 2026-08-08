@@ -3,13 +3,12 @@ import 'package:nitrite/nitrite.dart';
 
 /// The v1 filter operators this implementation actually supports.
 ///
-/// **`exists` is deliberately absent.** `docs/PROTOCOL.md` §4.1 lists it among
-/// the v1 operators, and `capabilities.filterOps` is authoritative precisely
-/// because the three Nitrite implementations were never assumed to have
-/// identical filter support: nitrite-flutter 2.0.4 has no exists filter — the
-/// fluent API offers eq, notEq, gt, gte, lt, lte, between, text, regex, within,
-/// notIn and elemMatch, and nothing that tests for a field's presence. The
-/// client greys the operator out rather than the bridge mistranslating it.
+/// **`exists` was absent until nitrite-flutter 3.0.0 and is now here.** It is
+/// listed in `docs/PROTOCOL.md` §4.1 and was reported unsupported for as long as
+/// the fluent API had nothing that tested for a field's presence; 2.1.0 added
+/// `where(f).exists()` and this adapter now maps onto it. `filterOps` stays
+/// authoritative either way — that is the mechanism that let the gap be honest
+/// rather than mistranslated, and it is what makes closing it a one-line change.
 ///
 /// `between` and `elemMatch` are the other direction — Dart has them and v1
 /// does not, so they stay out until the protocol gains them.
@@ -22,6 +21,7 @@ const nitriteFilterOps = [
   'lte',
   'in',
   'notIn',
+  'exists',
   'text',
 ];
 
@@ -120,6 +120,11 @@ Filter _leaf(Map<String, Object?> node, {required bool allowRegex}) {
       return on.within(_orderedList(value, op));
     case 'notIn':
       return on.notIn(_orderedList(value, op));
+    case 'exists':
+      // Presence only, and `value` is deliberately ignored: `exists: false` is
+      // not "does not exist" in the protocol — that is `not`. Reading the value
+      // would select the opposite rows for a client that sent one by habit.
+      return on.exists();
     case 'text':
       return on.text(_text(value));
     case nitriteRegexOp:

@@ -5,8 +5,9 @@
   always flagged as inferred, paging over `FindOptions` skip/limit/orderBy, the
   JSON filter DSL, and watch over Nitrite's collection subscription.
 - `capabilities.filterOps` reports `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`,
-  `notIn` and `text`. **`exists` is absent** — nitrite-flutter has no exists
-  filter, and the adapter refuses the operator rather than mistranslating it.
+  `notIn`, `exists` and `text`. `exists` needs nitrite 3.0.0, which is why this
+  package requires it: the operator was reported unsupported for as long as the
+  fluent API had nothing that tested for a field's presence.
 - `regex` is off unless `allowRegex` is set, and refused with a length cap and a
   nested-quantifier check when it is on. Dart's `RegExp` backtracks and a match
   cannot be interrupted, so the default is the mitigation that matters.

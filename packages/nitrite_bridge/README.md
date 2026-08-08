@@ -66,12 +66,14 @@ the default is the mitigation that matters.
 
 Reported in `capabilities.filterOps`, and this implementation's set is:
 
-`eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `notIn`, `text`, plus `and`, `or`,
-`not` — and `regex` when you allow it.
+`eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `notIn`, `exists`, `text`, plus
+`and`, `or`, `not` — and `regex` when you allow it.
 
-**`exists` is not in that list.** nitrite-flutter has no exists filter, so the
-adapter refuses the operator rather than mistranslating it. Do not assume parity
-with the Java or Rust adapters; each reports what it actually implements.
+**`exists` needs nitrite 3.0.0**, which is the floor this package sets. It tests
+presence only: a field explicitly set to null is present and matches, and "does
+not have the field" is `not` around it, never `exists` with `value: false`. Do
+not assume parity with the Java or Rust adapters; each reports what it actually
+implements.
 
 ## Watch
 
