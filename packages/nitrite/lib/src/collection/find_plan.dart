@@ -21,6 +21,16 @@ class FindPlan {
   /// Gets the blocking sort order.
   List<(String, SortOrder)> blockingSortOrder = [];
 
+  /// Gets the index whose keys can supply [blockingSortOrder] without reading
+  /// any document.
+  ///
+  /// This is a hint, not a decision: the reader still has to confirm that the
+  /// index holds exactly one entry per stored document (a multi-valued field
+  /// breaks that) and falls back to the blocking sort when it does not. When
+  /// the hint holds, only the documents actually returned are fetched, instead
+  /// of every document in the collection.
+  IndexDescriptor? sortIndexDescriptor;
+
   /// Gets the skip count.
   int? skip;
 

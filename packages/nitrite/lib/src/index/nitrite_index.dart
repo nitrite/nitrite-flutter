@@ -20,6 +20,18 @@ abstract class NitriteIndex {
   /// Finds the NitriteIds from the index for the given find plan.
   Stream<NitriteId> findNitriteIds(FindPlan findPlan);
 
+  /// Reads every `(indexed value, id)` pair out of the index, so a sorted query
+  /// can decide its order without deserializing a single document.
+  ///
+  /// Returns the pairs in no particular order, or `null` when the index is not
+  /// a faithful stand-in for the collection of [collectionSize] documents - a
+  /// document that contributes several index entries (a multi-valued field is
+  /// indexed once per element) or none at all (a non-comparable value is not
+  /// indexed) makes the index unusable for ordering, and the caller must sort
+  /// the documents instead.
+  Future<List<(DBValue, NitriteId)>?> readSortKeys(int collectionSize) async =>
+      null;
+
   /// Checks if the index is unique.
   bool get isUnique => indexDescriptor.indexType == IndexType.unique;
 

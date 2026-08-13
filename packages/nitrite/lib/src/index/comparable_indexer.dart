@@ -27,6 +27,16 @@ abstract class ComparableIndexer extends NitriteIndexer {
   }
 
   @override
+  Future<List<(DBValue, NitriteId)>?> readSortKeys(
+    IndexDescriptor indexDescriptor,
+    NitriteConfig nitriteConfig,
+    int collectionSize,
+  ) {
+    var nitriteIndex = _findNitriteIndex(indexDescriptor, nitriteConfig);
+    return nitriteIndex.readSortKeys(collectionSize);
+  }
+
+  @override
   Future<void> writeIndexEntry(
     FieldValues fieldValues,
     IndexDescriptor indexDescriptor,

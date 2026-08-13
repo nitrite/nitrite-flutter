@@ -120,10 +120,61 @@ class ReadOperations {
     return _nitriteMap.size();
   }
 
+  /// Orders the collection from an index on the sort field, so only the
+  /// documents actually returned are fetched.
+  ///
+  /// A blocking sort has to deserialize every stored document just to read one
+  /// field, which is why `orderBy(field).limit(20)` used to cost what draining
+  /// the whole collection costs. An index on that field already holds the key
+  /// for every document, so the ordering can be decided without touching a
+  /// document.
+  ///
+  /// Returns `null` when the sort cannot be answered this way - the index is
+  /// not a faithful stand-in for the collection (a multi-valued field is
+  /// indexed once per element, a non-comparable one is not indexed at all) and
+  /// the caller must fall back to the blocking sort.
+  //
+  // ponytail: reads the whole index (one small entry per document) rather than
+  // only the skip+limit entries the page needs, because the faithfulness check
+  // needs the total. Walking the index lazily in key order would make it
+  // O(limit), but needs a way to know the index covers the collection without
+  // reading all of it.
+  Future<Stream<Document>?> _indexSortedStream(FindPlan findPlan) async {
+    var descriptor = findPlan.sortIndexDescriptor;
+    if (descriptor == null) return null;
+
+    var indexer = await _nitriteConfig.findIndexer(descriptor.indexType);
+    var sortKeys = await indexer.readSortKeys(
+      descriptor,
+      _nitriteConfig,
+      await _nitriteMap.size(),
+    );
+    if (sortKeys == null) return null;
+
+    // the hint is only ever set for a single-field sort, so this is that field
+    var sortOrder = findPlan.blockingSortOrder.first.$2;
+
+    // same comparator and same stability as the blocking sort, so an indexed
+    // and an unindexed collection return the same rows in the same order
+    sortKeys.sort((a, b) {
+      var result = SortedDocumentStream.compareSortValues(
+        a.$1 is DBNull ? null : a.$1.value,
+        b.$1 is DBNull ? null : b.$1.value,
+      );
+      return sortOrder == SortOrder.descending ? -result : result;
+    });
+
+    return IndexedStream(
+      Stream.fromIterable(sortKeys.map((key) => key.$2)),
+      _nitriteMap,
+    );
+  }
+
   Stream<Document> _findSuitableStream(
     FutureFactory<FindPlan> findPlanFunction,
   ) async* {
     Stream<Document> rawStream;
+    Stream<Document>? indexSorted;
     var findPlan = await findPlanFunction();
 
     if (findPlan.subPlans.isNotEmpty) {
@@ -167,7 +218,8 @@ class ReadOperations {
           // create indexed stream from optimized filter
           rawStream = IndexedStream(nitriteIdStream, _nitriteMap);
         } else {
-          rawStream = _nitriteMap.values();
+          indexSorted = await _indexSortedStream(findPlan);
+          rawStream = indexSorted ?? _nitriteMap.values();
         }
       }
 
@@ -175,7 +227,10 @@ class ReadOperations {
         rawStream = FilteredStream(rawStream, findPlan.collectionScanFilter);
       }
 
-      if (findPlan.blockingSortOrder.isNotEmpty) {
+      // the blocking sort still runs whenever the ordered ids were not used -
+      // either no index could answer the sort, or the one that could turned out
+      // not to cover the collection faithfully
+      if (indexSorted == null && findPlan.blockingSortOrder.isNotEmpty) {
         rawStream = SortedDocumentStream(findPlan, rawStream);
       }
 

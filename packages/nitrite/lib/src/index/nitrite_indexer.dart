@@ -39,4 +39,16 @@ abstract class NitriteIndexer extends NitritePlugin {
     FindPlan findPlan,
     NitriteConfig nitriteConfig,
   );
+
+  /// Reads every `(indexed value, id)` pair out of the given index, so a sorted
+  /// query can decide its order without deserializing a single document.
+  ///
+  /// Returns `null` when this indexer cannot supply them, or when the index is
+  /// not a faithful stand-in for the collection of [collectionSize] documents.
+  Future<List<(DBValue, NitriteId)>?> readSortKeys(
+    IndexDescriptor indexDescriptor,
+    NitriteConfig nitriteConfig,
+    int collectionSize,
+  ) async =>
+      null;
 }

@@ -31,32 +31,7 @@ class SortedDocumentStream extends StreamView<Document> {
       var field = value.$1;
       var order = value.$2;
 
-      var aValue = a[field];
-      var bValue = b[field];
-
-      // handle null values
-      int result;
-      var aIsNull = aValue == null || aValue is DBNull;
-      var bIsNull = bValue == null || bValue is DBNull;
-      if (aIsNull && bIsNull) {
-        // two null keys are equal, otherwise the comparator violates
-        // antisymmetry and the sort result is undefined
-        result = 0;
-      } else if (aIsNull) {
-        result = -1;
-      } else if (bIsNull) {
-        result = 1;
-      } else {
-        // validate comparable
-        if (aValue is! Comparable || bValue is! Comparable) {
-          throw InvalidOperationException(
-            "Cannot compare ${aValue.runtimeType} and ${bValue.runtimeType}",
-          );
-        }
-
-        // compare values
-        result = aValue.compareTo(bValue);
-      }
+      var result = compareSortValues(a[field], b[field]);
 
       if (order == SortOrder.descending) {
         result = -result;
@@ -70,5 +45,35 @@ class SortedDocumentStream extends StreamView<Document> {
 
     // all values are equals and no next sort order left
     return 0;
+  }
+
+  /// Orders two values of a sort field the way an `orderBy` does: null (or
+  /// missing) before everything else, everything else by its natural order.
+  ///
+  /// Shared with the index-ordered sort path, which reads the same keys out of
+  /// an index instead of out of the documents - the two orderings must not
+  /// drift apart.
+  static int compareSortValues(dynamic aValue, dynamic bValue) {
+    var aIsNull = aValue == null || aValue is DBNull;
+    var bIsNull = bValue == null || bValue is DBNull;
+    if (aIsNull && bIsNull) {
+      // two null keys are equal, otherwise the comparator violates
+      // antisymmetry and the sort result is undefined
+      return 0;
+    } else if (aIsNull) {
+      return -1;
+    } else if (bIsNull) {
+      return 1;
+    }
+
+    // validate comparable
+    if (aValue is! Comparable || bValue is! Comparable) {
+      throw InvalidOperationException(
+        "Cannot compare ${aValue.runtimeType} and ${bValue.runtimeType}",
+      );
+    }
+
+    // compare values
+    return aValue.compareTo(bValue);
   }
 }

@@ -42,6 +42,33 @@ class SingleFieldIndex extends NitriteIndex {
   }
 
   @override
+  Future<List<(DBValue, NitriteId)>?> readSortKeys(int collectionSize) async {
+    var keys = <(DBValue, NitriteId)>[];
+    var seen = <NitriteId>{};
+
+    if (isUnique) {
+      var indexMap = await _findUniqueMap();
+      await for (var entry in indexMap.entries()) {
+        for (var nitriteId in entry.$2) {
+          if (!seen.add(nitriteId)) return null;
+          keys.add((entry.$1, nitriteId));
+        }
+      }
+    } else {
+      // the composite key carries both halves, so the values are never read
+      await for (var key in (await _findCompositeMap()).keys()) {
+        var nitriteId = key.id;
+        if (nitriteId == null || !seen.add(nitriteId)) return null;
+        keys.add((key.value, nitriteId));
+      }
+    }
+
+    // one entry per document, no more and no fewer, or the index cannot stand
+    // in for the collection and the caller has to sort the documents
+    return keys.length == collectionSize ? keys : null;
+  }
+
+  @override
   Future<void> remove(FieldValues fieldValues) async {
     var firstField = fieldValues.fields.fieldNames.first;
     var element = fieldValues.get(firstField);

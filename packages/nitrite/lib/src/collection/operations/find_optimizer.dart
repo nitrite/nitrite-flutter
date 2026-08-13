@@ -9,7 +9,7 @@ class FindOptimizer {
     Iterable<IndexDescriptor> indexDescriptors,
   ) {
     var findPlan = _createFilterPlan(indexDescriptors, filter);
-    _readSortOption(findOptions, findPlan);
+    _readSortOption(findOptions, findPlan, indexDescriptors);
     _readLimitOption(findOptions, findPlan);
 
     return findPlan;
@@ -320,7 +320,11 @@ class FindOptimizer {
     }
   }
 
-  void _readSortOption(FindOptions? findOptions, FindPlan findPlan) {
+  void _readSortOption(
+    FindOptions? findOptions,
+    FindPlan findPlan,
+    Iterable<IndexDescriptor> indexDescriptors,
+  ) {
     var indexDescriptor = findPlan.indexDescriptor;
     if (findOptions != null && findOptions.orderBy != null) {
       // get sort spec for find
@@ -367,10 +371,56 @@ class FindOptimizer {
           findPlan.blockingSortOrder = findSortSpec;
         }
       } else {
-        // no find options, so consider the index sorting order
+        // No index drives the scan, so every stored document would be fetched
+        // and deserialized just to read one field - even for limit(20). An
+        // index on the sort field already holds that field's value for every
+        // document, so record it as a hint; ReadOperations validates it
+        // against the collection.
+        findPlan.sortIndexDescriptor = _sortIndex(
+          findSortSpec,
+          findOptions,
+          findPlan,
+          indexDescriptors,
+        );
         findPlan.blockingSortOrder = findSortSpec;
       }
     }
+  }
+
+  /// Picks the index that could answer [sortSpec] from its keys alone, if any.
+  ///
+  /// Deliberately narrow - it only fires for the shape that pays: no filter (so
+  /// the index covers the whole result set), a limit (so there are rows to
+  /// avoid fetching), and one sort field carried by a simple unique or
+  /// non-unique index on exactly that field.
+  IndexDescriptor? _sortIndex(
+    List<(String, SortOrder)> sortSpec,
+    FindOptions findOptions,
+    FindPlan findPlan,
+    Iterable<IndexDescriptor> indexDescriptors,
+  ) {
+    if (sortSpec.length != 1 || findOptions.limit == null) return null;
+    // an unfiltered query still carries `all` as its collection-scan filter,
+    // which drops nothing and so leaves the index covering the whole result
+    var scanFilter = findPlan.collectionScanFilter;
+    if (findPlan.byIdFilter != null ||
+        findPlan.indexScanFilter != null ||
+        (scanFilter != null && scanFilter != all) ||
+        findPlan.subPlans.isNotEmpty) {
+      return null;
+    }
+
+    var sortField = sortSpec.first.$1;
+    for (var descriptor in indexDescriptors) {
+      var simple = descriptor.indexType == IndexType.unique ||
+          descriptor.indexType == IndexType.nonUnique;
+      if (simple &&
+          descriptor.fields.fieldNames.length == 1 &&
+          descriptor.fields.fieldNames.first == sortField) {
+        return descriptor;
+      }
+    }
+    return null;
   }
 
   void _readLimitOption(FindOptions? findOptions, FindPlan findPlan) {
