@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:nitrite/nitrite.dart';
+// `WriteResult` is a name both packages use; the wire one is the one under test.
+import 'package:nitrite/nitrite.dart' hide WriteResult;
 import 'package:nitrite_bridge/nitrite_bridge.dart';
 import 'package:test/test.dart';
 
@@ -329,6 +330,131 @@ void main() {
           .queryPage(page(store: 'Order', sortBy: 'sku'));
 
       expect([for (final row in result.rows) row['sku']], ['a-1', 'b-2']);
+    });
+  });
+
+  group('write', () {
+    /// Through the core's validator, because that is where an adapter is
+    /// reached from: a test that built a [WriteRequest] by hand would be
+    /// testing a path no client can take.
+    Future<WriteResult> write(
+            NitriteAdapter adapter, WriteOp op, Map<String, Object?> params) =>
+        adapter
+            .write(WriteRequest.fromParams(params, adapter.capabilities, op));
+
+    test('the three writes round-trip by document id', () async {
+      final adapter = adapterFor(allowWrite: true);
+
+      final inserted = await write(adapter, WriteOp.insert, {
+        'store': 'users',
+        'values': {'name': 'eve', 'age': 41},
+      });
+      expect(inserted.changes, 1);
+      final id = inserted.id;
+      expect(id, isNotNull,
+          reason: 'an insert reports the identity the client addresses it by');
+
+      final updated = await write(adapter, WriteOp.update, {
+        'store': 'users',
+        'rowId': id,
+        'values': {'age': 42},
+      });
+      expect(updated.changes, 1);
+
+      // A partial update leaves the fields it did not name alone.
+      final row = await adapter.queryPage(page(
+          store: 'users',
+          filter: {'field': 'name', 'op': 'eq', 'value': 'eve'}));
+      expect(row.rows.single['age'], 42);
+      expect(row.rows.single['_id'], id);
+
+      final deleted = await write(
+          adapter, WriteOp.delete, {'store': 'users', 'rowId': id});
+      expect(deleted.changes, 1);
+
+      // `changes: 0` is an answer, not an error: the row is gone, and a client
+      // must be able to tell that from a write that failed.
+      final again = await write(
+          adapter, WriteOp.delete, {'store': 'users', 'rowId': id});
+      expect(again.changes, 0);
+    });
+
+    test('an id is addressable as rendered, as a number and as bracketed',
+        () async {
+      final adapter = adapterFor(allowWrite: true);
+      final rendered =
+          (await adapter.queryPage(page(store: 'users', pageSize: 1)))
+              .rows
+              .single['_id'] as String;
+
+      for (final rowId in [rendered, int.parse(rendered), '[$rendered]']) {
+        final updated = await write(adapter, WriteOp.update, {
+          'store': 'users',
+          'rowId': rowId,
+          'values': {'seen': true},
+        });
+        expect(updated.changes, 1, reason: '$rowId');
+      }
+    });
+
+    test('the writes an adapter must refuse', () async {
+      final adapter = adapterFor(allowWrite: true);
+
+      // The identity is `rowId` and the engine owns it: Nitrite merges the
+      // update document, so an `_id` in it would rewrite the row's identity.
+      await expectLater(
+          write(adapter, WriteOp.update, {
+            'store': 'users',
+            'rowId': 1,
+            'values': {'_id': '2'},
+          }),
+          badRequest('_id is not editable'));
+
+      // Not an `_id` at all. A store that took this for one would address
+      // whatever it happened to match.
+      await expectLater(
+          write(adapter, WriteOp.delete,
+              {'store': 'users', 'rowId': 'not-an-id'}),
+          badRequest('rowId is not an _id'));
+
+      // The store allow-list is the same one every read goes through: an
+      // unchecked name would let a paired client create a collection by
+      // writing to it.
+      await expectLater(
+          write(adapter, WriteOp.insert, {
+            'store': 'nope',
+            'values': {'name': 'eve'},
+          }),
+          badRequest('unknown store'));
+    });
+
+    test('writing is refused until the developer opts in', () {
+      // Criterion 10, at the adapter: the gate is the core's, and this is the
+      // proof that a default-constructed adapter never opens it.
+      final adapter = adapterFor();
+      expect(adapter.capabilities.edit, isFalse);
+      expect(
+          () => write(adapter, WriteOp.insert, {
+                'store': 'users',
+                'values': {'name': 'eve'},
+              }),
+          throwsA(isA<BridgeException>()
+              .having((e) => e.kind, 'kind', BridgeErrorKind.forbidden)));
+    });
+
+    test('a snapshot pages the whole store once the developer opts in',
+        () async {
+      expect(adapterFor().capabilities.snapshot, isFalse);
+
+      final adapter = adapterFor(allowSnapshot: true);
+      final request = SnapshotRequest.fromParams(
+          {'store': 'users'}, adapter.capabilities);
+
+      var rows = 0;
+      await for (final chunk in adapter.snapshot(request)) {
+        rows += chunk.length;
+      }
+      expect(rows, 3);
     });
   });
 

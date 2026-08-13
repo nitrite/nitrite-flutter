@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:dbinspect_bridge/dbinspect_bridge.dart';
-import 'package:nitrite/nitrite.dart';
+// `WriteResult` is a name both packages use: Nitrite's is the ids a write
+// touched, the core's is what the wire carries. Only the core's is named here.
+import 'package:nitrite/nitrite.dart' hide WriteResult;
 
 import 'filter_dsl.dart';
 
@@ -49,6 +51,10 @@ class NitriteAdapter extends BridgeAdapter {
           // (threat model rule 5).
           edit: allowWrite,
           snapshot: allowSnapshot,
+          // Not an opt-in: `queryPage` already showed the first 64 KB of this
+          // very cell, and `docs/PROTOCOL.md` §2 has always promised the rest
+          // on request. A document is addressed by `_id`, which every row has.
+          blob: true,
           filterOps: [
             ...nitriteFilterOps,
             if (allowRegex) nitriteRegexOp,
@@ -194,6 +200,99 @@ class NitriteAdapter extends BridgeAdapter {
       elapsedMs: stopwatch.elapsedMilliseconds,
       pageSizeClamped: request.pageSizeClamped,
     );
+  }
+
+  /// One row, addressed by `_id` — the identity `docs/PROTOCOL.md` §3 gives
+  /// every Nitrite implementation.
+  @override
+  Future<WriteResult> write(WriteRequest request) async {
+    final collection = await _resolve(request.store);
+
+    switch (request.op) {
+      case WriteOp.insert:
+        final written = await collection.insert(_documentOf(request.values));
+        return WriteResult(
+          changes: written.getAffectedCount(),
+          // The value the client addresses the row by afterwards, in the
+          // rendering `_id` already has in a page.
+          id: written.isEmpty ? null : written.first.idValue,
+        );
+      case WriteOp.update:
+        if (request.values.containsKey(docId)) {
+          // Nitrite merges the update document, so an `_id` in it would rewrite
+          // the identity of the row it just matched. The identity is `rowId`,
+          // and it is not editable.
+          throw BridgeException(
+              BridgeErrorKind.badRequest, '_id is not an editable field',
+              detail: 'a row is addressed by rowId; the engine owns its '
+                  'identity');
+        }
+        final written = await collection.update(
+          byId(_idOf(request.rowId)),
+          _documentOf(request.values),
+          updateOptions(justOnce: true),
+        );
+        return WriteResult(changes: written.getAffectedCount());
+      case WriteOp.delete:
+        final written = await collection.remove(byId(_idOf(request.rowId)),
+            justOne: true);
+        // `changes: 0` is an answer, not an error: the row the client addressed
+        // was not there.
+        return WriteResult(changes: written.getAffectedCount());
+    }
+  }
+
+  /// One binary cell, whole, rather than the 64 KB `queryPage` showed.
+  ///
+  /// Read by id rather than by filter: this is the O(1) lookup the engine
+  /// already has, and the row the client is looking at is one it has an `_id`
+  /// for by definition.
+  @override
+  Future<BlobChunk?> fetchBlob(BlobRequest request) async {
+    final collection = await _resolve(request.store);
+    final document = await collection.getById(_idOf(request.rowId));
+    if (document == null) return null;
+
+    final value = document[request.column];
+    if (value == null) return null;
+    if (value is! List<int>) {
+      // Not binary. A client asking for the bytes of a field that is not bytes
+      // has a stale schema, and a UTF-8 rendering of a number would be a
+      // fabricated file rather than a helpful one.
+      throw BridgeException(BridgeErrorKind.badRequest,
+          '"${request.column}" is not a binary field');
+    }
+    return BlobChunk.slice(
+        value is Uint8List ? value : Uint8List.fromList(value), request);
+  }
+
+  /// The document a write carries. The core already refused everything that is
+  /// not a JSON scalar, and `_id` is validated on the way in by Nitrite itself.
+  static Document _documentOf(Map<String, Object?> values) {
+    final document = emptyDocument();
+    for (final entry in values.entries) {
+      document.put(
+          entry.key, entry.key == docId ? _idOf(entry.value).idValue : entry.value);
+    }
+    return document;
+  }
+
+  /// Accepts an id in the rendering a page carried — a decimal string, which is
+  /// how `nitrite-flutter` keeps it in the document — and the number underneath
+  /// it, which is what a person types. The bracketed `[1755…]` form the Java and
+  /// Rust adapters render is accepted too, so a pasted id works anywhere.
+  static NitriteId _idOf(Object? rowId) {
+    final text = rowId.toString();
+    final open = text.indexOf('[');
+    final close = text.indexOf(']');
+    final digits =
+        open == 0 && close > open ? text.substring(1, close) : text;
+    if (int.tryParse(digits) == null) {
+      throw BridgeException(
+          BridgeErrorKind.badRequest, 'rowId is not a Nitrite _id',
+          detail: 'an _id is the value the store reported in that column');
+    }
+    return NitriteId.createId(digits);
   }
 
   @override

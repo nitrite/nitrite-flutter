@@ -50,11 +50,20 @@ never present a sample as a guarantee.
 | Option | Default | What it turns on |
 |---|---|---|
 | `allowRegex` | `false` | the `regex` filter operator |
-| `allowWrite` | `false` | row editing (arrives with the protocol's write methods) |
+| `allowWrite` | `false` | row editing — `insertRow`, `updateRow`, `deleteRow` |
 | `allowSnapshot` | `false` | whole-store snapshot |
 
 An option that is off is **absent from `capabilities`**, not merely refused when
 called, so a client greys the control out rather than offering it and failing.
+
+**A row is addressed by `_id`.** With `allowWrite: true`, `updateRow` and
+`deleteRow` take the value the grid showed in that column — a decimal string
+here, and the number and the bracketed `[1755…]` form other runtimes render are
+accepted too, so an id pasted from another grid works. `_id` inside an update's
+`values` is refused: Nitrite merges an update document, so it would rewrite the
+identity of the row it just matched — and here it would report `changes: 0`
+while doing nothing at all. An update is partial, and `changes: 0` means the row
+was not there, which is an answer rather than an error.
 
 `regex` is off by default for a specific reason: Dart's `RegExp` backtracks, a
 pattern like `(a+)+$` can pin a core inside your running application, and a Dart
