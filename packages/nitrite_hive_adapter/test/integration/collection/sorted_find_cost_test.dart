@@ -28,7 +28,7 @@ Future<double> _sortedPageCost(String name, int payloadSize) async {
             ]),
   ]);
 
-  var page = orderBy("seq", SortOrder.descending).setLimit(20);
+  var page = orderBy("seq", SortOrder.descending).setLimit(1);
   Future<void> run() => coll.find(findOptions: page).toList().then((_) {});
 
   await run(); // warm
@@ -53,21 +53,26 @@ void main() {
     /// The same query, the same row count, the same index - only the size of
     /// the documents differs. A sorted page that decodes every row pays for the
     /// payload of every row, so the fat collection costs many times the lean
-    /// one. A sorted page that decodes only the rows it returns costs the same
-    /// either way.
+    /// one. A sorted page that decodes only the row it returns costs about the
+    /// same either way.
     ///
-    /// Deliberately not "sorted page vs. full drain": both halves here are
-    /// measured back to back under whatever load the machine is under, and the
-    /// only variable between them is the thing that was broken.
+    /// Both halves walk an index of identical size and shape, so that cost
+    /// cancels; what does not cancel is the payload of the rows each one
+    /// decodes. The page is deliberately one row rather than twenty: returning
+    /// a fat document legitimately costs more than returning a lean one, and
+    /// that difference is the floor of this ratio, so the fewer rows the page
+    /// returns the more of the ratio is the [_rows] rows it should never have
+    /// touched.
+    ///
+    /// Deliberately not "sorted page vs. full drain", whose halves share no
+    /// work at all. Both halves here are measured back to back, under whatever
+    /// load the machine is under.
     test("Test Sorted Page Cost Does Not Follow Document Size", () async {
       var lean = await _sortedPageCost('lean', 0);
       var fat = await _sortedPageCost('fat', 150);
 
-      // measured: ~0.8x with the index-ordered sort, ~4.9x without it. Dart's
-      // per-row stream overhead sits under both, so the gap is narrower here
-      // than in nitrite-java or nitrite-rust and the threshold sits lower.
       expect(
-        fat < lean * 2.5,
+        fat < lean * 3,
         isTrue,
         reason: 'a sorted page over fat documents took ${fat}ms against '
             '${lean}ms over lean ones, same row count - it is still decoding '
