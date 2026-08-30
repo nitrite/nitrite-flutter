@@ -40,6 +40,20 @@ abstract class Transaction {
   /// Gets a [NitriteCollection] to perform transactional operations on it.
   Future<NitriteCollection> getCollection(String name);
 
+  /// A transactional view over a collection the caller already holds.
+  ///
+  /// [getCollection] opens the primary by name and refuses a name that is not a
+  /// collection — and a repository's document collection is not one. A caller
+  /// holding an [ObjectRepository]'s [ObjectRepository.documentCollection] and
+  /// no `T` to reach [getRepository] with therefore has no door: `nitrite_bridge`
+  /// is exactly that caller, since it is handed document collections and the
+  /// entity-name-to-type mapping lives in the embedding application's generated
+  /// code rather than in the store.
+  ///
+  /// Keyed by the collection's own name, so asking twice returns the same
+  /// transactional collection [getCollection] would.
+  Future<NitriteCollection> viewOf(NitriteCollection primary);
+
   /// Gets an [ObjectRepository] to perform transactional operations on it.
   Future<ObjectRepository<T>> getRepository<T>({
     EntityDecorator<T>? entityDecorator,

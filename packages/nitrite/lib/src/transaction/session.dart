@@ -126,11 +126,19 @@ class _NitriteTransaction extends Transaction {
       return _collectionRegistry[name]!;
     }
 
-    NitriteCollection primary;
-    if (await _nitrite.hasCollection(name)) {
-      primary = await _nitrite.getCollection(name);
-    } else {
+    if (!await _nitrite.hasCollection(name)) {
       throw TransactionException('Collection $name does not exist');
+    }
+    return viewOf(await _nitrite.getCollection(name));
+  }
+
+  @override
+  Future<NitriteCollection> viewOf(NitriteCollection primary) async {
+    _checkState();
+
+    final name = primary.name;
+    if (_collectionRegistry.containsKey(name)) {
+      return _collectionRegistry[name]!;
     }
 
     var txMap = await _transactionStore.openMap<NitriteId, Document>(name);

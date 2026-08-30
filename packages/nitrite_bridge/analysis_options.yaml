@@ -1,0 +1,23 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  # This package hands documents out of a developer's live database to a client
+  # it does not trust, and takes a filter tree back from that client. Implicit
+  # dynamic casts are the exact bug class that turns a malformed frame from a
+  # peer into a crash inside the embedding developer's application, so they are
+  # errors here.
+  #
+  # `lints/recommended` rather than `flutter_lints`: this package is pure Dart,
+  # and requiring a Flutter SDK to build it would be a real cost to a
+  # server-side or CLI user with a Nitrite database.
+  language:
+    strict-casts: true
+    strict-raw-types: true
+  errors:
+    # A dropped Future here is a socket write or a database close that may never
+    # land. Not a style question.
+    unawaited_futures: error
+
+linter:
+  rules:
+    - unawaited_futures
