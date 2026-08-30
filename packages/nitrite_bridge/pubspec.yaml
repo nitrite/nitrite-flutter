@@ -18,4 +18,15 @@ dev_dependencies:
 funding:
   - https://github.com/sponsors/anidotnet
 
-resolution: workspace
+# Not on pub.dev until the dbinspect release, so this resolves through the
+# sibling checkout until then — which is why this package is deliberately out of
+# the workspace in the root `pubspec.yaml`. `dart pub publish` ignores overrides.
+#
+# Remove this the day `dbinspect_bridge` is published.
+dependency_overrides:
+  dbinspect_bridge:
+    path: ../../../../fanlight/dbinspect/dart/dbinspect_bridge
+  # Out of the workspace, `nitrite` would otherwise come from pub.dev and the
+  # tests would run against the published core rather than the one beside them.
+  nitrite:
+    path: ../nitrite

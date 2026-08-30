@@ -41,6 +41,7 @@ class NitriteAdapter extends BridgeAdapter {
     bool allowSnapshot = false,
   })  : _repositories = repositories,
         _allowRegex = allowRegex,
+        _transaction = null,
         _capabilities = AdapterCapabilities(
           query: QueryConsole.filter,
           // Nitrite's own collection-level subscription, so a write from
@@ -50,6 +51,12 @@ class NitriteAdapter extends BridgeAdapter {
           // Off unless the embedding developer turned it on for this adapter
           // (threat model rule 5).
           edit: allowWrite,
+          // Not an opt-in (`docs/PROTOCOL.md` §3.1): Nitrite's transaction is
+          // implemented above the store, so it is available on every engine
+          // this adapter can be pointed at — Hive and in-memory alike.
+          // `allowWrite` is the permission; this reports what the engine can
+          // undo.
+          transactions: allowWrite,
           snapshot: allowSnapshot,
           // Not an opt-in: `queryPage` already showed the first 64 KB of this
           // very cell, and `docs/PROTOCOL.md` §2 has always promised the rest
@@ -61,10 +68,39 @@ class NitriteAdapter extends BridgeAdapter {
           ],
         );
 
+  /// The transactional twin of [parent], resolving stores through
+  /// [transaction].
+  ///
+  /// Every capability but `transactions` is carried over: a gate that changed
+  /// inside a transaction would be a second, invisible permission model. That
+  /// one drops, because Nitrite does not nest one.
+  NitriteAdapter._inTransaction(NitriteAdapter parent, Transaction transaction)
+      : _db = parent._db,
+        _repositories = parent._repositories,
+        _allowRegex = parent._allowRegex,
+        _transaction = transaction,
+        sampleSize = parent.sampleSize,
+        id = parent.id,
+        displayName = parent.displayName,
+        _capabilities = AdapterCapabilities(
+          query: parent._capabilities.query,
+          watch: parent._capabilities.watch,
+          watchScope: parent._capabilities.watchScope,
+          edit: parent._capabilities.edit,
+          transactions: false,
+          snapshot: parent._capabilities.snapshot,
+          blob: parent._capabilities.blob,
+          filterOps: parent._capabilities.filterOps,
+        );
+
   final Nitrite _db;
   final List<ObjectRepository<dynamic>> _repositories;
   final AdapterCapabilities _capabilities;
   final bool _allowRegex;
+
+  /// The open transaction this adapter is scoped to, or null on the one that is
+  /// not. See [beginTransaction].
+  final Transaction? _transaction;
 
   /// How many documents `getSchema` reads before answering. The schema is a
   /// sample, never a guarantee, and says so on the wire.
@@ -90,24 +126,82 @@ class NitriteAdapter extends BridgeAdapter {
   @override
   AdapterCapabilities get capabilities => _capabilities;
 
+  /// Opens one Nitrite transaction (`docs/PROTOCOL.md` §3.1).
+  ///
+  /// Nitrite's transaction lives above the storage engine — a transactional
+  /// store buffers the writes and a journal replays them on commit — so this
+  /// works identically on Hive and in memory. Nothing here re-implements either
+  /// half; the session and the transaction are the engine's own.
+  ///
+  /// The session is held alongside the transaction and closed by whichever of
+  /// commit or rollback runs, because closing a session rolls back anything
+  /// still open in it — which is what makes the ending safe on both paths.
+  @override
+  Future<AdapterTransaction> beginTransaction() async {
+    final session = _db.createSession();
+    final Transaction started;
+    try {
+      started = await session.beginTransaction();
+    } on Object catch (failure) {
+      await session.close();
+      throw BridgeException(
+        BridgeErrorKind.adapter,
+        'the database would not begin a transaction',
+        detail: failure.toString(),
+      );
+    }
+
+    return AdapterTransaction(
+      adapter: NitriteAdapter._inTransaction(this, started),
+      onCommit: () async {
+        try {
+          await started.commit();
+        } on Object catch (failure) {
+          throw BridgeException(
+            BridgeErrorKind.adapter,
+            'the database refused the commit',
+            detail: failure.toString(),
+          );
+        } finally {
+          // Closed on both paths: a session that is not closed holds the
+          // transactional maps, and a failed commit is exactly when letting go
+          // matters most.
+          await session.close();
+        }
+      },
+      onRollback: () async {
+        try {
+          await started.rollback();
+        } finally {
+          await session.close();
+        }
+      },
+    );
+  }
+
+  /// The stores, counted through [_resolve] rather than off `_db` directly.
+  ///
+  /// Which matters inside a transaction: a count taken from the primary
+  /// collection would show the person a total that does not include the rows
+  /// they just staged, and §3.1's read-your-own-writes covers `listStores` as
+  /// much as it covers a page.
   @override
   Future<List<StoreInfo>> listStores() async {
     final stores = <StoreInfo>[];
     for (final name in await _db.listCollectionNames) {
-      final collection = await _db.getCollection(name);
       stores.add(StoreInfo(
         name: name,
         kind: 'collection',
-        approxCount: await collection.size,
+        approxCount: await (await _resolve(name)).size,
       ));
     }
     for (final repository in _repositories) {
-      final collection = repository.documentCollection;
+      final name = repository.documentCollection.name;
       stores.add(StoreInfo(
-        name: collection.name,
+        name: name,
         kind: 'repository',
-        key: _keyOf(collection.name),
-        approxCount: await collection.size,
+        key: _keyOf(name),
+        approxCount: await (await _resolve(name)).size,
       ));
     }
     return stores;
@@ -319,15 +413,34 @@ class NitriteAdapter extends BridgeAdapter {
   /// exist. Passing an unchecked name through would let a paired client litter
   /// the developer's database with empty collections.
   Future<NitriteCollection> _resolve(String store) async {
-    for (final repository in _repositories) {
-      if (repository.documentCollection.name == store) {
-        return repository.documentCollection;
+    NitriteCollection? repository;
+    for (final candidate in _repositories) {
+      if (candidate.documentCollection.name == store) {
+        repository = candidate.documentCollection;
+        break;
       }
     }
-    if ((await _db.listCollectionNames).contains(store)) {
-      return _db.getCollection(store);
+    if (repository == null &&
+        !(await _db.listCollectionNames).contains(store)) {
+      throw BridgeException(BridgeErrorKind.badRequest, 'unknown store');
     }
-    throw BridgeException(BridgeErrorKind.badRequest, 'unknown store');
+
+    // Inside a transaction, always the transaction's view — a repository's
+    // handle included. A read through the primary would miss the documents
+    // staged beside it, and a write through it would land outside the
+    // transaction entirely.
+    final transaction = _transaction;
+    if (transaction != null) {
+      // `Transaction.getCollection` opens the primary by name and a
+      // repository's document collection is not one; this adapter holds
+      // document collections rather than typed repositories, so it has no `T`
+      // for the other door. `viewOf` is that door.
+      return repository != null
+          ? transaction.viewOf(repository)
+          : transaction.getCollection(store);
+    }
+
+    return repository ?? await _db.getCollection(store);
   }
 
   /// A keyed repository is stored under `entityName+key`; the key is reported
