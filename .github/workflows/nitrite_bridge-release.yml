@@ -6,6 +6,12 @@ name: Release Nitrite Bridge
 # nothing and reports no failure. `workflow_dispatch` below is the way back when
 # it happens anyway; without it the only recovery is deleting and re-pushing the
 # tag.
+#
+# **A package's first version cannot come from here.** pub.dev's automated
+# publishing is configured on a package's admin page, which does not exist until
+# the package does, so version one is published by hand with `dart pub publish`
+# and the tag pushed afterwards — which makes this workflow's first run fail with
+# "already exists". That is expected once, for the first release only.
 
 on:
   push:
