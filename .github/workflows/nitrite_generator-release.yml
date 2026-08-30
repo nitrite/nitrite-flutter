@@ -17,6 +17,7 @@ jobs:
   publish:
     name: Publish on pub.dev
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     permissions:
       id-token: write # Required for authentication using OIDC
@@ -51,7 +52,28 @@ jobs:
       - name: Format Nitrite
         run: melos run lint:all
 
+      # `dart pub publish` answers "already exists" for a version that is up,
+      # and that is a permanent failure the retry below would nonetheless
+      # attempt ten times. It happens whenever a tag is re-pushed, or when a
+      # package's first version had to be published by hand — which is how
+      # every first release works, because pub.dev configures automated
+      # publishing on a page that does not exist until the package does.
+      - name: Is nitrite_generator already published?
+        id: published
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's/^version: *//p' packages/nitrite_generator/pubspec.yaml | head -1)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if curl -sfo /dev/null \
+               "https://pub.dev/api/packages/nitrite_generator/versions/$version"; then
+            echo "nitrite_generator $version is already on pub.dev"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish Nitrite Generator
+        if: steps.published.outputs.skip == 'false'
         uses: nick-fields/retry@v4
         with:
           max_attempts: 10
