@@ -1,9 +1,17 @@
 name: Release Nitrite
 
+# Push release tags **three at a time at most**. GitHub creates no tag events at
+# all for a push carrying more than three tags — not the fourth onward, all of
+# them — so a batched `git push origin tagA tagB ... tagF` silently publishes
+# nothing and reports no failure. `workflow_dispatch` below is the way back when
+# it happens anyway; without it the only recovery is deleting and re-pushing the
+# tag.
+
 on:
   push:
     tags:
       - 'nitrite-[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
 
 jobs:
   publish:

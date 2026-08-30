@@ -1,4 +1,4 @@
-name: Release Nitrite Generator
+name: Release Nitrite Bridge
 
 # Push release tags **three at a time at most**. GitHub creates no tag events at
 # all for a push carrying more than three tags — not the fourth onward, all of
@@ -10,7 +10,7 @@ name: Release Nitrite Generator
 on:
   push:
     tags:
-      - 'nitrite_generator-[0-9]+.[0-9]+.[0-9]+*'
+      - 'nitrite_bridge-[0-9]+.[0-9]+.[0-9]+*'
   workflow_dispatch:
 
 jobs:
@@ -51,11 +51,11 @@ jobs:
       - name: Format Nitrite
         run: melos run lint:all
 
-      - name: Publish Nitrite Generator
+      - name: Publish Nitrite Bridge
         uses: nick-fields/retry@v4
         with:
           max_attempts: 10
           timeout_minutes: 60
           command: |
-            cd packages/nitrite_generator
+            cd packages/nitrite_bridge
             flutter pub publish --force

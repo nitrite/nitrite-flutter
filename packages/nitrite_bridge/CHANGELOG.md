@@ -1,6 +1,9 @@
-## 0.1.0
+## 3.2.0
 
-- First release. Requires nitrite 3.2.0, for `Transaction.viewOf`.
+- First release. Versioned with the rest of the nitrite-flutter packages
+  rather than from 0.1.0, so a reader does not have to work out which
+  `nitrite` a given `nitrite_bridge` pairs with. Requires nitrite 3.2.0, for
+  `Transaction.viewOf`.
   `NitriteAdapter` for `dbinspect_bridge`: collections and
   handed-in repositories as stores, schema inferred from a document sample and
   always flagged as inferred, paging over `FindOptions` skip/limit/orderBy, the

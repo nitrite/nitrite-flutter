@@ -7,18 +7,9 @@ environment:
 dev_dependencies:
   melos: ^8.0.0
 
-# `packages/nitrite_bridge` is deliberately absent from the workspace and from
-# melos. It depends on `dbinspect_bridge`, which is not on pub.dev until the
-# dbinspect release, so resolving it here would fail `pub get` for every other
-# package too. It resolves through the sibling checkout on its own instead:
-#
-#   cd packages/nitrite_bridge && dart pub get && dart test
-#
-# The same sequencing the Rust and JVM adapters are in — `nitrite-bridge` is out
-# of the Cargo workspace `members` and out of the Maven `<modules>` for this very
-# reason. Put it back the day `dbinspect_bridge` is published.
 workspace:
   - packages/nitrite
+  - packages/nitrite_bridge
   - packages/nitrite_generator
   - packages/nitrite_hive_adapter
   - packages/nitrite_spatial
