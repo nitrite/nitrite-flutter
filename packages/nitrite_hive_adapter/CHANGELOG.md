@@ -1,3 +1,7 @@
+## 3.2.0
+
+- Rebuilt against nitrite 3.2.0. No functional change in this package.
+
 ## 3.1.0
 
 - Maintenance release: raised `nitrite` dependency to `^3.1.0`.

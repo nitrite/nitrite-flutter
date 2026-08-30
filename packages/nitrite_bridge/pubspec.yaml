@@ -8,7 +8,7 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  nitrite: ^3.0.0
+  nitrite: ^3.2.0
   dbinspect_bridge: ^0.1.0
 
 dev_dependencies:

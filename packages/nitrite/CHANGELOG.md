@@ -1,3 +1,7 @@
+## 3.2.0
+
+- Added `Transaction.viewOf`, a transactional view over a collection the caller already holds. `getCollection(name)` opens the primary by name and refuses a name that is not a collection — and a repository's document collection is not one — so a caller holding an `ObjectRepository.documentCollection`, and no `T` to reach `getRepository` with, had no way in. That caller is `nitrite_bridge`, which is handed document collections and knows nothing about the entity types behind them. Keyed by the collection's own name, so asking twice returns the same transactional collection `getCollection` would.
+
 ## 3.1.0
 
 - A sorted, limited `find` no longer fetches the whole collection when the sort field is indexed. `find(findOptions: orderBy("createdAt", SortOrder.descending).setLimit(20))` asked for 20 rows and cost what draining every stored document costs: `SortedDocumentStream` collects the entire result set before `skip`/`take` get to drop 99% of it, and the cost is the decode, not the comparison, so it scales with document *size* as well as count. An index on the sort field bought nothing - the index was only ever used to *filter*, never to order, and page 50 cost exactly what page 1 cost because the work finished before the skip applied.

@@ -1,13 +1,25 @@
 ## 0.1.0
 
-- First release. `NitriteAdapter` for `dbinspect_bridge`: collections and
+- First release. Requires nitrite 3.2.0, for `Transaction.viewOf`.
+  `NitriteAdapter` for `dbinspect_bridge`: collections and
   handed-in repositories as stores, schema inferred from a document sample and
   always flagged as inferred, paging over `FindOptions` skip/limit/orderBy, the
   JSON filter DSL, and watch over Nitrite's collection subscription.
 - `capabilities.filterOps` reports `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`,
-  `notIn`, `exists` and `text`. `exists` needs nitrite 3.0.0, which is why this
-  package requires it: the operator was reported unsupported for as long as the
-  fluent API had nothing that tested for a field's presence.
+  `notIn`, `exists` and `text`. `exists` needs nitrite 3.0.0: the operator was
+  reported unsupported for as long as the fluent API had nothing that tested
+  for a field's presence.
+- Transactions (`docs/PROTOCOL.md` §3.1). `beginTransaction()` returns an
+  `AdapterTransaction` whose adapter is a transactional twin over the same
+  database — a second adapter rather than a mode on the first, so one
+  connection's uncommitted documents can never reach another connection's
+  reads. Nitrite's transaction lives above the storage engine, so this works
+  identically on Hive and in memory.
+- `capabilities.transactions` follows `allowWrite`: that flag is the
+  permission, this reports what the engine can undo. The transactional twin
+  reports it `false`, because Nitrite does not nest one. `listStores` counts
+  through the transaction, since a total that left out the rows the person just
+  staged is not read-your-own-writes.
 - `regex` is off unless `allowRegex` is set, and refused with a length cap and a
   nested-quantifier check when it is on. Dart's `RegExp` backtracks and a match
   cannot be interrupted, so the default is the mitigation that matters.
