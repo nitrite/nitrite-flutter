@@ -26,6 +26,16 @@ abstract class NitriteMap<Key, Value> extends AttributesAware
   /// this map.
   Stream<Value> values();
 
+  /// Gets a [Stream] of the values contained in this map, without fetching the
+  /// first [skipCount] of them.
+  ///
+  /// The default discards them one at a time, so a store that has no cheaper
+  /// way to reach the offset is correct without doing anything. A store that
+  /// can move over its keys without reading the values behind them should
+  /// override this: paging walks the offset again on every page, and where a
+  /// value costs a read and a decode, that is the whole cost of a page.
+  Stream<Value> valuesSkipping(int skipCount) => values().skip(skipCount);
+
   /// Gets a [Stream] of the keys contained in this map.
   Stream<Key> keys();
 

@@ -191,6 +191,26 @@ class BoxMap<Key, Value> extends NitriteMap<Key, Value> {
   }
 
   @override
+  Stream<Value> valuesSkipping(int skipCount) async* {
+    // The box holds its keys in memory and its values on disk, so stepping over
+    // a key costs an iterator bump while reading one costs a read and a decode.
+    // Discarding the values of skipped rows was the whole cost of a late page.
+    var iterator = _lazyBox.keys.iterator;
+
+    // Advanced by hand rather than with Iterable.skip, which keeps calling
+    // moveNext for the whole count without looking at what it returns. Hive's
+    // skip-list iterator dereferences a null once it is past the end, so a page
+    // starting beyond the last key throws instead of coming back empty.
+    for (var i = 0; i < skipCount; i++) {
+      if (!iterator.moveNext()) return;
+    }
+
+    while (iterator.moveNext()) {
+      yield await _lazyBox.get(iterator.current) as Value;
+    }
+  }
+
+  @override
   Future<Key?> firstKey() async {
     var index = _keyIndex();
     return index.isEmpty ? null : index.firstKey();
