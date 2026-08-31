@@ -1,18 +1,20 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
+/// Stamps the Hive dependency version into the source tree.
+///
+/// It reads `pubspec.yaml` off disk rather than through Flutter's `rootBundle`, which is what
+/// it used to do. `rootBundle` needs `WidgetsFlutterBinding`, so this file pulled in
+/// `package:flutter` and could only be compiled by `flutter test` - under `dart test` it
+/// crashed the Dart front end in the FFI transformer before running anything. Nothing here
+/// wants a widget binding: the pubspec is a file in the package root and `dart:io` was already
+/// imported to write the output beside it.
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
   group(retry: 3, 'Meta Writer', () {
     test('Write Meta', () async {
-      final fileContent = await rootBundle.loadString(
-        "pubspec.yaml",
-      );
+      final fileContent = await File('pubspec.yaml').readAsString();
       final pubspec = loadYaml(fileContent);
       var version = pubspec['dependencies']['hive'].replaceAll('^', '');
 
@@ -22,7 +24,7 @@ void main() {
 Map<String, String> meta = <String, String>{
   "version": "$version",
 };
-  """;
+""";
 
       var metaDartFile = File('lib/src/store/hive_meta.dart');
       await metaDartFile.writeAsString(metaDartFileContents, flush: true);
