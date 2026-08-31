@@ -1,3 +1,7 @@
+## 3.3.0
+
+- Rebuilt against nitrite 3.3.0. No functional change in this package.
+
 ## 3.2.0
 
 - First release. Versioned with the rest of the nitrite-flutter packages

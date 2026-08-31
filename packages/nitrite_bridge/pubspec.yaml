@@ -1,6 +1,6 @@
 name: nitrite_bridge
 description: Inspect a running application's Nitrite database from a desktop client, over a paired, loopback-by-default connection.
-version: 3.2.0
+version: 3.3.0
 homepage: https://nitrite.dizitart.com/
 repository: https://github.com/nitrite/nitrite-flutter
 
@@ -8,7 +8,7 @@ environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  nitrite: ^3.2.0
+  nitrite: ^3.3.0
   dbinspect_bridge: ^0.1.0
 
 dev_dependencies:
