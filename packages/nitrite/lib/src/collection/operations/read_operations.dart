@@ -197,6 +197,21 @@ class ReadOperations {
         hashCode: (doc) => doc.id.hashCode,
       );
     } else {
+      // The offset can be taken at the source, before a document is fetched,
+      // but only where nothing between the source and the page drops or
+      // reorders rows: a post-filter or a blocking sort would make the source's
+      // Nth row a different row from the page's. Those keep the stream skip
+      // below, which is correct and merely pays for what it passes over.
+      var skip = findPlan.skip ?? 0;
+      // An unfiltered scan still carries the `all` filter rather than null, and
+      // that one accepts every document, so it moves no row past the offset.
+      // Any other filter can, and then the source's Nth row is not the page's.
+      var scanFilter = findPlan.collectionScanFilter;
+      var canTakeSkipAtSource = skip > 0 &&
+          (scanFilter == null || scanFilter == all) &&
+          findPlan.blockingSortOrder.isEmpty;
+      var skipTakenAtSource = false;
+
       // and or single filter
       if (findPlan.byIdFilter != null) {
         var nitriteId = NitriteId.createId(findPlan.byIdFilter!.value);
@@ -215,11 +230,25 @@ class ReadOperations {
           );
           var nitriteIdStream = indexer.findByFilter(findPlan, _nitriteConfig);
 
+          if (canTakeSkipAtSource) {
+            // an id is not a document; dropping one costs nothing next to the
+            // fetch and decode it saves
+            nitriteIdStream = nitriteIdStream.skip(skip);
+            skipTakenAtSource = true;
+          }
+
           // create indexed stream from optimized filter
           rawStream = IndexedStream(nitriteIdStream, _nitriteMap);
         } else {
           indexSorted = await _indexSortedStream(findPlan);
-          rawStream = indexSorted ?? _nitriteMap.values();
+          if (indexSorted != null) {
+            rawStream = indexSorted;
+          } else if (canTakeSkipAtSource) {
+            rawStream = _nitriteMap.valuesSkipping(skip);
+            skipTakenAtSource = true;
+          } else {
+            rawStream = _nitriteMap.values();
+          }
         }
       }
 
@@ -235,7 +264,7 @@ class ReadOperations {
       }
 
       if (findPlan.limit != null || findPlan.skip != null) {
-        rawStream = rawStream.skip(findPlan.skip ?? 0);
+        rawStream = rawStream.skip(skipTakenAtSource ? 0 : (findPlan.skip ?? 0));
         rawStream = rawStream.take(findPlan.limit ?? _maxSafeInteger);
       }
     }
