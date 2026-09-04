@@ -52,10 +52,12 @@ class ReadOperations {
 
   Future<Document?> getById(NitriteId nitriteId) async {
     var doc = await _nitriteMap[nitriteId];
-    if (doc != null) {
-      doc = await _processorChain.processAfterRead(doc);
-    }
-    return doc;
+    if (doc == null) return null;
+    // Hand out a copy, as the cursor does. The in-memory store returns the very
+    // instance it holds, so without this a caller's `doc.put(...)` edits the
+    // store directly and bypasses every index.
+    var copy = doc.clone();
+    return _processorChain.processAfterRead(copy);
   }
 
   void _prepareFilter(Filter filter) {

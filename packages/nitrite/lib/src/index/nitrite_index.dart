@@ -52,11 +52,17 @@ abstract class NitriteIndex {
   ) {
     nitriteIds = nitriteIds ?? <NitriteId>[];
 
-    if (isUnique && nitriteIds.length == 1) {
-      // if key is already exists for unique type, throw error
-      throw UniqueConstraintException(
-        'Unique key constraint violation for ${fieldValues.fields}',
-      );
+    if (isUnique && nitriteIds.isNotEmpty) {
+      // Another document already holding this key is the violation. The same
+      // document again is not: a unique index over an array field visits a
+      // repeated element once per occurrence, and a rebuild or a replayed write
+      // reaches the key the document already owns.
+      if (nitriteIds.any((id) => id != fieldValues.nitriteId)) {
+        throw UniqueConstraintException(
+          'Unique key constraint violation for ${fieldValues.fields}',
+        );
+      }
+      return nitriteIds;
     }
 
     // index always are in ascending format
