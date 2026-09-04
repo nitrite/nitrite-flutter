@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:nitrite/nitrite.dart';
 import 'package:nitrite/src/collection/operations/index_operations.dart';
 import 'package:nitrite/src/common/util/document_utils.dart';
+import 'package:nitrite/src/common/util/object_utils.dart';
 
 /// @nodoc
 class DocumentIndexWriter {
@@ -34,6 +35,16 @@ class DocumentIndexWriter {
 
       // if the index is affected by the update
       if (fields.fieldNames.any((field) => updatedFields.containsKey(field))) {
+        // "affected" only means the update carries the field. An update that
+        // writes the whole document back, the common upsert shape, carries every
+        // indexed field with its old value, and rewriting those entries is pure
+        // cost. A dirty index still has to be rebuilt, so that case is not
+        // skipped.
+        if (!await _indexOperations.shouldRebuildIndex(fields) &&
+            _sameIndexedValues(oldDoc, newDoc, fields)) {
+          continue;
+        }
+
         var indexType = indexDescriptor.indexType;
         var nitriteIndexer = await _nitriteConfig.findIndexer(indexType);
 
@@ -59,6 +70,20 @@ class DocumentIndexWriter {
         nitriteIndexer,
       );
     }
+  }
+
+  /// Whether the two documents hold the same values for every field of the
+  /// index, compared deeply so that lists and embedded values count as equal
+  /// when their contents are.
+  bool _sameIndexedValues(Document oldDoc, Document newDoc, Fields fields) {
+    var before = getDocumentValues(oldDoc, fields).values;
+    var after = getDocumentValues(newDoc, fields).values;
+    if (before.length != after.length) return false;
+    for (var i = 0; i < before.length; i++) {
+      if (before[i].$1 != after[i].$1) return false;
+      if (!deepEquals(before[i].$2, after[i].$2)) return false;
+    }
+    return true;
   }
 
   Future<void> _writeIndexEntryInternal(
