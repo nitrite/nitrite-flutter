@@ -1,4 +1,4 @@
-## Unreleased
+## 3.3.1
 
 Ported from the corresponding fixes in `nitrite-java`, where each was found.
 

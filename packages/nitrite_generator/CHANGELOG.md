@@ -1,3 +1,7 @@
+## 3.3.1
+
+- Rebuilt against nitrite 3.3.1. No functional change in this package.
+
 ## 3.3.0
 
 - Rebuilt against nitrite 3.3.0. No functional change in this package.
