@@ -13,8 +13,9 @@ void main() {
     Future<NitriteCollection> seed(bool tagsIndex, bool createdIndex) async {
       var db = await Nitrite.builder().openOrCreate();
       var c = await db.getCollection('array_index_independence');
-      if (tagsIndex)
+      if (tagsIndex) {
         await c.createIndex(['tags'], indexOptions(IndexType.nonUnique));
+      }
       if (createdIndex) {
         await c.createIndex(['created_at'], indexOptions(IndexType.nonUnique));
       }
