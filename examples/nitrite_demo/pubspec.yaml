@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^2.0.0
   flutter_slidable: ^4.0.3
   flutter_riverpod: ^3.0.0
   riverpod_annotation: ^4.0.0
