@@ -368,14 +368,14 @@ void main() {
       expect(row.rows.single['age'], 42);
       expect(row.rows.single['_id'], id);
 
-      final deleted = await write(
-          adapter, WriteOp.delete, {'store': 'users', 'rowId': id});
+      final deleted =
+          await write(adapter, WriteOp.delete, {'store': 'users', 'rowId': id});
       expect(deleted.changes, 1);
 
       // `changes: 0` is an answer, not an error: the row is gone, and a client
       // must be able to tell that from a write that failed.
-      final again = await write(
-          adapter, WriteOp.delete, {'store': 'users', 'rowId': id});
+      final again =
+          await write(adapter, WriteOp.delete, {'store': 'users', 'rowId': id});
       expect(again.changes, 0);
     });
 
@@ -447,8 +447,8 @@ void main() {
       expect(adapterFor().capabilities.snapshot, isFalse);
 
       final adapter = adapterFor(allowSnapshot: true);
-      final request = SnapshotRequest.fromParams(
-          {'store': 'users'}, adapter.capabilities);
+      final request =
+          SnapshotRequest.fromParams({'store': 'users'}, adapter.capabilities);
 
       var rows = 0;
       await for (final chunk in adapter.snapshot(request)) {

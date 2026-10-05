@@ -328,8 +328,8 @@ class NitriteAdapter extends BridgeAdapter {
         );
         return WriteResult(changes: written.getAffectedCount());
       case WriteOp.delete:
-        final written = await collection.remove(byId(_idOf(request.rowId)),
-            justOne: true);
+        final written =
+            await collection.remove(byId(_idOf(request.rowId)), justOne: true);
         // `changes: 0` is an answer, not an error: the row the client addressed
         // was not there.
         return WriteResult(changes: written.getAffectedCount());
@@ -365,8 +365,8 @@ class NitriteAdapter extends BridgeAdapter {
   static Document _documentOf(Map<String, Object?> values) {
     final document = emptyDocument();
     for (final entry in values.entries) {
-      document.put(
-          entry.key, entry.key == docId ? _idOf(entry.value).idValue : entry.value);
+      document.put(entry.key,
+          entry.key == docId ? _idOf(entry.value).idValue : entry.value);
     }
     return document;
   }
@@ -379,8 +379,7 @@ class NitriteAdapter extends BridgeAdapter {
     final text = rowId.toString();
     final open = text.indexOf('[');
     final close = text.indexOf(']');
-    final digits =
-        open == 0 && close > open ? text.substring(1, close) : text;
+    final digits = open == 0 && close > open ? text.substring(1, close) : text;
     if (int.tryParse(digits) == null) {
       throw BridgeException(
           BridgeErrorKind.badRequest, 'rowId is not a Nitrite _id',

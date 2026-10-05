@@ -18,9 +18,8 @@ class MapMetaData implements MetaData {
     // the catalog document, so adding a name here would edit the stored set in
     // place - a write that has not been made yet, and one no rollback undoes.
     var stored = document[tagMapMetaData]?.cast<String>();
-    _mapNames = stored == null
-        ? HashSet<String>()
-        : HashSet<String>.from(stored);
+    _mapNames =
+        stored == null ? HashSet<String>() : HashSet<String>.from(stored);
   }
 
   @override

@@ -21,10 +21,7 @@ void main() {
       await collection.createIndex(['qty', 'qty2']);
 
       await collection.insert(
-        emptyDocument()
-            .put('name', 'item_c')
-            .put('qty', 5)
-            .put('qty2', 10),
+        emptyDocument().put('name', 'item_c').put('qty', 5).put('qty2', 10),
       );
     });
 

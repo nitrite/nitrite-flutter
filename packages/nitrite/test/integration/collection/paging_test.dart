@@ -22,8 +22,10 @@ void pagingTests(Future<Nitrite> Function() dbFactory) {
       db = await dbFactory();
       collection = await db.getCollection('paged');
       for (var i = 0; i < rows; i++) {
-        await collection.insert(
-            emptyDocument().put('index', i).put('group', i % 5).put('name', 'row $i'));
+        await collection.insert(emptyDocument()
+            .put('index', i)
+            .put('group', i % 5)
+            .put('name', 'row $i'));
       }
     });
 
@@ -33,9 +35,11 @@ void pagingTests(Future<Nitrite> Function() dbFactory) {
       if (!db.isClosed) await db.close();
     });
 
-    Future<List<Object?>> indexesOf(Filter filter, [FindOptions? options]) async {
+    Future<List<Object?>> indexesOf(Filter filter,
+        [FindOptions? options]) async {
       var out = <Object?>[];
-      await for (var doc in collection.find(filter: filter, findOptions: options)) {
+      await for (var doc
+          in collection.find(filter: filter, findOptions: options)) {
         out.add(doc['index']);
       }
       return out;
@@ -43,8 +47,9 @@ void pagingTests(Future<Nitrite> Function() dbFactory) {
 
     Future<void> assertPagesMatchFullScan(Filter filter,
         {String? sortField, SortOrder? order, int pageSize = page}) async {
-      FindOptions? base =
-          sortField == null ? null : orderBy(sortField, order ?? SortOrder.ascending);
+      FindOptions? base = sortField == null
+          ? null
+          : orderBy(sortField, order ?? SortOrder.ascending);
       var whole = await indexesOf(filter, base);
       expect(whole, isNotEmpty, reason: 'the fixture must return rows');
 
@@ -67,14 +72,20 @@ void pagingTests(Future<Nitrite> Function() dbFactory) {
       for (var offset = 0; offset < rows; offset += page) {
         var got = await indexesOf(all, skipBy(offset).setLimit(page));
         var end = offset + page > rows ? rows : offset + page;
-        expect(got, whole.sublist(offset, end), reason: 'page at offset $offset');
+        expect(got, whole.sublist(offset, end),
+            reason: 'page at offset $offset');
       }
     });
 
     test('a page past the end is empty', () async {
       for (var offset in [rows, rows + 1, rows * 3]) {
-        expect(await collection.find(findOptions: skipBy(offset).setLimit(page)).length, 0,
-            reason: 'a page starting at $offset must be empty, not wrap to the start');
+        expect(
+            await collection
+                .find(findOptions: skipBy(offset).setLimit(page))
+                .length,
+            0,
+            reason:
+                'a page starting at $offset must be empty, not wrap to the start');
       }
     });
 
@@ -89,12 +100,14 @@ void pagingTests(Future<Nitrite> Function() dbFactory) {
     test('an empty collection pages to nothing', () async {
       var empty = await db.getCollection('empty');
       expect(await empty.find(findOptions: skipBy(0).setLimit(page)).length, 0);
-      expect(await empty.find(findOptions: skipBy(10).setLimit(page)).length, 0);
+      expect(
+          await empty.find(findOptions: skipBy(10).setLimit(page)).length, 0);
       await empty.close();
     });
 
     test('an indexed query pages the same way', () async {
-      await collection.createIndex(['index'], indexOptions(IndexType.nonUnique));
+      await collection
+          .createIndex(['index'], indexOptions(IndexType.nonUnique));
       await assertPagesMatchFullScan(where('index').gte(100));
     });
 

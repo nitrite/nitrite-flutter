@@ -2,7 +2,6 @@ import 'package:nitrite/nitrite.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
-import '../../test_utils.dart';
 import 'base_collection_test_loader.dart';
 
 void main() {
@@ -21,7 +20,7 @@ void main() {
     test('Test GetById Does Not Hand Out The Stored Instance', () async {
       var doc = createDocument('name', 'original');
       var result = await collection.insert(doc);
-      var id = await result.first;
+      var id = result.first;
 
       var first = await collection.getById(id);
       first!.put('name', 'mutated');

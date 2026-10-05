@@ -64,9 +64,8 @@ void main() {
     });
 
     test('hello carries it as a present false rather than an absent key', () {
-      final capabilities =
-          adapterFor(allowWrite: false).toJson()['capabilities']!
-              as Map<String, Object?>;
+      final capabilities = adapterFor(allowWrite: false)
+          .toJson()['capabilities']! as Map<String, Object?>;
       expect(capabilities.containsKey('transactions'), isTrue);
       expect(capabilities['transactions'], isFalse);
     });
@@ -184,7 +183,8 @@ void main() {
       // Resolved through `viewOf`, not through the repository handle the
       // adapter was constructed with — a write through that one would land
       // outside the transaction.
-      expect((await transaction.adapter.queryPage(page(store: store))).total, 2);
+      expect(
+          (await transaction.adapter.queryPage(page(store: store))).total, 2);
 
       await transaction.rollback();
       expect(await orders.documentCollection.size, 1);

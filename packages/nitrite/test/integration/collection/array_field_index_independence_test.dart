@@ -13,13 +13,15 @@ void main() {
     Future<NitriteCollection> seed(bool tagsIndex, bool createdIndex) async {
       var db = await Nitrite.builder().openOrCreate();
       var c = await db.getCollection('array_index_independence');
-      if (tagsIndex) await c.createIndex(['tags'], indexOptions(IndexType.nonUnique));
+      if (tagsIndex)
+        await c.createIndex(['tags'], indexOptions(IndexType.nonUnique));
       if (createdIndex) {
         await c.createIndex(['created_at'], indexOptions(IndexType.nonUnique));
       }
       for (var day = 0; day < 4; day++) {
         var tag = day % 2 == 0 ? 'todo' : 'misc';
-        await c.insert(createDocument('created_at', day * 1000).put('tags', [tag]));
+        await c.insert(
+            createDocument('created_at', day * 1000).put('tags', [tag]));
       }
       return c;
     }
@@ -31,8 +33,12 @@ void main() {
     });
 
     test('array eq result is index-independent', () async {
-      var without = await (await seed(false, false)).find(filter: where('tags').eq('todo')).length;
-      var with_ = await (await seed(true, false)).find(filter: where('tags').eq('todo')).length;
+      var without = await (await seed(false, false))
+          .find(filter: where('tags').eq('todo'))
+          .length;
+      var with_ = await (await seed(true, false))
+          .find(filter: where('tags').eq('todo'))
+          .length;
       expect(without, with_);
       expect(with_, 2);
     });
@@ -41,22 +47,58 @@ void main() {
       var c = await seed(true, true);
       // day 2 is the only "todo" inside [1000,3000]
       expect(
-          await c.find(filter: and([where('tags').eq('todo'), where('created_at').between(1000, 3000)])).length, 1);
-      expect(
-          await c.find(filter: and([where('created_at').between(1000, 3000), where('tags').eq('todo')])).length, 1);
-      expect(
           await c
-              .find(filter: and([where('tags').eq('todo'), where('created_at').gte(1000), where('created_at').lte(3000)]))
+              .find(
+                  filter: and([
+                where('tags').eq('todo'),
+                where('created_at').between(1000, 3000)
+              ]))
               .length,
           1);
-      expect(await c.find(filter: and([where('tags').eq('todo'), where('created_at').gte(1000)])).length, 1);
+      expect(
+          await c
+              .find(
+                  filter: and([
+                where('created_at').between(1000, 3000),
+                where('tags').eq('todo')
+              ]))
+              .length,
+          1);
+      expect(
+          await c
+              .find(
+                  filter: and([
+                where('tags').eq('todo'),
+                where('created_at').gte(1000),
+                where('created_at').lte(3000)
+              ]))
+              .length,
+          1);
+      expect(
+          await c
+              .find(
+                  filter: and([
+                where('tags').eq('todo'),
+                where('created_at').gte(1000)
+              ]))
+              .length,
+          1);
     });
 
     test('array within matches by containment on collection scan', () async {
       var c = await seed(false, true);
-      expect(await c.find(filter: where('tags').within(['todo', 'other'])).length, 2);
       expect(
-          await c.find(filter: and([where('tags').within(['todo']), where('created_at').between(1000, 3000)])).length, 1);
+          await c.find(filter: where('tags').within(['todo', 'other'])).length,
+          2);
+      expect(
+          await c
+              .find(
+                  filter: and([
+                where('tags').within(['todo']),
+                where('created_at').between(1000, 3000)
+              ]))
+              .length,
+          1);
     });
   });
 }

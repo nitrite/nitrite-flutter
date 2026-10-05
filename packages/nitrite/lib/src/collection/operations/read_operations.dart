@@ -266,7 +266,8 @@ class ReadOperations {
       }
 
       if (findPlan.limit != null || findPlan.skip != null) {
-        rawStream = rawStream.skip(skipTakenAtSource ? 0 : (findPlan.skip ?? 0));
+        rawStream =
+            rawStream.skip(skipTakenAtSource ? 0 : (findPlan.skip ?? 0));
         rawStream = rawStream.take(findPlan.limit ?? _maxSafeInteger);
       }
     }
