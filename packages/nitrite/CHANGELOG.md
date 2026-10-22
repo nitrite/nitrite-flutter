@@ -1,4 +1,4 @@
-## Unreleased
+## 3.3.2
 
 - Embedded-field lookup (`doc['address.city']`, and so filters and indexes on nested fields) now descends into plain `Map` values, not just `Document`s. A document holding a nested map put in directly never matched a nested-field filter. (nitrite/nitrite-java#1335)
 
