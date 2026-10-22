@@ -491,6 +491,16 @@ class _NitriteDocument extends Document {
       return _recursiveGet(value[splits[0]], splits.sublist(1));
     }
 
+    if (value is Map) {
+      // a plain map value is scanned like a document
+      var key = splits[0];
+      if (key.isNullOrEmpty) {
+        throw ValidationException("Invalid key provided");
+      }
+
+      return _recursiveGet(value[key], splits.sublist(1));
+    }
+
     if (value is Iterable) {
       // if the current level value is an iterable
 

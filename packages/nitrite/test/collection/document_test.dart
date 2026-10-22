@@ -41,6 +41,12 @@ void main() {
       expect(documentFromMap(<String, dynamic>{}).size, 0);
     });
 
+    test('Get Embedded Value in Plain Map', () {
+      // issue nitrite-java#1335
+      var doc = emptyDocument()..put('address', {'city': 'bangalore'});
+      expect(doc['address.city'], 'bangalore');
+    });
+
     test('Get Value', () {
       expect(doc[""], null);
       expect(doc["score"], 1034);
